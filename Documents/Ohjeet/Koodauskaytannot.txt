@@ -1,0 +1,6 @@
+Koodataan samalla kielellä, joka pitää vielä sopia. Finglish ei ole hyvä käytäntö.
+
+Sovitaan:
+- Tiedostojen nimeämiskäytännöt
+- Luokkien ja kirjastojen nimeämiskäytännöt
+- Muuttujien nimeämiskäytännöt

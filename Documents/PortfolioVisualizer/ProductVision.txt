@@ -1,0 +1,13 @@
+Portfolio management
+	- Visualisoidaan portfoliomanagementin kannalta tärkeää dataa helpommin ymmärrettävään muotoon
+	- Vertaillaan erilaisia projekteja keskenään
+	- Työkalu ammattikäyttöön
+
+Datan hallinnointi ja lisääminen
+	- Dataa voidaan viedä järjestelmään formilla
+	- datasta voidaan valita halutut attribuutit
+
+
+Open source
+	- Avoimen lähdekoodin työkalu portfolioiden analysointiin
+

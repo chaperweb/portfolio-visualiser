@@ -1,0 +1,11 @@
+Definition of done tikettikohtaisesti
+
+Tiketti on valmis kun seuraavat asiat on tehty
+	1. Tiketti on kommentoitu oikein ja commiteissa on j‰rkev‰t
+	1. Tiketille m‰‰ritellyt valmistumiskriteerit t‰yttyv‰t
+	2. Lokaalisti testattuna tiketti toimii
+	3. Automaattiset testit on kirjoitettu ja ne menev‰t l‰pi
+	4. Code review: Toinen devaaja tarkistaa koodisi ja hyv‰ksyy sen
+	5. Pit‰‰ toimia Internet Exploder 10 ja sit‰ uudemmilla selaimilla
+	6. Project owner hyv‰ksyy tiketin
+	
