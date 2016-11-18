@@ -1,4 +1,4 @@
-﻿Todo-list yleisille asioille
+Todo-list yleisille asioille
 
 
 - Code review pattern. Keskustellaan miten kannattaisi hoitaa, jotta mahdollisimman järkevä
