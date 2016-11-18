@@ -1,0 +1,20 @@
+Sprinttien aikataulut / Sisältö:
+
+Sprint aloitus
+- suunnitellaan seuraavan backlogin sisältö
+- yritetään arvioida tikettien määriä ja työmääriä
+- jaetaan tehtävät pienempiin ryhmiin
+- muuta?
+
+Sprint lopetus
+
+-Review
+1. Katsotaan mitä on tullut tehtyä
+
+-Demo
+1. Demotaan mitä on tehty
+
+
+Daily scrum möte:
+- Koodaillaan yhdessä
+- Vastataan kysymyksiin
