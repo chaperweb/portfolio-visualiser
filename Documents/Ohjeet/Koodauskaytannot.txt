@@ -1,6 +1,16 @@
-Koodataan samalla kielell‰, joka pit‰‰ viel‰ sopia. Finglish ei ole hyv‰ k‰yt‰ntˆ.
+ÔªøKoodataan samalla kielell√§, joka pit√§√§ viel√§ sopia. Finglish ei ole hyv√§ k√§yt√§nt√∂.
 
 Sovitaan:
-- Tiedostojen nime‰misk‰yt‰nnˆt
-- Luokkien ja kirjastojen nime‰misk‰yt‰nnˆt
-- Muuttujien nime‰misk‰yt‰nnˆt
+- Tiedostojen nime√§misk√§yt√§nn√∂t
+- Luokkien ja kirjastojen nime√§misk√§yt√§nn√∂t
+- Muuttujien nime√§misk√§yt√§nn√∂t
+- Kommenttien laajuus ja tarpeet
+- Testien koodaaminen ja ajaminen lokaalisti sek√§ automatisoidusti palvelimella (Jenkins)
+- Code review: Mill√§ kriteereill√§ koodin voi hyv√§ksy√§?
+	-Ainakin:
+		- Koodi vastaa tehty√§ ominaisuutta ja t√§ytt√§√§ hyv√§ksymiskriteerit
+		- Testit menee l√§pi
+		- Muuttujat nimetty k√§yt√§nt√∂jen mukaisesti
+		- Koodi on kommentoitu
+		- Ymm√§rsin, mit√§ koodi tekee
+		- En keksinyt bugeja tai puutteita testeiss√§
