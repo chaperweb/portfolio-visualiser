@@ -1,0 +1,26 @@
+Ohjeet Gitin k‰yttˆ‰ varten:
+
+Branchit
+	-Projekti p‰‰branch
+	-Bugit omiin brancheihin
+	-Featuret omiin brancheihin 
+
+
+
+Commitit
+	-Tee commit aina branchiin, jota k‰yt‰t devatessa, ei koskaan masteriin!
+	-Jokaiseen committiin kokonainen kuvaus siit‰ mit‰ on tehty/lis‰tty
+	-Linkit‰ agilefant-tiketti committiin
+
+Pull request
+	-Kun tiketti on valmis, tee pull request.
+	-Joku toinen devaaja k‰y koodisi l‰pi ja kun se on todettu hyv‰ksi jenkins prosessi hoitaa tiketin mergen masteriin.
+	-T‰m‰ prosesi vaatii viel‰ hiomista ja jutellaan siit‰ lis‰‰.
+
+
+
+Sourcetree
+	-Ei ole pakko k‰ytt‰‰ ja myˆs muut tavat k‰ytt‰‰ gitti‰ on ok
+	-Ladataan osoitteesta https://www.sourcetreeapp.com/
+	-Kopioi codenton git sourcetreehen
+
