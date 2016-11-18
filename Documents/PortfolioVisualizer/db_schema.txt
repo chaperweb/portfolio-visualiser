@@ -1,0 +1,74 @@
+from django.db import models
+from django_trees.models import AbstractNode
+
+class ProjectScale(models.Model):
+   budget_upper_bound =
+   resources_upper_bound =
+   name = 
+
+class OrganizationalUnit(AbstractNode):
+  name = models.CharField(max_length=10)
+  location = 
+
+class RealProject()
+  name = models.CharField(max_length=30)
+  project_manager = models.ForeignKey(User)
+  start = 
+
+class Project(models.Model):
+  real_project = 
+  description = models.CharField(max_length=30)
+  end =
+  milestone = boolean
+
+class Comment(models.Model):
+  comment =
+  user =
+  project =
+
+class Task(models.Model):
+  name =
+  project = 
+
+class TaskProgress(models.Model):
+  task = 
+  created_at = 
+  amount = 
+
+class Resource()
+   amount =
+   name =
+   project = 
+   unit =
+
+class ResourceSpent()
+   resource =
+   created_at =
+   amount
+
+class Budget(models.Model):
+  created_at = models.DateTime
+  name =
+
+class BudgetItem(models.Model):
+  budget = 
+  name =
+  amount
+
+class BudgetSpent(models.Model):
+  budget_item = 
+  amount =
+  created_at = 
+
+class Location(models.Model):
+  lgn = models.CharField(max_length=30)
+  ltd = models.CharField(max_length=30)
+
+class User(models.Model):
+  username = models.CharField(max_length=30)
+  email = models.CharField(max_length=30)
+  first_name = models.CharField(max_length=30)
+  last_name = models.CharField(max_length=30)
+
+
+
