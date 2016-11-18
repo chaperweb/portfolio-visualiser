@@ -1,16 +1,51 @@
-﻿Koodataan samalla kielellä, joka pitää vielä sopia. Finglish ei ole hyvä käytäntö.
+Koodataan englanniksi
+ - Kommentit
+ - Koodi
+
+Työskentely suomeksi
+ - Palaverit
+ - Commitit
+ - Pull requestit
+ - Slack
+ - Sähköposti
+
 
 Sovitaan:
-- Tiedostojen nimeämiskäytännöt
-- Luokkien ja kirjastojen nimeämiskäytännöt
-- Muuttujien nimeämiskäytännöt
-- Kommenttien laajuus ja tarpeet
-- Testien koodaaminen ja ajaminen lokaalisti sekä automatisoidusti palvelimella (Jenkins)
-- Code review: Millä kriteereillä koodin voi hyväksyä?
-	-Ainakin:
-		- Koodi vastaa tehtyä ominaisuutta ja täyttää hyväksymiskriteerit
-		- Testit menee läpi
-		- Muuttujat nimetty käytäntöjen mukaisesti
-		- Koodi on kommentoitu
-		- Ymmärsin, mitä koodi tekee
-		- En keksinyt bugeja tai puutteita testeissä
+
+Tiedostojen nimeämiskäytännöt
+ - Ei välilyöntejä
+ - Ei ääkkösiä
+ - (Tekstitiedostoissa encode utf-8)
+
+
+Luokkien ja kirjastojen nimeämiskäytännöt
+ - Pythonin ja js:n mukaisesti
+
+
+Muuttujien nimeämiskäytännöt
+ - Pyritään nimeämään mahdollisimman kuvaavasti
+ - Lokaalit muuttujat: _testi
+ - Globaalit muuttujat: testi
+ - Luokkien nimet: Testiclass
+ - Lokaalit funktiot/metodit: testi_funktio()
+ - Globaalit funktiot/metodit: testiFunktio() 
+
+
+Kommenttien laajuus ja tarpeet
+ - Kommentoi kaikki sellainen, jota et tajua enää viikon päästä
+ - Kommentoi, mitä funktion/metodin olisi tarkoitus tehdä
+
+
+Testien koodaaminen (ja ajaminen lokaalisti sekä automatisoidusti palvelimella (Jenkins))
+ - Kirjoita aina testit
+ - Tyhjillä arvoilla
+ - Väärillä arvoilla
+ - Toimivilla arvoilla
+
+Code review: Millä kriteereillä koodin voi hyväksyä?
+ - Code reviewn tekee kuka tahansa toinen koodari, mielellään eri “pienryhmästä”
+ - Koodi vastaa tehtyä ominaisuutta ja täyttää hyväksymiskriteerit, testit koodattu
+ - Muuttujat nimetty käytäntöjen mukaisesti
+ - Koodi on kommentoitu
+ - Ymmärsin, mitä koodi tekee
+ - En keksinyt bugeja tai puutteita testeissä
