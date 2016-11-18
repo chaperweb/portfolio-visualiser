@@ -1,7 +1,7 @@
-Todo-list yleisille asioille
+ÔªøTodo-list yleisille asioille
 
 
-- Code review pattern. Keskustellaan miten kannattaisi hoitaa, jotta mahdollisimman j‰rkev‰
-- Jenkins-prosessi, joka mergaa branchin masteriin, kun pull request on hyv‰ksytty
-- Jenkins prosessi, joka buildaa uuden version development-palvelimelle mergen j‰lkeen.
-- Sovitaan koodausk‰yt‰nnˆist‰
+- Code review pattern. Keskustellaan miten kannattaisi hoitaa, jotta mahdollisimman j√§rkev√§
+- Jenkins-prosessi, joka mergaa branchin masteriin, kun pull request on hyv√§ksytty
+- Jenkins prosessi, joka buildaa uuden version development-palvelimelle mergen j√§lkeen.
+- Sovitaan koodausk√§yt√§nn√∂ist√§

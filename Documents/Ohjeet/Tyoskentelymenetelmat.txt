@@ -1,4 +1,4 @@
-1. Valitse itsellesi tiketti agilefantin sprint backlogista
-2. Luo uusi branch master-branchista ja nime‰ branch featurea tai bugifiksi‰ kuvaavaksi
-3. Koodaa tiketti valmiiksi. Muista j‰rkev‰t commit - viestit, koodin kommentit sek‰ testit koodillesi
-4. Pushaa muutokset luomaasi banchiin ja tee pull request ja pyyd‰ jotakuta toista devaajaa tarkistamaan se
+Ôªø1. Valitse itsellesi tiketti agilefantin sprint backlogista
+2. Luo uusi branch master-branchista ja nime√§ branch featurea tai bugifiksi√§ kuvaavaksi
+3. Koodaa tiketti valmiiksi. Muista j√§rkev√§t commit - viestit, koodin kommentit sek√§ testit koodillesi
+4. Pushaa muutokset luomaasi banchiin ja tee pull request ja pyyd√§ jotakuta toista devaajaa tarkistamaan se
