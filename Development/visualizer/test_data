@@ -1,0 +1,4 @@
+INSERT INTO Project VALUES(2, 001, 'TestDescription', 'Project2', 1000, 1);
+INSERT INTO Project VALUES(3, 001, 'TestDescription2', 'Project3', 1000, 2);
+INSERT INTO Project VALUES(4, 001, 'TestDescription3', 'Project4', 1000, 3);
+INSERT INTO Project VALUES(5, 001, 'TestDescription4', 'Project5', 1000, 4)
