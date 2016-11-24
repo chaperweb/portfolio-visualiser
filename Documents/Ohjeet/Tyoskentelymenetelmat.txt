@@ -1,4 +1,9 @@
 1. Valitse itsellesi tiketti agilefantin sprint backlogista
 2. Luo uusi branch master-branchista ja nimeä branch featurea tai bugifiksiä kuvaavaksi
 3. Koodaa tiketti valmiiksi. Muista järkevät commit - viestit, koodin kommentit sekä testit koodillesi
+<<<<<<< HEAD
 4. Pushaa muutokset luomaasi branchiin ja tee pull request ja pyydä jotakuta toista devaajaa tarkistamaan se
+=======
+4. Pushaa muutokset luomaasi banchiin ja tee pull request ja pyydä jotakuta toista devaajaa tarkistamaan se
+u
+>>>>>>> modify_documentt2
