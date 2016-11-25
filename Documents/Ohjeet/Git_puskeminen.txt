@@ -16,3 +16,5 @@ Jos conflict:
 -push kyseinen branch
 
 Jos hankaluuksia mergessä, lataa Kdiff3
+
+niklaksen testi
