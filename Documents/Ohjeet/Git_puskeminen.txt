@@ -1,0 +1,18 @@
+Git työskentelyohje
+
+-luo branch
+-checkout kyseinen branch
+-addaa
+-commitoi
+-push kyseiseen branchiin
+-mene git ja tee pull request
+-pitäisi mergetä itsestään, jos ei onnistu -> katso alta
+
+Jos conflict:
+-mene master
+-pullaa master
+-mene takaisin uuteen branchiin
+-merge branchit
+-push kyseinen branch
+
+Jos hankaluuksia mergessä, lataa Kdiff3
