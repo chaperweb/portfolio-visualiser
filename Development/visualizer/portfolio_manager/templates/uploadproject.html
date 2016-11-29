@@ -16,8 +16,8 @@
         <label for="{{ form.name.id_for_name }}">Name:</label>
         <input id="id_name" class="form-control" type="text" name="name" maxlength="50" />
         <!-- Error handling -->
-        {% if form.title.errors %}
-        {% for error in form.title.errors %}
+        {% if form.name.errors %}
+        {% for error in form.name.errors %}
         <p class="text-danger">  {{ error|escape }}</p>
         {% endfor %}
         {% endif %}

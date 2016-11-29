@@ -5,7 +5,7 @@ from portfolio_manager.forms import ProjectForm
 # Bujaa
 def add_new_project(request):
     if request.method == 'POST':
-        form = ProjectForm()
+        form = ProjectForm(request.POST)
         if form.is_valid():
             project = Project(name = form.cleaned_data['name'])
             #startTime = form.cleaned_data['startTime'],
