@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>bujaa</title>
+</head>
+<body>
+
+<p>
+  projektit:
+</p>
+<br /><br />
+  <div>
+ {% for imgs in projects %}
+       <p>
+        {{ imgs.name }}
+       </p>
+       <p>
+        {{ imgs.organization }}
+       </p>
+
+{% endfor %}
+     </div>
+</body>
+</html>
