@@ -22,6 +22,16 @@
         {% endfor %}
         {% endif %}
       </p>
+      <p>
+        <label for="{{ form.organization.id_for_organization }}">Organization:</label>
+        <input id="id_organization" class="form-control" type="text" name="organization" maxlength="50" />
+        <!-- Error handling -->
+        {% if form.title.errors %}
+        {% for error in form.title.errors %}
+        <p class="text-danger">  {{ error|escape }}</p>
+        {% endfor %}
+        {% endif %}
+      </p>
 
 
       <input id="submit-all" type="submit" value="Send" />
