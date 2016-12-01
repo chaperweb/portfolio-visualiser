@@ -8,8 +8,8 @@
   <div>
     {% csrf_token %}
   <select name="organizationID">
-  {% for entry in projects %}
-    <option value="{{Project.organization}}">{{entry.organization}}</option>
+  {% for entry in orgs %}
+    <option value="{{Organization.name}}">{{entry.name}}</option>
   {% endfor %}
   </select>
 <br>

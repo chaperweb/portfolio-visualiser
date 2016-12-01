@@ -10,14 +10,15 @@
 </p>
 <br /><br />
   <div>
- {% for imgs in projects %}
-       <p>
-        {{ imgs.name }}
-       </p>
-       <p>
-        {{ imgs.parent }}
-       </p>
-{% endfor %}
-     </div>
+      {% for project in projects %}
+        <b>
+            {{ project.parent.name }}
+        </b>
+        <p>
+            {{ project.name }}
+        </p>
+
+      {% endfor %}
+  </div>
 </body>
 </html>
