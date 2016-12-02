@@ -4,17 +4,10 @@
   <title>klik klik</title>
 </head>
 <body>
+
   <form action="{% url 'select_org' %}" method="POST">
-  <div>
     {% csrf_token %}
-  <select name="organizationID">
-  {% for entry in orgs %}
-    <option value="{{Organization.name}}">{{entry.name}}</option>
-  {% endfor %}
-  </select>
-<br>
-<br>
-<p>
+    {{ form }}
   <input type="submit" name="submit" value="Vahvista">
 </p>
 </form>

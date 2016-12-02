@@ -6,16 +6,13 @@
 <body>
 
 <p>
-  projektit:
+  Valitsemasi organisaatio projektit:
 </p>
 <br /><br />
   <div>
- {% for imgs in projects %}
+ {% for p in projs %}
        <p>
-        {{ imgs.name }}
-       </p>
-       <p>
-        {{ imgs.organization }}
+        {{ p.name }}
        </p>
 
 {% endfor %}
