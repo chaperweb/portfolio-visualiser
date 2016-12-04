@@ -5,32 +5,52 @@ from django.utils import timezone
 
 class ModelsTestCase(TestCase):
     def setUp(self):
+      pass
+        
+    def test_project_dimensions_and_milestones(self):
+        """Test project dimensions and milestones"""
 
-        self.project = Project()
-        self.project.name = 'projekti'
-        self.project.save()
+        project = Project()
+        project.name = 'projekti'
+        project.save()
 
         d1 = NumericDimension()
         d1.initial_value = 5
         d1.name = 'budjetti'
         d1.save()
 
-        self.now = timezone.now()
-        d1.set_milestone(self.now + timedelta(days=4), 7)
-
         pd1 = ProjectDimension()
-        pd1.project = self.project
+        pd1.project = project
         pd1.dimension_object = d1
         pd1.save()
-      
-    def test_progress(self):
-        """Test progress of numeric dimension"""
 
-        self.project.dimensions.all()[0].dimension_object.update_progress(self.now + timedelta(days=1), -1);
-        self.project.dimensions.all()[0].dimension_object.update_progress(self.now + timedelta(days=2), 2);
+        now = timezone.now()
+        project_milestone = ProjectMilestone()
+        project_milestone.deadline = now + timedelta(days=4)
+        project_milestone.project = project
+        project_milestone.save()
 
-        self.assertEqual(self.project.dimensions.all()[0].dimension_object.get_status(), 6)
-        self.assertEqual(self.project.on_schedule(self.now + timedelta(days=5)), False)
+        d1_milestone = NumericDimensionMilestone()
+        d1_milestone.numeric_dimension = d1
+        d1_milestone.value = 7
+        d1_milestone.save()
 
-        self.project.dimensions.all()[0].dimension_object.update_progress(self.now + timedelta(days=3), 1);
-        self.assertEqual(self.project.on_schedule(self.now + timedelta(days=5)), True)
+        project_milestone_d1_milestone = ProjectMilestoneDimensionMilestone()
+        project_milestone_d1_milestone.project_milestone = project_milestone
+        project_milestone_d1_milestone.dimension_milestone_object = d1_milestone
+        project_milestone_d1_milestone.save()
+
+        self.assertEqual(len(project.dimensions.all()), 1)
+        self.assertEqual(project.dimensions.all()[0].dimension_object.name, 'budjetti')
+        self.assertEqual(len(project.milestones.all()), 1)
+        self.assertEqual(project.milestones.all()[0].dimension_milestones.all()[0].dimension_milestone_object.value, 7)
+
+        project.dimensions.all()[0].dimension_object.record_change(now + timedelta(days=1), -1);
+        project.dimensions.all()[0].dimension_object.record_change(now + timedelta(days=2), 2);
+
+        self.assertEqual(project.dimensions.all()[0].dimension_object.get_status(), 6)
+        self.assertEqual(project.milestones.all()[0].on_schedule(), False)
+
+        project.dimensions.all()[0].dimension_object.record_change(now + timedelta(days=3), 1);
+        self.assertEqual(project.milestones.all()[0].on_schedule(), True)
+
