@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+import reversion
+from reversion.models import Version
 
 # Create your models here.
 
@@ -45,43 +47,32 @@ class Dimension (models.Model):
   def get_content_type(self):
     return ContentType.objects.get_for_model(self).id
 
-class DimensionChange(models.Model):
-  class Meta:
-    abstract = True
-
-  created_at = models.DateTimeField(auto_now_add=True)
-  comment = models.CharField(max_length=256)
-
+@reversion.register()
 class NumericDimension (Dimension):
 
-  initial_value = models.IntegerField()
+  value = models.IntegerField()
 
-  def record_change(self, when, change):
-    nd_change = NumericDimensionChange()
-    nd_change.change = change
-    nd_change.numeric_dimension = self
-    nd_change.created_at = when
-    nd_change.save()
-
-  def get_status(self):
-    return self.initial_value + sum(x.change for x in self.changes.all())
-
-
-class NumericDimensionChange (DimensionChange):
-  numeric_dimension = models.ForeignKey(NumericDimension, on_delete=models.CASCADE, related_name='changes')
-  change = models.IntegerField()
-
+  def update_value(self, value, when):
+    with reversion.create_revision():
+      self.value = value
+      self.save()
+      reversion.set_date_created(when)
+ 
 class NumericDimensionMilestone (models.Model):
   numeric_dimension = models.ForeignKey(NumericDimension, on_delete=models.CASCADE, related_name='milestones')
   value = models.IntegerField()
 
   def on_schedule(self, deadline):
-    total_change = 0;
-    for change in self.numeric_dimension.changes.all():
-      if change.created_at <= deadline:
-        total_change += change.change
+    versions = Version.objects.get_for_object(self.numeric_dimension)
+    versions = versions.filter(revision__date_created__lte=deadline)
 
-    return self.value <= self.numeric_dimension.initial_value + total_change
+    dimension_value = self.numeric_dimension.value
+    try:
+        dimension_value = versions[0].field_dict["value"]
+    except IndexError:
+      pass
 
+    return self.value <= dimension_value
+      
 
 

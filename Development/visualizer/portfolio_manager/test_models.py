@@ -15,8 +15,8 @@ class ModelsTestCase(TestCase):
         project.save()
 
         d1 = NumericDimension()
-        d1.initial_value = 5
         d1.name = 'budjetti'
+        d1.value = 5;
         d1.save()
 
         pd1 = ProjectDimension()
@@ -45,12 +45,12 @@ class ModelsTestCase(TestCase):
         self.assertEqual(len(project.milestones.all()), 1)
         self.assertEqual(project.milestones.all()[0].dimension_milestones.all()[0].dimension_milestone_object.value, 7)
 
-        project.dimensions.all()[0].dimension_object.record_change(now + timedelta(days=1), -1);
-        project.dimensions.all()[0].dimension_object.record_change(now + timedelta(days=2), 2);
+        project.dimensions.all()[0].dimension_object.update_value(4, now + timedelta(days=1));
+        project.dimensions.all()[0].dimension_object.update_value(6, now + timedelta(days=2));
 
-        self.assertEqual(project.dimensions.all()[0].dimension_object.get_status(), 6)
+        self.assertEqual(project.dimensions.all()[0].dimension_object.value, 6)
         self.assertEqual(project.milestones.all()[0].on_schedule(), False)
 
-        project.dimensions.all()[0].dimension_object.record_change(now + timedelta(days=3), 1);
+        project.dimensions.all()[0].dimension_object.update_value(7, now + timedelta(days=3));
         self.assertEqual(project.milestones.all()[0].on_schedule(), True)
 
