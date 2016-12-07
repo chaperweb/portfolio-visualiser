@@ -7,11 +7,17 @@ from django.db import models
 #example model
 class Organization (models.Model):
     name = models.CharField(max_length=50, primary_key=True)
+    def __str__(self):
+        return self.name
 
+    def __unicode__(self):
+        return self.name
 
 class Project (models.Model):
     name = models.CharField(max_length=50)
     parent = models.ForeignKey('Organization',on_delete=models.CASCADE)
+
+
 
     #startTime = models.DateTimeField(auto_now_add = True)
     #duration = models.IntegerField(default = 0)

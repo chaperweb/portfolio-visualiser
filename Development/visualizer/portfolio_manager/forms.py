@@ -15,5 +15,4 @@ class OrganizationForm(forms.Form):
                             error_messages={'required': 'Your organization needs a name!'})
 
 class CronForm(forms.Form):
-    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="(Nothing)",to_field_name="name")
-    
+    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="(Nothing)")
