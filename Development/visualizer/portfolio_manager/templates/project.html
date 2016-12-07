@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>bujaa</title>
+</head>
+<body>
+
+<h2>
+  projektin tiedot:
+</h2>
+<a href="{% url 'project_edit' project.pk %}">EDIT</a>
+<br /><br />
+  <div>
+    Nimi: <br />
+      {{ project.name }}<br /><br />
+
+Organizaatio: <br />
+{{ project.parent }}
+  </div>
+  <div>
+    <input type=button value="previous Page" onClick="javascript:history.go(-1);">
+  </div>
+</body>
+</html>

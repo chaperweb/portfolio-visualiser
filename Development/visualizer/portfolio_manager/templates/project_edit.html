@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>bujaa</title>
+</head>
+<body>
+
+<p>
+  Muuta projektin tietoja:
+</p>
+<br /><br />
+  <div>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit" />
+    </form>
+
+     </div>
+     <div>
+       <input type=button value="previous Page" onClick="javascript:history.go(-1);">
+     </div>
+</body>
+</html>

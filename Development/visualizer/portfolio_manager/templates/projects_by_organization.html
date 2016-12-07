@@ -12,8 +12,10 @@
   <div>
  {% for p in projs %}
        <p>
-        {{ p.name }}
+        <a href="{% url 'show_project' p.pk %}">{{ p.name }}</a>
        </p>
+
+
 
 {% endfor %}
      </div>

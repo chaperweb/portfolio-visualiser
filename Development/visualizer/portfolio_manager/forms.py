@@ -1,12 +1,17 @@
 from django import forms
-from portfolio_manager.models import Organization
+from portfolio_manager.models import Organization, Project
 
 class ProjectForm(forms.Form):
+
+
     name = forms.CharField(label = 'Name', max_length=50, required = True,
                             error_messages={'required': 'Your project needs a name!'})
-    organization = forms.CharField(label = 'Organization', max_length=50, required = True,
-                            error_messages={'required': 'Your project needs an Organization!'})
-    #startTime = forms.DateTimeField(label = 'Start Date', required = True,
+    parent = forms.ModelChoiceField(queryset=Organization.objects.all())
+
+    # class Meta:
+    #     model = Project
+    #     fields = ('name', 'parent',)
+# #startTime = forms.DateTimeField(label = 'Start Date', required = True,
     #                        error_messages={'required': 'When will the project start?'})
     #duration = forms.IntegerField()
 
