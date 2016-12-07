@@ -73,6 +73,21 @@ class NumericDimensionMilestone (models.Model):
       pass
 
     return self.value <= dimension_value
-      
+
+@reversion.register()
+class Person (models.Model):
+  first_name = models.CharField(max_length=64)
+  last_name = models.CharField(max_length=64)
+
+@reversion.register()
+class MembersDimension(Dimension):
+  members = models.ManyToManyField(Person)
+
+  def set_members(self, members, when=None):
+    with reversion.create_revision():
+      self.members.set(members)
+      if (when != None):
+        reversion.set_date_created(when)
+
 
 
