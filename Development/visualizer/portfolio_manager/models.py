@@ -20,23 +20,6 @@ class ProjectDimension (models.Model):
   content_type = models.ForeignKey(ContentType)
   object_id = models.PositiveIntegerField()
   dimension_object = GenericForeignKey('content_type', 'object_id')
-
-class ProjectMilestone (models.Model):
-  deadline = models.DateTimeField()
-  project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='milestones')
-
-  def on_schedule(self):
-    for dimension_milestone in self.dimension_milestones.all():
-      if not dimension_milestone.dimension_milestone_object.on_schedule(self.deadline):
-        return False
-
-    return True
-
-class ProjectMilestoneDimensionMilestone (models.Model):
-  project_milestone = models.ForeignKey(ProjectMilestone, on_delete=models.CASCADE, related_name='dimension_milestones')
-  content_type = models.ForeignKey(ContentType)
-  object_id = models.PositiveIntegerField()
-  dimension_milestone_object = GenericForeignKey('content_type', 'object_id')
    
 class Dimension (models.Model):
   class Meta:
@@ -45,7 +28,7 @@ class Dimension (models.Model):
   name = models.CharField(max_length=64)
   
   def get_content_type(self):
-    return ContentType.objects.get_for_model(self).id
+    return ContentType.objects.get_for_model(self).id   
 
 @reversion.register()
 class NumericDimension (Dimension):
@@ -74,6 +57,33 @@ class NumericDimensionMilestone (models.Model):
 
     return self.value <= dimension_value
 
+
+@reversion.register(follow=['milestones_dimensions'])
+class ProjectMilestone (models.Model):
+  deadline = models.DateTimeField()
+  
+  def on_schedule(self):
+    for dimension_milestone in self.dimension_milestones.all():
+      if not dimension_milestone.dimension_milestone_object.on_schedule(self.deadline):
+        return False
+
+    return True
+
+@reversion.register(follow=['milestones'])
+class MilestonesDimension (Dimension):
+
+  milestones = models.ManyToManyField(ProjectMilestone, related_name='milestones_dimensions')
+
+  def set_milestones(self, milestones):
+    with reversion.create_revision():
+      self.milestones.set(milestones)
+
+class ProjectMilestoneDimensionMilestone (models.Model):
+  project_milestone = models.ForeignKey(ProjectMilestone, on_delete=models.CASCADE, related_name='dimension_milestones')
+  content_type = models.ForeignKey(ContentType)
+  object_id = models.PositiveIntegerField()
+  dimension_milestone_object = GenericForeignKey('content_type', 'object_id')
+
 @reversion.register()
 class Person (models.Model):
   first_name = models.CharField(max_length=64)
@@ -88,6 +98,4 @@ class MembersDimension(Dimension):
       self.members.set(members)
       if (when != None):
         reversion.set_date_created(when)
-
-
 
