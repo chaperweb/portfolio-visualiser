@@ -2,11 +2,68 @@ from django.test import TestCase
 from models import *
 from datetime import datetime, timedelta
 from django.utils import timezone
-
+from decimal import *
 
 class ModelsTestCase(TestCase):
     def setUp(self):
       pass
+
+    def test_size_money_dimension(self):
+        
+        d1 = SizeMoneyDimension()
+        d1.name = 'size_money'
+        d1.value = 0
+        d1.save();
+
+        d1.update_value(1)
+        d1.update_value(5.4)
+
+        versions = Version.objects.get_for_object(d1)
+        self.assertEqual(len(versions), 2)
+
+        self.assertEqual(versions[0].field_dict['value'], Decimal('5.4').quantize(Decimal(10) ** -2))
+        self.assertEqual(versions[1].field_dict['value'], 1)
+
+    def test_development_method_dimension(self):
+        
+        d1 = DevelopmentMethodDimension()
+        d1.name = 'development method'
+        d1.value = ''
+        d1.save();
+
+        d1.update_value('java')
+        d1.update_value('scala')
+
+        versions = Version.objects.get_for_object(d1)
+        self.assertEqual(len(versions), 2)
+
+        self.assertEqual(versions[0].field_dict['value'],'scala')
+        self.assertEqual(versions[1].field_dict['value'], 'java')
+
+    def test_project_id(self):
+        project = Project()
+        project.name = 'projekti'
+        project.save()
+        self.assertEqual(project.id, 1)
+
+
+
+    def test_start_time_dimension(self):
+
+        d1 = StartTimeDimension()
+        d1.name = 'start time'
+        d1.value = timezone.now()
+        d1.save();
+
+        now = timezone.now()
+        d1.update_value(now)
+        d1.update_value(now + timedelta(days=5))
+
+        versions = Version.objects.get_for_object(d1)
+        self.assertEqual(len(versions), 2)
+
+        self.assertEqual(versions[0].field_dict['value'].replace(microsecond=0), now.replace(microsecond=0) + timedelta(days=5))
+        self.assertEqual(versions[1].field_dict['value'].replace(microsecond=0), now.replace(microsecond=0))
 
     def test_milestones_dimension(self):
         project = Project()
@@ -102,6 +159,31 @@ class ModelsTestCase(TestCase):
         project.dimensions.all()[0].dimension_object.update_value(7, now + timedelta(days=3));
         self.assertEqual(project.dimensions.all()[1].dimension_object.milestones.all()[0].on_schedule(), True)
 
+    def test_project_manager_dimension(self):
+        d1 = ProjectManagerDimension()
+        d1.save()
+
+        person1 = Person();
+        person1.first_name = 'first first'
+        person1.last_name = 'first last'
+        person1.save()
+
+        person2 = Person()
+        person2.first_name = 'second first'
+        person2.last_name = 'second last'
+        person2.save()
+
+        d1.update_value(person1)
+        d1.update_value(person2)
+
+        person2.first_name = 'updated second first'
+        person2.save()
+
+        versions = Version.objects.get_for_object(d1)
+        self.assertEqual(len(versions), 2)
+        self.assertEqual(Person.objects.get(pk=versions[0].field_dict['value_id']).first_name, 'updated second first')
+        self.assertEqual(Person.objects.get(pk=versions[1].field_dict['value_id']).first_name, 'first first')
+
     def test_members_dimension(self):
 
         project = Project()
@@ -142,3 +224,47 @@ class ModelsTestCase(TestCase):
 
         
 
+    def test_project_dependencies_dimension(self):
+        d1 = ProjectDependenciesDimension()
+        d1.save()
+
+        project1 = Project()
+        project1.name = 'projekti1'
+        project1.save()
+
+        project2 = Project()
+        project2.name = 'projekti2'
+        project2.save()
+
+        d1.set_dependencies([project1])
+        d1.set_dependencies([project1, project2])
+
+        versions = Version.objects.get_for_object(d1)
+        self.assertEqual(len(versions), 2)
+
+        self.assertEqual(len(versions[0].field_dict['dependencies']), 2)
+        self.assertEqual(versions[0].field_dict['dependencies'][0], project1.id)
+        self.assertEqual(versions[0].field_dict['dependencies'][1], project2.id)
+
+
+    def test_suppliers_dimension(self):
+        d1 = SuppliersDimension()
+        d1.save()
+
+        supplier1 = Supplier()
+        supplier1.name = 'supplier1'
+        supplier1.save()
+
+        supplier2 = Supplier()
+        supplier2.name = 'supplier2'
+        supplier2.save()
+
+        d1.set_suppliers([supplier1])
+        d1.set_suppliers([supplier1, supplier2])
+
+        versions = Version.objects.get_for_object(d1)
+        self.assertEqual(len(versions), 2)
+
+        self.assertEqual(len(versions[0].field_dict['suppliers']), 2)
+        self.assertEqual(Supplier.objects.get(pk=versions[0].field_dict['suppliers'][0]).name, supplier1.name)
+        self.assertEqual(Supplier.objects.get(pk=versions[0].field_dict['suppliers'][1]).name, supplier2.name)
