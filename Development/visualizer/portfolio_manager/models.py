@@ -26,6 +26,12 @@ class ProjectDimension (models.Model):
   content_type = models.ForeignKey(ContentType)
   object_id = models.PositiveIntegerField()
   dimension_object = GenericForeignKey('content_type', 'object_id')
+
+  def __unicode__(self):
+    return self.dimension_object.__class__.__name__
+
+  def __str__(self):
+    return unicode(self).encode('utf-8')
  
 #model for a Dimension to use in comparisons
 class Dimension (models.Model):
@@ -57,6 +63,12 @@ class NumericDimensionMilestone (models.Model):
   numeric_dimension = models.ForeignKey(NumericDimension, on_delete=models.CASCADE, related_name='milestones')
   value = models.IntegerField()
 
+  def __unicode__(self):
+    return "id: "+str(self.numeric_dimension.id)+" value: "+str(self.value)
+
+  def __str__(self):
+    return unicode(self).encode('utf-8')
+
   def on_schedule(self, deadline):
     versions = Version.objects.get_for_object(self.numeric_dimension)
     versions = versions.filter(revision__date_created__lte=deadline)
@@ -74,6 +86,12 @@ class NumericDimensionMilestone (models.Model):
 class ProjectMilestone (models.Model):
   deadline = models.DateTimeField()
   
+  def __unicode__(self):
+    return str(map((lambda x: x.dimension_milestone_object.__class__.__name__+": "+str(x.dimension_milestone_object)) , self.dimension_milestones.all()))+" @ "+str(self.deadline)
+
+  def __str__(self):
+    return unicode(self).encode('utf-8')
+
   def on_schedule(self):
     for dimension_milestone in self.dimension_milestones.all():
       if not dimension_milestone.dimension_milestone_object.on_schedule(self.deadline):
@@ -102,6 +120,12 @@ class ProjectMilestoneDimensionMilestone (models.Model):
 class Person (models.Model):
   first_name = models.CharField(max_length=64)
   last_name = models.CharField(max_length=64)
+
+  def __unicode__(self):
+    return self.first_name+" "+self.last_name
+
+  def __str__(self):
+    return unicode(self).encode('utf-8')
 
 #Dimension for project participant management
 @reversion.register()
