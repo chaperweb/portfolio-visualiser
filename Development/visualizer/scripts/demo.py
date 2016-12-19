@@ -32,7 +32,7 @@ def run():
 
   pd2 = ProjectDimension()
   pd2.project = project
-  pd2.dimension_object = d_milestones
+  pd2.dimension_object = d_project_manager
   pd2.save()
 
   pd3 = ProjectDimension()
@@ -94,7 +94,9 @@ def run():
   d_project_manager.update_value(person3, now)
   d_project_manager.update_value(person4, now + timedelta(days=7))
 
+  print "Project dimensions"
   print project.dimensions.all()
+  print ""
 
   print "Members history"
   for version in Version.objects.get_for_object(d_members):
