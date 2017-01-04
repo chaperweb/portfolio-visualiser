@@ -1,26 +1,26 @@
-Yleisiä graafisia keinoja:
+ï»¿YleisiÃ¤ graafisia keinoja:
 
-Ympyräkaavio - Valmiit/keskeneräiset/aloittamattomat featuret
+YmpyrÃ¤kaavio - Valmiit/keskenerÃ¤iset/aloittamattomat featuret
 
-Pylväsdiagrammi - Työtunnit/Budget
+PylvÃ¤sdiagrammi - TyÃ¶tunnit/Budget
 
 Graafit - Aika/Budget/Featuret
 
 Edistyspalkki - Kuinka valmis projekti/feature on
 
-Värikoodeja - Prioriteetit yms.
+VÃ¤rikoodeja - Prioriteetit yms.
 
-Gantt-käyrä - aikataulujen järjestely
+Gantt-kÃ¤yrÃ¤ - aikataulujen jÃ¤rjestely
 
-Aikataulu - Päivämäärät
+Aikataulu - PÃ¤ivÃ¤mÃ¤Ã¤rÃ¤t
 
-Filtereitä - Missä vaiheessa projekti, projektien riippuvuudet
+FiltereitÃ¤ - MissÃ¤ vaiheessa projekti, projektien riippuvuudet
 
-Kommentit/Kuvaukset lisäyksistä/muutoksista
+Kommentit/Kuvaukset lisÃ¤yksistÃ¤/muutoksista
 
-Puu - Projektien väliset riippuvuudet
+Puu - Projektien vÃ¤liset riippuvuudet
 
-Resurssien hallinta - Ryhmän jäsenten työmäärä
+Resurssien hallinta - RyhmÃ¤n jÃ¤senten tyÃ¶mÃ¤Ã¤rÃ¤
 
 Kartta - ei yleinen olemassaolevissa portfolio management-ohjelmissa
 
@@ -31,16 +31,16 @@ Asiakas/Firma
 
 Budjetti
 
-Päivämäärät - aloitus/lopetus/muutokset jne.
+PÃ¤ivÃ¤mÃ¤Ã¤rÃ¤t - aloitus/lopetus/muutokset jne.
 
 Kommentit/Kuvaukset
 
-Projektien keskenäinen riippuvuus
+Projektien keskenÃ¤inen riippuvuus
 
-Ominaisuuksien/vaiheiden status; tehty/kesken/tekemättä
+Ominaisuuksien/vaiheiden status; tehty/kesken/tekemÃ¤ttÃ¤
 
-Tehdyt työtunnit tai muut yksiköt
+Tehdyt tyÃ¶tunnit tai muut yksikÃ¶t
 
-Työntekijät ja niiden asemat/tehtävät
+TyÃ¶ntekijÃ¤t ja niiden asemat/tehtÃ¤vÃ¤t
 
 Sijainti

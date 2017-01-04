@@ -3,9 +3,7 @@
 Branchit
 	-Projekti pääbranch
 	-Bugit omiin brancheihin
-	-Featuret omiin brancheihin 
-
-
+	-Featuret omiin brancheihin
 
 Commitit
 	-Tee commit aina branchiin, jota käytät devatessa, ei koskaan masteriin!
@@ -17,10 +15,14 @@ Pull request
 	-Joku toinen devaaja käy koodisi läpi ja kun se on todettu hyväksi jenkins prosessi hoitaa tiketin mergen masteriin.
 	-Tämä prosesi vaatii vielä hiomista ja jutellaan siitä lisää.
 
-
+Merge conflict
+	-Mene master
+	-Pullaa master
+	-Mene takaisin uuteen branchiin
+	-Merge branchit
+	-Push kyseinen branch
 
 Sourcetree
 	-Ei ole pakko käyttää ja myös muut tavat käyttää gittiä on ok
 	-Ladataan osoitteesta https://www.sourcetreeapp.com/
 	-Kopioi codenton git sourcetreehen
-
