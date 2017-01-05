@@ -1,7 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from portfolio_manager.models import Project,Organization
 from portfolio_manager.forms import ProjectForm,OrganizationForm,CronForm
+
 import reversion
+import logging
+
+# LOGGING
+logger = logging.getLogger('django.request')
 
 def add_new_project(request):
     if request.method == 'POST':
@@ -16,10 +21,12 @@ def add_new_project(request):
                 newproject = Project(name = form.cleaned_data['name'], parent = organization)
                 newproject.save()
 
+                # Log to file that project is added
+                logger.info("Project added: " + newproject.name + ", Org: " + newproject.parent.name)
+
                 # Store some meta-info
                 # reversion.set_user(request.user)
                 reversion.set_comment("Created the project")
-
                 form = ProjectForm()
         return redirect('projects')
 
@@ -65,6 +72,7 @@ def project_edit(request, project_id):
                 # Store meta-info
                 # reversion.set_user(request.user)
                 reversion.set_comment("Updated project")
+                
         return redirect('show_project', project_id=proj.pk)
     else:
         data = {
