@@ -1,25 +1,26 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from portfolio_manager.models import Project,Organization
 from portfolio_manager.forms import ProjectForm,OrganizationForm,CronForm
-# Create your views here.
-# Bujaa
+import reversion
+
 def add_new_project(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
         if form.is_valid():
-            organization = Organization(name = form.cleaned_data['parent'])
-            organization.save()
+            with reversion.create_revision():
+                # Save a new Organization
+                organization = Organization(name = form.cleaned_data['parent'])
+                organization.save()
 
-            newproject = Project(name = form.cleaned_data['name'], parent = organization)
+                # Save a new Project
+                newproject = Project(name = form.cleaned_data['name'], parent = organization)
+                newproject.save()
 
-        #    newproject = organization.project_set.create(name=form.cleaned_data['name'])
-            newproject.save()
-            print(newproject.name)
+                # Store some meta-info
+                # reversion.set_user(request.user)
+                reversion.set_comment("Created the project")
 
-            #startTime = form.cleaned_data['startTime'],
-            #        duration = form.cleaned_data['duration'])
-
-            form = ProjectForm()
+                form = ProjectForm()
         return redirect('projects')
 
     elif request.method == 'GET':
@@ -30,29 +31,12 @@ def projects(request):
     projects_all = Project.objects.all()
     return render(request, 'projects.html', {'projects': projects_all})
 
-# def organizations(request):
-    # project = Project.objects.all()
-    # oform = request.POST
-    # if request.method =='POST':
-    #     print(oform['organizationID'])
-    #     selected_item = get_object_or_404(Project, organization=oform)
-    #     return redirect('projects')
-#    orgs = Organization.objects.all()
-    #if request.method == 'POST':
-    #    form = OrganizationForm(request.POST)
-    #    if form.is_valid():
-    #        projects = Project.objects.filter(parent = selected_item)
-    #        return redirect('projects')
-    #return render(request, 'droptable_organization.html', {'orgs':orgs})
-
 def organizations(request):
 
    if request.method == "POST":
       form = CronForm(request.POST)
 
       if form.is_valid:
-         print(request.POST.get("orgs", ""))
-
          projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
 
          #redirect to the url where you'll process the input
@@ -72,12 +56,15 @@ def project_edit(request, project_id):
         form = ProjectForm(request.POST)
 
         if form.is_valid():
+            with reversion.create_revision():
+                # Update the projects info
+                proj.name = form.cleaned_data['name']
+                proj.parent = form.cleaned_data['parent']
+                proj.save()
 
-            # proj = form.save(commit=False)
-            proj.name = form.cleaned_data['name']
-            proj.parent = form.cleaned_data['parent']
-            # print("org: " + organization)
-            proj.save()
+                # Store meta-info
+                # reversion.set_user(request.user)
+                reversion.set_comment("Updated project")
         return redirect('show_project', project_id=proj.pk)
     else:
         data = {
