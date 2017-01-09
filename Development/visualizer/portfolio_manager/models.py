@@ -14,11 +14,17 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 class Organization (models.Model):
   name = models.CharField(max_length=50, primary_key=True)
 
+  def __str__(self):
+    return str(self.name)
+
+  def __unicode__(self):
+    return self.name
+
 #Model for a Project instance
 #Id generated automatically
 class Project (models.Model):
   name = models.CharField(max_length=50)
-  parent = models.ForeignKey(Organization, null=True)
+  parent = models.ForeignKey(Organization, null=True,on_delete=models.CASCADE)
 
 #Model for a project dimension
 class ProjectDimension (models.Model):
@@ -245,3 +251,4 @@ class OwningOrganizationDimension (TextDimension):
 @reversion.register()
 class StartTimeDimension (Dimension):
   value = models.DateTimeField()
+

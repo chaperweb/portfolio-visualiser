@@ -1,13 +1,11 @@
-Portfolio management
-	- Visualisoidaan portfoliomanagementin kannalta tärkeää dataa helpommin ymmärrettävään muotoon
-	- Vertaillaan erilaisia projekteja keskenään
-	- Työkalu ammattikäyttöön
+﻿Product vision for Portfolio Visualizer
+CS-C2130 - Ohjelmistoprojekti 1
+Team 6
 
-Datan hallinnointi ja lisääminen
-	- Dataa voidaan viedä järjestelmään formilla
-	- Datasta voidaan valita halutut attribuutit
+Asiakas: Codento
 
+Projektin kuvaus
+Organisaatioilla on useita menneitä, käynnissä olevia ja päättyneitä projekteja. Projektien dataa hallinnoidaan perinteisesti numeroina sekä tekstinä ja sitä usein käsitellään samassa muodossa esimerkiksi excelin avulla. Datan ollessa tällaisessa muodossa projektien vertailu ja seuraaminen on huomattavan vaikeaa ja vaivalloista. Jotkin datasta piiloon jääneet havainnot jäävät huomaamatta ja esimerkiksi kaikki syyt projektien onnistumiselle ja epäonnistumiselle eivät tule otetuksi huomioon. Tämän projektin tavoitteena on luoda työkalu tämän kaltaisen datan visualisointiin, jolloin organisaatioiden projektien keskinäinen vertailu sekä projektien sisäisten tunnuslukujen tarkastelu on helpompaa. Portfolioiden hallintaan on jo olemassa työkaluja, mutta niissä on kaikissa omat puutteensa. Pyrimme hyödyntämään olemassa olevia hyviä käytäntöjä ja keksimään huonoille käytännöille parempia vaihtoehtoja. Työkalu on tarkoitettu ammattikäyttöön esimerkiksi projektien johdolle, konsulteille tai ylemmälle johdolle projektien onnistumisen seurantaan koko organisaation tasolla.
 
-Open source
-	- Avoimen lähdekoodin työkalu portfolioiden analysointiin
+Projektin koodaus koostuu pääpiirteittäin kahdesta erillisestä osiosta, jotka voidaan jakaa edelleen pienempiin kokonaisuuksiin. Aluksi on tärkeää luoda tapa syöttää tietokantaan tarvittavaa dataa, sekä saada esitettyä data yksinkertaisessa muodossa. Toisessa vaiheessa luomme visualisointeja tietokantaan syötetyn datan pohjalta. Dataa pitää luonnollisesti pystyä suodattamaan halutuilla attribuuteilla. Pyrimme toteuttamaan ensimmäisen vaiheen mahdollisimman nopeasti, jotta meille jäisi mahdollisimman paljon aikaa kehittää visualisointia, joka on koko projektin idea.
 

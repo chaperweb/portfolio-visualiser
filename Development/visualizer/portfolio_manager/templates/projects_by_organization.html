@@ -6,17 +6,16 @@
 <body>
 
 <p>
-  projektit:
+  Valitsemasi organisaatio projektit:
 </p>
 <br /><br />
   <div>
- {% for imgs in projects %}
+ {% for p in projs %}
        <p>
-        {{ imgs.name }}
+        <a href="{% url 'show_project' p.pk %}">{{ p.name }}</a>
        </p>
-       <p>
-        {{ imgs.organization }}
-       </p>
+
+
 
 {% endfor %}
      </div>

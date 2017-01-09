@@ -1,0 +1,46 @@
+﻿Yleisiä graafisia keinoja:
+
+Ympyräkaavio - Valmiit/keskeneräiset/aloittamattomat featuret
+
+Pylväsdiagrammi - Työtunnit/Budget
+
+Graafit - Aika/Budget/Featuret
+
+Edistyspalkki - Kuinka valmis projekti/feature on
+
+Värikoodeja - Prioriteetit yms.
+
+Gantt-käyrä - aikataulujen järjestely
+
+Aikataulu - Päivämäärät
+
+Filtereitä - Missä vaiheessa projekti, projektien riippuvuudet
+
+Kommentit/Kuvaukset lisäyksistä/muutoksista
+
+Puu - Projektien väliset riippuvuudet
+
+Resurssien hallinta - Ryhmän jäsenten työmäärä
+
+Kartta - ei yleinen olemassaolevissa portfolio management-ohjelmissa
+
+
+Tarvittava tieto:
+
+Asiakas/Firma 
+
+Budjetti
+
+Päivämäärät - aloitus/lopetus/muutokset jne.
+
+Kommentit/Kuvaukset
+
+Projektien keskenäinen riippuvuus
+
+Ominaisuuksien/vaiheiden status; tehty/kesken/tekemättä
+
+Tehdyt työtunnit tai muut yksiköt
+
+Työntekijät ja niiden asemat/tehtävät
+
+Sijainti

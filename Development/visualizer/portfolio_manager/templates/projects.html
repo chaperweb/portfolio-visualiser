@@ -11,12 +11,10 @@
 <br /><br />
   <div>
       {% for project in projects %}
-        <b>
+        <b><br /><br />
             {{ project.parent.name }}
-        </b>
-        <p>
-            {{ project.name }}
-        </p>
+        </b><br />
+      <a href="{% url 'show_project' project.pk %}">{{ project.name }}</a>
 
       {% endfor %}
   </div>

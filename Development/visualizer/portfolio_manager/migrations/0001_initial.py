@@ -11,48 +11,12 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+
     ]
 
     operations = [
         migrations.CreateModel(
-            name='NumericDimension',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=64)),
-                ('initial_value', models.IntegerField()),
-            ],
-            options={
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='NumericDimensionMilestone',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('deadline', models.DateTimeField()),
-                ('value', models.IntegerField()),
-                ('numeric_dimension', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='milestones', to='portfolio_manager.NumericDimension')),
-            ],
-            options={
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='NumericDimensionProgress',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('comment', models.CharField(max_length=256)),
-                ('change', models.IntegerField()),
-                ('numeric_dimension', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='progessions', to='portfolio_manager.NumericDimension')),
-            ],
-            options={
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
+
             name='Organization',
             fields=[
                 ('name', models.CharField(max_length=50, primary_key=True, serialize=False)),
@@ -62,16 +26,8 @@ class Migration(migrations.Migration):
             name='Project',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=64)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='ProjectDimension',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('object_id', models.PositiveIntegerField()),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='dimensions', to='portfolio_manager.Project')),
+                ('name', models.CharField(max_length=50)),
+                ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='portfolio_manager.Organization')),
             ],
         ),
     ]

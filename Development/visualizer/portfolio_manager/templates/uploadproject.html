@@ -10,29 +10,7 @@
 
       <div >
       {% csrf_token %}
-      {{ form.non_field_errors }}
-
-      <p>
-        <label for="{{ form.name.id_for_name }}">Name:</label>
-        <input id="id_name" class="form-control" type="text" name="name" maxlength="50" />
-        <!-- Error handling -->
-        {% if form.name.errors %}
-        {% for error in form.name.errors %}
-        <p class="text-danger">  {{ error|escape }}</p>
-        {% endfor %}
-        {% endif %}
-      </p>
-      <p>
-        <label for="{{ form.organization.id_for_organization }}">Organization:</label>
-        <input id="id_organization" class="form-control" type="text" name="organization" maxlength="50" />
-        <!-- Error handling -->
-        {% if form.title.errors %}
-        {% for error in form.title.errors %}
-        <p class="text-danger">  {{ error|escape }}</p>
-        {% endfor %}
-        {% endif %}
-      </p>
-
+      {{ form }}
 
       <input id="submit-all" type="submit" value="Send" />
       </div>
