@@ -34,6 +34,20 @@ def add_new_project(request):
         form = ProjectForm()
     return render(request, 'uploadproject.html', {'form': form})
 
+def add_new_org(request):
+    if request.method == 'POST':
+        form = OrganizationForm(request.POST)
+        if form.is_valid():
+            with reversion.create_revision():
+                organization = Organization(name = form.cleaned_data['name'])
+                organization.save()
+                reversion.set_comment("Created new organization")
+        return redirect('add_new_project')
+
+    elif request.method == 'GET':
+        form = OrganizationForm()
+    return render(request, 'new_org.html', {'form':form})
+
 def projects(request):
     projects_all = Project.objects.all()
     return render(request, 'projects.html', {'projects': projects_all})
@@ -72,7 +86,7 @@ def project_edit(request, project_id):
                 # Store meta-info
                 # reversion.set_user(request.user)
                 reversion.set_comment("Updated project")
-                
+
         return redirect('show_project', project_id=proj.pk)
     else:
         data = {
