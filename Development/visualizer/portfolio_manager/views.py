@@ -1,33 +1,40 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from portfolio_manager.models import Project,Organization
 from portfolio_manager.forms import ProjectForm,OrganizationForm,CronForm
-
-import reversion
 import logging
 
 # LOGGING
 logger = logging.getLogger('django.request')
 
+def history(request):
+    history_all = Project.history.all()
+    names = {}
+    orgs = {}
+    dates = {}
+    for h in history_all:
+        names[h.id] = []
+        orgs[h.id] = []
+        dates[h.id] = []
+    for h in history_all:
+        names[h.id].append(h.name)
+        orgs[h.id].append(h.parent)
+        dates[h.id].append(h.history_date)
+
+    return render(request, 'history.html', {'ids':range(1, len(names)+1), 'names':names, 'orgs':orgs, 'dates':dates})
+
 def add_new_project(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
         if form.is_valid():
-            with reversion.create_revision():
-                # Save a new Organization
-                organization = Organization(name = form.cleaned_data['parent'])
-                organization.save()
+            # Save a new Organization
+            organization = Organization(name = form.cleaned_data['parent'])
+            organization.save()
 
-                # Save a new Project
-                newproject = Project(name = form.cleaned_data['name'], parent = organization)
-                newproject.save()
+            # Save a new Project
+            newproject = Project(name = form.cleaned_data['name'], parent = organization)
+            newproject.save()
 
-                # Log to file that project is added
-                logger.info("Project added: " + newproject.name + ", Org: " + newproject.parent.name)
-
-                # Store some meta-info
-                # reversion.set_user(request.user)
-                reversion.set_comment("Created the project")
-                form = ProjectForm()
+            form = ProjectForm()
         return redirect('projects')
 
     elif request.method == 'GET':
@@ -38,10 +45,8 @@ def add_new_org(request):
     if request.method == 'POST':
         form = OrganizationForm(request.POST)
         if form.is_valid():
-            with reversion.create_revision():
-                organization = Organization(name = form.cleaned_data['name'])
-                organization.save()
-                reversion.set_comment("Created new organization")
+            organization = Organization(name = form.cleaned_data['name'])
+            organization.save()
         return redirect('add_new_project')
 
     elif request.method == 'GET':
@@ -77,15 +82,10 @@ def project_edit(request, project_id):
         form = ProjectForm(request.POST)
 
         if form.is_valid():
-            with reversion.create_revision():
-                # Update the projects info
-                proj.name = form.cleaned_data['name']
-                proj.parent = form.cleaned_data['parent']
-                proj.save()
-
-                # Store meta-info
-                # reversion.set_user(request.user)
-                reversion.set_comment("Updated project")
+            # Update the projects info
+            proj.name = form.cleaned_data['name']
+            proj.parent = form.cleaned_data['parent']
+            proj.save()
 
         return redirect('show_project', project_id=proj.pk)
     else:
