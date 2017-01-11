@@ -4,20 +4,43 @@
   <title>bujaa</title>
 </head>
 <body>
-
-<br /><br />
   <div>
-      {% for name in names %}
-        {{name}}<b>---></b>
+      {% for id in ids %}
+        <!--  ID -->
+        <b>id: {{id}}</b>
+        <br />
+
+        <!-- NAME -->
+        {% for nKey,nValue in names.items %}
+          {% if nKey == id %}
+            {% for name in nValue reversed %}
+              {{name}}<b>&rArr;</b>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        <br />
+
+        <!-- ORGANIZATION -->
+        {% for oKey,oValue in orgs.items %}
+          {% if oKey == id %}
+            {% for org in oValue reversed %}
+              {{org}}<b>&rArr;</b>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        <br />
+
+        <!-- DATE -->
+        {% for dKey,dValue in dates.items %}
+          {% if dKey == id %}
+            {% for date in dValue reversed %}
+              {{date}}<b>&#9977;</b>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        <br /><br /><br />
       {% endfor %}
       <br />
-      {% for org in orgs %}
-        {{org}}<b>---></b>
-      {% endfor %}
-      <br />
-      {% for date in dates %}
-        {{date}}<b>||</b>
-      {% endfor %}
   </div>
 </body>
 </html>

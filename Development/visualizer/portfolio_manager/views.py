@@ -8,14 +8,19 @@ logger = logging.getLogger('django.request')
 
 def history(request):
     history_all = Project.history.all()
-    names = []
-    orgs = []
-    dates = []
+    names = {}
+    orgs = {}
+    dates = {}
     for h in history_all:
-        names.append(h.name)
-        orgs.append(h.parent)
-        dates.append(h.history_date)
-    return render(request, 'history.html', {'names':names, 'orgs':orgs, 'dates':dates})
+        names[h.id] = []
+        orgs[h.id] = []
+        dates[h.id] = []
+    for h in history_all:
+        names[h.id].append(h.name)
+        orgs[h.id].append(h.parent)
+        dates[h.id].append(h.history_date)
+
+    return render(request, 'history.html', {'ids':range(1, len(names)+1), 'names':names, 'orgs':orgs, 'dates':dates})
 
 def add_new_project(request):
     if request.method == 'POST':
