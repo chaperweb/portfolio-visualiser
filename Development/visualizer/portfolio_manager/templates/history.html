@@ -1,16 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>bujaa</title>
+  <title>HISTORY</title>
 </head>
+<style>
+div {
+  margin: auto;
+  width: 80%;
+  height: 100%;
+
+}
+#name {
+  background: rgb(224,243,250); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(224,243,250,1) 0%, rgba(7,169,244,1) 0%, rgba(216,240,252,1) 22%, rgba(216,240,252,1) 22%, rgba(184,226,246,1) 44%, rgba(184,226,246,1) 44%, rgba(184,226,246,1) 53%, rgba(184,226,246,1) 65%, rgba(184,226,246,1) 73%, rgba(184,226,246,1) 73%, rgba(2,148,252,1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  rgba(224,243,250,1) 0%,rgba(7,169,244,1) 0%,rgba(216,240,252,1) 22%,rgba(216,240,252,1) 22%,rgba(184,226,246,1) 44%,rgba(184,226,246,1) 44%,rgba(184,226,246,1) 53%,rgba(184,226,246,1) 65%,rgba(184,226,246,1) 73%,rgba(184,226,246,1) 73%,rgba(2,148,252,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  rgba(224,243,250,1) 0%,rgba(7,169,244,1) 0%,rgba(216,240,252,1) 22%,rgba(216,240,252,1) 22%,rgba(184,226,246,1) 44%,rgba(184,226,246,1) 44%,rgba(184,226,246,1) 53%,rgba(184,226,246,1) 65%,rgba(184,226,246,1) 73%,rgba(184,226,246,1) 73%,rgba(2,148,252,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e0f3fa', endColorstr='#0294fc',GradientType=0 ); /* IE6-9 */
+  border-radius: 20px;
+  padding: 10px;
+}
+#org {
+  background: #fefcea; /* Old browsers */
+  background: -moz-linear-gradient(top,  #fefcea 38%, #f1da36 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  #fefcea 38%,#f1da36 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  #fefcea 38%,#f1da36 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefcea', endColorstr='#f1da36',GradientType=0 ); /* IE6-9 */
+  border-radius: 20px;
+  padding: 10px;
+}
+#date {
+  background: #c8d1b5; /* Old browsers */
+  background: -moz-linear-gradient(top,  #c8d1b5 0%, #80c217 57%, #80c217 94%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  #c8d1b5 0%,#80c217 57%,#80c217 94%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  #c8d1b5 0%,#80c217 57%,#80c217 94%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c8d1b5', endColorstr='#80c217',GradientType=0 ); /* IE6-9 */
+  border-radius: 20px;
+  padding: 10px;
+}
+#id {
+  background: #fcecfc; /* Old browsers */
+  background: -moz-linear-gradient(top,  #fcecfc 0%, #fba6e1 41%, #fd89d7 59%, #ff7cd8 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  #fcecfc 0%,#fba6e1 41%,#fd89d7 59%,#ff7cd8 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  #fcecfc 0%,#fba6e1 41%,#fd89d7 59%,#ff7cd8 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcecfc', endColorstr='#ff7cd8',GradientType=0 ); /* IE6-9 */
+  border-radius: 40px;
+  padding:20px;
+}
+</style>
 <body>
   <div>
       {% for id in ids %}
         <!--  ID -->
-        <b>id: {{id}}</b>
-        <br />
+        <div id="id">
+        <h3>id: {{id}}</h3>
 
         <!-- NAME -->
+        <div id="name">
         {% for nKey,nValue in names.items %}
           {% if nKey == id %}
             {% for name in nValue reversed %}
@@ -19,8 +64,12 @@
           {% endif %}
         {% endfor %}
         <br />
+        </div>
+
+        <br />
 
         <!-- ORGANIZATION -->
+        <div id="org">
         {% for oKey,oValue in orgs.items %}
           {% if oKey == id %}
             {% for org in oValue reversed %}
@@ -29,8 +78,12 @@
           {% endif %}
         {% endfor %}
         <br />
+        </div>
+
+        <br />
 
         <!-- DATE -->
+        <div id="date">
         {% for dKey,dValue in dates.items %}
           {% if dKey == id %}
             {% for date in dValue reversed %}
@@ -38,6 +91,10 @@
             {% endfor %}
           {% endif %}
         {% endfor %}
+        </div>
+
+        <br /><br /><br />
+        </div>
         <br /><br /><br />
       {% endfor %}
       <br />
