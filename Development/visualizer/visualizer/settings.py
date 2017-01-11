@@ -79,7 +79,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'portfolio_manager',
-    'reversion',
     'simple_history',
 ]
 
