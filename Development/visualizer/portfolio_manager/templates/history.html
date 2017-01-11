@@ -7,8 +7,16 @@
 
 <br /><br />
   <div>
-      {% for history in histories %}
-        {{history}}
+      {% for name in names %}
+        {{name}}<b>---></b>
+      {% endfor %}
+      <br />
+      {% for org in orgs %}
+        {{org}}<b>---></b>
+      {% endfor %}
+      <br />
+      {% for date in dates %}
+        {{date}}<b>||</b>
       {% endfor %}
   </div>
 </body>
