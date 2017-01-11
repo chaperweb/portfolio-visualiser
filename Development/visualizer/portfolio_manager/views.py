@@ -8,6 +8,10 @@ import logging
 # LOGGING
 logger = logging.getLogger('django.request')
 
+def history(request):
+    history_all = Project.history.all()
+    return render(request, 'history.html', {'histories': history_all})
+
 def add_new_project(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
@@ -22,7 +26,7 @@ def add_new_project(request):
                 newproject.save()
 
                 # Log to file that project is added
-                logger.info("Project added: " + newproject.name + ", Org: " + newproject.parent.name)
+                # logger.info("Project added: " + newproject.name + ", Org: " + form.cleaned_data['parent'])
 
                 # Store some meta-info
                 # reversion.set_user(request.user)
