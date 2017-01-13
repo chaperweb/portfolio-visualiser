@@ -2,3 +2,5 @@ Django==1.10.4
 django-extensions==1.7.5
 django-reversion==2.0.8
 six==1.10.0
+django-simple-history==1.8.1
+simple-history==1.1
