@@ -12,3 +12,8 @@ class OrganizationForm(forms.Form):
 
 class CronForm(forms.Form):
     orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="(Nothing)")
+	
+class SheetUrlForm(forms.Form):
+    url = forms.CharField(label = 'url', required = True, error_messages={'required': 'url is required'})	
+	
+
