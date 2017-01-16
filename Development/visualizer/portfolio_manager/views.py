@@ -1,23 +1,38 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from portfolio_manager.models import Project,Organization
 from portfolio_manager.forms import ProjectForm,OrganizationForm,CronForm
-# Create your views here.
-# Bujaa
+import logging
+
+# LOGGING
+logger = logging.getLogger('django.request')
+
+def history(request):
+    history_all = Project.history.all()
+    names = {}
+    orgs = {}
+    dates = {}
+    for h in history_all:
+        names[h.id] = []
+        orgs[h.id] = []
+        dates[h.id] = []
+    for h in history_all:
+        names[h.id].append(h.name)
+        orgs[h.id].append(h.parent)
+        dates[h.id].append(h.history_date)
+
+    return render(request, 'history.html', {'ids':range(1, len(names)+1), 'names':names, 'orgs':orgs, 'dates':dates})
+
 def add_new_project(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
         if form.is_valid():
+            # Save a new Organization
             organization = Organization(name = form.cleaned_data['parent'])
             organization.save()
 
+            # Save a new Project
             newproject = Project(name = form.cleaned_data['name'], parent = organization)
-
-        #    newproject = organization.project_set.create(name=form.cleaned_data['name'])
             newproject.save()
-            print(newproject.name)
-
-            #startTime = form.cleaned_data['startTime'],
-            #        duration = form.cleaned_data['duration'])
 
             form = ProjectForm()
         return redirect('projects')
@@ -26,24 +41,21 @@ def add_new_project(request):
         form = ProjectForm()
     return render(request, 'uploadproject.html', {'form': form})
 
+def add_new_org(request):
+    if request.method == 'POST':
+        form = OrganizationForm(request.POST)
+        if form.is_valid():
+            organization = Organization(name = form.cleaned_data['name'])
+            organization.save()
+        return redirect('add_new_project')
+
+    elif request.method == 'GET':
+        form = OrganizationForm()
+    return render(request, 'new_org.html', {'form':form})
+
 def projects(request):
     projects_all = Project.objects.all()
     return render(request, 'projects.html', {'projects': projects_all})
-
-# def organizations(request):
-    # project = Project.objects.all()
-    # oform = request.POST
-    # if request.method =='POST':
-    #     print(oform['organizationID'])
-    #     selected_item = get_object_or_404(Project, organization=oform)
-    #     return redirect('projects')
-#    orgs = Organization.objects.all()
-    #if request.method == 'POST':
-    #    form = OrganizationForm(request.POST)
-    #    if form.is_valid():
-    #        projects = Project.objects.filter(parent = selected_item)
-    #        return redirect('projects')
-    #return render(request, 'droptable_organization.html', {'orgs':orgs})
 
 def organizations(request):
 
@@ -51,8 +63,6 @@ def organizations(request):
       form = CronForm(request.POST)
 
       if form.is_valid:
-         print(request.POST.get("orgs", ""))
-
          projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
 
          #redirect to the url where you'll process the input
@@ -72,12 +82,11 @@ def project_edit(request, project_id):
         form = ProjectForm(request.POST)
 
         if form.is_valid():
-
-            # proj = form.save(commit=False)
+            # Update the projects info
             proj.name = form.cleaned_data['name']
             proj.parent = form.cleaned_data['parent']
-            # print("org: " + organization)
             proj.save()
+
         return redirect('show_project', project_id=proj.pk)
     else:
         data = {
