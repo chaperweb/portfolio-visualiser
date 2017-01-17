@@ -1,23 +1,3 @@
-# from __future__ import unicode_literals
-#
-# from django.db import models
-# from simple_history.models import HistoricalRecords
-#
-# class Organization (models.Model):
-#     name = models.CharField(max_length=50, primary_key=True)
-#     history = HistoricalRecords()
-#     def __str__(self):
-#         return str(self.name)
-#
-#     def __unicode__(self):
-#         return self.name
-#
-# class Project (models.Model):
-#     name = models.CharField(max_length=50)
-#     parent = models.ForeignKey('Organization',on_delete=models.CASCADE)
-#     history = HistoricalRecords()
-
-
 from __future__ import unicode_literals
 
 from django.db import models
@@ -71,8 +51,6 @@ def import_models_data(data):
           project_dimension.dimension_object.save()
       
    
-
-    
 #Model for a Organization
 #Id generated automatically
 class Organization (models.Model):
@@ -115,244 +93,44 @@ class Dimension (models.Model):
   def get_content_type(self):
     return ContentType.objects.get_for_model(self).id
 
-  def update_value(self, value, when=None):
-      self.value = value
-      self.save()
-
-#Dimensions for Integer, Decimal and Text inputs
-#update_value adds timestamp when edited
-class NumericDimension (Dimension):
-
-  value = models.IntegerField()
-
-
-#model for comparisons between milestones and NumericDimension values
-class NumericDimensionMilestone (models.Model):
-  numeric_dimension = models.ForeignKey(NumericDimension, on_delete=models.CASCADE, related_name='milestones')
-  value = models.IntegerField()
-
-  def __unicode__(self):
-    return "id: "+str(self.numeric_dimension.id)+" value: "+str(self.value)
-
-  def __str__(self):
-    return unicode(self).encode('utf-8')
-
-  def on_schedule(self, deadline):
-    versions = Version.objects.get_for_object(self.numeric_dimension)
-    versions = versions.filter(revision__date_created__lte=deadline)
-
-    dimension_value = self.numeric_dimension.value
-    try:
-        dimension_value = versions[0].field_dict["value"]
-    except IndexError:
-      pass
-
-    return self.value <= dimension_value
-
-class ProjectMilestone (models.Model):
-  deadline = models.DateTimeField()
-
-  def __unicode__(self):
-    return str(map((lambda x: x.dimension_milestone_object.__class__.__name__+": "+str(x.dimension_milestone_object)) , self.dimension_milestones.all()))+" @ "+str(self.deadline)
-
-  def __str__(self):
-    return unicode(self).encode('utf-8')
-
-  def on_schedule(self):
-    for dimension_milestone in self.dimension_milestones.all():
-      if not dimension_milestone.dimension_milestone_object.on_schedule(self.deadline):
-        return False
-
-    return True
-
-class MilestonesDimension (Dimension):
-
-  milestones = models.ManyToManyField(ProjectMilestone, related_name='milestones_dimensions')
-
-  def set_milestones(self, milestones):
-      self.milestones.set(milestones)
-
-#Model for
-class ProjectMilestoneDimensionMilestone (models.Model):
-  project_milestone = models.ForeignKey(ProjectMilestone, on_delete=models.CASCADE, related_name='dimension_milestones')
-  content_type = models.ForeignKey(ContentType)
-  object_id = models.PositiveIntegerField()
-  dimension_milestone_object = GenericForeignKey('content_type', 'object_id')
-
 class Person (models.Model):
   first_name = models.CharField(max_length=64)
   last_name = models.CharField(max_length=64)
 
-  def __unicode__(self):
-    return self.first_name+" "+self.last_name
-
-  def __str__(self):
-    return unicode(self).encode('utf-8')
-
-#Dimension for project participant management
-class MembersDimension(Dimension):
-  members = models.ManyToManyField(Person)
-
-  def set_members(self, members, when=None):
-      self.members.set(members)
-
-  # def from_sheet(self, value):
-  #   pass
-
-  # def update_from_sheet(self, value):
-
-  #   members_update = []
-
-  #   for first_name in value.split(','):
-  #     member = None
-  #     member_first_name = first_name.strip()
-  #     try:
-  #       member = Person.objects.get(first_name=member_first_name)
-  #     except Person.DoesNotExist:
-  #       member = Person()
-  #       member.first_name = member_first_name
-  #       member.save()
-  #     members_update.append(member)
-
-  #   self.members.set(members_update)
-
 class DecimalDimension (Dimension):
-    value = models.DecimalField(max_digits = 20, decimal_places = 2)
-    
-    def from_sheet(self, value):
-      self.value = value
-
-    def update_from_sheet(self, value):
-      pass
-
-#model for comparisons between milestones and DecimalDimension values
-class DecimalDimensionMilestone (models.Model):
-  numeric_dimension = models.ForeignKey(DecimalDimension, on_delete=models.CASCADE, related_name='decimal_milestones')
-  value = models.IntegerField()
+  value = models.DecimalField(max_digits = 20, decimal_places = 2)
+  history = HistoricalRecords()
 
 class TextDimension (Dimension):
-    value = models.TextField()
+  value = models.TextField()
+  history = HistoricalRecords()
     
-    def from_sheet(self, value):
-      self.value = value
-
-    def update_from_sheet(self, value):
-      pass
+class AssociatedOrganizationDimension (Dimension):
+  value = models.ForeignKey(Organization, null=True)
+  history = HistoricalRecords()
 
 class AssociatedPersonDimension (Dimension):
   value = models.ForeignKey(Person, null=True)
+  history = HistoricalRecords()
   
-  def from_sheet(self, value):
-    person = None
-    try:
-      person = Person.objects.get(first_name=value)
-    except Person.DoesNotExist:
-      person = Person()
-      person.first_name = value
-      person.save()
+# #Dimension for project participant management
+# class AssociatedPersonsDimension(Dimension):
+#   persons = models.ManyToManyField(Person, through='DimensionPerson', through_fields=('dimension', 'person'))
+#   history = HistoricalRecords(m2m_fields=['students'])
 
-    self.value = person
+# class DimensionPerson(models.Model):
+#   dimension = models.ForeignKey(AssociatedPersonsDimension, on_delete=models.CASCADE)
+#   person = models.ForeignKey(Person, on_delete=models.CASCADE)
 
-  def update_from_sheet(self, value):
-      pass
 
-#Connection between project and a project owner
-class ProjectOwnerDimension (AssociatedPersonDimension):
-    history = HistoricalRecords()
-
-#Connection between project and a project manager
-class ProjectManagerDimension (AssociatedPersonDimension):
-    history = HistoricalRecords()
-
-#Storing the project dependencies as list of project IDs
-class ProjectDependenciesDimension(Dimension):
-    dependencies = models.ManyToManyField(Project)
-
-    def set_dependencies(self, dependencies, when=None):
-        self.dependencies.set(dependencies)
-        self.save()
-
-    # def from_sheet(self, value):
-    #   pass
-
-    # def update_from_sheet(self, value):
-    #   if value:
-    #     self.dependencies.set([Project.objects.get(pk=value)])
-
-#Task class
-#Is person completing task essential?
-class Task (Dimension):
-    task_description = models.TextField()
-    value = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
-
-#Project size in money
-class SizeMoneyDimension (DecimalDimension):
-  history = HistoricalRecords()
-
-#Project size in man-days
-class SizeManDaysDimension(DecimalDimension):
-  history = HistoricalRecords()
-
-#Project size as effect
-class SizeEffectDimension(TextDimension):
-  history = HistoricalRecords()
-
-#Technologies used in project
-class TechnologyDimension(TextDimension):
-  history = HistoricalRecords()
-
-#Development model used in project
-class DevelopmentModelDimension(TextDimension):
-  history = HistoricalRecords()
-
-#Description of the project
-class DescriptionDimension(TextDimension):
-  history = HistoricalRecords()
-
-class Supplier(models.Model):
-  name = models.CharField(max_length=50)
-
-#Deliverer of the project
-class SuppliersDimension(Dimension):
-  suppliers = models.ManyToManyField(Supplier)
-
-  def set_suppliers(self, suppliers, when=None):
-      self.suppliers.set(suppliers)
-      self.save()
-
-#Customer of the project
-class CustomerDimension(TextDimension):
-  history = HistoricalRecords()
-
-#Phase of the project as a list of Milestone IDs
-class PhaseDimension (TextDimension):
-  history = HistoricalRecords()
-
-class OwningOrganizationDimension (TextDimension):
-  history = HistoricalRecords()
+# #Storing the project dependencies as list of project IDs
+# class ProjectDependenciesDimension(Dimension): FIXME
+#   dependencies = models.ManyToManyField(Project)
+#   history = HistoricalRecords(m2m_fields=['students'])
 
 class DateDimension (Dimension):
   value = models.DateTimeField()
+  history = HistoricalRecords()
   
-  def from_sheet(self, value):
-    self.value = pytz.utc.localize(datetime.strptime(value, '%d/%m/%Y'))
-
-  def update_from_sheet(self, value):
-      pass
-
-class StartDateDimension (DateDimension):
-  history = HistoricalRecords()
-
-class EndDateDimension (DateDimension):
-  history = HistoricalRecords()
-
-class DepartmentDimension (TextDimension):
-  history = HistoricalRecords()
-
-class VendorDimension (TextDimension):
-  history = HistoricalRecords()
-
-class NameDimension (TextDimension):
-  history = HistoricalRecords()
 
 
