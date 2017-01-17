@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from portfolio_manager.models import Project,Organization
-from portfolio_manager.forms import ProjectForm,OrganizationForm,CronForm
+from portfolio_manager.forms import ProjectForm,OrganizationForm,CronForm,SheetUrlForm
+import portfolio_manager.scripts.load_data
 import logging
 
 # LOGGING
@@ -95,3 +96,11 @@ def project_edit(request, project_id):
 }
         form = ProjectForm(data)
     return render(request, 'project_edit.html', {'form': form})
+	
+def load_sheet_data(form):
+	if request.method == "POST"
+		form = SheetUrlForm(request.POST)
+		
+		if form.is_valid():
+		portfolio_manager.scripts.load_data.load_data_from_url(form.cleaned_data['url'])
+		return redirect('load-sheet-data')
