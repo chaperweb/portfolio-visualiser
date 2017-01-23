@@ -1,23 +1,3 @@
-# from __future__ import unicode_literals
-#
-# from django.db import models
-# from simple_history.models import HistoricalRecords
-#
-# class Organization (models.Model):
-#     name = models.CharField(max_length=50, primary_key=True)
-#     history = HistoricalRecords()
-#     def __str__(self):
-#         return str(self.name)
-#
-#     def __unicode__(self):
-#         return self.name
-#
-# class Project (models.Model):
-#     name = models.CharField(max_length=50)
-#     parent = models.ForeignKey('Organization',on_delete=models.CASCADE)
-#     history = HistoricalRecords()
-
-
 from __future__ import unicode_literals
 
 from django.db import models
@@ -56,7 +36,7 @@ class ProjectDimension (models.Model):
     return self.dimension_object.__class__.__name__
 
   def __str__(self):
-    return unicode(self).encode('utf-8')
+    return self.dimension_object.__class__.__name__
 
 #model for a Dimension to use in comparisons
 class Dimension (models.Model):
@@ -140,7 +120,7 @@ class Person (models.Model):
     return self.first_name+" "+self.last_name
 
   def __str__(self):
-    return unicode(self).encode('utf-8')
+    return self.first_name+" "+self.last_name
 
 #Dimension for project participant management
 class MembersDimension(Dimension):
@@ -165,7 +145,7 @@ class AssociatedPersonDimension (Dimension):
 
 #Connection between project and a project owner
 class ProjectOwnerDimension (AssociatedPersonDimension):
-    pass
+    assPerson = models.ForeignKey(AssociatedPersonDimension, related_name="owner")
 
 #Connection between project and a project manager
 class ProjectManagerDimension (AssociatedPersonDimension):

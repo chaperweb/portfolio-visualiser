@@ -7,6 +7,7 @@ from . import views
 urlpatterns = [
     url(r'^upload-new-project$', views.add_new_project, name='add_new_project'),
     url(r'^add_new_org$', views.add_new_org, name='add_new_org'),
+    url(r'^add_new_person$', views.add_new_person, name='add_new_person'),
     url(r'^projects$', views.projects, name='projects'),
     url(r'^org$', views.organizations, name='select_org'),
     url(r"^projects/(?P<project_id>[0-9]+)$", views.show_project, name='show_project'),
