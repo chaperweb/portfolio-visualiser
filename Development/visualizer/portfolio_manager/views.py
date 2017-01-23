@@ -98,9 +98,9 @@ def project_edit(request, project_id):
     return render(request, 'project_edit.html', {'form': form})
 	
 def load_sheet_data(form):
-	if request.method == "POST"
+	if request.method == "POST":
 		form = SheetUrlForm(request.POST)
 		
 		if form.is_valid():
-		portfolio_manager.scripts.load_data.load_data_from_url(form.cleaned_data['url'])
-		return redirect('load-sheet-data')
+		  portfolio_manager.scripts.load_data.load_data_from_url(form.cleaned_data['url'])
+		  return redirect('load-sheet-data')
