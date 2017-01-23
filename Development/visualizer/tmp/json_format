@@ -1,0 +1,30 @@
+
+
+{
+   "<project_1_id>": {
+    "name": "Projekti 1"
+    "dimensions": [
+      { 
+        "name": "kuvaus",
+        "type": "TextDimension",
+        "history": [
+          { "created_at": 2015-12-12 10:10:11, "value": "hyvä projekti"}
+          { "created_at": 2015-12-12 10:10:10, "value": "hybä projekti"}
+        ]
+        "milestones": []
+      },
+      { 
+        "name": "budjetti",
+        "type": "DecimalDimension",
+        "history": [
+          { "created_at": 2015-12-12 10:10:11, "value": 9}
+          { "created_at": 2015-12-12 10:10:09, "value": 7}
+        ],
+        "milestones": [
+          { "at": 2015-12-15 10:10:10, "value": 100}
+          { "at": 2015-12-11 10:10:10, "value": 4}
+        ]
+      }
+    ]
+  }
+}
