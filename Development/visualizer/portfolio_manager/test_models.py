@@ -3,12 +3,48 @@ from models import *
 from datetime import datetime, timedelta
 from django.utils import timezone
 from decimal import *
-
+from serializers import ProjectSerializer
+from rest_framework.renderers import JSONRenderer
 
 class ModelsTestCase(TestCase):
 
     def setUp(self):
         pass
+
+    def test_serialize_project(self):
+        project = Project()
+        project.name = 'projekti'
+        project.save()
+
+        d1 = DecimalDimension()
+        d1.name = 'budjetti'
+        d1.value = 2
+        d1.save()
+
+        m = DecimalDimensionMilestone()
+        m.value = 6
+        m.decimal_dimension = d1
+        m.at = timezone.now()
+        m.save()
+
+        pd1 = ProjectDimension()
+        pd1.project = project
+        pd1.dimension_object = d1
+        pd1.save()
+
+        d2 = DecimalDimension()
+        d2.name = 'tyotunnit'
+        d2.value = 3
+        d2.save()
+
+        pd2 = ProjectDimension()
+        pd2.project = project
+        pd2.dimension_object = d2
+        pd2.save()
+
+        serializer = ProjectSerializer(project)
+        self.assertEqual('', JSONRenderer().render(serializer.data))
+
 
     def test_import_models_data(self):
         data = [[u'id', u'__history_date', u'Name', u'StartDate', u'EndDate', u'ProjectOwner', u'OwningOrganization', u'ProjectManager', u'Customer', u'Department', u'SizeMoney', u'SizeManDays', u'SizeEffect', u'Description', u'Technology', u'ProjectDependencies', u'DevelopmentModel', u'Vendor', u'Members', u'Phase'],

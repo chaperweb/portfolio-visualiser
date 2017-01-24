@@ -81,7 +81,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'portfolio_manager',
     'simple_history',
-    'django_extensions'
+    'django_extensions',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

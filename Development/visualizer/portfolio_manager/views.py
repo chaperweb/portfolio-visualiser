@@ -3,6 +3,8 @@ from portfolio_manager.models import Project,Organization
 from portfolio_manager.forms import ProjectForm,OrganizationForm,CronForm,SheetUrlForm
 import portfolio_manager.scripts.load_data
 import logging
+from django.http import JsonResponse
+from serializers import ProjectSerializer
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -104,3 +106,9 @@ def load_sheet_data(form):
 		if form.is_valid():
 		  portfolio_manager.scripts.load_data.load_data_from_url(form.cleaned_data['url'])
 		  return redirect('load-sheet-data')
+
+def json(request, project_id):
+    project = Project.objects.get(pk=project_id)
+    serializer = ProjectSerializer(project)
+    return JsonResponse(serializer.data)
+

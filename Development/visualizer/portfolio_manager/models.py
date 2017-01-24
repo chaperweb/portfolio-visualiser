@@ -101,6 +101,12 @@ class DecimalDimension (Dimension):
   value = models.DecimalField(max_digits = 20, decimal_places = 2)
   history = HistoricalRecords()
 
+class DecimalDimensionMilestone (models.Model):
+  value = models.DecimalField(max_digits = 20, decimal_places=2)
+  at = models.DateTimeField()
+  decimal_dimension = models.ForeignKey(DecimalDimension, on_delete=models.CASCADE, related_name='milestones')
+  history = HistoricalRecords()
+  
 class TextDimension (Dimension):
   value = models.TextField()
   history = HistoricalRecords()
@@ -113,20 +119,23 @@ class AssociatedPersonDimension (Dimension):
   value = models.ForeignKey(Person, null=True)
   history = HistoricalRecords()
   
-# #Dimension for project participant management
-# class AssociatedPersonsDimension(Dimension):
-#   persons = models.ManyToManyField(Person, through='DimensionPerson', through_fields=('dimension', 'person'))
-#   history = HistoricalRecords(m2m_fields=['students'])
+#Dimension for project participant management
+class AssociatedPersonsDimension(Dimension):
+  persons = models.ManyToManyField(Person, through='DimensionPerson', through_fields=('dimension', 'person'))
 
-# class DimensionPerson(models.Model):
-#   dimension = models.ForeignKey(AssociatedPersonsDimension, on_delete=models.CASCADE)
-#   person = models.ForeignKey(Person, on_delete=models.CASCADE)
+class DimensionPerson(models.Model):
+  dimension = models.ForeignKey(AssociatedPersonsDimension, on_delete=models.CASCADE)
+  person = models.ForeignKey(Person, on_delete=models.CASCADE)
+  history = HistoricalRecords()
 
+#Storing the project dependencies as list of project IDs
+class AssociatedProjectsDimension(Dimension):
+  projects = models.ManyToManyField(Project, through='DimensionProject', through_fields=('dimension', 'project'))
 
-# #Storing the project dependencies as list of project IDs
-# class ProjectDependenciesDimension(Dimension): FIXME
-#   dependencies = models.ManyToManyField(Project)
-#   history = HistoricalRecords(m2m_fields=['students'])
+class DimensionProject(models.Model):
+  dimension = models.ForeignKey(AssociatedProjectsDimension, on_delete=models.CASCADE)
+  project = models.ForeignKey(Project, on_delete=models.CASCADE)
+  history = HistoricalRecords()
 
 class DateDimension (Dimension):
   value = models.DateTimeField()
