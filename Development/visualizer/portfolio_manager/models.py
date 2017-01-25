@@ -25,6 +25,19 @@ class Project (models.Model):
   parent = models.ForeignKey('Organization', null=True,on_delete=models.CASCADE)
   history = HistoricalRecords()
 
+class InsertedField(models.Model):
+  name = models.CharField(max_length=50)
+  parent = models.ForeignKey('Project', null=True,on_delete=models.CASCADE)
+  textValue = models.CharField(max_length=50)
+  numericalValue = models.DecimalField(max_digits = 20, decimal_places = 2, null=True)
+
+
+  def __str__(self):
+      return str(self.name)
+  def __unicode__(self):
+      return self.name
+
+
 #Model for a project dimension
 class ProjectDimension (models.Model):
   project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='dimensions')

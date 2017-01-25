@@ -7,7 +7,12 @@
 
 <h2>
   projektin tiedot:
+
+
 </h2>
+<br />
+<a href="{% url 'insert_field' project.pk %}">Insert field</a
+  <br />
 <a href="{% url 'project_edit' project.pk %}">EDIT</a>
 <br /><br />
   <div>
@@ -22,6 +27,23 @@
 
     Budget: <br />
       {{ budget }}<br /><br />
+
+      Lisäkentät:
+<br />
+<br />
+ {{ extraField|length }}
+{% for f in extraField %}
+
+  <br /><br />
+      {{ f.name }}: {{f.textValue}}: {{f.numericalValue}}
+      {% if f.textValue == '' %}
+      EI TEKSTIÄ
+      {% endif %}
+      {% if f.numericalValue == Null or f.numericalValue == 0 %}
+      EI NUMEROITA
+      {% endif %}
+
+{% endfor %}
   </div>
   <div>
     <input type="button" value="previous Page" onclick="javascript:history.go(-1);">

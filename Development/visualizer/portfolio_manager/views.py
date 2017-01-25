@@ -129,7 +129,10 @@ def show_project(request, project_id):
         dd = ContentType.objects.get_for_model(DecimalDimension)
         owner = ProjectDimension.objects.filter(content_type=pod, project_id=theProject.id).first().dimension_object.assPerson.value   # ONLY WORKS IF THERE IS ONLY ONE OWNER
         budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first().dimension_object.value
-        return render(request, 'project.html', {'project': theProject, 'owner': owner, 'budget':budget })
+        extraFields = InsertedField.objects.filter(parent=theProject)
+
+
+        return render(request, 'project.html', {'project': theProject, 'extraField': extraFields, 'owner': owner, 'budget':budget })
 
 def project_edit(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)
@@ -150,3 +153,29 @@ def project_edit(request, project_id):
 }
         form = ProjectForm(data)
     return render(request, 'project_edit.html', {'form': form})
+
+
+def insert_field(request, project_id):
+    proj = get_object_or_404(Project, pk=project_id)
+    if request.method == 'POST':
+        form = TableSpecification(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['datatype']=='TXT':
+                insField = InsertedField(name = form.cleaned_data['name'], parent=proj, textValue=form.cleaned_data['value'])
+                insField.save()
+                return redirect('show_project', project_id=proj.pk)
+            else:
+                insField = InsertedField(name = form.cleaned_data['name'], parent=proj, numericalValue=float('0' + form.cleaned_data['value']))
+                insField.save()
+                return redirect('show_project', project_id=proj.pk)
+        else:
+            formt = TableSpecification()
+            return render(request, 'insert_field.html', {'formt':formt})
+    elif request.method == 'GET':
+        data = {
+            'name': proj.name,
+            'parent': proj.parent,
+            'unit': proj.name,
+        }
+        formt = TableSpecification()
+        return render(request, 'insert_field.html', {'formt':formt})
