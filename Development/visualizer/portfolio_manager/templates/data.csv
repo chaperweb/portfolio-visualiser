@@ -1,3 +1,4 @@
+header("Content-type: text/csv");
 date,close
 1-May-12,58.13
 30-Apr-12,53.98
