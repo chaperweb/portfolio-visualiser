@@ -20,6 +20,9 @@ class DecimalDimensionMilestoneSerializer(serializers.ModelSerializer):
     fields = ('id', 'value', 'at')
 
 class DecimalDimensionHistorySerializer(serializers.ModelSerializer):
+
+  value = serializers.DecimalField(max_digits=20, decimal_places=2, coerce_to_string=False)
+
   class Meta:
     model = HistoricalDecimalDimension
     fields = ('id', 'value', 'history_date')

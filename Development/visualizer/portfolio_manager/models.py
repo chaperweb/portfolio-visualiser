@@ -100,16 +100,19 @@ class Person (models.Model):
 class DecimalDimension (Dimension):
   value = models.DecimalField(max_digits = 20, decimal_places = 2)
   history = HistoricalRecords()
+  __history_date = None
 
 class DecimalDimensionMilestone (models.Model):
   value = models.DecimalField(max_digits = 20, decimal_places=2)
   at = models.DateTimeField()
   decimal_dimension = models.ForeignKey(DecimalDimension, on_delete=models.CASCADE, related_name='milestones')
   history = HistoricalRecords()
+  __history_date = None
   
 class TextDimension (Dimension):
   value = models.TextField()
   history = HistoricalRecords()
+  __history_date = None
     
 class AssociatedOrganizationDimension (Dimension):
   value = models.ForeignKey(Organization, null=True)
@@ -127,6 +130,7 @@ class DimensionPerson(models.Model):
   dimension = models.ForeignKey(AssociatedPersonsDimension, on_delete=models.CASCADE)
   person = models.ForeignKey(Person, on_delete=models.CASCADE)
   history = HistoricalRecords()
+  __history_date = None
 
 #Storing the project dependencies as list of project IDs
 class AssociatedProjectsDimension(Dimension):
@@ -136,6 +140,7 @@ class DimensionProject(models.Model):
   dimension = models.ForeignKey(AssociatedProjectsDimension, on_delete=models.CASCADE)
   project = models.ForeignKey(Project, on_delete=models.CASCADE)
   history = HistoricalRecords()
+  __history_date = None
 
 class DateDimension (Dimension):
   value = models.DateTimeField()
