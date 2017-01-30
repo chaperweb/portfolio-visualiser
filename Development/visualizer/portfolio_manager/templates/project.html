@@ -11,7 +11,7 @@
 
 </h2>
 <br />
-<a href="{% url 'insert_field' project.pk %}">Insert field</a
+<a href="{% url 'insert_field' project.pk %}">Insert field</a>
   <br />
 <a href="{% url 'project_edit' project.pk %}">EDIT</a>
 <br /><br />
@@ -35,12 +35,11 @@
 {% for f in extraField %}
 
   <br /><br />
-      {{ f.name }}: {{f.textValue}}: {{f.numericalValue}}
-      {% if f.textValue == '' %}
-      EI TEKSTIÄ
-      {% endif %}
+  {% if f.textValue == '' %}
+      {{ f.name }}: {{f.numericalValue}}
+        {% endif %}
       {% if f.numericalValue == Null or f.numericalValue == 0 %}
-      EI NUMEROITA
+      {{ f.name }}: {{f.textValue}}
       {% endif %}
 
 {% endfor %}
