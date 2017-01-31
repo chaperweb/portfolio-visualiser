@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>bujaa</title>
+</head>
+<body>
+
+<p>
+  Lisää projektille vertailtava arvo:
+</p>
+  <div>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ formt }}
+        <input type="submit" value="Submit" />
+    </form>
+
+     </div>
+     <div>
+       Projektin vertailtavat arvot: <br />
+
+       {% for dimension in dimensions %}
+         <b><br />
+             {{ dimension.name }}, {{ dimension.unit }}
+        <br />
+       {% endfor %}
+        </b>
+     </div>
+     <div>
+       <input type=button value="previous Page" onClick="javascript:history.go(-1);">
+     </div>
+
+
+</body>
+</html>
