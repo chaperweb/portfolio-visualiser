@@ -43,7 +43,7 @@ class TableSpecification(forms.Form):
 
         if datatype == 'NUM':
             try:
-                val = float(value)
+                val = int(value)
             except ValueError:
                 raise forms.ValidationError(
                     "ERROERRORERROR."
