@@ -25,8 +25,16 @@
     Budget: <br />
       {{ budget }}<br /><br />
 
+      Extra: <br />
+        {{ text.dimension_object.name }} : {{ text.dimension_object.value }}<br /><br />
+
+        ExtraNumeric: <br />
+          {{ intfield.dimension_object.name }} : {{ intfield.dimension_object.value }}<br /><br />
+
       Lisäkentät:
 <br />
+Extra: <br />
+  {{ text.name }}<br /><br />
 <br />
  {{ extraField|length }}
 {% for f in extraField %}

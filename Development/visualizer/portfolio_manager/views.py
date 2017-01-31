@@ -130,9 +130,13 @@ def show_project(request, project_id):
         owner = ProjectDimension.objects.filter(content_type=pod, project_id=theProject.id).first().dimension_object.assPerson.value   # ONLY WORKS IF THERE IS ONLY ONE OWNER
         budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first().dimension_object.value
         extraFields = InsertedField.objects.filter(parent=theProject)
+        td = ContentType.objects.get_for_model(TextDimension)
+        text = ProjectDimension.objects.filter(content_type=td, project_id=theProject.id).first()
+        nd = ContentType.objects.get_for_model(NumericDimension)
+        intfield = ProjectDimension.objects.filter(content_type=nd, project_id=theProject.id).first()
 
 
-        return render(request, 'project.html', {'project': theProject, 'extraField': extraFields, 'owner': owner, 'budget':budget })
+        return render(request, 'project.html', {'project': theProject, 'extraField': extraFields, 'owner': owner, 'budget':budget, 'text':text, 'intfield':intfield })
 
 def project_edit(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)
@@ -161,10 +165,33 @@ def insert_field(request, project_id):
         form = TableSpecification(request.POST)
         if form.is_valid():
             if form.cleaned_data['datatype']=='TXT':
+                pd_text = ProjectDimension(dimension_object=proj, project=proj)
+                pd_text.save()
+
+                # Make budjet dimension
+                text = TextDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
+                text.save()
+
+                # Link budget to project
+                pd_text.dimension_object=text
+                pd_text.save()
+
                 insField = InsertedField(name = form.cleaned_data['name'], parent=proj, textValue=form.cleaned_data['value'])
                 insField.save()
+
                 return redirect('show_project', project_id=proj.pk)
             else:
+
+                pd_num = ProjectDimension(dimension_object=proj, project=proj)
+                pd_num.save()
+
+                # Make budjet dimension
+                num = NumericDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
+                num.save()
+
+                # Link budget to project
+                pd_num.dimension_object=num
+                pd_num.save()
                 insField = InsertedField(name = form.cleaned_data['name'], parent=proj, numericalValue=float('0' + form.cleaned_data['value']))
                 insField.save()
                 return redirect('show_project', project_id=proj.pk)
