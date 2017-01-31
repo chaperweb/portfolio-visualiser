@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^data\.csv$', TemplateView.as_view(template_name="data.csv")),
     url(r'^path\.html$', TemplateView.as_view(template_name="path.html")),
     url(r'^datapath\.html$', TemplateView.as_view(template_name="datapath.html")),
+    url(r'^$', TemplateView.as_view(template_name="homepage.html"), name='homepage'),
 ]

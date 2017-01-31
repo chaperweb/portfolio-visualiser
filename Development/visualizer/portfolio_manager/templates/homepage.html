@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<head>
+  <title>PROJECT VISUALIZER</title>
+  <style>
+    {% load static %}
+    body {
+      background-image: url("{% static "portfolio_manager/homepage_BG.jpg" %}");
+      background-size: 100%;
+      min-height: 100%;
+    }
+    #textandlogin {
+      display: flex;
+      justify-content: space-between;
+    }
+    #homepagetext {
+      text-align: center;
+      width: 60%;
+      height: 100%;
+      border-radius: 10px;
+      background-color: WHITE;
+      margin-left: 20%;
+      margin-right: 20%;
+      margin-top: 1%;
+      border-style: solid;
+      border-width: 20px;
+      border-color: WHITE;
+    }
+    #loginbox {
+      float:right;
+      margin-top:1%;
+      border-radius: 5px;
+    }
+    footer {
+      background-color: DARKGREY;
+      position: absolute;
+      z-index: 10;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  {% include "navbar.html" %}
+  <div id="textandlogin">
+    <div id="homepagetext">
+      <h1>PROJECT VISUALIZER</h1>
+      <!-- LOREM IPSUM -->
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc cursus nec erat ut blandit. Donec ac ultrices erat. Nullam volutpat, augue eu congue aliquet, dui libero mattis felis, nec rutrum dolor ex in erat. Quisque sit amet bibendum arcu. Nam egestas id libero suscipit mattis. Integer pellentesque interdum hendrerit. Pellentesque mattis, lectus sed porttitor blandit, mauris ligula feugiat nibh, et dapibus sapien metus nec tellus. Etiam elementum leo vitae augue porttitor tempus. Praesent vel diam sed tortor egestas pharetra non ut augue. Ut sed sem maximus dolor elementum suscipit vitae in libero. Cras cursus finibus fringilla. Etiam eget ex rhoncus, lobortis nunc eu, fringilla est. Phasellus tincidunt congue orci, nec sagittis sapien. Sed vehicula, diam non lacinia consectetur, felis mauris rhoncus velit, in sollicitudin leo odio nec odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.<br /><br />
+        Nullam sed odio in nisi pellentesque sollicitudin. Proin vitae placerat eros. Aliquam a nulla a ante tincidunt lobortis a ut odio. Proin vulputate, tellus ac bibendum molestie, dui elit aliquam mauris, eget vestibulum nunc tortor eu mi. Vestibulum nec dolor vel ex pellentesque facilisis. Duis pulvinar malesuada vulputate. Vestibulum id ante sed ligula maximus tempus. Nullam sollicitudin nulla a massa cursus interdum. Nulla tincidunt ante ligula, ut tincidunt tellus semper eget. Donec eros lectus, vestibulum ac lectus at, luctus venenatis turpis.<br /><br />
+        Cras sollicitudin dignissim quam malesuada tincidunt. Proin ac leo a magna molestie condimentum a ac leo. Nulla non magna et felis tincidunt fermentum. Mauris eleifend, nisi in eleifend ultrices, risus massa volutpat augue, sit amet laoreet augue quam at diam. Donec bibendum odio vitae nibh vulputate consequat ac ut enim. Vivamus nisl nulla, consequat in velit sit amet, vulputate condimentum magna. Praesent nisl ante, mollis a blandit in, ultricies laoreet magna. Quisque rhoncus molestie convallis.<br /><br />
+        Morbi egestas sapien mi, in hendrerit risus interdum vitae. Integer nulla eros, rutrum eu est in, consectetur accumsan ligula. Donec tempus rhoncus tellus, sit amet varius nunc facilisis in. Proin consequat quam eget ipsum dapibus tincidunt ut eu lacus. Maecenas et purus non nisl commodo tempus nec nec justo. Fusce metus mauris, pharetra et rutrum vel, sollicitudin id urna. Curabitur condimentum, velit eu luctus tincidunt, lorem tortor pretium lacus, eu malesuada nulla nisl facilisis est. Sed ut ipsum ac nisi tincidunt elementum.<br /><br />
+        In at facilisis nisl, a luctus ligula. Nunc arcu diam, scelerisque nec laoreet ut, auctor commodo lorem. Nullam lectus sem, posuere at iaculis at, mattis et sem. Cras quis diam pretium, pulvinar ipsum pellentesque, sagittis neque. Aenean sollicitudin non quam vitae mollis. Phasellus sit amet ante convallis, imperdiet ipsum id, semper justo. Pellentesque quis nibh sed nisi elementum dapibus ac a nunc. Nulla id est vel elit feugiat scelerisque a nec felis. Duis eu purus porta, fringilla nunc in, lobortis magna. Quisque eu consequat quam. Proin consectetur faucibus est, efficitur fringilla tortor consequat eget. Aenean sit amet finibus nisi. Suspendisse ultrices est sollicitudin orci bibendum, nec consectetur quam faucibus. In sit amet magna ac lorem malesuada hendrerit. Curabitur metus neque, volutpat sit amet bibendum a, tincidunt id ex.
+      </p>
+    </div>
+    <div id="loginbox">
+      Username: <br />
+      <input type="text" /><br />
+      Password: <br />
+      <input type="password" /><br />
+      <button type="submit" style="margin-top:5px;">Login</button>
+    </div>
+  </div>
+  <footer>
+    Contact us at: thisgoestonoone@fakedomain.fi
+  </footer>
+</body>
