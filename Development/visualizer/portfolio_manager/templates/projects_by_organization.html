@@ -4,7 +4,10 @@
   <title>bujaa</title>
 </head>
 <body>
-
+{% include "navbar.html" %}
+<script>
+$('[href*="{% url 'select_org' %}"]').addClass('active');
+</script>
 <p>
   Valitsemasi organisaatio projektit:
 </p>
