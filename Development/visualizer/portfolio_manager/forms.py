@@ -30,7 +30,7 @@ class CronForm(forms.Form):
 class TableSpecification(forms.Form):
     name = forms.CharField(label = 'Field name', max_length=50, required = True,
                             error_messages={'required': 'Your field needs a name!'})
-    DATATYPES = (('NUM', 'Numeerinen'),('TXT', 'Teksti'))
+    DATATYPES = (('TXT', 'Teksti'),('NUM', 'Numeerinen'),('DEC','Desimaali'))
     datatype = forms.ChoiceField(choices=DATATYPES)
     value = forms.CharField(label = 'Value', max_length=64, required = True,
                             error_messages={'required': 'value!'})
@@ -44,6 +44,19 @@ class TableSpecification(forms.Form):
         if datatype == 'NUM':
             try:
                 val = int(value)
+            except ValueError:
+                raise forms.ValidationError(
+                    "ERROERRORERROR."
+                )
+                print("That's not an int!")
+
+            if not isinstance(val, numbers.Number):
+                raise forms.ValidationError(
+                    "ERROERRORERROR."
+                )
+        if datatype == 'DEC':
+            try:
+                val = float(value)
             except ValueError:
                 raise forms.ValidationError(
                     "ERROERRORERROR."

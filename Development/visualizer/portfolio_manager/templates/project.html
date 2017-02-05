@@ -23,31 +23,22 @@
       {{ owner }}<br /><br />
 
     Budget: <br />
-      {{ budget }}<br /><br />
+      {{ budget.dimension_object.value }}<br /><br />
 
-      Extra: <br />
-        {{ text.dimension_object.name }} : {{ text.dimension_object.value }}<br /><br />
+      <b>Extra text fields:</b> <br />
+      {% for x in text %}
+        {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
+        {% endfor %}
 
-        ExtraNumeric: <br />
-          {{ intfield.dimension_object.name }} : {{ intfield.dimension_object.value }}<br /><br />
+        <b>Extra Numeric fields:</b> <br />
+        {% for x in intfield %}
+          {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
+          {% endfor %}
+        <b>  Extra Decimal fields:</b> <br />
+          {% for x in decfield %}
+            {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
+            {% endfor %}
 
-      Lisäkentät:
-<br />
-Extra: <br />
-  {{ text.name }}<br /><br />
-<br />
- {{ extraField|length }}
-{% for f in extraField %}
-
-  <br /><br />
-  {% if f.textValue == '' %}
-      {{ f.name }}: {{f.numericalValue}}
-        {% endif %}
-      {% if f.numericalValue == Null or f.numericalValue == 0 %}
-      {{ f.name }}: {{f.textValue}}
-      {% endif %}
-
-{% endfor %}
   </div>
   <div>
     <input type="button" value="previous Page" onclick="javascript:history.go(-1);">

@@ -127,16 +127,24 @@ def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
         pod = ContentType.objects.get_for_model(ProjectOwnerDimension)
         dd = ContentType.objects.get_for_model(DecimalDimension)
-        owner = ProjectDimension.objects.filter(content_type=pod, project_id=theProject.id).first().dimension_object.assPerson.value   # ONLY WORKS IF THERE IS ONLY ONE OWNER
-        budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first().dimension_object.value
-        extraFields = InsertedField.objects.filter(parent=theProject)
-        td = ContentType.objects.get_for_model(TextDimension)
-        text = ProjectDimension.objects.filter(content_type=td, project_id=theProject.id).first()
         nd = ContentType.objects.get_for_model(NumericDimension)
-        intfield = ProjectDimension.objects.filter(content_type=nd, project_id=theProject.id).first()
+        td = ContentType.objects.get_for_model(TextDimension)
+
+        # Default fields
+        owner = ProjectDimension.objects.filter(content_type=pod, project_id=theProject.id).first().dimension_object.assPerson.value   # ONLY WORKS IF THERE IS ONLY ONE OWNER
+        budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
+
+        # Added text fields
+        texts = ProjectDimension.objects.filter(content_type=td, project_id=theProject.id)
+
+        # Added integer fields
+        intfields = ProjectDimension.objects.filter(content_type=nd, project_id=theProject.id)
+
+        # Added decimal fields, removing budget from the query set
+        decfields = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).exclude(pk=budget.pk)
 
 
-        return render(request, 'project.html', {'project': theProject, 'extraField': extraFields, 'owner': owner, 'budget':budget, 'text':text, 'intfield':intfield })
+        return render(request, 'project.html', {'project': theProject, 'owner': owner, 'budget':budget, 'text':texts, 'intfield':intfields, 'decfield':decfields })
 
 def project_edit(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)
@@ -164,45 +172,46 @@ def insert_field(request, project_id):
     if request.method == 'POST':
         form = TableSpecification(request.POST)
         if form.is_valid():
-            if form.cleaned_data['datatype']=='TXT':
+            if form.cleaned_data['datatype']=='TXT': #Trying to add a text field
+                # Project dimension for text
                 pd_text = ProjectDimension(dimension_object=proj, project=proj)
                 pd_text.save()
 
-                # Make budjet dimension
+                # Make text dimension
                 text = TextDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
                 text.save()
 
-                # Link budget to project
+                # Link text to project
                 pd_text.dimension_object=text
                 pd_text.save()
-
-                insField = InsertedField(name = form.cleaned_data['name'], parent=proj, textValue=form.cleaned_data['value'])
-                insField.save()
-
                 return redirect('show_project', project_id=proj.pk)
-            else:
-
+            elif form.cleaned_data['datatype']=='DEC': # Trying to add a decimal field
                 pd_num = ProjectDimension(dimension_object=proj, project=proj)
                 pd_num.save()
 
-                # Make budjet dimension
+                # Make decimal dimension
+                dec = DecimalDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
+                dec.save()
+
+                # Link decimal to project
+                pd_num.dimension_object=dec
+                pd_num.save()
+                return redirect('show_project', project_id=proj.pk)
+            else: # Not text or decimal, so it is integer
+                pd_num = ProjectDimension(dimension_object=proj, project=proj)
+                pd_num.save()
+
+                # Make numeric dimension
                 num = NumericDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
                 num.save()
 
-                # Link budget to project
+                # Link numeric to project
                 pd_num.dimension_object=num
                 pd_num.save()
-                insField = InsertedField(name = form.cleaned_data['name'], parent=proj, numericalValue=float('0' + form.cleaned_data['value']))
-                insField.save()
                 return redirect('show_project', project_id=proj.pk)
-        else:
+        else: # if form is not valid, return to form again
             formt = TableSpecification()
             return render(request, 'insert_field.html', {'formt':formt})
     elif request.method == 'GET':
-        data = {
-            'name': proj.name,
-            'parent': proj.parent,
-            'unit': proj.name,
-        }
         formt = TableSpecification()
         return render(request, 'insert_field.html', {'formt':formt})
