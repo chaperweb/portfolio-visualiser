@@ -1,51 +1,14 @@
+{% load static %}
 <!DOCTYPE html>
 <head>
   <title>PROJECT VISUALIZER</title>
+  <link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
   <style>
-    {% load static %}
-    body {
-      background-image: url("{% static "portfolio_manager/homepage_BG.jpg" %}");
-      background-size: 100%;
-      min-height: 100%;
-    }
-    #textandlogin {
-      display: flex;
-      justify-content: space-between;
-    }
-    #homepagetext {
-      text-align: center;
-      width: 60%;
-      height: 100%;
-      border-radius: 10px;
-      background-color: WHITE;
-      margin-left: 20%;
-      margin-right: 20%;
-      margin-top: 1%;
-      border-style: solid;
-      border-width: 20px;
-      border-color: WHITE;
-    }
-    #loginbox {
-      float:right;
-      margin-top:1%;
-      border-radius: 5px;
-    }
-    footer {
-      background-color: DARKGREY;
-      position: absolute;
-      z-index: 10;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      padding: 1rem;
-      text-align: center;
-      border-top: 2px;
-      border-color: BLACK;
-      border-style: solid;
-    }
-    #codentologo {
-      width:200px;
-    }
+  body {
+    background-image: url("{% static "portfolio_manager/img/homepage_BG.jpg" %}");
+    background-size: 100%;
+    min-height: 100%;
+  }
   </style>
 </head>
 <body>
@@ -71,7 +34,7 @@
     </div>
   </div>
   <footer>
-    <img id="codentologo" src="{% static "portfolio_manager/Codento.png" %}" /><br />
+    <img id="codentologo" src="{% static "portfolio_manager/img/Codento.png" %}" /><br />
     Contact us at: thisgoestonoone@fakedomain.fi
   </footer>
 </body>
