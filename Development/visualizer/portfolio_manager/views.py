@@ -154,7 +154,8 @@ def project_edit(request, project_id):
         if form.is_valid():
             # Update the projects info
             proj.name = form.cleaned_data['name']
-            proj.parent = form.cleaned_data['parent']
+            org = get_object_or_404(Organization, name=form.cleaned_data['organization'])
+            proj.parent = org
             proj.save()
 
         return redirect('show_project', project_id=proj.pk)
