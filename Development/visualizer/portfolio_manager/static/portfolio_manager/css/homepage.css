@@ -1,0 +1,38 @@
+#textandlogin {
+  display: flex;
+  justify-content: space-between;
+}
+#homepagetext {
+  text-align: center;
+  width: 60%;
+  height: 100%;
+  border-radius: 10px;
+  background-color: WHITE;
+  margin-left: 20%;
+  margin-right: 20%;
+  margin-top: 1%;
+  border-style: solid;
+  border-width: 20px;
+  border-color: WHITE;
+}
+#loginbox {
+  float:right;
+  margin-top:1%;
+  border-radius: 5px;
+}
+footer {
+  background-color: DARKGREY;
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  text-align: center;
+  border-top: 2px;
+  border-color: BLACK;
+  border-style: solid;
+}
+#codentologo {
+  width:200px;
+}
