@@ -28,6 +28,16 @@ class ModelsTestCase(TestCase):
         self.assertEqual('dir', Project.objects.get(id=2).dimensions.all()[0].dimension_object.history.all()[0].value)
         self.assertEqual('biz', Project.objects.get(id=2).dimensions.all()[0].dimension_object.history.all()[1].value)
 
+    def test_import_dmy_startdate_dmy_history_date(self):
+        data = [[u'id', u'__history_date', u'StartDate'],
+                [u'1', '03/18/2013', '5/6/2017'],
+                [u'1', '03/16/2013', '3/4/2015']
+                ]
+        from_data_array(data)
+        self.assertEqual(2, Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all().count())
+        self.assertEqual(parse('5/6/2017').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
+        self.assertEqual(parse('3/4/2015').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
+
     def test_import_startdate(self):
         data = [[u'id', u'__history_date', u'StartDate'],
                 [u'1', '2013-03-16T17:41:28+00:00', '2013-05-16T17:41:28+00:00'],

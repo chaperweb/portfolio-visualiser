@@ -44,7 +44,11 @@ def from_data_array(data):
           dimension_object = dimension_parent_class()
           create_project_dimension = True
 
-        dimension_object.from_sheet(dimension_update, update[1])
+        history_date = parse(update[1])
+        if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
+          history_date = history_date.replace(tzinfo=pytz.utc)
+
+        dimension_object.from_sheet(dimension_update, history_date)
         dimension_object.save()
 
         if create_project_dimension:
@@ -55,12 +59,12 @@ def from_data_array(data):
 
           dimension_objects[idx] = dimension_object
 
-        
+# Only sheets shared with reader@portfolio-sheet-data.iam.gserviceaccount.com can be imported!      
   
 def from_google_sheet(SheetUrl):
-    scope = ['https://spreadsheets.google.com/feeds']
+    scope = ['https://www.googleapis.com/auth/drive','https://spreadsheets.google.com/feeds','https://docs.google.com/feeds']
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(dir_path+'/../data/service_account.json', scope)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(dir_path+'/data/service_account.json', scope)
     gc = gspread.authorize(credentials)
     Sheet = gc.open_by_url(SheetUrl)
     worksheet = Sheet.get_worksheet(0)

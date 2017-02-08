@@ -8,7 +8,11 @@ from simple_history.models import HistoricalRecords
 from datetime import datetime
 import pytz
 from simple_history import register
+from dateutil.parser import parse
 
+
+class GoogleSheet (models.Model):
+  url = models.URLField(blank=False)
 
 #Model for a Organization
 #Id generated automatically
@@ -161,6 +165,15 @@ class DateDimension (Dimension):
   value = models.DateTimeField()
   history = HistoricalRecords()
   __history_date = None
+
+  def from_sheet(self, value, history_date):
+    
+    d = parse(value)
+    if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
+      d = d.replace(tzinfo=pytz.utc)
+
+    self.value = d
+    self._history_date = history_date
 
 # THESE ARE ONLY FOR GOOGLE SHEET IMPORTER
 class NameDimension (TextDimension):

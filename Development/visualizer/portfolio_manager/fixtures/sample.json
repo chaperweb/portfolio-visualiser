@@ -1,68 +1,16 @@
 [
   {
-    "model": "portfolio_manager.Project",
+    "model": "portfolio_manager.GoogleSheet",
     "pk": 1,
     "fields": {
-      "name": "Project 1"
+      "url": "http://blaablaa"
     }
   },
   {
-    "model": "portfolio_manager.DecimalDimension",
-    "pk": 1,
-    "fields": {
-      "name": "budjetti",
-      "value": 2
-    }
-  },
-  {
-    "model": "portfolio_manager.DecimalDimension",
+    "model": "portfolio_manager.GoogleSheet",
     "pk": 2,
     "fields": {
-      "name": "tyotunnit",
-      "value": 4
-    }
-  },
-  {
-    "model": "portfolio_manager.DecimalDimensionMilestone",
-    "pk": 1,
-    "fields": {
-      "value": 6,
-      "decimal_dimension_id": 1,
-      "at": "2013-03-16T17:41:28+00:00"
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectDimension",
-    "pk": 1,
-    "fields": {
-      "project_id": 1,
-      "object_id": 1,
-      "content_type_id": 8
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectDimension",
-    "pk": 2,
-    "fields": {
-      "project_id": 1,
-      "object_id": 2,
-      "content_type_id": 8
-    }
-  },
-  {
-    "model": "portfolio_manager.HistoricalDecimalDimension",
-    "fields": {
-      "id": 1,
-      "value": 2,
-      "history_date": "2013-01-16T17:41:28+00:00"
-    }
-  },
-  {
-    "model": "portfolio_manager.HistoricalDecimalDimension",
-    "fields": {
-      "id": 2,
-      "value": 4,
-      "history_date": "2013-02-16T17:41:28+00:00"
+      "url": "http://daada"
     }
   }
 ]

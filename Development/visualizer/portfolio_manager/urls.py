@@ -12,7 +12,6 @@ urlpatterns = [
     url(r'^org$', views.organizations, name='select_org'),
     url(r"^projects/(?P<project_id>[0-9]+)$", views.show_project, name='show_project'),
     url(r'^projects/(?P<project_id>[0-9]+)/edit/$', views.project_edit, name='project_edit'),
-    url(r'^load-sheet-data$', views.load_sheet_data, name='add_sheet_data'),
     url(r"^json/(?P<project_id>[0-9]+)$", views.json, name='json'),
     url(r'^history$', views.history, name='history'),
     url(r'^projects/(?P<project_id>[0-9]+)/insert_field/$', views.insert_field, name='insert_field'),
@@ -20,4 +19,7 @@ urlpatterns = [
     url(r'^path\.html$', TemplateView.as_view(template_name="path.html"), name='path'),
     url(r'^datapath\.html$', TemplateView.as_view(template_name="datapath.html")),
     url(r'^$', TemplateView.as_view(template_name="homepage.html"), name='homepage'),
+    url(r"^importer\.html$", views.importer, name='importer'),
+    url(r"^importer\.html/delete/(?P<google_sheet_id>[0-9]+)$", views.delete_google_sheet, name='delete_google_sheet'),
+    url(r"^importer\.html/load/(?P<google_sheet_id>[0-9]+)$", views.load_google_sheet, name='load_google_sheet'),
 ]
