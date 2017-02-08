@@ -48,6 +48,11 @@ div {
 }
 </style>
 <body>
+  {% include "navbar.html" %}
+  <script>
+  $('[href*="{% url 'history' %}"]').addClass('active');
+  </script>
+  <br />
   <div>
       {% for id in ids %}
         <!--  ID -->

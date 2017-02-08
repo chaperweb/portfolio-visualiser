@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+
+        .bar {
+            fill: none;
+        }
+
+        .line{
+             fill: none;
+             stroke: black;
+             stroke-width: 5px;
+        }
+    </style>
+</head>
+<body>  {% include "navbar.html" %}  <script>  $('[href*="path.html"]').addClass('active');  </script>
+    <script>
+
+    var height = 500,
+        width = 1000,
+        marginY = 100,
+        marginX = 100;
+
+    var svg = d3.select("body")
+                .append("svg")
+                .attr("height", height+marginX)
+                .attr("width", width+marginY)
+                .append("g")
+                .attr("transform", "translate("+50+","+50+")");
+
+    var pathData = [{"date": "01-05-16", "budget": 150.10, "owner": "Teuvo"},
+                    {"date": "15-05-16", "budget": 170.10, "owner": "Teuvo"},
+                    {"date": "01-06-16", "budget": 50.03, "owner": "Matti"},
+                    {"date": "01-07-16", "budget": 200.04, "owner": "Teppo"}];
+
+    //d3.csv("http://ec2-52-213-73-4.eu-west-1.compute.amazonaws.com:8000/data.csv", function(error, pathData){
+
+    var parseTime = d3.timeParse("%d-%m-%y");
+
+    var x = d3.scaleTime().range([0,width]),
+        y = d3.scaleLinear().range([height,0]);
+
+    pathData.forEach(function(d) {
+       d.date = d3.timeParse("%d-%m-%y")(d.date)
+    });
+
+    x.domain(d3.extent(pathData, function(d){return d.date}))
+    y.domain([0, d3.max(pathData, function(d){return d.budget})])
+
+    var valueLine = d3.line()
+                        .curve(d3.curveStepAfter)
+                        .x(function(d){return x(d.date)})
+                        .y(function(d){return y(d.budget)})
+
+    svg.append("path")
+        .attr("class", "line")
+        .attr("d", valueLine(pathData));
+
+    svg.selectAll("rect")
+        .data(pathData)
+        .enter()
+        .append("rect")
+        .attr("id", "testPath")
+        .attr("class", "bar")
+        .attr("x", function(d){return x(d.date);})
+        .attr("y", function(d){return y(d.budget);})
+        .attr("width", 0)
+        .attr("height", function(d){return height-y(d.budget);});
+
+    svg.selectAll("text")
+        .data(pathData)
+        .enter()
+        .append("text")
+        .append("textPath")
+        .attr("stroke", "black")
+        .attr("xlink:href", function(d){return "#testPath"})
+        .text(""+pathData.owner+"");
+
+    svg.append("g")
+       .attr("transform", "translate(0,"+height+")")
+       .call(d3.axisBottom(x));
+    svg.append("g")
+       .call(d3.axisLeft(y));
+
+    //});
+
+    </script>
+</body>

@@ -1,24 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>bujaa</title>
-</head>
-<body>
 
+
+
+{% include "navbar.html" %}
 <h2>
   projektin tiedot:
+
+
 </h2>
+<br />
+<a href="{% url 'insert_field' project.pk %}">Insert field</a>
+  <br />
 <a href="{% url 'project_edit' project.pk %}">EDIT</a>
 <br /><br />
   <div>
     Nimi: <br />
       {{ project.name }}<br /><br />
 
-Organizaatio: <br />
-{{ project.parent }}
+    Organizaatio: <br />
+      {{ project.parent }}<br /><br />
+
+    Omistaja: <br />
+      {{ owner }}<br /><br />
+
+    Budget: <br />
+      {{ budget.dimension_object.value }}<br /><br />
+
+      <b>Extra text fields:</b> <br />
+      {% for x in text %}
+        {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
+        {% endfor %}
+
+        <b>Extra Numeric fields:</b> <br />
+        {% for x in intfield %}
+          {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
+          {% endfor %}
+        <b>  Extra Decimal fields:</b> <br />
+          {% for x in decfield %}
+            {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
+            {% endfor %}
+
   </div>
   <div>
-    <input type=button value="previous Page" onClick="javascript:history.go(-1);">
+    <input type="button" value="previous Page" onclick="javascript:history.go(-1);">
   </div>
 </body>
 </html>

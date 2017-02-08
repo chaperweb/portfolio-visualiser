@@ -66,7 +66,8 @@ SECRET_KEY = '#(mkfq^^n!0s(n#@&l^nbuv6$7v=i*7si*t3*9i*6w3sn(rh)h'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]',
+'*']
 
 
 # Application definition
@@ -164,6 +165,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR,'portfolio_manager/static')
 STATIC_URL = '/static/'
 
 NOSE_ARGS = ['--nocapture',

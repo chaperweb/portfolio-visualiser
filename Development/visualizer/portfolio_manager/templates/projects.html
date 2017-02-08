@@ -4,7 +4,10 @@
   <title>bujaa</title>
 </head>
 <body>
-
+{% include "navbar.html" %}
+<script>
+$('[href*="{% url 'projects' %}"]').addClass('active');
+</script>
 <p>
   projektit:
 </p>

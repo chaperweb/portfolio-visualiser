@@ -4,7 +4,11 @@
   <title>klik klik</title>
 </head>
 <body>
-
+{% include "navbar.html" %}
+<script>
+$('[href*="{% url 'select_org' %}"]').addClass('active');
+</script>
+<br />
   <form action="{% url 'select_org' %}" method="POST">
     {% csrf_token %}
     {{ form }}
