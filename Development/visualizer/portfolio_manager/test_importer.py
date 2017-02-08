@@ -14,7 +14,7 @@ class ModelsTestCase(TestCase):
         pass
 
     def test_import_dimension_name(self):
-        data = [[u'id', u'__history_date', u'Name'],
+        data = [[u'id', u'__history_date', u'Name   '],
                 [u'1', '2013-03-16T17:41:28+00:00', 'foo'],
                 ]
         from_data_array(data)
@@ -25,7 +25,7 @@ class ModelsTestCase(TestCase):
                 [u'1', '2013-03-16T17:41:28+00:00', 'foo'],
                 [u'1', '2013-03-17T17:41:28+00:00'],
                 [u'1', '2013-03-18T17:41:28+00:00', 'baz'],
-                [u'2', '2013-03-20T17:41:28+00:00', 'dir'],
+                [u'2', '2013-03-20T17:41:28+00:00', 'dir '],
                 [u'2', '2013-03-19T17:41:28+00:00', 'biz']
                 ]
         from_data_array(data)
@@ -58,7 +58,7 @@ class ModelsTestCase(TestCase):
 
     def test_import_projectmanager(self):
         data = [[u'id', u'__history_date', u'ProjectManager'],
-                [u'1', '2013-03-16T17:41:28+00:00', 'Pekka'],
+                [u'1', '2013-03-16T17:41:28+00:00', 'Pekka '],
                 [u'1', '2013-03-18T17:41:28+00:00', 'Matti'],
                 [u'1', '2013-03-19T17:41:28+00:00', 'Pekka'],
                 ]
@@ -72,9 +72,9 @@ class ModelsTestCase(TestCase):
 
     def test_import_members(self):
         data = [[u'id', u'__history_date', u'Members'],
-                [u'1', '2013-03-16T17:41:28+00:00', 'Pekka,Matti'],
+                [u'1', '2013-03-16T17:41:28+00:00', 'Pekka ,Matti'],
                 [u'1', '2013-03-18T17:41:28+00:00', 'Matti'],
-                [u'1', '2013-03-19T17:41:28+00:00', 'Taneli,Pekka'],
+                [u'1', '2013-03-19T17:41:28+00:00', 'Taneli  ,Pekka '],
                 ]
         from_data_array(data)
         self.assertEqual(1, Project.objects.all().count())
@@ -86,7 +86,7 @@ class ModelsTestCase(TestCase):
         data = [[u'id', u'__history_date', u'ProjectDependencies'],
                 [u'1', '2013-03-16T17:41:28+00:00'],
                 [u'2', '2013-03-18T17:41:28+00:00', '1'],
-                [u'3', '2013-03-19T17:41:28+00:00', '1,2'],
+                [u'3', '2013-03-19T17:41:28+00:00', '1, 2'],
                 ]
         from_data_array(data)
         self.assertEqual(3, Project.objects.all().count())
@@ -99,9 +99,9 @@ class ModelsTestCase(TestCase):
 
     def test_import_owningorganization(self):
         data = [[u'id', u'__history_date', u'OwningOrganization'],
-                [u'1', '2013-03-16T17:41:28+00:00', 'Org1'],
+                [u'1', '2013-03-16T17:41:28+00:00', 'Org1  '],
                 [u'1', '2013-03-18T17:41:28+00:00', 'Org2'],
-                [u'1', '2013-03-19T17:41:28+00:00', 'Org1'],
+                [u'1', '2013-03-19T17:41:28+00:00', 'Org1 '],
                 ]
         from_data_array(data)
         self.assertEqual(1, Project.objects.all().count())

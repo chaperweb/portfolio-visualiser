@@ -39,17 +39,17 @@ def from_data_array(data):
         try:
           dimension_object = dimension_objects[idx]
         except KeyError:
-          dimension_sub_class = globals()[dimensions[idx]+"Dimension"]
+          dimension_sub_class = globals()[dimensions[idx].strip()+"Dimension"]
           dimension_parent_class = dimension_sub_class.__bases__[0]
           dimension_object = dimension_parent_class()
-          dimension_object.name = dimensions[idx]
+          dimension_object.name = dimensions[idx].strip()
           create_project_dimension = True
 
         history_date = parse(update[1])
         if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
           history_date = history_date.replace(tzinfo=pytz.utc)
 
-        dimension_object.from_sheet(dimension_update, history_date)
+        dimension_object.from_sheet(dimension_update.strip(), history_date)
         dimension_object.save()
 
         if create_project_dimension:

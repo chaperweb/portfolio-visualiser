@@ -135,7 +135,8 @@ class AssociatedPersonsDimension(Dimension):
   def from_sheet(self, value, history_date):
     self.save()
     self.persons.set([])
-    for person_first_name in value.split(','):
+    for part in value.split(','):
+      person_first_name = part.strip()
       person = None
       try:
         person = Person.objects.get(first_name=person_first_name)
@@ -156,7 +157,8 @@ class AssociatedProjectsDimension(Dimension):
   def from_sheet(self, value, history_date):
     self.save()
     self.projects.set([])
-    for project_id in value.split(','):
+    for part in value.split(','):
+      project_id = part.strip()
       project = None
       try:
         project = Project.objects.get(id=project_id)
