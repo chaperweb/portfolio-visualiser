@@ -42,6 +42,7 @@ def from_data_array(data):
           dimension_sub_class = globals()[dimensions[idx]+"Dimension"]
           dimension_parent_class = dimension_sub_class.__bases__[0]
           dimension_object = dimension_parent_class()
+          dimension_object.name = dimensions[idx]
           create_project_dimension = True
 
         history_date = parse(update[1])

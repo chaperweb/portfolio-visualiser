@@ -12,6 +12,13 @@ class ModelsTestCase(TestCase):
 
     def setUp(self):
         pass
+
+    def test_import_dimension_name(self):
+        data = [[u'id', u'__history_date', u'Name'],
+                [u'1', '2013-03-16T17:41:28+00:00', 'foo'],
+                ]
+        from_data_array(data)
+        self.assertEqual('Name', Project.objects.get(id=1).dimensions.all()[0].dimension_object.name)
      
     def test_import_name(self):
         data = [[u'id', u'__history_date', u'Name'],
