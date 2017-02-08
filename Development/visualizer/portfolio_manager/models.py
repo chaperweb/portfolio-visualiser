@@ -7,50 +7,9 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from simple_history.models import HistoricalRecords
 from datetime import datetime
 import pytz
+from simple_history import register
 
-def import_models_data(data):
 
-  Project.objects.all().delete()
-
-  dimensions = data[0][2:]
-  prev_id = -1
-
-  for update in data[1:]:
-    project_id = update[0]
-    project = None
-
-    if project_id != prev_id: # new project
-      project = Project()
-      project.id = update[0]
-      project.save()
-      prev_id = update[0]
-    
-      for idx, dimension in enumerate(dimensions):
-        if dimension == 'Members' or dimension == 'ProjectDependencies':
-          continue
-
-        dimension_class = globals()[dimension+"Dimension"]
-        dimension_object = dimension_class()
-        dimension_object.from_sheet(update[2+idx])
-        dimension_object.save()
-
-        project_dimension = ProjectDimension()
-        project_dimension.project = project
-        project_dimension.dimension_object = dimension_object
-        project_dimension.save()
-
-    else:
-      project = Project.objects.get(pk=project_id)
-
-      for idx, dimension_update in enumerate(update[2:]):
-        if dimension_update:
-          if dimensions[idx] == 'Members' or dimensions[idx] == 'ProjectDependencies':
-            continue
-          project_dimension = ProjectDimension.objects.get(project=project, content_type=ContentType.objects.get_for_model(globals()[dimensions[idx]+"Dimension"]))
-          project_dimension.dimension_object.from_sheet(dimension_update)
-          project_dimension.dimension_object.save()
-      
-   
 #Model for a Organization
 #Id generated automatically
 class Organization (models.Model):
@@ -93,6 +52,10 @@ class Dimension (models.Model):
   def get_content_type(self):
     return ContentType.objects.get_for_model(self).id
 
+  def from_sheet(self, value, history_date):
+    self.value = value
+    self._history_date = history_date
+
 class Person (models.Model):
   first_name = models.CharField(max_length=64)
   last_name = models.CharField(max_length=64)
@@ -108,43 +71,163 @@ class DecimalDimensionMilestone (models.Model):
   decimal_dimension = models.ForeignKey(DecimalDimension, on_delete=models.CASCADE, related_name='milestones')
   history = HistoricalRecords()
   __history_date = None
-  
+
+
 class TextDimension (Dimension):
   value = models.TextField()
   history = HistoricalRecords()
   __history_date = None
+
     
 class AssociatedOrganizationDimension (Dimension):
   value = models.ForeignKey(Organization, null=True)
   history = HistoricalRecords()
+  __history_date = None
+
+  def from_sheet(self, value, history_date):
+
+    organization = None
+    try:
+      organization = Organization.objects.get(name=value)
+    except Organization.DoesNotExist:
+      organization = Organization()
+      organization.name = value
+      organization.save()
+
+    self.value = organization
+    self._history_date = history_date
 
 class AssociatedPersonDimension (Dimension):
   value = models.ForeignKey(Person, null=True)
   history = HistoricalRecords()
-  
+  __history_date = None
+
+  def from_sheet(self, value, history_date):
+
+    person = None
+    try:
+      person = Person.objects.get(first_name=value)
+    except Person.DoesNotExist:
+      person = Person()
+      person.first_name = value
+      person.save()
+
+    self.value = person
+    self._history_date = history_date
+
+
 #Dimension for project participant management
 class AssociatedPersonsDimension(Dimension):
-  persons = models.ManyToManyField(Person, through='DimensionPerson', through_fields=('dimension', 'person'))
+  persons = models.ManyToManyField(Person)
 
-class DimensionPerson(models.Model):
-  dimension = models.ForeignKey(AssociatedPersonsDimension, on_delete=models.CASCADE)
-  person = models.ForeignKey(Person, on_delete=models.CASCADE)
-  history = HistoricalRecords()
-  __history_date = None
+  def from_sheet(self, value, history_date):
+    self.save()
+    self.persons.set([])
+    for person_first_name in value.split(','):
+      person = None
+      try:
+        person = Person.objects.get(first_name=person_first_name)
+      except Person.DoesNotExist:
+        person = Person()
+        person.first_name = person_first_name
+        person.save()
+
+      self.persons.add(person)
+
 
 #Storing the project dependencies as list of project IDs
 class AssociatedProjectsDimension(Dimension):
-  projects = models.ManyToManyField(Project, through='DimensionProject', through_fields=('dimension', 'project'))
+  projects = models.ManyToManyField(Project)
 
-class DimensionProject(models.Model):
-  dimension = models.ForeignKey(AssociatedProjectsDimension, on_delete=models.CASCADE)
-  project = models.ForeignKey(Project, on_delete=models.CASCADE)
-  history = HistoricalRecords()
-  __history_date = None
+  def from_sheet(self, value, history_date):
+    self.save()
+    self.projects.set([])
+    for project_id in value.split(','):
+      project = None
+      try:
+        project = Project.objects.get(id=project_id)
+      except Project.DoesNotExist:
+        project = Project()
+        project.id = project_id
+        project.save()
+
+      self.projects.add(project)
 
 class DateDimension (Dimension):
   value = models.DateTimeField()
   history = HistoricalRecords()
-  
+  __history_date = None
+
+# THESE ARE ONLY FOR GOOGLE SHEET IMPORTER
+class NameDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class StartDateDimension (DateDimension):
+  class Meta:
+    proxy = True
+
+class EndDateDimension (DateDimension):
+  class Meta:
+    proxy = True
+
+class ProjectOwnerDimension (AssociatedPersonDimension):
+  class Meta:
+    proxy = True
+
+class OwningOrganizationDimension (AssociatedOrganizationDimension):
+  class Meta:
+    proxy = True    
+
+class ProjectManagerDimension (AssociatedPersonDimension):
+  class Meta:
+    proxy = True
+
+class CustomerDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class DepartmentDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class SizeMoneyDimension (DecimalDimension):
+  class Meta:
+    proxy = True
+
+class SizeManDaysDimension (DecimalDimension):
+  class Meta:
+    proxy = True
+
+class SizeEffectDimension (DecimalDimension):
+  class Meta:
+    proxy = True
+
+class DescriptionDimension (TextDimension):
+  class Meta:
+    proxy = True
 
 
+class TechnologyDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class ProjectDependenciesDimension (AssociatedProjectsDimension):
+  class Meta:
+    proxy = True
+
+class DevelopmentModelDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class VendorDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class MembersDimension (AssociatedPersonsDimension):
+  class Meta:
+    proxy = True
+
+class PhaseDimension (TextDimension):
+  class Meta:
+    proxy = True

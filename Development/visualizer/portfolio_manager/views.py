@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from portfolio_manager.models import Project,Organization
 from portfolio_manager.forms import ProjectForm,OrganizationForm,CronForm,SheetUrlForm
-import portfolio_manager.scripts.load_data
 import logging
 from django.http import JsonResponse
 from serializers import ProjectSerializer
@@ -104,7 +103,7 @@ def load_sheet_data(form):
 		form = SheetUrlForm(request.POST)
 		
 		if form.is_valid():
-		  portfolio_manager.scripts.load_data.load_data_from_url(form.cleaned_data['url'])
+		  importer.from_google_sheet(form.cleaned_data['url'])
 		  return redirect('load-sheet-data')
 
 def json(request, project_id):
