@@ -9,6 +9,7 @@ from datetime import datetime
 import pytz
 from simple_history import register
 from dateutil.parser import parse
+from django.db.models.signals import pre_delete
 
 
 class GoogleSheet (models.Model):
@@ -47,6 +48,11 @@ class ProjectDimension (models.Model):
 
   def __str__(self):
     return self.dimension_object.__class__.__name__
+
+def dimension_cleanup(sender, instance, *args, **kwargs):
+  instance.dimension_object.delete()
+
+pre_delete.connect(dimension_cleanup, sender=ProjectDimension)
 
 #model for a Dimension to use in comparisons
 class Dimension (models.Model):

@@ -133,6 +133,8 @@ class ModelsTestCase(TestCase):
 
         self.assertEqual(1, Project.objects.get(id=1).dimensions.all().count())
         self.assertTrue(isinstance(Project.objects.get(id=1).dimensions.all()[0].dimension_object, TextDimension))
+        self.assertEqual(0, DecimalDimension.objects.all().count())
+        self.assertEqual(1, ProjectDimension.objects.all().count())
 
     def test_keep_unaffected_projects(self):
         project = Project()
