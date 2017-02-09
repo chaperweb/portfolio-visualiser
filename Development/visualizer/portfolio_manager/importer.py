@@ -1,7 +1,7 @@
 import gspread
-from models import *
+from portfolio_manager.models import *
 from oauth2client.service_account import ServiceAccountCredentials
-import os 
+import os
 
 def from_data_array(data):
 
@@ -27,8 +27,8 @@ def from_data_array(data):
       project.save()
       prev_id = update[0]
 
-      dimension_objects = {} 
-      
+      dimension_objects = {}
+
     for idx, dimension_update in enumerate(update[2:]):
 
       if dimension_update:
@@ -60,8 +60,8 @@ def from_data_array(data):
 
           dimension_objects[idx] = dimension_object
 
-# Only sheets shared with reader@portfolio-sheet-data.iam.gserviceaccount.com can be imported!      
-  
+# Only sheets shared with reader@portfolio-sheet-data.iam.gserviceaccount.com can be imported!
+
 def from_google_sheet(SheetUrl):
     scope = ['https://www.googleapis.com/auth/drive','https://spreadsheets.google.com/feeds','https://docs.google.com/feeds']
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -70,8 +70,3 @@ def from_google_sheet(SheetUrl):
     Sheet = gc.open_by_url(SheetUrl)
     worksheet = Sheet.get_worksheet(0)
     from_data_array(worksheet.get_all_values())
-
-    
-
-    
-

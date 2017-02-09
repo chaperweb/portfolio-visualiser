@@ -1,9 +1,9 @@
 from django.test import TestCase
-from models import *
+from portfolio_manager.models import *
 from datetime import datetime, timedelta
 from django.utils import timezone
 from decimal import *
-from serializers import ProjectSerializer
+from portfolio_manager.serializers import ProjectSerializer
 from rest_framework.renderers import JSONRenderer
 from django.test import Client
 from django.core.urlresolvers import reverse

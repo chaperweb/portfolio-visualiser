@@ -1,11 +1,11 @@
 from django.test import TestCase
-from models import *
+from portfolio_manager.models import *
 from datetime import datetime, timedelta
 from django.utils import timezone
 from decimal import *
-from serializers import ProjectSerializer
+from portfolio_manager.serializers import ProjectSerializer
 from rest_framework.renderers import JSONRenderer
-from importer import from_data_array
+from portfolio_manager.importer import from_data_array
 from dateutil.parser import parse
 
 class ModelsTestCase(TestCase):
@@ -19,7 +19,7 @@ class ModelsTestCase(TestCase):
                 ]
         from_data_array(data)
         self.assertEqual('Name', Project.objects.get(id=1).dimensions.all()[0].dimension_object.name)
-     
+
     def test_import_name(self):
         data = [[u'id', u'__history_date', u'Name'],
                 [u'1', '2013-03-16T17:41:28+00:00', 'foo'],
@@ -111,8 +111,8 @@ class ModelsTestCase(TestCase):
         self.assertEqual(Organization.objects.get(name='Org2'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
         self.assertEqual(Organization.objects.get(name='Org1'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[2].value)
 
-        
-        
+
+
     def test_overwrite_project(self):
         project = Project()
         project.id = 1
@@ -157,5 +157,3 @@ class ModelsTestCase(TestCase):
         self.assertEqual(2, Project.objects.all().count())
         self.assertEqual(1, Project.objects.get(id=1).dimensions.all().count())
         self.assertTrue(isinstance(Project.objects.get(id=1).dimensions.all()[0].dimension_object, DecimalDimension))
-
-        

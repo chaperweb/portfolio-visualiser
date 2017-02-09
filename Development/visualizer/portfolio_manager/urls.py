@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^projects/(?P<project_id>[0-9]+)/edit/$', views.project_edit, name='project_edit'),
     url(r"^json/(?P<project_id>[0-9]+)$", views.json, name='json'),
     url(r'^history$', views.history, name='history'),
+    url(r'^visualizations$', TemplateView.as_view(template_name="visualizations.html"), name='visualizations'),
     url(r'^projects/(?P<project_id>[0-9]+)/insert_field/$', views.insert_field, name='insert_field'),
     url(r'^data\.csv$', TemplateView.as_view(template_name="data.csv")),
     url(r'^path\.html$', TemplateView.as_view(template_name="path.html"), name='path'),
