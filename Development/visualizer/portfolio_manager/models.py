@@ -13,7 +13,8 @@ from django.db.models.signals import pre_delete
 
 
 class GoogleSheet (models.Model):
-  url = models.URLField(blank=False)
+    name = models.CharField(max_length=50)
+    url = models.URLField(blank=False)
 
 #Model for a Organization
 #Id generated automatically
@@ -90,7 +91,7 @@ class TextDimension (Dimension):
   history = HistoricalRecords()
   __history_date = None
 
-    
+
 class AssociatedOrganizationDimension (Dimension):
   value = models.ForeignKey(Organization, null=True)
   history = HistoricalRecords()
@@ -175,7 +176,7 @@ class DateDimension (Dimension):
   __history_date = None
 
   def from_sheet(self, value, history_date):
-    
+
     d = parse(value)
     if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
       d = d.replace(tzinfo=pytz.utc)
@@ -203,7 +204,7 @@ class ProjectOwnerDimension (AssociatedPersonDimension):
 
 class OwningOrganizationDimension (AssociatedOrganizationDimension):
   class Meta:
-    proxy = True    
+    proxy = True
 
 class ProjectManagerDimension (AssociatedPersonDimension):
   class Meta:
