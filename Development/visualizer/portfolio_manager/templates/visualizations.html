@@ -4,15 +4,6 @@
   <title>New Organization</title>
 </head>
 <style>
-input[type=text], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
 
 input[type=submit] {
     width: 100%;
@@ -29,20 +20,16 @@ input[type=submit]:hover {
     background-color: #45a049;
 }
 
-div {
-    margin: auto;
-    align-items: center;
-    border-radius: 5px;
-    width: 40%;
-    background-color: #f2f2f2;
-    padding: 20px;
-}
 </style>
 
 <body>
   {% include "navbar.html" %}
-<p>
-  MOI
-</p>
+  <form action="{%url 'path' %}" method="GET">
+    {% csrf_token %}
+    <input type="submit" value="Path"/>
+  </form>
+
+  <input type="submit" value="Squares"/>
+  <input type="submit" value="Balls"/>
 </body>
 </html>
