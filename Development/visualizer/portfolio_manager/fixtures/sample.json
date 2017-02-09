@@ -1,0 +1,24 @@
+[
+  {
+    "model": "portfolio_manager.GoogleSheet",
+    "pk": 1,
+    "fields": {
+      "url": "http://blaablaa"
+    }
+  },
+  {
+    "model": "portfolio_manager.GoogleSheet",
+    "pk": 2,
+    "fields": {
+      "url": "http://daada"
+    }
+  }
+]
+
+
+      
+   
+  
+
+ 
+      

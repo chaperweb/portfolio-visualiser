@@ -5,6 +5,15 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.validators import MaxValueValidator, MinValueValidator
 from simple_history.models import HistoricalRecords
+from datetime import datetime
+import pytz
+from simple_history import register
+from dateutil.parser import parse
+from django.db.models.signals import pre_delete
+
+
+class GoogleSheet (models.Model):
+  url = models.URLField(blank=False)
 
 #Model for a Organization
 #Id generated automatically
@@ -40,6 +49,11 @@ class ProjectDimension (models.Model):
   def __str__(self):
     return self.dimension_object.__class__.__name__
 
+def dimension_cleanup(sender, instance, *args, **kwargs):
+  instance.dimension_object.delete()
+
+pre_delete.connect(dimension_cleanup, sender=ProjectDimension)
+
 #model for a Dimension to use in comparisons
 class Dimension (models.Model):
   class Meta:
@@ -50,168 +64,196 @@ class Dimension (models.Model):
   def get_content_type(self):
     return ContentType.objects.get_for_model(self).id
 
-  def update_value(self, value, when=None):
-      self.value = value
-      self.save()
-
-#Dimensions for Integer, Decimal and Text inputs
-#update_value adds timestamp when edited
-class NumericDimension (Dimension):
-
-  value = models.IntegerField()
-
-
-#model for comparisons between milestones and NumericDimension values
-class NumericDimensionMilestone (models.Model):
-  numeric_dimension = models.ForeignKey(NumericDimension, on_delete=models.CASCADE, related_name='milestones')
-  value = models.IntegerField()
-
-  def __unicode__(self):
-    return "id: "+str(self.numeric_dimension.id)+" value: "+str(self.value)
-
-  def __str__(self):
-    return unicode(self).encode('utf-8')
-
-  def on_schedule(self, deadline):
-    versions = Version.objects.get_for_object(self.numeric_dimension)
-    versions = versions.filter(revision__date_created__lte=deadline)
-
-    dimension_value = self.numeric_dimension.value
-    try:
-        dimension_value = versions[0].field_dict["value"]
-    except IndexError:
-      pass
-
-    return self.value <= dimension_value
-
-class ProjectMilestone (models.Model):
-  deadline = models.DateTimeField()
-
-  def __unicode__(self):
-    return str(map((lambda x: x.dimension_milestone_object.__class__.__name__+": "+str(x.dimension_milestone_object)) , self.dimension_milestones.all()))+" @ "+str(self.deadline)
-
-  def __str__(self):
-    return unicode(self).encode('utf-8')
-
-  def on_schedule(self):
-    for dimension_milestone in self.dimension_milestones.all():
-      if not dimension_milestone.dimension_milestone_object.on_schedule(self.deadline):
-        return False
-
-    return True
-
-class MilestonesDimension (Dimension):
-
-  milestones = models.ManyToManyField(ProjectMilestone, related_name='milestones_dimensions')
-
-  def set_milestones(self, milestones):
-      self.milestones.set(milestones)
-
-#Model for
-class ProjectMilestoneDimensionMilestone (models.Model):
-  project_milestone = models.ForeignKey(ProjectMilestone, on_delete=models.CASCADE, related_name='dimension_milestones')
-  content_type = models.ForeignKey(ContentType)
-  object_id = models.PositiveIntegerField()
-  dimension_milestone_object = GenericForeignKey('content_type', 'object_id')
+  def from_sheet(self, value, history_date):
+    self.value = value
+    self._history_date = history_date
 
 class Person (models.Model):
   first_name = models.CharField(max_length=64)
   last_name = models.CharField(max_length=64)
 
-  def __unicode__(self):
-    return self.first_name+" "+self.last_name
+class DecimalDimension (Dimension):
+  value = models.DecimalField(max_digits = 20, decimal_places = 2)
+  history = HistoricalRecords()
+  __history_date = None
+
+class DecimalDimensionMilestone (models.Model):
+  value = models.DecimalField(max_digits = 20, decimal_places=2)
+  at = models.DateTimeField()
+  decimal_dimension = models.ForeignKey(DecimalDimension, on_delete=models.CASCADE, related_name='milestones')
+  history = HistoricalRecords()
+  __history_date = None
+
+
+class TextDimension (Dimension):
+  value = models.TextField()
+  history = HistoricalRecords()
+  __history_date = None
+
+    
+class AssociatedOrganizationDimension (Dimension):
+  value = models.ForeignKey(Organization, null=True)
+  history = HistoricalRecords()
+  __history_date = None
+
+  def from_sheet(self, value, history_date):
+
+    organization = None
+    try:
+      organization = Organization.objects.get(name=value)
+    except Organization.DoesNotExist:
+      organization = Organization()
+      organization.name = value
+      organization.save()
+
+    self.value = organization
+    self._history_date = history_date
+
+class AssociatedPersonDimension (Dimension):
+  value = models.ForeignKey(Person, null=True)
+  history = HistoricalRecords()
+  __history_date = None
+
+  def from_sheet(self, value, history_date):
+
+    person = None
+    try:
+      person = Person.objects.get(first_name=value)
+    except Person.DoesNotExist:
+      person = Person()
+      person.first_name = value
+      person.save()
+
+    self.value = person
+    self._history_date = history_date
+
+
+#Dimension for project participant management
+class AssociatedPersonsDimension(Dimension):
+  persons = models.ManyToManyField(Person)
+
+  def from_sheet(self, value, history_date):
+    self.save()
+    self.persons.set([])
+    for part in value.split(','):
+      person_first_name = part.strip()
+      person = None
+      try:
+        person = Person.objects.get(first_name=person_first_name)
+      except Person.DoesNotExist:
+        person = Person()
+        person.first_name = person_first_name
+        person.save()
+
+      self.persons.add(person)
 
   def __str__(self):
     return self.first_name+" "+self.last_name
 
-#Dimension for project participant management
-class MembersDimension(Dimension):
-  members = models.ManyToManyField(Person)
-
-  def set_members(self, members, when=None):
-      self.members.set(members)
-
-class DecimalDimension (Dimension):
-    value = models.DecimalField(max_digits = 20, decimal_places = 2)
-
-#model for comparisons between milestones and DecimalDimension values
-class DecimalDimensionMilestone (models.Model):
-  numeric_dimension = models.ForeignKey(DecimalDimension, on_delete=models.CASCADE, related_name='decimal_milestones')
-  value = models.IntegerField()
-
-class TextDimension (Dimension):
-    value = models.TextField()
-
-class AssociatedPersonDimension (Dimension):
-  value = models.ForeignKey(Person, null=True)
-
-#Connection between project and a project owner
-class ProjectOwnerDimension (AssociatedPersonDimension):
-    assPerson = models.ForeignKey(AssociatedPersonDimension, related_name="owner")
-
-#Connection between project and a project manager
-class ProjectManagerDimension (AssociatedPersonDimension):
-    pass
-
 #Storing the project dependencies as list of project IDs
-class ProjectDependenciesDimension(Dimension):
-    dependencies = models.ManyToManyField(Project)
+class AssociatedProjectsDimension(Dimension):
+  projects = models.ManyToManyField(Project)
 
-    def set_dependencies(self, dependencies, when=None):
-        self.dependencies.set(dependencies)
-        self.save()
+  def from_sheet(self, value, history_date):
+    self.save()
+    self.projects.set([])
+    for part in value.split(','):
+      project_id = part.strip()
+      project = None
+      try:
+        project = Project.objects.get(id=project_id)
+      except Project.DoesNotExist:
+        project = Project()
+        project.id = project_id
+        project.save()
 
-#Task class
-#Is person completing task essential?
-class Task (Dimension):
-    task_description = models.TextField()
-    value = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+      self.projects.add(project)
 
-#Project size in money
-class SizeMoneyDimension (DecimalDimension):
-  pass
-
-#Project size in man-days
-class SizeMd(DecimalDimension):
-  pass
-
-#Project size as impact
-class SizeImpactDimension(TextDimension):
-  pass
-
-#Technologies used in project
-class TechnologyDimension(TextDimension):
-  pass
-
-#Development model used in project
-class DevelopmentMethodDimension(TextDimension):
-  pass
-
-#Description of the project
-class DescriptionDimension(TextDimension):
-  pass
-
-class Supplier(models.Model):
-  name = models.CharField(max_length=50)
-
-#Deliverer of the project
-class SuppliersDimension(Dimension):
-  suppliers = models.ManyToManyField(Supplier)
-
-  def set_suppliers(self, suppliers, when=None):
-      self.suppliers.set(suppliers)
-      self.save()
-
-#Customer of the project
-class CustomerDimension(TextDimension):
-  pass
-
-#Phase of the project as a list of Milestone IDs
-class PhaseDimension (TextDimension):
-  pass
-
-class OwningOrganizationDimension (TextDimension):
-  pass
-
-class StartTimeDimension (Dimension):
+class DateDimension (Dimension):
   value = models.DateTimeField()
+  history = HistoricalRecords()
+  __history_date = None
+
+  def from_sheet(self, value, history_date):
+    
+    d = parse(value)
+    if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
+      d = d.replace(tzinfo=pytz.utc)
+
+    self.value = d
+    self._history_date = history_date
+
+# THESE ARE ONLY FOR GOOGLE SHEET IMPORTER
+class NameDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class StartDateDimension (DateDimension):
+  class Meta:
+    proxy = True
+
+class EndDateDimension (DateDimension):
+  class Meta:
+    proxy = True
+
+class ProjectOwnerDimension (AssociatedPersonDimension):
+  class Meta:
+    proxy = True
+   # assPerson = models.ForeignKey(AssociatedPersonDimension, related_name="owner")
+
+class OwningOrganizationDimension (AssociatedOrganizationDimension):
+  class Meta:
+    proxy = True    
+
+class ProjectManagerDimension (AssociatedPersonDimension):
+  class Meta:
+    proxy = True
+
+class CustomerDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class DepartmentDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class SizeMoneyDimension (DecimalDimension):
+  class Meta:
+    proxy = True
+
+class SizeManDaysDimension (DecimalDimension):
+  class Meta:
+    proxy = True
+
+class SizeEffectDimension (DecimalDimension):
+  class Meta:
+    proxy = True
+
+class DescriptionDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+
+class TechnologyDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class ProjectDependenciesDimension (AssociatedProjectsDimension):
+  class Meta:
+    proxy = True
+
+class DevelopmentModelDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class VendorDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class MembersDimension (AssociatedPersonsDimension):
+  class Meta:
+    proxy = True
+
+class PhaseDimension (TextDimension):
+  class Meta:
+    proxy = True

@@ -3,6 +3,9 @@ from portfolio_manager.models import *
 from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import logging
+from django.http import JsonResponse
+from serializers import ProjectSerializer
+from importer import from_google_sheet
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -166,6 +169,32 @@ def project_edit(request, project_id):
 }
         form = ProjectForm(data)
     return render(request, 'project_edit.html', {'form': form})
+	
+def delete_google_sheet(request, google_sheet_id):
+    GoogleSheet.objects.get(id=google_sheet_id).delete()
+    return redirect('importer')
+
+def load_google_sheet(request, google_sheet_id):
+    google_sheet = GoogleSheet.objects.get(id=google_sheet_id)
+    from_google_sheet(google_sheet.url)
+    return redirect('importer')
+
+def importer(request):
+    if request.method == "POST":
+        form = GoogleSheetForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+        
+        return redirect('importer')
+    else:
+        return render(request, 'importer.html', { 'google_sheets': GoogleSheet.objects.all(), 'form': GoogleSheetForm() } )
+
+
+def json(request, project_id):
+    project = Project.objects.get(pk=project_id)
+    serializer = ProjectSerializer(project)
+    return JsonResponse(serializer.data)
 
 
 def insert_field(request, project_id):
