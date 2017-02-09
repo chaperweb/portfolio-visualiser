@@ -14,7 +14,7 @@ class ViewsTestCase(TestCase):
         def setUp(self):
                 pass
 
-        def test_json(self):
+        def test_json_decimal_dimension(self):
 
                 project = Project()
                 project.name = 'projekti'
@@ -54,4 +54,3 @@ class ViewsTestCase(TestCase):
                 self.maxDiff = None
                 expected_response = {u"id": 1, u"name": u"projekti", u"dimensions": [{u"id": 1, u"dimension_object": {u"id": 1, u"name": u"budjetti", u"milestones": [{u"id": 1, u"value": u'6.00', u"at": u'2016-01-30T05:55:14.372793Z'}], u"history": [{u"id": 1, u"value": u'2.00', u"history_date": u"2016-01-30T05:55:14.372793Z"}]}}, {u"id": 2, u"dimension_object": {u"id": 2, u"name": u"tyotunnit", u"milestones": [], u"history": [{u"id": 2, u"value": u'3.00', u"history_date": u"2016-01-30T05:55:14.372793Z"}]}}]}
                 self.assertEquals(expected_response, json.loads(response.content))
-                
