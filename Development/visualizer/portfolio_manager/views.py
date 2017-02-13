@@ -4,8 +4,8 @@ from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import logging
 from django.http import JsonResponse
-from serializers import ProjectSerializer
-from importer import from_google_sheet
+from portfolio_manager.serializers import ProjectSerializer
+from portfolio_manager.importer import from_google_sheet
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -125,7 +125,6 @@ def organizations(request):
         form = CronForm()
    return render(request, 'droptable_organization.html', {'form':form})
 
-
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
         pod = ContentType.objects.get_for_model(ProjectOwnerDimension)
@@ -163,13 +162,10 @@ def project_edit(request, project_id):
 
         return redirect('show_project', project_id=proj.pk)
     else:
-        data = {
-    'name': proj.name,
-    'parent': proj.parent
-}
+        data = { 'name': proj.name, 'parent': proj.parent }
         form = ProjectForm(data)
     return render(request, 'project_edit.html', {'form': form})
-	
+
 def delete_google_sheet(request, google_sheet_id):
     GoogleSheet.objects.get(id=google_sheet_id).delete()
     return redirect('importer')
@@ -185,17 +181,15 @@ def importer(request):
 
         if form.is_valid():
             form.save()
-        
+
         return redirect('importer')
     else:
         return render(request, 'importer.html', { 'google_sheets': GoogleSheet.objects.all(), 'form': GoogleSheetForm() } )
-
 
 def json(request, project_id):
     project = Project.objects.get(pk=project_id)
     serializer = ProjectSerializer(project)
     return JsonResponse(serializer.data)
-
 
 def insert_field(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)

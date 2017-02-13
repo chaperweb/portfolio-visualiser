@@ -3,7 +3,7 @@
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <style>
-ul {
+#navbar {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -34,14 +34,14 @@ li a:hover {
 </head>
 <body>
 
-<ul>
+<ul id="navbar">
   <li><a href="{% url 'homepage' %}">Home</a></li>
+  <li><a href="{% url 'visualizations' %}">Visualizations</a></li>
   <li><a href="{% url 'add_new_project' %}">Add new project</a></li>
   <li><a href="{% url 'projects' %}">Projects</a></li>
   <li><a href="{% url 'select_org' %}">Projects by organization</a></li>
   <li><a href="{% url 'history' %}">History</a></li>
   <li><a href="{% url 'add_new_org' %}">Add new organization</a></li>
   <li><a href="{% url 'add_new_person' %}">Add new person</a></li>
-  <li><a href="{% url 'path' %}">Path visualization</a></li>
   <li><a href="{% url 'importer' %}">Importer</a></li>
 </ul>

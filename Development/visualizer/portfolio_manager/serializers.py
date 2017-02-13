@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from models import *
+from portfolio_manager.models import *
 
 
 class DimensionObjectRelatedField(serializers.RelatedField):
