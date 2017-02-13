@@ -63,10 +63,15 @@ def from_data_array(data):
 # Only sheets shared with reader@portfolio-sheet-data.iam.gserviceaccount.com can be imported!
 
 def from_google_sheet(SheetUrl):
-    scope = ['https://www.googleapis.com/auth/drive','https://spreadsheets.google.com/feeds','https://docs.google.com/feeds']
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(dir_path+'/data/service_account.json', scope)
-    gc = gspread.authorize(credentials)
-    Sheet = gc.open_by_url(SheetUrl)
-    worksheet = Sheet.get_worksheet(0)
-    from_data_array(worksheet.get_all_values())
+    try:
+        scope = ['https://www.googleapis.com/auth/drive','https://spreadsheets.google.com/feeds','https://docs.google.com/feeds']
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        credentials = ServiceAccountCredentials.from_json_keyfile_name(dir_path+'/data/service_account.json', scope)
+        gc = gspread.authorize(credentials)
+        Sheet = gc.open_by_url(SheetUrl)
+        worksheet = Sheet.get_worksheet(0)
+        from_data_array(worksheet.get_all_values())
+    except gspread.exceptions.SpreadsheetNotFound:
+        print("spreadsheet not found")
+    except gspread.exceptions.NoValidUrlKeyFound:
+        print("URLi paskana")
