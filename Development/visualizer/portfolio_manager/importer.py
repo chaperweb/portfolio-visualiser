@@ -18,12 +18,18 @@ def from_data_array(data):
 
       try:
         project = Project.objects.get(id=project_id)
+        # org = Organization.objects.get(name=update[6])
         project.delete()
       except Project.DoesNotExist:
         pass
+    # except Organization.DoesNotExist:
+    #     pass
 
       project = Project()
+    #   org = Organization()
+    #   org.name = update[6]
       project.id = update[0]
+      project.name = update[2]
       project.save()
       prev_id = update[0]
 
