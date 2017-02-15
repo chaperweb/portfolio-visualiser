@@ -129,24 +129,24 @@ def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
         pod = ContentType.objects.get_for_model(ProjectOwnerDimension)
         dd = ContentType.objects.get_for_model(DecimalDimension)
-        nd = ContentType.objects.get_for_model(NumericDimension)
+        # nd = ContentType.objects.get_for_model(NumericDimension)
         td = ContentType.objects.get_for_model(TextDimension)
 
         # Default fields
-        owner = ProjectDimension.objects.filter(content_type=pod, project_id=theProject.id).first().dimension_object.assPerson.value   # ONLY WORKS IF THERE IS ONLY ONE OWNER
+        # owner = ProjectDimension.objects.filter(content_type=pod, project_id=theProject.id).first().dimension_object.assPerson.value   # ONLY WORKS IF THERE IS ONLY ONE OWNER
         budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
 
         # Added text fields
         texts = ProjectDimension.objects.filter(content_type=td, project_id=theProject.id)
 
         # Added integer fields
-        intfields = ProjectDimension.objects.filter(content_type=nd, project_id=theProject.id)
+        # intfields = ProjectDimension.objects.filter(content_type=nd, project_id=theProject.id)
 
         # Added decimal fields, removing budget from the query set
         decfields = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).exclude(pk=budget.pk)
 
 
-        return render(request, 'project.html', {'project': theProject, 'owner': owner, 'budget':budget, 'text':texts, 'intfield':intfields, 'decfield':decfields })
+        return render(request, 'project.html', {'project': theProject, 'budget':budget, 'text':texts, 'decfield':decfields })
 
 def project_edit(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)

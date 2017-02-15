@@ -30,10 +30,6 @@
         {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
         {% endfor %}
 
-        <b>Extra Numeric fields:</b> <br />
-        {% for x in intfield %}
-          {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
-          {% endfor %}
         <b>  Extra Decimal fields:</b> <br />
           {% for x in decfield %}
             {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
