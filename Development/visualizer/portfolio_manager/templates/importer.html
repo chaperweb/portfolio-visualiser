@@ -1,110 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>New Person</title>
-</head>
-<style>
-input[type=text], select {
-    width: 50%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
+{% extends "base.html" %}
 
-input[type=submit] {
-    width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
+{% block title %} <title>Import Sheet</title> {% endblock %}
 
-input[type=submit]:hover {
-    background-color: #45a049;
-}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/importer.css" %}">
+{% endblock %}
 
-div {
-    margin: auto;
-    align-items: center;
-    border-radius: 5px;
-    width: 40%;
-    background-color: #f2f2f2;
-    padding: 20px;
-}
-table {
-  font-family: 'Verdana';
-  margin: 25px auto;
-  border-collapse: separate;
-  border-spacing: 3px;
-  border: 1px solid #eee;
-  box-shadow:0px 0px 20px #808080;
-  text-align:center;
-  border-radius:10px;
-}
+{% block javascript %}
+<script>
+$('[href*="{% url 'importer' %}"]').addClass('active');
+</script>
+{% endblock %}
 
-.action:hover {
-  color: #555;
-  background: #f1f1f1;
-  text-decoration: underline;
-}
-th, td {
-  color: BLACK;
-  border: 1px solid #eee;
-  padding: 12px 35px;
-}
-th {
-  background: #228B22;
-  color: #fff;
-  text-transform: uppercase;
-  font-size: 12px;
-  border-radius: 5px;
-}
-tr, td {
-  transition: all 1s;
-  border-radius: 5px;
-  box-shadow: 3px 3px #808080;
-}
+{% block content %}
+<br />
 
-</style>
+<form action="{% url 'importer' %}"   method="POST">
+  <div >
+    {% csrf_token %}
+    {{ form }}
 
-<body>
-  {% include "navbar.html" %}
-  <script>
-  $('[href*="{% url 'importer' %}"]').addClass('active');
-  </script>
-  <br />
+    <input id="submit_person" type="submit" value="Add new Google Sheet" />
+  </div>
+</form>
 
-  <form action="{% url 'importer' %}"   method="POST">
+<table>
+<thead>
+  <tr>
+    <th>Name</th>
+    <th colspan="2">Actions</th>
+  </tr>
+</thead>
 
-        <div >
-        {% csrf_token %}
-        {{ form }}
+{% for google_sheet in google_sheets %}
+  <tr>
+    <td>{{ google_sheet.name }}</td>
+    <td class="action"><a href="{% url 'load_google_sheet' google_sheet_id=google_sheet.id %}">Load</a></td>
+    <td class="action"><a href="{% url 'delete_google_sheet' google_sheet_id=google_sheet.id %}">Delete</a></td>
+  </tr>
+{% endfor %}
+</table>
 
-        <input id="submit_person" type="submit" value="Add new Google Sheet" />
-        </div>
-  </form>
-
-  <table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th colspan="2">Actions</th>
-    </tr>
-  </thead>
-
-  {% for google_sheet in google_sheets %}
-    <tr>
-      <td>{{ google_sheet.name }}</td>
-      <td class="action"><a href="{% url 'load_google_sheet' google_sheet_id=google_sheet.id %}">Load</a></td>
-      <td class="action"><a href="{% url 'delete_google_sheet' google_sheet_id=google_sheet.id %}">Delete</a></td>
-    </tr>
-  {% endfor %}
-  </table>
-</body>
-</html>
+{% endblock %}

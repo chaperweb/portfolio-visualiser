@@ -1,36 +1,13 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
+  {% block title %}{% endblock %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<style>
-#navbar {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
-}
-
-li {
-    float: left;
-}
-
-li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-li a:hover {
-    background-color: #111;
-}
-.active {
-    background-color: #4CAF50;
-    color: white;
-}
-</style>
+  <link rel="stylesheet" href="{% static "portfolio_manager/css/base.css" %}">
+  {% block css %}{% endblock %}
+  {% block javascript %}{% endblock %}
 </head>
 <body>
 
@@ -45,3 +22,6 @@ li a:hover {
   <li><a href="{% url 'add_new_person' %}">Add new person</a></li>
   <li><a href="{% url 'importer' %}">Importer</a></li>
 </ul>
+
+{% block content %}CONTENT HERE{% endblock %}
+  
