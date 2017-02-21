@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}-Portfolio Visualizer-{% endblock %}</title>
+        <!-- jQuery -->
+        <script src="{% static "bootstrap/js/jquery-3.1.1.min.js" %}"></script>
+        <!-- Bootstrap CSS-->
+        <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+        <link rel="stylesheet" href="{% static "bootstrap/css/custom.css" %}">
+        <!-- Bootstrap JS -->
+        <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+        {% block headfiles %}{% endblock %}
+    </head>
+    <body>
+        <!-- NavBar Bootstrap jumb examp -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div id="title" class="navbar">
+                      <ul id="navbar" class="navbar-collapse collapse">
+                        <li><a href="{% url 'homepage' %}">Home</a></li>
+                        <li><a href="{% url 'visualizations' %}">Visualizations</a></li>
+                        <li><a href="{% url 'add_new_project' %}">Add new project</a></li>
+                        <li><a href="{% url 'projects' %}">Projects</a></li>
+                        <li><a href="{% url 'select_org' %}">Projects by organization</a></li>
+                        <li><a href="{% url 'history' %}">History</a></li>
+                        <li><a href="{% url 'add_new_org' %}">Add new organization</a></li>
+                        <li><a href="{% url 'add_new_person' %}">Add new person</a></li>
+                        <li><a href="{% url 'importer' %}">Importer</a></li>
+                        <li><a href="{% url 'about' %}">About</a></li>
+                      </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        {% comment Linebreaks for revealing hidden text %}
+        {% endcomment %}
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+        <!-- This is a sticky footer from Bootstrap examples -->
+        <footer class="footer tr">
+            <div class="separator"></div>
+            <div id="footerlinks">
+                <div class="container">
+                    <div class="row" style="width: 70%; margin-left: auto; margin-right: auto;">
+                    </div>
+                </div>
+            </div>
+            <div id="footer" class="container">
+              <nav class="navbar navbar-default navbar-fixed-bottom">
+                <div class="navbar-inner navbar-content-center">
+                  <p>© Team Scrum 6 '17 Powered and chilled by Django</p>
+                </div>
+              </nav>
+            </div>
+        </footer>
+        <!-- Bootstrap width mode-->
+        <div class="device-xs visible-xs"></div>
+        <div class="device-sm visible-sm"></div>
+        <div class="device-md visible-md"></div>
+        <div class="device-lg visible-lg"></div>
+    </body>
+</html>

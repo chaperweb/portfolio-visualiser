@@ -1,0 +1,77 @@
+
+a {
+  color: white !important;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+  color: grey !important;
+}
+
+h2 {
+  color: black;
+}
+
+h1 {
+  text-shadow: 3px 3px rgba(0,0,0,0.5);
+}
+
+p {
+  color: white;
+}
+
+.lighttext {
+  color: black;
+}
+
+body {
+  background-image: url('/static/pictures/bodyBg.png');
+  background-size: auto;
+}
+
+.btn {
+  background-color:#000;
+  background-color: rgba(110,136,152,0.6);
+  color: white;
+  border:none;
+}
+
+.btn:hover {
+  background-color: white;
+  color: black;
+}
+
+.jumbotron {
+  background-image: url('/static/pictures/jumboBg.png');
+  background-size:auto;
+  color: white;
+  border-top: 3px;
+  border-color: #fcfffc;
+}
+
+.navbar {
+  background-image: url('/static/pictures/navBg.png');
+  background-size:auto;
+  color: white;
+  border:none;
+}
+
+#footer {
+  text-align: center;
+}
+
+.panel-heading {
+  background-image: url('/static/pictures/panelBg.png') !important;
+  background-size:auto;
+  color: black;
+}
+
+.panel-collapse {
+  background-image: url('/static/pictures/collapseBg.png');
+  background-size: auto;
+}
+
+#panel1, #panel2, #panel3 {
+  border:none !important;
+}
