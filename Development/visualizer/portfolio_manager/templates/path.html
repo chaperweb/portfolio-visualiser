@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "base.html" %}
+{% block title %}Portfolio Visualizer{% endblock %}
+{% block content %}
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <style>
 
@@ -17,7 +17,7 @@
         li {font-weight: normal;}
     </style>
 </head>
-<body>  {% include "navbar.html" %}
+
     <script>
 
     var height = 500,
@@ -90,4 +90,4 @@
     //});
 
     </script>
-</body>
+{% endblock %}
