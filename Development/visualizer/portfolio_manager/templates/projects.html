@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>bujaa</title>
-</head>
-<body>
-{% include "navbar.html" %}
-<script>
-$('[href*="{% url 'projects' %}"]').addClass('active');
-</script>
+{% extends "base.html" %}
+{% block title %}Portfolio Visualizer{% endblock %}
+{% block content %}
 <p>
   projektit:
 </p>
@@ -21,5 +14,4 @@ $('[href*="{% url 'projects' %}"]').addClass('active');
 
       {% endfor %}
   </div>
-</body>
-</html>
+{% endblock %}

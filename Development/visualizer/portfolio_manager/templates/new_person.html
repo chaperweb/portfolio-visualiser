@@ -1,49 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>New Person</title>
-</head>
-<style>
-input[type=text], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-input[type=submit] {
-    width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-input[type=submit]:hover {
-    background-color: #45a049;
-}
-
-div {
-    margin: auto;
-    align-items: center;
-    border-radius: 5px;
-    width: 40%;
-    background-color: #f2f2f2;
-    padding: 20px;
-}
-</style>
-
-<body>
-  {% include "navbar.html" %}
-  <script>
-  $('[href*="{% url 'add_new_person' %}"]').addClass('active');
-  </script>
+{% extends "base.html" %}
+{% block title %}Portfolio Visualizer{% endblock %}
+{% block content %}
   <br />
 <form action="{% url 'add_new_person' %}"   method="POST">
 
@@ -54,5 +11,4 @@ div {
       <input id="submit_person" type="submit" value="Send" />
       </div>
 </form>
-</body>
-</html>
+{% endblock %}

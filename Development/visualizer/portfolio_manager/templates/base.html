@@ -10,7 +10,7 @@
         <script src="{% static "bootstrap/js/jquery-3.1.1.min.js" %}"></script>
         <!-- Bootstrap CSS-->
         <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
-        <link rel="stylesheet" href="{% static "bootstrap/css/custom.css" %}">
+      
         <!-- Bootstrap JS -->
         <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
         {% block headfiles %}{% endblock %}
@@ -27,7 +27,8 @@
                         <span class="icon-bar"></span>
                     </button>
                     <div id="title" class="navbar">
-                      <ul id="navbar" class="navbar-collapse collapse">
+                      <div id="navbar" class="navbar-collapse collapse">
+                      <ul id="navlist" class="nav navbar-nav navbar-right">
                         <li><a href="{% url 'homepage' %}">Home</a></li>
                         <li><a href="{% url 'visualizations' %}">Visualizations</a></li>
                         <li><a href="{% url 'add_new_project' %}">Add new project</a></li>
@@ -40,6 +41,7 @@
                         <li><a href="{% url 'about' %}">About</a></li>
                       </ul>
                     </div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -49,7 +51,9 @@
         <br/>
         <br/>
         <br/>
+ {% block content %}
 
+ {% endblock %}
         <!-- This is a sticky footer from Bootstrap examples -->
         <footer class="footer tr">
             <div class="separator"></div>

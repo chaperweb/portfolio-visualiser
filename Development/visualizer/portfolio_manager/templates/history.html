@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>HISTORY</title>
-</head>
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+{% block content %}
 <style>
-div {
-  margin: auto;
-  width: 80%;
-  height: 100%;
 
-}
 #name {
   background: rgb(224,243,250); /* Old browsers */
   background: -moz-linear-gradient(top,  rgba(224,243,250,1) 0%, rgba(7,169,244,1) 0%, rgba(216,240,252,1) 22%, rgba(216,240,252,1) 22%, rgba(184,226,246,1) 44%, rgba(184,226,246,1) 44%, rgba(184,226,246,1) 53%, rgba(184,226,246,1) 65%, rgba(184,226,246,1) 73%, rgba(184,226,246,1) 73%, rgba(2,148,252,1) 100%); /* FF3.6-15 */
@@ -47,11 +40,8 @@ div {
   padding:20px;
 }
 </style>
-<body>
-  {% include "navbar.html" %}
-  <script>
-  $('[href*="{% url 'history' %}"]').addClass('active');
-  </script>
+
+
   <br />
   <div>
       {% for id in ids %}
@@ -104,5 +94,4 @@ div {
       {% endfor %}
       <br />
   </div>
-</body>
-</html>
+{% endblock %}

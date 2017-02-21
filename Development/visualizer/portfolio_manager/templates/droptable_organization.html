@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>klik klik</title>
-</head>
-<body>
-{% include "navbar.html" %}
-<script>
-$('[href*="{% url 'select_org' %}"]').addClass('active');
-</script>
+{% extends "base.html" %}
+{% block title %}Portfolio Visualizer{% endblock %}
+{% block content %}
 <br />
   <form action="{% url 'select_org' %}" method="POST">
     {% csrf_token %}
@@ -15,5 +8,4 @@ $('[href*="{% url 'select_org' %}"]').addClass('active');
   <input type="submit" name="submit" value="Vahvista">
 </p>
 </form>
-</body>
-</html>
+{% endblock %}

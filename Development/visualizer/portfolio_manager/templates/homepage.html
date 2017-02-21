@@ -1,29 +1,9 @@
 {% extends "base.html" %}
-{% load static %}
+{% block title %}Portfolio Visualizer{% endblock %}
+{% block content %}
 
-<section id="content" class="tr">
-    {% block content %}
-    <div class="jumbotron">
-        <div class="container">
-            <h1 class="lighttext">WELCOME TO GAME SHOP!</h1>
-            <p>Quidquid latine dictum sit, altum videtur.</p>
-            {% if not user.is_authenticated %}
-            <p><a id="loginbutton" class="btn btn-primary btn-lg" href="/store/login/" role="button">Login &raquo;</a></p>
-            <p><a id="registerbutton" class="btn btn-primary btn-lg" href="register" role="button">Register &raquo;</a></p>
-            {% endif %}
-        </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h2>LOREM IPSUM</h2>
-                <p class="lighttext">Bacon ipsum dolor amet frankfurter swine beef culpa short ribs drumstick burgdoggen pastrami nulla fatback shankle sunt bacon.  Sausage laboris eiusmod, esse nostrud exercitation sirloin beef ribs laborum.  Doner consequat strip steak pancetta, in dolor kielbasa beef ball tip mollit.  Capicola ham meatball ut dolore et. </p>
-            </div>
-            <div class="col-md-6">
-                <h2>LOREM IPSUM</h2>
-                <p class="lighttext">Bacon ipsum dolor amet frankfurter swine beef culpa short ribs drumstick burgdoggen pastrami nulla fatback shankle sunt bacon.  Sausage laboris eiusmod, esse nostrud exercitation sirloin beef ribs laborum.  Doner consequat strip steak pancetta, in dolor kielbasa beef ball tip mollit.  Capicola ham meatball ut dolore et. </p>
-            </div>
-        </div>
-    </div>
-    {% endblock %}
-</section>
+<p>
+  To be done
+</p>
+
+{% endblock %}

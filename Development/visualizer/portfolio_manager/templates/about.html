@@ -1,12 +1,6 @@
-{% load static %}
-<!DOCTYPE html>
-<head>
-  <title>PROJECT VISUALIZER</title>
-
-
-</head>
-<body>
-  {% include "navbar.html" %}
+{% extends "base.html" %}
+{% block title %}Portfolio Visualizer{% endblock %}
+{% block content %}
 
   <div id="text">
     <h1>PROJECT VISUALIZER</h1>
@@ -18,6 +12,4 @@
     </p>
   </div>
 
-
-
-</body>
+{% endblock %}

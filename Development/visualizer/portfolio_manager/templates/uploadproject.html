@@ -1,24 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>bujaa</title>
-  <style>
+{% extends "base.html" %}
+{% block title %}New project{% endblock %}
+{% block content %}
 
-  body {
-background: rgb(243,226,199); /* Old browsers */
-background: -moz-linear-gradient(top,  rgba(243,226,199,1) 14%, rgba(193,158,103,1) 40%, rgba(182,141,76,1) 64%, rgba(233,212,179,1) 88%); /* FF3.6-15 */
-background: -webkit-linear-gradient(top,  rgba(243,226,199,1) 14%,rgba(193,158,103,1) 40%,rgba(182,141,76,1) 64%,rgba(233,212,179,1) 88%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom,  rgba(243,226,199,1) 14%,rgba(193,158,103,1) 40%,rgba(182,141,76,1) 64%,rgba(233,212,179,1) 88%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3e2c7', endColorstr='#e9d4b3',GradientType=0 ); /* IE6-9 */
-}
-</style>
-</head>
- <body style="background-color:#E6E6FA">
-
-{% include "navbar.html" %}
-<script>
-$('[href*="{% url 'add_new_project' %}"]').addClass('active');
-</script>
 <br />
 <form action="{% url 'add_new_project' %}" enctype="multipart/form-data" method="POST">
 
@@ -37,5 +20,4 @@ $('[href*="{% url 'add_new_project' %}"]').addClass('active');
   {% csrf_token %}
   <input type="submit" value="Add New Person" name="new_person_redirect" id="new_person_redirect" />
 </form>
-</body>
-</html>
+{% endblock %}

@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>New Organization</title>
-</head>
+{% extends "base.html" %}
+{% block title %}Visut{% endblock %}
+{% block content %}
 <style>
 
 input[type=submit] {
@@ -22,8 +20,8 @@ input[type=submit]:hover {
 
 </style>
 
-<body>
-  {% include "navbar.html" %}
+
+
   <form action="{%url 'path' %}" method="GET">
     {% csrf_token %}
     <input type="submit" value="Path"/>
@@ -31,5 +29,5 @@ input[type=submit]:hover {
 
   <input type="submit" value="Squares"/>
   <input type="submit" value="Balls"/>
-</body>
-</html>
+
+{% endblock %}

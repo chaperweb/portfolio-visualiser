@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>bujaa</title>
-</head>
-<body>
-{% include "navbar.html" %}
-<script>
-$('[href*="{% url 'select_org' %}"]').addClass('active');
-</script>
+{% extends "base.html" %}
+{% block title %}Portfolio Visualizer{% endblock %}
+{% block content %}
 <p>
   Valitsemasi organisaatio projektit:
 </p>
@@ -22,5 +15,4 @@ $('[href*="{% url 'select_org' %}"]').addClass('active');
 
 {% endfor %}
      </div>
-</body>
-</html>
+{% endblock %}
