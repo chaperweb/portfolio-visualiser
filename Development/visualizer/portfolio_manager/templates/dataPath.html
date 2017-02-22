@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
+{# TITLE HERE #}
 {% block title %}
-  <title>dataPath</title>
+dataPath
 {% endblock %}
 
+{# CSS HERE #}
 {% block css %}
 <style>
 .line {
@@ -14,13 +16,14 @@
 </style>
 {% endblock %}
 
+{# JAVASCRIPT HERE #}
 {% block javascript %}
 {% load static %}
 <script src="{% static "portfolio_manager/js/dataPath.js" %}"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 {% endblock %}
 
-
+{# CONTENT HERE #}
 {% block content %}
 
 {% endblock %}

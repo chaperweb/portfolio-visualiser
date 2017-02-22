@@ -1,69 +1,67 @@
 {% extends "base.html" %}
 
+{# TITLE HERE #}
 {% block title %}
-<title>HISTORY</title>
+History
 {% endblock %}
 
+{# CSS HERE #}
 {% block css %}
 {% load static %}
 <link rel="stylesheet" href="{% static "portfolio_manager/css/history.css" %}">
 {% endblock %}
 
+{# JAVASCRIPT HERE #}
 {% block javascript %}
 <script>$('[href*="{% url 'history' %}"]').addClass('active');</script>
 {% endblock %}
 
+{# CONTENT HERE #}
 {% block content %}
-<br />
 <div>
   {% for id in ids %}
-    <!--  ID -->
+    <br />
+    {# ID #}
     <div id="id">
-    <h3>id: {{id}}</h3>
+      <h3>id: {{ id }}</h3>
 
-    <!-- NAME -->
-    <div id="name">
-    {% for nKey,nValue in names.items %}
-      {% if nKey == id %}
-        {% for name in nValue reversed %}
-          {{name}}<b>&rArr;</b>
+      {# NAME #}
+      <div id="name">
+        {% for nKey,nValue in names.items %}
+          {% if nKey == id %}
+            {% for name in nValue reversed %}
+              {{name}}<b>&rArr;</b>
+            {% endfor %}
+          {% endif %}
         {% endfor %}
-      {% endif %}
-    {% endfor %}
-    <br />
-    </div>
+      </div>
+      <br />
+      <br />
 
-    <br />
-
-    <!-- ORGANIZATION -->
-    <div id="org">
-    {% for oKey,oValue in orgs.items %}
-      {% if oKey == id %}
-        {% for org in oValue reversed %}
-          {{org}}<b>&rArr;</b>
+      {# ORGANIZATION #}
+      <div id="org">
+        {% for oKey,oValue in orgs.items %}
+          {% if oKey == id %}
+            {% for org in oValue reversed %}
+              {{org}}<b>&rArr;</b>
+            {% endfor %}
+          {% endif %}
         {% endfor %}
-      {% endif %}
-    {% endfor %}
-    <br />
-    </div>
+      </div>
+      <br />
+      <br />
 
-    <br />
-
-    <!-- DATE -->
-    <div id="date">
-    {% for dKey,dValue in dates.items %}
-      {% if dKey == id %}
-        {% for date in dValue reversed %}
-          {{date}}<b>&#9977;</b>
+      {# DATE #}
+      <div id="date">
+        {% for dKey,dValue in dates.items %}
+          {% if dKey == id %}
+            {% for date in dValue reversed %}
+              {{date}}<b>&#9977;</b>
+            {% endfor %}
+          {% endif %}
         {% endfor %}
-      {% endif %}
-    {% endfor %}
+      </div>
     </div>
-
-    <br /><br /><br />
-    </div>
-    <br /><br /><br />
   {% endfor %}
-  <br />
 </div>
 {% endblock %}

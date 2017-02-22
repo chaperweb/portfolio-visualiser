@@ -1,19 +1,21 @@
 {% extends "base.html" %}
 
+{# TITLE HERE #}
 {% block title %}
-<title> Droptable Organization</title>
+Droptable Organization
 {% endblock %}
 
+{# JAVASCRIPT HERE #}
 {% block javascript %}
 <script>$('[href*="{% url 'select_org' %}"]').addClass('active');</script>
 {% endblock %}
 
+{# CONTENT HERE #}
 {% block content %}
 <br />
   <form action="{% url 'select_org' %}" method="POST">
     {% csrf_token %}
     {{ form }}
   <input type="submit" name="submit" value="Vahvista">
-</p>
 </form>
 {% endblock %}

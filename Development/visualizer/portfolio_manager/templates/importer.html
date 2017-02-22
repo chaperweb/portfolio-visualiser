@@ -2,7 +2,7 @@
 
 {# TITLE HERE #}
 {% block title %}
-<title>Import Sheet</title>
+Import Sheet
 {% endblock %}
 
 {# CSS HERE #}
@@ -13,9 +13,7 @@
 
 {# JAVASCRIPT HERE #}
 {% block javascript %}
-<script>
-$('[href*="{% url 'importer' %}"]').addClass('active');
-</script>
+<script>$('[href*="{% url 'importer' %}"]').addClass('active');</script>
 {% endblock %}
 
 {# CONTENT HERE #}

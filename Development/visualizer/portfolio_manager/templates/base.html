@@ -3,14 +3,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  {% block title %}{% endblock %}
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  {# TITLE GOES HERE #}
+  <title>
+  {% block title %}
+  {% endblock %}
+  </title>
+
+  {# CSS GOES HERE #}
   <link rel="stylesheet" href="{% static "portfolio_manager/css/base.css" %}">
   {% block css %}{% endblock %}
+
+  {# JAVASCRIPT GOES HERE #}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   {% block javascript %}{% endblock %}
 </head>
-<body>
 
+<body>
+{# NAVIGATION BAR #}
 <ul id="navbar">
   <li><a href="{% url 'homepage' %}">Home</a></li>
   <li><a href="{% url 'visualizations' %}">Visualizations</a></li>
@@ -24,4 +33,5 @@
   <li><a href="{% url 'about' %}">About</a></li>
 </ul>
 
+{# REST OF THE BODY HERE #}
 {% block content %}CONTENT HERE{% endblock %}
