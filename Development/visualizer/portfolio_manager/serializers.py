@@ -148,6 +148,7 @@ class ProjectDimensionSerializer(serializers.ModelSerializer):
         model = ProjectDimension
         fields = ('id', 'dimension_object')
 
+
 class ProjectSerializer(serializers.ModelSerializer):
 
     dimensions = ProjectDimensionSerializer(many=True)
@@ -155,3 +156,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('id', 'name', 'dimensions')
+
+
+
+
+
+        
