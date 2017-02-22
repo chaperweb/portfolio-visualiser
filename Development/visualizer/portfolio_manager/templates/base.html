@@ -45,23 +45,17 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <!-- SHOW ON ALL SIZES -->
-      <a class="navbar-brand" href="{% url 'homepage' %}">Home</a>
-      <a class="navbar-brand" href="{% url 'visualizations' %}">Visualizations</a>
     </div>
     <ul class="nav navbar-nav hidden-xs">
-      <!--
-      FOLLOWING ITEMS WILL BE SHOWN IF THEY FIT
-      ON SCREEN AND ARE IN DROPDOWN OTHERWISE
-      -->
-      <li class=""><a href="{% url 'add_new_project' %}">Add new project</a></li>
-      <li class=""><a href="{% url 'projects' %}">Projects</a></li>
-      <li class=""><a href="{% url 'select_org' %}">Projects by organization</a></li>
-      <li class=""><a href="{% url 'history' %}">History</a></li>
-      <li class="hidden-sm"><a href="{% url 'add_new_org' %}">Add new organization</a></li>
-      <li class="hidden-sm"><a href="{% url 'add_new_person' %}">Add new person</a></li>
-      <li class="hidden-sm"><a href="{% url 'importer' %}">Importer</a></li>
-      <li class="hidden-sm"><a href="{% url 'about' %}">About</a></li>
+      <li><a class="navbar-brand" href="{% url 'homepage' %}">Home</a></li>
+      <li><a class="navbar-brand" href="{% url 'projects' %}">Projects</a></li>
+      <li><a class="navbar-brand" href="{% url 'homepage' %}">Workspace</a></li>   <!-- TODO: Redirect to correct site -->
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a class="navbar-brand" href="{% url 'homepage' %}">Admin</a></li>   <!-- TODO: Redirect to correct site -->
+      <li><a class="navbar-brand" href="{% url 'homepage' %}">Database</a></li>   <!-- TODO: Redirect to correct site -->
+      <li><a class="navbar-brand" href="{% url 'about' %}">About</a></li>
+      <li><a class="navbar-brand" href="{% url 'homepage' %}">Log Out</a></li>   <!-- TODO: Redirect to correct site -->
     </ul>
   </div>
 </nav>
