@@ -18,50 +18,48 @@ History
 
 {# CONTENT HERE #}
 {% block content %}
-<div>
-  {% for id in ids %}
-    <br />
-    {# ID #}
-    <div id="id">
-      <h3>id: {{ id }}</h3>
+{% for id in ids %}
+  <br />
+  {# Project #}
+  <div id="project" class="blob project">
+    <h3>id: {{ id }}</h3>
 
-      {# NAME #}
-      <div id="name">
-        {% for nKey,nValue in names.items %}
-          {% if nKey == id %}
-            {% for name in nValue reversed %}
-              {{name}}<b>&rArr;</b>
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-      </div>
-      <br />
-      <br />
-
-      {# ORGANIZATION #}
-      <div id="org">
-        {% for oKey,oValue in orgs.items %}
-          {% if oKey == id %}
-            {% for org in oValue reversed %}
-              {{org}}<b>&rArr;</b>
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-      </div>
-      <br />
-      <br />
-
-      {# DATE #}
-      <div id="date">
-        {% for dKey,dValue in dates.items %}
-          {% if dKey == id %}
-            {% for date in dValue reversed %}
-              {{date}}<b>&#9977;</b>
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-      </div>
+    {# NAME #}
+    <div id="name" class="blob name">
+      {% for nKey,nValue in names.items %}
+        {% if nKey == id %}
+          {% for name in nValue reversed %}
+            {{name}}<b>&rArr;</b>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
     </div>
-  {% endfor %}
-</div>
+    <br />
+    <br />
+
+    {# ORGANIZATION #}
+    <div id="org" class="blob org">
+      {% for oKey,oValue in orgs.items %}
+        {% if oKey == id %}
+          {% for org in oValue reversed %}
+            {{org}}<b>&rArr;</b>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    <br />
+    <br />
+
+    {# DATE #}
+    <div id="date" class="blob date">
+      {% for dKey,dValue in dates.items %}
+        {% if dKey == id %}
+          {% for date in dValue reversed %}
+            {{date}}<b>&#9977;</b>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% endfor %}
 {% endblock %}

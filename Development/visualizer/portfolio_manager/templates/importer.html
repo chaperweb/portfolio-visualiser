@@ -20,7 +20,7 @@ Import Sheet
 {% block content %}
 <br />
 <form action="{% url 'importer' %}" method="POST">
-  <div>
+  <div class="googleform">
     {% csrf_token %}
     {{ form }}
     <input id="submit_person" type="submit" value="Add new Google Sheet" />
