@@ -1,18 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>load sheet test data</title>
-</head>
-<body>
+{% extends "base.html" %}
 
+{# TITLE HERE #}
+{% block title %}
+<title>Load sheet Testdata</title>
+{% endblock %}
+
+{# CONTENT HERE #}
+{% block content %}
 <form action="{% url 'add_sheet_data' %}" enctype="multipart/form-data" method="POST">
-
-      <div >
-      {% csrf_token %}
-      {{ form }}
-
-      <input id="submit-all" type="submit" value="Send" />
-      </div>
-    </form>
-</body>
-</html>
+  <div>
+    {% csrf_token %}
+    {{ form }}
+    <input id="submit-all" type="submit" value="Send" />
+  </div>
+</form>
+{% endblock %}

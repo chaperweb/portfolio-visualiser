@@ -4,10 +4,11 @@
 <title> Droptable Organization</title>
 {% endblock %}
 
+{% block javascript %}
+<script>$('[href*="{% url 'select_org' %}"]').addClass('active');</script>
+{% endblock %}
+
 {% block content %}
-<script>
-$('[href*="{% url 'select_org' %}"]').addClass('active');
-</script>
 <br />
   <form action="{% url 'select_org' %}" method="POST">
     {% csrf_token %}

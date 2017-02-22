@@ -1,26 +1,30 @@
 {% extends "base.html" %}
 
-{% block title %} <title>Import Sheet</title> {% endblock %}
+{# TITLE HERE #}
+{% block title %}
+<title>Import Sheet</title>
+{% endblock %}
 
+{# CSS HERE #}
 {% block css %}
 {% load static %}
 <link rel="stylesheet" href="{% static "portfolio_manager/css/importer.css" %}">
 {% endblock %}
 
+{# JAVASCRIPT HERE #}
 {% block javascript %}
 <script>
 $('[href*="{% url 'importer' %}"]').addClass('active');
 </script>
 {% endblock %}
 
+{# CONTENT HERE #}
 {% block content %}
 <br />
-
-<form action="{% url 'importer' %}"   method="POST">
-  <div >
+<form action="{% url 'importer' %}" method="POST">
+  <div>
     {% csrf_token %}
     {{ form }}
-
     <input id="submit_person" type="submit" value="Add new Google Sheet" />
   </div>
 </form>
@@ -41,5 +45,4 @@ $('[href*="{% url 'importer' %}"]').addClass('active');
   </tr>
 {% endfor %}
 </table>
-
 {% endblock %}

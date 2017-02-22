@@ -1,35 +1,41 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>bujaa</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<p>
-  Lisää projektille vertailtava arvo:
-</p>
-  <div>
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ formt }}
-        <input type="submit" value="Submit" />
-    </form>
+{# TITLE HERE #}
+{% block title %}
+<title>Insert Field</title>
+{% endblock %}
 
-     </div>
-     <div>
-       Projektin vertailtavat arvot: <br />
+{# CSS HERE #}
+{% block css %}
 
-       {% for dimension in dimensions %}
-         <b><br />
-             {{ dimension.name }}, {{ dimension.unit }}
-        <br />
-       {% endfor %}
-        </b>
-     </div>
-     <div>
-       <input type=button value="previous Page" onClick="javascript:history.go(-1);">
-     </div>
+{% endblock %}
 
 
-</body>
-</html>
+{# JAVASCRIPT HERE #}
+{% block javascript %}
+
+{% endblock %}
+
+{# CONTENT HERE #}
+{% block content %}
+<p>Lisää projektille vertailtava arvo:</p>
+<div>
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ formt }}
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+<div>
+ Projektin vertailtavat arvot:
+ <br />
+ {% for dimension in dimensions %}
+ <br />
+ <b>{{ dimension.name }}, {{ dimension.unit }}</b>
+ <br />
+ {% endfor %}
+</div>
+<div>
+ <input type=button value="previous Page" onClick="javascript:history.go(-1);">
+</div>
+{% endblock %}
