@@ -1,39 +1,25 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
+  {# TITLE GOES HERE #}
+  <title>
+  {% block title %}
+  {% endblock %}
+  </title>
+
+  {# CSS GOES HERE #}
+  <link rel="stylesheet" href="{% static "portfolio_manager/css/base.css" %}">
+  {% block css %}{% endblock %}
+
+  {# JAVASCRIPT GOES HERE #}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<style>
-#navbar {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
-}
-
-li {
-    float: left;
-}
-
-li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-li a:hover {
-    background-color: #111;
-}
-.active {
-    background-color: #4CAF50;
-    color: white;
-}
-</style>
+  {% block javascript %}{% endblock %}
 </head>
-<body>
 
+<body>
+{# NAVIGATION BAR #}
 <ul id="navbar">
   <li><a href="{% url 'homepage' %}">Home</a></li>
   <li><a href="{% url 'visualizations' %}">Visualizations</a></li>
@@ -46,3 +32,6 @@ li a:hover {
   <li><a href="{% url 'importer' %}">Importer</a></li>
   <li><a href="{% url 'about' %}">About</a></li>
 </ul>
+
+{# REST OF THE BODY HERE #}
+{% block content %}CONTENT HERE{% endblock %}

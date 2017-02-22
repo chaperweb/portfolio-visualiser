@@ -1,25 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>bujaa</title>
-</head>
-<body>
-{% include "navbar.html" %}
-<script>
-$('[href*="{% url 'projects' %}"]').addClass('active');
-</script>
-<p>
-  projektit:
-</p>
-<br /><br />
-  <div>
-      {% for project in projects %}
-        <b><br /><br />
-            {{ project.parent.name }}
-        </b><br />
-      <a href="{% url 'show_project' project.pk %}">{{ project.name }}</a>
+{% extends "base.html" %}
 
-      {% endfor %}
-  </div>
-</body>
-</html>
+{# TITLE HERE #}
+{% block title %}
+All Projects
+{% endblock %}
+
+{# JAVASCRIPT HERE #}
+{% block javascript %}
+<script>$('[href*="{% url 'projects' %}"]').addClass('active');</script>
+{% endblock %}
+
+{# CONTENT HERE #}
+{% block content %}
+<p>Projektit:</p>
+<br />
+<br />
+<div>
+  {% for project in projects %}
+    <br />
+    <br />
+    <b>{{ project.parent.name }}</b>
+    <br />
+    <a href="{% url 'show_project' project.pk %}">{{ project.name }}</a>
+  {% endfor %}
+</div>
+{% endblock %}

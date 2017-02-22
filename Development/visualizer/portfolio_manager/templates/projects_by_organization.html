@@ -1,26 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>bujaa</title>
-</head>
-<body>
-{% include "navbar.html" %}
-<script>
-$('[href*="{% url 'select_org' %}"]').addClass('active');
-</script>
-<p>
-  Valitsemasi organisaatio projektit:
-</p>
-<br /><br />
-  <div>
- {% for p in projs %}
-       <p>
-        <a href="{% url 'show_project' p.pk %}">{{ p.name }}</a>
-       </p>
+{% extends "base.html" %}
 
+{# TITLE HERE #}
+{% block title %}
+Projects by Organization
+{% endblock %}
 
+{# JAVASCRIPT HERE #}
+{% block javascript %}
+<script>$('[href*="{% url 'select_org' %}"]').addClass('active');</script>
+{% endblock %}
 
-{% endfor %}
-     </div>
-</body>
-</html>
+{# CONTENT HERE #}
+{% block content %}
+<p>Valitsemasi organisaatio projektit:</p>
+<br />
+<br />
+<div>
+  {% for p in projs %}
+    <p><a href="{% url 'show_project' p.pk %}">{{ p.name }}</a></p>
+  {% endfor %}
+</div>
+{% endblock %}
