@@ -44,7 +44,6 @@ div {
 </style>
 {% endblock %}
 
-
 {# JAVASCRIPT HERE #}
 {% block javascript %}
 <script>$('[href*="{% url 'add_new_person' %}"]').addClass('active');</script>
@@ -53,7 +52,7 @@ div {
 {# CONTENT HERE #}
 {% block content %}
 <br />
-<form action="{% url 'add_new_person' %}"   method="POST">
+<form action="{% url 'add_new_person' %}" method="POST">
   <div>
     {% csrf_token %}
     {{ form }}
