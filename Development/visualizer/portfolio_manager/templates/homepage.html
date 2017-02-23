@@ -69,42 +69,26 @@ PROJECT VISUALIZER
 
 <div id="projects">
   <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-    <div class="panel-group">
-      <div class="panel panel-default">
-        <div class="panel-heading" data-toggle="collapse" href="#collapse1" aria-controls="#collapse1" aria-expanded="false">
-          <b>
-            <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-            <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-            &nbsp;Project 1
-          </b>
-        </div>
-        <div id="collapse1" class="panel-collapse collapse text-center">
-          THIS
-          <br />IS
-          <br />PROJECT
-          <br />NUMBER
-          <br />1
-        </div>
-      </div>
-    </div>
-    <div class="panel-group">
-      <div class="panel panel-default">
-        <div class="panel-heading" data-toggle="collapse" href="#collapse2" aria-controls="#collapse2" aria-expanded="false">
-          <b>
-            <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-            <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-            &nbsp;Project 2
-          </b>
-        </div>
-        <div id="collapse2" class="panel-collapse collapse text-center">
-          THIS
-          <br />IS
-          <br />PROJECT
-          <br />NUMBER
-          <br />2
+    {% for project in projects %}
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading" data-toggle="collapse" href="#collapse{{project.pk}}" aria-controls="#collapse{{project.pk}}" aria-expanded="false">
+            <b>
+              <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+              <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+              &nbsp;{{ project.name }}
+            </b>
+          </div>
+          <div id="collapse{{project.pk}}" class="panel-collapse collapse text-center">
+            THIS
+            <br />IS
+            <br />PROJECT
+            <br />NUMBER
+            <br />{{project.pk}}
+          </div>
         </div>
       </div>
-    </div>
+    {% endfor %}
   </div>
 </div>
 

@@ -10,6 +10,11 @@ from portfolio_manager.importer import from_google_sheet
 # LOGGING
 logger = logging.getLogger('django.request')
 
+def home(request):
+    context = {}
+    context["projects"] = Project.objects.all()
+    return render(request, 'homepage.html', context)
+
 # Site to see history of projects
 def history(request):
     history_all = Project.history.all()
