@@ -73,17 +73,16 @@ PROJECT VISUALIZER
 </div>
 </div>
 </div>
-<div class="container-fluid">
-  <div class="col-sm-9">
-  </div>
-  <div class="col-sm-3">
+
+<div id="projects">
+  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
     <div class="panel-group">
       <div class="panel panel-default">
         <div class="panel-heading">
           <span class="caret" aria-hidden="true"></span>
-          <b>&nbsp;Project 1</b>
+          <b data-toggle="collapse" href="#collapse1">&nbsp;Project 1</b>
         </div>
-        <div class="panel-body">
+        <div id="collapse1" class="panel-collapse collapse">
           INSERT DESCRIPTION HERE
           <br />ASDA
           <br />ASD
@@ -94,4 +93,5 @@ PROJECT VISUALIZER
     </div>
   </div>
 </div>
+
 {% endblock %}
