@@ -8,17 +8,70 @@ PROJECT VISUALIZER
 {# CSS HERE #}
 {% block css %}
 {% load static %}
-<style>
-body {
-  background-image: url("{% static "portfolio_manager/img/homepage_BG.jpg" %}");
-  background-size: 100%;
-  min-height: 100%;
-}
-</style>
+<link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
 {% endblock %}
 
-{# CONTENT HERE #}
 {% block content %}
+
+<p>
+  To be done
+</p>
+<div id="visut" class="">
+  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    <div class="hoverPath">
+        <img class="img-responsive" src="/static/portfolio_manager/img/pathfoto.jpg" alt="">
+            <div class="overlay">
+                <h2>Path</h2>
+				<p>
+					<a href="{%url 'path' %}">This visualization does magic</a>
+				</p>
+            </div>
+    </div>
+</div>
+<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    <div class="hover4field">
+        <img class="img-responsive" src="/static/portfolio_manager/img/nelikentta.jpg" alt="">
+        <div class="overlay">
+
+            <div class="rotate">
+                <p class="group1">
+                    <a href="#">
+                      dada
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                    <a href="#">
+                      dada2
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                </p>
+                    <hr>
+                    <hr>
+                <p class="group2">
+                    <a href="#">
+                      dada3
+                        <i class="fa fa-instagram"></i>
+                    </a>
+                    <a href="#">
+                      dada4
+                        <i class="fa fa-dribbble"></i>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+<div class="hoverPath">
+    <img class="img-responsive" src="/static/portfolio_manager/img/relations.jpg" alt="">
+        <div class="overlay">
+            <h2>Relations</h2>
+    <p>
+      <a href="#">Relations visualization</a>
+    </p>
+        </div>
+</div>
+</div>
+</div>
 <div class="container-fluid">
   <div class="col-sm-9">
   </div>
