@@ -8,7 +8,6 @@ PROJECT VISUALIZER
 {# CSS HERE #}
 {% block css %}
 {% load static %}
-<link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
 <style>
 body {
   background-image: url("{% static "portfolio_manager/img/homepage_BG.jpg" %}");
@@ -20,5 +19,25 @@ body {
 
 {# CONTENT HERE #}
 {% block content %}
-
+<div class="container-fluid">
+  <div class="col-sm-9">
+  </div>
+  <div class="col-sm-3">
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span class="caret" aria-hidden="true"></span>
+          <b>&nbsp;Project 1</b>
+        </div>
+        <div class="panel-body">
+          INSERT DESCRIPTION HERE
+          <br />ASDA
+          <br />ASD
+          <br />ASDAS
+          <br />ASDASDA
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

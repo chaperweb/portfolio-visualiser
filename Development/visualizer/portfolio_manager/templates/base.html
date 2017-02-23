@@ -1,37 +1,69 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
   {# TITLE GOES HERE #}
   <title>
   {% block title %}
+  Portfolio Visualizer
   {% endblock %}
   </title>
 
   {# CSS GOES HERE #}
+  {# Base custom CSS #}
   <link rel="stylesheet" href="{% static "portfolio_manager/css/base.css" %}">
-  {% block css %}{% endblock %}
+  {# Bootstrap #}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  {# CSS BLOCK #}
+  {% block css %}
+  {% endblock %}
 
   {# JAVASCRIPT GOES HERE #}
+  {# Jquery #}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  {% block javascript %}{% endblock %}
+  {# Bootstrap JavaScript #}
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  {# JAVASCRIPT BLOCK #}
+  {% block javascript %}
+  {% endblock %}
 </head>
 
 <body>
+<br />
 {# NAVIGATION BAR #}
-<ul id="navbar">
-  <li><a href="{% url 'homepage' %}">Home</a></li>
-  <li><a href="{% url 'visualizations' %}">Visualizations</a></li>
-  <li><a href="{% url 'add_new_project' %}">Add new project</a></li>
-  <li><a href="{% url 'projects' %}">Projects</a></li>
-  <li><a href="{% url 'select_org' %}">Projects by organization</a></li>
-  <li><a href="{% url 'history' %}">History</a></li>
-  <li><a href="{% url 'add_new_org' %}">Add new organization</a></li>
-  <li><a href="{% url 'add_new_person' %}">Add new person</a></li>
-  <li><a href="{% url 'importer' %}">Importer</a></li>
-  <li><a href="{% url 'about' %}">About</a></li>
-</ul>
-
+<nav class="navbar navbar-default navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <!-- This button will only be displayed on narrow (mobile) screen sizes -->
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <!-- SHOW ON ALL SIZES -->
+      <a class="navbar-brand" href="{% url 'homepage' %}">Home</a>
+      <a class="navbar-brand" href="{% url 'visualizations' %}">Visualizations</a>
+    </div>
+    <ul class="nav navbar-nav hidden-xs">
+      <!--
+      FOLLOWING ITEMS WILL BE SHOWN IF THEY FIT
+      ON SCREEN AND ARE IN DROPDOWN OTHERWISE
+      -->
+      <li class=""><a href="{% url 'add_new_project' %}">Add new project</a></li>
+      <li class=""><a href="{% url 'projects' %}">Projects</a></li>
+      <li class=""><a href="{% url 'select_org' %}">Projects by organization</a></li>
+      <li class=""><a href="{% url 'history' %}">History</a></li>
+      <li class="hidden-sm"><a href="{% url 'add_new_org' %}">Add new organization</a></li>
+      <li class="hidden-sm"><a href="{% url 'add_new_person' %}">Add new person</a></li>
+      <li class="hidden-sm"><a href="{% url 'importer' %}">Importer</a></li>
+      <li class="hidden-sm"><a href="{% url 'about' %}">About</a></li>
+    </ul>
+  </div>
+</nav>
 {# REST OF THE BODY HERE #}
 {% block content %}CONTENT HERE{% endblock %}
