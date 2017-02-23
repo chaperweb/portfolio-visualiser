@@ -19,15 +19,29 @@ class DimensionObjectRelatedField(serializers.RelatedField):
             serializer = AssociatedPersonsSerializer(value)
         elif isinstance(value, AssociatedProjectsDimension):
             serializer = AssociatedProjectsSerializer(value)
+        elif isinstance(value, DecimalReferenceDimension):
+            serializer = DecimalReferenceDimensionSerializer(value)
         else:
             raise Exception('Unexpected type of dimesion object: '+value.__class__.__name__)
 
         return serializer.data
 
-class DecimalDimensionMilestoneSerializer(serializers.ModelSerializer):
+class DecimalReferenceDimensionHistorySerializer(serializers.ModelSerializer):
+
+  value = serializers.DecimalField(max_digits=20, decimal_places=2, coerce_to_string=False)
+  at = serializers.DateTimeField()
+
   class Meta:
-    model = DecimalDimensionMilestone
-    fields = ('id', 'value', 'at')
+    model = HistoricalDecimalDimension
+    fields = ('id', 'value', 'at', 'history_date')
+
+class DecimalReferenceDimensionSerializer(serializers.ModelSerializer):
+
+  history = DecimalReferenceDimensionHistorySerializer(many=True)
+
+  class Meta:
+    model = DecimalReferenceDimension
+    fields = ('id', 'name', 'history')
 
 class DecimalDimensionHistorySerializer(serializers.ModelSerializer):
 
@@ -39,12 +53,11 @@ class DecimalDimensionHistorySerializer(serializers.ModelSerializer):
 
 class DecimalDimensionSerializer(serializers.ModelSerializer):
 
-  milestones = DecimalDimensionMilestoneSerializer(many=True)
   history = DecimalDimensionHistorySerializer(many=True)
 
   class Meta:
     model = DecimalDimension
-    fields = ('id', 'name', 'milestones', 'history')
+    fields = ('id', 'name', 'history')
 
 
 class TextDimensionHistorySerializer(serializers.ModelSerializer):
