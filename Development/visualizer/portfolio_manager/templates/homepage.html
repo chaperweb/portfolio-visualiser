@@ -1,17 +1,95 @@
-{% load static %}
-<!DOCTYPE html>
-<head>
-  <title>PROJECT VISUALIZER</title>
-  <link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
-  <style>
-  body {
-    background-image: url("{% static "portfolio_manager/img/homepage_BG.jpg" %}");
-    background-size: 100%;
-    min-height: 100%;
-  }
-  </style>
-</head>
-<body>
-  {% include "navbar.html" %}
+{% extends "base.html" %}
 
-</body>
+{# TITLE HERE #}
+{% block title %}
+PROJECT VISUALIZER
+{% endblock %}
+
+{# CSS HERE #}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/hover-effects.css" %}">
+{% endblock %}
+
+{% block content %}
+
+<div id="visut" class="">
+  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    <div class="hoverPath">
+        <img class="img-responsive" src="/static/portfolio_manager/img/paatti.jpg" alt="">
+            <div class="overlay">
+                <h2>Path</h2>
+				<p>
+					<a href="{%url 'path' %}">This visualization does magic</a>
+				</p>
+            </div>
+    </div>
+</div>
+<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    <div class="hover4field">
+        <img class="img-responsive" src="/static/portfolio_manager/img/neli.jpg" alt="">
+        <div class="overlay">
+
+            <div class="rotate">
+                <p class="group1">
+                    <a href="#">
+                      dada
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                    <a href="#">
+                      dada2
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                </p>
+                    <hr>
+                    <hr>
+                <p class="group2">
+                    <a href="#">
+                      dada3
+                        <i class="fa fa-instagram"></i>
+                    </a>
+                    <a href="#">
+                      dada4
+                        <i class="fa fa-dribbble"></i>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+<div class="hoverPath">
+    <img class="img-responsive" src="/static/portfolio_manager/img/relations.jpg" alt="">
+        <div class="overlay">
+            <h2>Relations</h2>
+    <p>
+      <a href="#">Relations visualization</a>
+    </p>
+        </div>
+</div>
+</div>
+</div>
+
+<div id="projects">
+
+  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span class="caret" aria-hidden="true"></span>
+          <b data-toggle="collapse" href="#collapse1">&nbsp;Project 1</b>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse">
+          INSERT DESCRIPTION HERE
+          <br />ASDA
+          <br />ASD
+          <br />ASDAS
+          <br />ASDASDA
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

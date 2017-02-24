@@ -1,43 +1,60 @@
+{% extends "base.html" %}
 
+{# TITLE HERE #}
+{% block title %}
+Projects
+{% endblock %}
 
-
-{% include "navbar.html" %}
-<h2>
-  projektin tiedot:
-
-
-</h2>
+{# CONTENT HERE #}
+{% block content %}
+<h2>Projektin tiedot:</h2>
 <br />
 <a href="{% url 'insert_field' project.pk %}">Insert field</a>
-  <br />
+<br />
 <a href="{% url 'project_edit' project.pk %}">EDIT</a>
-<br /><br />
-  <div>
-    Nimi: <br />
-      {{ project.name }}<br /><br />
-
-    Organizaatio: <br />
-      {{ project.parent }}<br /><br />
-
-    Omistaja: <br />
-      {{ owner }}<br /><br />
-
-    Budget: <br />
-      {{ budget.dimension_object.value }}<br /><br />
-
-      <b>Extra text fields:</b> <br />
-      {% for x in text %}
-        {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
-        {% endfor %}
-
-        <b>  Extra Decimal fields:</b> <br />
-          {% for x in decfield %}
-            {{ x.dimension_object.name }}: <br /> {{ x.dimension_object.value }}<br /><br />
-            {% endfor %}
-
-  </div>
-  <div>
-    <input type="button" value="previous Page" onclick="javascript:history.go(-1);">
-  </div>
-</body>
-</html>
+<br />
+<br />
+<div>
+  Name:
+  <br />
+  {{ project.name }}
+  <br />
+  <br />
+  Organization:
+  <br />
+  {{ project.parent }}
+  <br />
+  <br />
+  Owner:
+  <br />
+  {{ owner }}
+  <br />
+  <br />
+  Budget:
+  <br />
+  {{ budget.dimension_object.value }}
+  <br />
+  <br />
+  <b>Extra text fields:</b>
+  <br />
+  {% for x in text %}
+    {{ x.dimension_object.name }}:
+    <br />
+    {{ x.dimension_object.value }}
+    <br />
+    <br />
+  {% endfor %}
+  <b>Extra Decimal fields:</b>
+  <br />
+  {% for x in decfield %}
+    {{ x.dimension_object.name }}:
+    <br />
+    {{ x.dimension_object.value }}
+    <br />
+    <br />
+  {% endfor %}
+</div>
+<div>
+  <input type="button" value="previous Page" onclick="javascript:history.go(-1);">
+</div>
+{% endblock %}

@@ -1,8 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>New Person</title>
-</head>
+{% extends "base.html" %}
+
+{# TITLE HERE #}
+{% block title %}
+New Person
+{% endblock %}
+
+{# CSS HERE #}
+{% block css %}
 <style>
 input[type=text], select {
     width: 100%;
@@ -38,21 +42,21 @@ div {
     padding: 20px;
 }
 </style>
+{% endblock %}
 
-<body>
-  {% include "navbar.html" %}
-  <script>
-  $('[href*="{% url 'add_new_person' %}"]').addClass('active');
-  </script>
-  <br />
-<form action="{% url 'add_new_person' %}"   method="POST">
+{# JAVASCRIPT HERE #}
+{% block javascript %}
+<script>$('[href*="{% url 'add_new_person' %}"]').addClass('active');</script>
+{% endblock %}
 
-      <div >
-      {% csrf_token %}
-      {{ form }}
-
-      <input id="submit_person" type="submit" value="Send" />
-      </div>
+{# CONTENT HERE #}
+{% block content %}
+<br />
+<form action="{% url 'add_new_person' %}" method="POST">
+  <div>
+    {% csrf_token %}
+    {{ form }}
+    <input id="submit_person" type="submit" value="Send" />
+  </div>
 </form>
-</body>
-</html>
+{% endblock %}
