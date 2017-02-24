@@ -12,3 +12,9 @@ div[aria-expanded=false ] .glyphicon-triangle-top {
 div[aria-expanded=true] .glyphicon-triangle-bottom {
   display: none;
 }
+
+.leftborder {
+  border-left-style: solid;
+  min-height: 100vh;
+  overflow-y: auto;
+}
