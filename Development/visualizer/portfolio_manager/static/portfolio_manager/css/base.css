@@ -1,3 +1,17 @@
 .navbar-item {
   font-size: 150%;
 }
+
+.navbar {
+  background-color: rgb(116,116,116) !important;
+  color: white !important;
+  border-color:  rgb(116,116,116) !important;
+}
+
+.navbar-nav > li > a {
+  color: white !important;
+}
+.navbar-nav > .active > a {
+  color:rgb(37,230,32) !important;
+  background-color: rgb(116,116,116) !important;
+}

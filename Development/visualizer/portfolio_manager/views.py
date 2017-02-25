@@ -244,3 +244,8 @@ def insert_field(request, project_id):
     elif request.method == 'GET':
         formt = TableSpecification()
         return render(request, 'insert_field.html', {'formt':formt})
+
+def projektit(request):
+    projects_all = Project.objects.all()
+    organizations_all = Organization.objects.all()
+    return render(request, 'projektit.html', {'projects': projects_all, 'organizations': organizations_all})

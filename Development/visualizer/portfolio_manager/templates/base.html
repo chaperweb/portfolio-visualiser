@@ -15,10 +15,12 @@
   </title>
 
   {# CSS GOES HERE #}
-  {# Base custom CSS #}
-  <link rel="stylesheet" href="{% static "portfolio_manager/css/base.css" %}">
+
   {# Bootstrap #}
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  {# Base custom CSS #}
+  <link rel="stylesheet" href="{% static "portfolio_manager/css/base.css" %}">
   {# CSS BLOCK #}
   {% block css %}
   {% endblock %}
@@ -36,6 +38,13 @@
 <body>
 <br />
 {# NAVIGATION BAR #}
+<script>
+$(document).ready(function() {
+	// get current URL path and assign 'active' class
+	var pathname = window.location.pathname;
+	$('.nav > li > a[href="'+pathname+'"]').parent().addClass('active');
+})
+</script>
 <nav class="navbar navbar-default navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
