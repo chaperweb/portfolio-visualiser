@@ -73,6 +73,13 @@ class Person (models.Model):
   first_name = models.CharField(max_length=64)
   last_name = models.CharField(max_length=64)
 
+  def __str__(self):
+    return str(self.first_name + " " + self.last_name)
+
+  def __unicode__(self):
+    return self.first_name + " " + self.last_name
+
+
 class DecimalDimension (Dimension):
   value = models.DecimalField(max_digits = 20, decimal_places = 2)
   history = HistoricalRecords()
