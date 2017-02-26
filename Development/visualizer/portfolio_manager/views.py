@@ -191,10 +191,9 @@ def importer(request):
     else:
         return render(request, 'importer.html', { 'google_sheets': GoogleSheet.objects.all(), 'form': GoogleSheetForm() } )
 
-def json(request, project_id):
-    project = Project.objects.get(pk=project_id)
-    serializer = ProjectSerializer(project)
-    return JsonResponse(serializer.data)
+def json(request):
+    serializer = ProjectSerializer(Project.objects.all(), many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 def insert_field(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)

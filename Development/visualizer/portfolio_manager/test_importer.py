@@ -8,7 +8,7 @@ from rest_framework.renderers import JSONRenderer
 from portfolio_manager.importer import from_data_array
 from dateutil.parser import parse
 
-class ModelsTestCase(TestCase):
+class ImporterTestCase(TestCase):
 
     def setUp(self):
         pass
@@ -19,6 +19,18 @@ class ModelsTestCase(TestCase):
                 ]
         from_data_array(data)
         self.assertEqual('Name', Project.objects.get(id=1).dimensions.all()[0].dimension_object.name)
+
+    def test_import_size_money(self):
+        data = [[u'id', u'__history_date', u'Name', u'SizeMoney'],
+                [u'2', '7/12/2015', 'foo', '100'],
+                [u'2', '14/12/2015', u'', '30'],
+                [u'2', '6/1/2016', u'','4'],
+                [u'2', '8/2/2016', u'','1251'],
+                [u'2', '14/3/2015', u'','325']
+                ]
+        from_data_array(data)
+        self.assertEqual(5, Project.objects.get(id=2).dimensions.all()[1].dimension_object.history.all().count())
+        
 
     def test_import_name(self):
         data = [[u'id', u'__history_date', u'Name'],
@@ -84,19 +96,19 @@ class ModelsTestCase(TestCase):
         self.assertEqual(Person.objects.get(first_name='Pekka'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.persons.all()[0])
 
     def test_import_projectdependencies(self):
-        data = [[u'id', u'__history_date', u'ProjectDependencies'],
-                [u'1', '2013-03-16T17:41:28+00:00'],
-                [u'2', '2013-03-18T17:41:28+00:00', '1'],
-                [u'3', '2013-03-19T17:41:28+00:00', '1, 2'],
+        data = [[u'id', u'__history_date', u'Name', u'ProjectDependencies'],
+                [u'1', '2013-03-16T17:41:28+00:00', 'Project1'],
+                [u'2', '2013-03-18T17:41:28+00:00', 'Project2', '1'],
+                [u'3', '2013-03-19T17:41:28+00:00', 'Project3', '1, 2'],
                 ]
         from_data_array(data)
         self.assertEqual(3, Project.objects.all().count())
-        self.assertEquals(0, Project.objects.get(id=1).dimensions.all().count())
-        self.assertEquals(1, Project.objects.get(id=2).dimensions.all()[0].dimension_object.projects.all().count())
-        self.assertEquals(Project.objects.get(pk=1), Project.objects.get(id=2).dimensions.all()[0].dimension_object.projects.all()[0])
-        self.assertEquals(2, Project.objects.get(id=3).dimensions.all()[0].dimension_object.projects.all().count())
-        self.assertEquals(Project.objects.get(pk=1), Project.objects.get(id=3).dimensions.all()[0].dimension_object.projects.all()[0])
-        self.assertEquals(Project.objects.get(pk=2), Project.objects.get(id=3).dimensions.all()[0].dimension_object.projects.all()[1])
+        self.assertEquals(1, Project.objects.get(id=1).dimensions.all().count())
+        self.assertEquals(1, Project.objects.get(id=2).dimensions.all()[1].dimension_object.projects.all().count())
+        self.assertEquals(Project.objects.get(pk=1), Project.objects.get(id=2).dimensions.all()[1].dimension_object.projects.all()[0])
+        self.assertEquals(2, Project.objects.get(id=3).dimensions.all()[1].dimension_object.projects.all().count())
+        self.assertEquals(Project.objects.get(pk=1), Project.objects.get(id=3).dimensions.all()[1].dimension_object.projects.all()[0])
+        self.assertEquals(Project.objects.get(pk=2), Project.objects.get(id=3).dimensions.all()[1].dimension_object.projects.all()[1])
 
     def test_import_owningorganization(self):
         data = [[u'id', u'__history_date', u'OwningOrganization'],
@@ -113,6 +125,19 @@ class ModelsTestCase(TestCase):
         self.assertEqual(Organization.objects.get(name='Org1'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[2].value)
         self.assertEqual(Organization.objects.get(name='Org1'), Project.objects.get(id=1).parent)
 
+
+    def test_size_money_reference(self):
+        data = [[u'id', u'__history_date', u'Name', u'SizeMoneyReference'],
+                [u'1', '2013-03-16T17:41:28+00:00', 'Project1', '03/18/2013;5'],
+                [u'1', '2013-03-18T17:41:28+00:00', u'', '04/18/2013;9'],
+                ]
+        from_data_array(data)
+        self.assertEqual(2, Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all().count())
+        self.assertEqual(9, Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all()[0].value)
+        self.assertEqual(parse('04/18/2013').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all()[0].at)
+
+        self.assertEqual(5, Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all()[1].value)
+        self.assertEqual(parse('03/18/2013').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all()[1].at)
 
 
     def test_overwrite_project(self):
