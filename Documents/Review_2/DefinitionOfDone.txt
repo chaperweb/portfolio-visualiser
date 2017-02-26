@@ -1,0 +1,11 @@
+﻿Definition of done tikettikohtaisesti
+
+Ominaisuus/Bugikojaus/Tiketti on valmis kun seuraavat asiat on tehty
+	1. Tiketti on kommentoitu oikein ja commiteissa on järkevät viestit
+	2. Tiketille määritellyt valmistumiskriteerit täyttyvät
+	3. Lokaalisti testattuna tiketti toimii
+	4. Automaattiset testit on kirjoitettu ja ne menevät läpi
+	5. Code review: Toinen devaaja tarkistaa koodisi ja hyväksyy sen
+	6. Pitää toimia Internet Explorer 10 ja sitä uudemmilla selaimilla
+	7. Project owner hyväksyy tiketin
+	
