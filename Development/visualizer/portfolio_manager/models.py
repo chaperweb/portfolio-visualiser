@@ -78,13 +78,22 @@ class DecimalDimension (Dimension):
   history = HistoricalRecords()
   __history_date = None
 
-class DecimalDimensionMilestone (models.Model):
+class DecimalReferenceDimension (Dimension):
   value = models.DecimalField(max_digits = 20, decimal_places=2)
   at = models.DateTimeField()
-  decimal_dimension = models.ForeignKey(DecimalDimension, on_delete=models.CASCADE, related_name='milestones')
   history = HistoricalRecords()
   __history_date = None
 
+  def from_sheet(self, value, history_date):
+    parts = value.split(';')
+    self.value = parts[1]
+
+    at_tmp = parse(parts[0])
+    if at_tmp.tzinfo is None or at_tmp.tzinfo.utcoffset(at_tmp) is None:
+      at_tmp = at_tmp.replace(tzinfo=pytz.utc)
+
+    self.at = at_tmp
+    self._history_date = history_date
 
 class TextDimension (Dimension):
   value = models.TextField()
@@ -256,5 +265,17 @@ class MembersDimension (AssociatedPersonsDimension):
     proxy = True
 
 class PhaseDimension (TextDimension):
+  class Meta:
+    proxy = True
+
+class SizeMoneyReferenceDimension (DecimalReferenceDimension):
+  class Meta:
+    proxy = True
+
+class SizeManDaysReferenceDimension (DecimalReferenceDimension):
+  class Meta:
+    proxy = True
+
+class SizeEffectReferenceDimension (DecimalReferenceDimension):
   class Meta:
     proxy = True

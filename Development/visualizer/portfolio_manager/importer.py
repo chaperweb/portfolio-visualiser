@@ -5,6 +5,10 @@ import os
 
 def from_data_array(data):
 
+  # thefile = open('/tmp/dumppi', 'w')
+  # for item in data:
+  #   thefile.write("%s\n" % ';'.join(item))
+
   dimensions = data[0][2:]
   prev_id = -1
   dimension_objects = None
