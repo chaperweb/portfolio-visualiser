@@ -251,6 +251,8 @@ def insert_field(request, project_id):
         return render(request, 'insert_field.html', {'formt':formt})
 
 def projektit(request):
+    dd = ContentType.objects.get_for_model(DecimalDimension)
+    budgets = ProjectDimension.objects.filter(content_type=dd)
     projects_all = Project.objects.all()
     organizations_all = Organization.objects.all()
-    return render(request, 'projektit.html', {'projects': projects_all, 'organizations': organizations_all})
+    return render(request, 'projektit.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
