@@ -14,25 +14,21 @@ Projects
 {# CONTENT HERE #}
 {% block content %}
 <!-- Sidebar -->
-<nav class="navbar nav-stacked navbar-inverse col-lg-2" role="navigation">
-  <ul class="nav navbar-header">
-    <li class="dropdown navbar-brand" href="#" data-toggle="dropdown">
-      <a class="dropdown-toggle" href="#">Projects</a>
+<nav class="sidebar navbar flex-column navbar-inverse col-lg-2">
+  <ul class="nav navbar-nav flex-column">
+    <li><a href="#" data-toggle="collapse" data-target="#projects" class="navbar-toggle">Projects</a></li>
+    <li>
+      <div id="projects" class="collapse">
+        <ul class="nav navbar-collapse flex-column pull-left">
+          {% for p in projects %}
+            <li><a href="/projects/{{p.pk}}">{{p.name}}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
     </li>
-      <ul class="dropdown-menu">
-        <li class="dropdown-header">Dropdown heading</li>
-        <li><a href="#">Action</a></li>
-        <li><a href="#">Another action</a></li>
-        <li><a href="#">Something else here</a></li>
-        <li><a href="#">Separated link</a></li>
-        <li><a href="#">One more separated link</a></li>
-      </ul>
-    </li>
-    <li><a href="#">Services</a></li>
-    <li><a href="#">Contact</a></li>
   </ul>
 </nav>
-<!-- /#sidebar-wrapper -->
+<!-- /sidebar -->
 
 <!-- Page Content -->
 <div id="page-content-wrapper">
