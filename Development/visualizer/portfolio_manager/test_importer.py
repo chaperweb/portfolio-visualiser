@@ -20,6 +20,18 @@ class ImporterTestCase(TestCase):
         from_data_array(data)
         self.assertEqual('Name', Project.objects.get(id=1).dimensions.all()[0].dimension_object.name)
 
+    def test_import_size_money(self):
+        data = [[u'id', u'__history_date', u'Name', u'SizeMoney'],
+                [u'2', '7/12/2015', 'foo', '100'],
+                [u'2', '14/12/2015', u'', '30'],
+                [u'2', '6/1/2016', u'','4'],
+                [u'2', '8/2/2016', u'','1251'],
+                [u'2', '14/3/2015', u'','325']
+                ]
+        from_data_array(data)
+        self.assertEqual(5, Project.objects.get(id=2).dimensions.all()[1].dimension_object.history.all().count())
+        
+
     def test_import_name(self):
         data = [[u'id', u'__history_date', u'Name'],
                 [u'1', '2013-03-16T17:41:28+00:00', 'foo'],
