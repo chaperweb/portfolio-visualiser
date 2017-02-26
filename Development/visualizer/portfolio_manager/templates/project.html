@@ -5,56 +5,56 @@
 Projects
 {% endblock %}
 
+{# CSS HERE #}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/project.css" %}">
+{% endblock %}
+
 {# CONTENT HERE #}
 {% block content %}
-<h2>Projektin tiedot:</h2>
-<br />
-<a href="{% url 'insert_field' project.pk %}">Insert field</a>
-<br />
-<a href="{% url 'project_edit' project.pk %}">EDIT</a>
-<br />
-<br />
-<div>
-  Name:
-  <br />
-  {{ project.name }}
-  <br />
-  <br />
-  Organization:
-  <br />
-  {{ project.parent }}
-  <br />
-  <br />
-  Owner:
-  <br />
-  {{ owner }}
-  <br />
-  <br />
-  Budget:
-  <br />
-  {{ budget.dimension_object.value }}
-  <br />
-  <br />
-  <b>Extra text fields:</b>
-  <br />
-  {% for x in text %}
-    {{ x.dimension_object.name }}:
-    <br />
-    {{ x.dimension_object.value }}
-    <br />
-    <br />
-  {% endfor %}
-  <b>Extra Decimal fields:</b>
-  <br />
-  {% for x in decfield %}
-    {{ x.dimension_object.name }}:
-    <br />
-    {{ x.dimension_object.value }}
-    <br />
-    <br />
-  {% endfor %}
+<!-- Sidebar -->
+<nav class="navbar nav-stacked navbar-inverse col-lg-2" role="navigation">
+  <ul class="nav navbar-header">
+    <li class="dropdown navbar-brand" href="#" data-toggle="dropdown">
+      <a class="dropdown-toggle" href="#">Projects</a>
+    </li>
+      <ul class="dropdown-menu">
+        <li class="dropdown-header">Dropdown heading</li>
+        <li><a href="#">Action</a></li>
+        <li><a href="#">Another action</a></li>
+        <li><a href="#">Something else here</a></li>
+        <li><a href="#">Separated link</a></li>
+        <li><a href="#">One more separated link</a></li>
+      </ul>
+    </li>
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</nav>
+<!-- /#sidebar-wrapper -->
+
+<!-- Page Content -->
+<div id="page-content-wrapper">
+  <div class="container col-lg-10">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        {{ project.parent }}
+        {{ owner }}
+        {{ budget.dimension_object.value }}
+        <b>Extra text fields:</b>
+        {% for x in text %}
+          {{ x.dimension_object.name }}:
+          {{ x.dimension_object.value }}
+        {% endfor %}
+        <b>Extra Decimal fields:</b>
+        {% for x in decfield %}
+          {{ x.dimension_object.name }}:
+          {{ x.dimension_object.value }}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 </div>
-<div>
-  <input type="button" value="previous Page" onclick="javascript:history.go(-1);">
-</div>
+<!-- /#page-content-wrapper -->
 {% endblock %}
