@@ -13,82 +13,93 @@ PROJECT VISUALIZER
 {% endblock %}
 
 {% block content %}
-
 <div id="visut" class="">
   <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
     <div class="hoverPath">
         <img class="img-responsive" src="/static/portfolio_manager/img/paatti.jpg" alt="">
-            <div class="overlay">
-                <h2>Path</h2>
-				<p>
-					<a href="{%url 'path' %}">This visualization does magic</a>
-				</p>
-            </div>
-    </div>
-</div>
-<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-    <div class="hover4field">
-        <img class="img-responsive" src="/static/portfolio_manager/img/neli.jpg" alt="">
         <div class="overlay">
+          <h2>Path</h2>
+  				<p>
+  					<a href="{%url 'path' %}">This visualization does magic</a>
+  				</p>
+        </div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    <div class="hoverPath">
+      <img class="img-responsive" src="/static/portfolio_manager/img/neli.jpg" alt="">
+      <div class="overlay">
+        <h2>4-Field</h2>
+        <p>
+          <a href="{%url 'path' %}">This visualization does magic</a>
+        </p>
+      </div>
 
-            <div class="rotate">
-                <p class="group1">
-                    <a href="#">
-                      dada
-                        <i class="fa fa-twitter"></i>
-                    </a>
-                    <a href="#">
-                      dada2
-                        <i class="fa fa-facebook"></i>
-                    </a>
-                </p>
-                    <hr>
-                    <hr>
-                <p class="group2">
-                    <a href="#">
-                      dada3
-                        <i class="fa fa-instagram"></i>
-                    </a>
-                    <a href="#">
-                      dada4
-                        <i class="fa fa-dribbble"></i>
-                    </a>
-                </p>
-            </div>
+
+    <!--
+  *** Elements for 4-field effect ***
+
+     <div class="overlay">
+        <div class="rotate">
+          <p class="group1">
+            <a href="#">
+              dada
+              <i class="fa fa-twitter"></i>
+            </a>
+            <a href="#">
+              dada2
+              <i class="fa fa-facebook"></i>
+            </a>
+          </p>
+          <hr>
+          <hr>
+          <p class="group2">
+            <a href="#">
+              dada3
+              <i class="fa fa-instagram"></i>
+            </a>
+            <a href="#">
+              dada4
+              <i class="fa fa-dribbble"></i>
+            </a>
+          </p>
         </div>
+      </div> -->
     </div>
-</div>
-<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-<div class="hoverPath">
-    <img class="img-responsive" src="/static/portfolio_manager/img/relations.jpg" alt="">
-        <div class="overlay">
-            <h2>Relations</h2>
-    <p>
-      <a href="#">Relations visualization</a>
-    </p>
-        </div>
-</div>
-</div>
+  </div>
+  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    <div class="hoverPath">
+      <img class="img-responsive" src="/static/portfolio_manager/img/relations.jpg" alt="">
+      <div class="overlay">
+        <h2>Relations</h2>
+        <p><a href="#">Relations visualization</a></p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="projects">
-
-  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-    <div class="panel-group">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <span class="caret" aria-hidden="true"></span>
-          <b data-toggle="collapse" href="#collapse1">&nbsp;Project 1</b>
-        </div>
-        <div id="collapse1" class="panel-collapse collapse">
-          INSERT DESCRIPTION HERE
-          <br />ASDA
-          <br />ASD
-          <br />ASDAS
-          <br />ASDASDA
+  <div class="pre-scrollable leftborder col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    {% for project in projects %}
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading" data-toggle="collapse" href="#collapse{{project.pk}}" aria-controls="#collapse{{project.pk}}" aria-expanded="false">
+            <b>
+              <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+              <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+              &nbsp;{{ project.name }}
+            </b>
+          </div>
+          <div id="collapse{{project.pk}}" class="panel-collapse collapse text-center">
+            THIS
+            <br />IS
+            <br />PROJECT
+            <br />NUMBER
+            <br />{{project.pk}}
+          </div>
         </div>
       </div>
-    </div>
+    {% endfor %}
   </div>
 </div>
 

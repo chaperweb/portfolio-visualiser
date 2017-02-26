@@ -10,6 +10,11 @@ from portfolio_manager.importer import from_google_sheet
 # LOGGING
 logger = logging.getLogger('django.request')
 
+def home(request):
+    context = {}
+    context["projects"] = Project.objects.all()
+    return render(request, 'homepage.html', context)
+
 # Site to see history of projects
 def history(request):
     history_all = Project.history.all()
@@ -238,3 +243,8 @@ def insert_field(request, project_id):
     elif request.method == 'GET':
         formt = TableSpecification()
         return render(request, 'insert_field.html', {'formt':formt})
+
+def projektit(request):
+    projects_all = Project.objects.all()
+    organizations_all = Organization.objects.all()
+    return render(request, 'projektit.html', {'projects': projects_all, 'organizations': organizations_all})

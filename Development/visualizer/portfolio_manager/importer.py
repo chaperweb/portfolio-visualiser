@@ -22,18 +22,12 @@ def from_data_array(data):
 
       try:
         project = Project.objects.get(id=project_id)
-        # org = Organization.objects.get(name=update[6])
         project.delete()
       except Project.DoesNotExist:
         pass
-    # except Organization.DoesNotExist:
-    #     pass
 
       project = Project()
-    #   org = Organization()
-    #   org.name = update[6]
       project.id = update[0]
-      project.name = update[2]
       project.save()
       prev_id = update[0]
 
@@ -46,13 +40,15 @@ def from_data_array(data):
         dimension_object = None
         create_project_dimension = False
 
+        dimension_object_name = dimensions[idx].strip()
+
         try:
           dimension_object = dimension_objects[idx]
         except KeyError:
-          dimension_sub_class = globals()[dimensions[idx].strip()+"Dimension"]
+          dimension_sub_class = globals()[dimension_object_name+"Dimension"]
           dimension_parent_class = dimension_sub_class.__bases__[0]
           dimension_object = dimension_parent_class()
-          dimension_object.name = dimensions[idx].strip()
+          dimension_object.name = dimension_object_name
           create_project_dimension = True
 
         history_date = parse(update[1])
@@ -61,6 +57,14 @@ def from_data_array(data):
 
         dimension_object.from_sheet(dimension_update.strip(), history_date)
         dimension_object.save()
+
+        if dimension_object_name == 'OwningOrganization':
+          project.parent = dimension_object.value
+          project.save()
+
+        if dimension_object_name == 'Name':
+          project.name = dimension_object.value
+          project.save()
 
         if create_project_dimension:
           project_dimension = ProjectDimension()

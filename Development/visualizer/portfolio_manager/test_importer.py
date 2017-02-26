@@ -46,6 +46,7 @@ class ImporterTestCase(TestCase):
         self.assertEqual(2, Project.objects.get(id=2).dimensions.all()[0].dimension_object.history.all().count())
         self.assertEqual('dir', Project.objects.get(id=2).dimensions.all()[0].dimension_object.history.all()[0].value)
         self.assertEqual('biz', Project.objects.get(id=2).dimensions.all()[0].dimension_object.history.all()[1].value)
+        self.assertEqual('baz', Project.objects.get(id=1).name)
 
     def test_import_dmy_startdate_dmy_history_date(self):
         data = [[u'id', u'__history_date', u'StartDate'],
@@ -122,6 +123,7 @@ class ImporterTestCase(TestCase):
         self.assertEqual(Organization.objects.get(name='Org1'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
         self.assertEqual(Organization.objects.get(name='Org2'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
         self.assertEqual(Organization.objects.get(name='Org1'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[2].value)
+        self.assertEqual(Organization.objects.get(name='Org1'), Project.objects.get(id=1).parent)
 
 
     def test_size_money_reference(self):
