@@ -1,3 +1,20 @@
 .nav-stacked {
   min-height: 100vh;
 }
+/* FOR TRIANGLE FLIPPING */
+div[aria-expanded=false ] .glyphicon-triangle-top {
+  display: none;
+}
+div[aria-expanded=true] .glyphicon-triangle-bottom {
+  display: none;
+}
+
+.panel-heading {
+  background-color: rgb(116,116,116) !important;
+  color: white !important;
+  border-color:  rgb(116,116,116) !important;
+}
+
+.title {
+  font-size: 300%;
+}

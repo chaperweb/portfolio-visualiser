@@ -15,6 +15,6 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 .leftborder {
   border-left-style: solid;
-  min-height: 100vh;
+  min-height: 88vh;
   overflow-y: auto;
 }

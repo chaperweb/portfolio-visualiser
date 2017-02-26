@@ -39,19 +39,123 @@ Projects
   <div class="container col-lg-10">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2">
-        {{ project.parent }}
-        {{ owner }}
-        {{ budget.dimension_object.value }}
-        <b>Extra text fields:</b>
-        {% for x in text %}
-          {{ x.dimension_object.name }}:
-          {{ x.dimension_object.value }}
-        {% endfor %}
-        <b>Extra Decimal fields:</b>
-        {% for x in decfield %}
-          {{ x.dimension_object.name }}:
-          {{ x.dimension_object.value }}
-        {% endfor %}
+        <div class="title text-center"><b>{{ project.name }}</b></div>
+        <div class="panel-group">
+          <!-- ORGANIZATION -->
+          <div class="panel panel-default">
+            <div class="panel-heading row" data-toggle="collapse" href="#org-panel" aria-controls="#org-panel" aria-expanded="false">
+              <div class="col-lg-1">
+                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+              </div>
+              <div class="col-lg-2">
+                Organization
+              </div>
+              <div class="col-lg-2 col-lg-offset-4">
+                {{ project.parent }}
+              </div>
+            </div>
+            <div id="org-panel" class="panel-collapse panel-body collapse text-center row">
+              <div>THIS<br />IS<br />WHERE<br />THE<br />HISTORY<br />COMES</div>
+            </div>
+          </div>
+          <!-- OWNER -->
+          <div class="panel panel-default">
+            <div class="panel-heading row" data-toggle="collapse" href="#owner-panel" aria-controls="#owner-panel" aria-expanded="false">
+              <div class="col-lg-1">
+                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+              </div>
+              <div class="col-lg-2">
+                Owner:
+              </div>
+              <div class="col-lg-2 col-lg-offset-4">
+                {{owner}}
+              </div>
+            </div>
+            <div id="owner-panel" class="panel-collapse panel-body collapse text-center">
+              THIS
+              <br />IS
+              <br />WHERE
+              <br />THE
+              <br />HISTORY
+              <br />COMES
+            </div>
+          </div>
+          <!-- BUDGET -->
+          <div class="panel panel-default">
+            <div class="panel-heading row" data-toggle="collapse" href="#budget-panel" aria-controls="#budget-panel" aria-expanded="false">
+              <div class="col-lg-1">
+                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+              </div>
+              <div class="col-lg-2">
+                Budget:
+              </div>
+              <div class="col-lg-2 col-lg-offset-4">
+                {{ budget.dimension_object.value }}
+              </div>
+            </div>
+            <div id="budget-panel" class="panel-collapse panel-body collapse text-center">
+              THIS
+              <br />IS
+              <br />WHERE
+              <br />THE
+              <br />HISTORY
+              <br />COMES
+            </div>
+          </div>
+          <!-- TEXT FIELDS -->
+          {% for x in text %}
+            <div class="panel panel-default">
+              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+                <div class="col-lg-1">
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                </div>
+                <div class="col-lg-2">
+                  {{x.dimension_object.name}}:
+                </div>
+                <div class="col-lg-2 col-lg-offset-4">
+                  {{ x.dimension_object.value }}
+                </div>
+              </div>
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
+                THIS
+                <br />IS
+                <br />WHERE
+                <br />THE
+                <br />HISTORY
+                <br />COMES
+              </div>
+            </div>
+          {% endfor %}
+          <!-- DECIMAL FIELDS -->
+          {% for x in decfield %}
+            <div class="panel panel-default">
+              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+                <div class="col-lg-1">
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                </div>
+                <div class="col-lg-2">
+                  {{x.dimension_object.name}}:
+                </div>
+                <div class="col-lg-2 col-lg-offset-4">
+                  {{ x.dimension_object.value }}
+                </div>
+              </div>
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
+                THIS
+                <br />IS
+                <br />WHERE
+                <br />THE
+                <br />HISTORY
+                <br />COMES
+              </div>
+            </div>
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
