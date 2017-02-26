@@ -1,0 +1,39 @@
+/* FOR TRIANGLE FLIPPING */
+div[aria-expanded=false ] .glyphicon-triangle-top {
+  display: none;
+}
+div[aria-expanded=true] .glyphicon-triangle-bottom {
+  display: none;
+}
+
+.panel-heading {
+  background-color: rgb(116,116,116) !important;
+  color: white !important;
+  border-color:  rgb(116,116,116) !important;
+}
+
+.title {
+  font-size: 300%;
+}
+
+.sidebar {
+  top: 0;
+  margin: 0;
+  padding: 0;
+  min-height: 90vh;
+}
+
+.sidebar li a {
+  color: #ffffff;
+  text-indent: 20px;
+  margin: 0;
+  width: 250px;
+}
+
+.navbar-collapse li a {
+  background-color: #999;
+}
+
+.navbar-inverse .navbar-toggle {
+  border: 0;
+}

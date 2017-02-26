@@ -150,8 +150,14 @@ def show_project(request, project_id):
         # Added decimal fields, removing budget from the query set
         decfields = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).exclude(pk=budget.pk)
 
+        context = {}
+        context['project'] = theProject
+        context['budget'] = budget
+        context['text'] = texts
+        context['decfield'] = decfields
+        context['projects'] = Project.objects.all()
 
-        return render(request, 'project.html', {'project': theProject, 'budget':budget, 'text':texts, 'decfield':decfields })
+        return render(request, 'project.html', context)
 
 def project_edit(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)
