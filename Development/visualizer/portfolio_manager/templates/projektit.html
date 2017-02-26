@@ -24,7 +24,7 @@ PROJECTS
       {% for project in projects %}
         {% if project.parent == org %}
           <div class="col-lg-3 {{org}}">
-            {{ project.name }}
+            <a href="{% url 'show_project' project.pk %}">{{ project.name }}</a>
           </div>
         {% endif %}
       {% endfor %}
