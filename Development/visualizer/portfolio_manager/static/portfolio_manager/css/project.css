@@ -16,6 +16,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 .title {
   font-size: 300%;
+  padding-bottom: 20px;
 }
 
 /* SIDENAV CSS */
