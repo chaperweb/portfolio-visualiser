@@ -1,0 +1,28 @@
+/* FOR TRIANGLE FLIPPING */
+div[aria-expanded=false ] .glyphicon-triangle-top {
+  display: none;
+}
+div[aria-expanded=true] .glyphicon-triangle-bottom {
+  display: none;
+}
+
+.panel-heading {
+  background-color: rgb(116,116,116) !important;
+  color: white !important;
+  border-color:  rgb(116,116,116) !important;
+}
+
+#proju > div {
+  background-color: rgb(156,156,156) !important;
+  margin-right: 5%;
+  margin-bottom: 30px;
+  text-decoration-color: white !important;
+}
+
+#proju {
+  color: white !important;
+}
+
+#orginprojut {
+  padding-left: 0px !important;
+}
