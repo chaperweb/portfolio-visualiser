@@ -14,27 +14,29 @@ Projects
 {# CONTENT HERE #}
 {% block content %}
 <!-- Sidebar -->
-<nav class="sidebar navbar flex-column navbar-inverse col-lg-2">
-  <ul class="nav navbar-nav flex-column">
-    <li><a href="#" data-toggle="collapse" data-target="#projects" class="navbar-toggle">Projects</a></li>
+<div class="sidebar navbar-fixed-left navbar-inverse col-md-2">
+  <ul class="nav navbar-nav">
+    <!-- Press this list item to show all the projects -->
+    <li data-toggle="collapse" data-target="#projects" class="navbar-toggle sidebar-item">Projects</li>
     <li>
+      <!-- Expandable list with all the projects -->
       <div id="projects" class="collapse">
-        <ul class="nav navbar-collapse flex-column pull-left">
+        <ul class="nav navbar-collapse">
           {% for p in projects %}
-            <li><a href="/projects/{{p.pk}}">{{p.name}}</a></li>
+            <li><a class="sidebar-subitem" href="/projects/{{p.pk}}">{{p.name}}</a></li>
           {% endfor %}
         </ul>
       </div>
     </li>
   </ul>
-</nav>
+</div>
 <!-- /sidebar -->
 
 <!-- Page Content -->
 <div id="page-content-wrapper">
   <div class="container col-lg-10">
     <div class="row">
-      <div class="col-lg-8 col-lg-offset-2">
+      <div class="col-md-8 col-md-offset-2">
         <div class="title text-center"><b>{{ project.name }}</b></div>
         <div class="panel-group">
           <!-- ORGANIZATION -->
