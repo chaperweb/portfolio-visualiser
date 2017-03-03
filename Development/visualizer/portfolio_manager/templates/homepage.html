@@ -13,8 +13,28 @@ PROJECT VISUALIZER
 {% endblock %}
 
 {% block content %}
-<div id="visut" class="">
-  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+<!-- Modal -->
+<div class="modal fade" id="add-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3>Name for new project</h3>
+        <form method="POST" action="/">
+          {% csrf_token %}
+          <input type="text" />
+          <center style="margin-top: 15px;">
+            <button type="submit" class="btn btn-success">Add project</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </center>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Visualizations -->
+<div id="visut" class="pre-scrollable col-lg-9 col-md-6 col-sm-12 col-xs-12" style="min-height:88vh;">
+  <div class="col-lg-3 col-md-12 col-sm-6 col-xs-12">
     <div class="hoverPath">
         <img class="img-responsive" src="/static/portfolio_manager/img/paatti.jpg" alt="">
         <div class="overlay">
@@ -25,7 +45,7 @@ PROJECT VISUALIZER
         </div>
     </div>
   </div>
-  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+  <div class="col-lg-3 col-md-12 col-sm-6 col-xs-12">
     <div class="hoverPath">
       <img class="img-responsive" src="/static/portfolio_manager/img/neli.jpg" alt="">
       <div class="overlay">
@@ -34,40 +54,9 @@ PROJECT VISUALIZER
           <a href="{%url 'path' %}">This visualization does magic</a>
         </p>
       </div>
-
-
-    <!--
-  *** Elements for 4-field effect ***
-
-     <div class="overlay">
-        <div class="rotate">
-          <p class="group1">
-            <a href="#">
-              dada
-              <i class="fa fa-twitter"></i>
-            </a>
-            <a href="#">
-              dada2
-              <i class="fa fa-facebook"></i>
-            </a>
-          </p>
-          <hr>
-          <hr>
-          <p class="group2">
-            <a href="#">
-              dada3
-              <i class="fa fa-instagram"></i>
-            </a>
-            <a href="#">
-              dada4
-              <i class="fa fa-dribbble"></i>
-            </a>
-          </p>
-        </div>
-      </div> -->
     </div>
   </div>
-  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+  <div class="col-lg-3 col-md-12 col-sm-6 col-xs-12">
     <div class="hoverPath">
       <img class="img-responsive" src="/static/portfolio_manager/img/relations.jpg" alt="">
       <div class="overlay">
@@ -79,27 +68,35 @@ PROJECT VISUALIZER
 </div>
 
 <div id="projects">
-  <div class="pre-scrollable leftborder col-lg-3 col-md-4 col-sm-6 col-xs-12">
-    {% for project in projects %}
-      <div class="panel-group">
-        <div class="panel panel-default">
-          <div class="panel-heading" data-toggle="collapse" href="#collapse{{project.pk}}" aria-controls="#collapse{{project.pk}}" aria-expanded="false">
-            <b>
-              <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-              <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-              &nbsp;{{ project.name }}
-            </b>
-          </div>
-          <div id="collapse{{project.pk}}" class="panel-collapse collapse text-center">
-            THIS
-            <br />IS
-            <br />PROJECT
-            <br />NUMBER
-            <br />{{project.pk}}
+  <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
+    <div class="row">
+      <button class="btn btn-success btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal  ">
+        <span class="glyphicon glyphicon-plus"></span>
+        &nbsp;Add Project
+      </button>
+    </div>
+    <div class="row">
+      {% for project in projects %}
+        <div class="panel-group col-md-10 col-md-offset-1">
+          <div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" href="#collapse{{project.pk}}" aria-controls="#collapse{{project.pk}}" aria-expanded="false">
+              <b>
+                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                &nbsp;{{ project.name }}
+              </b>
+            </div>
+            <div id="collapse{{project.pk}}" class="panel-collapse collapse text-center">
+              THIS
+              <br />IS
+              <br />PROJECT
+              <br />NUMBER
+              <br />{{project.pk}}
+            </div>
           </div>
         </div>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
 </div>
 

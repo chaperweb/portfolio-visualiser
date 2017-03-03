@@ -11,44 +11,86 @@ Projects
 <link rel="stylesheet" href="{% static "portfolio_manager/css/project.css" %}">
 {% endblock %}
 
+{% block javascript %}
+<script>
+  $(document).on("click", ".open-modify", function () {
+    var field = $(this).data('field');
+    var value = $(this).data('value');
+    $(".modal-body h3").html("Modify: " + field);
+    $(".modal-body h4").html("Current value: " + value);
+    document.getElementById("newValue").type = $(this).data('type');
+    document.getElementById("newValue").value = $(this).data('value');
+  });
+</script>
+{% endblock %}
+
 {# CONTENT HERE #}
 {% block content %}
 <!-- Sidebar -->
-<nav class="sidebar navbar flex-column navbar-inverse col-lg-2">
-  <ul class="nav navbar-nav flex-column">
-    <li><a href="#" data-toggle="collapse" data-target="#projects" class="navbar-toggle">Projects</a></li>
+<div class="sidebar navbar-fixed-left navbar-inverse col-md-2">
+  <ul class="nav navbar-nav">
+    <!-- Press this list item to show all the projects -->
+    <li data-toggle="collapse" data-target="#projects" class="navbar-toggle sidebar-item">Projects</li>
     <li>
+      <!-- Expandable list with all the projects -->
       <div id="projects" class="collapse">
-        <ul class="nav navbar-collapse flex-column pull-left">
+        <ul class="nav navbar-collapse">
           {% for p in projects %}
-            <li><a href="/projects/{{p.pk}}">{{p.name}}</a></li>
+            <li><a class="sidebar-subitem" href="/projects/{{p.pk}}">{{p.name}}</a></li>
           {% endfor %}
         </ul>
       </div>
     </li>
   </ul>
-</nav>
+</div>
 <!-- /sidebar -->
 
 <!-- Page Content -->
+<!-- Modal -->
+<div class="modal fade" id="modify-field-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3></h3>
+        <form id="modifyForm" method="GET" action="">
+          {% csrf_token %}
+          <h4></h4>
+          <label id="new-value-label" for="new-value">New value: </label>
+          <input type="" name="newValue" id="newValue"/>
+          <center style="margin-top: 15px;">
+            <button type="submit" class="btn btn-success">Save change</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          </center>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="page-content-wrapper">
   <div class="container col-lg-10">
     <div class="row">
-      <div class="col-lg-8 col-lg-offset-2">
+      <div class="col-md-8 col-md-offset-2">
+        <!-- Project name -->
         <div class="title text-center"><b>{{ project.name }}</b></div>
         <div class="panel-group">
           <!-- ORGANIZATION -->
           <div class="panel panel-default">
             <div class="panel-heading row" data-toggle="collapse" href="#org-panel" aria-controls="#org-panel" aria-expanded="false">
-              <div class="col-lg-1">
+              <div class="col-md-1">
                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
                 <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
               </div>
-              <div class="col-lg-2">
+              <div class="col-md-2">
                 Organization
               </div>
-              <div class="col-lg-2 col-lg-offset-4">
+              <div class="col-md-2 col-md-offset-4">
                 {{ project.parent }}
+              </div>
+              <div class="col-md-1 pull-right">
+                <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="Organization" data-value="{{project.parent}}" data-toggle="modal" data-target="#modify-field-modal">
+                  Modify
+                </button>
               </div>
             </div>
             <div id="org-panel" class="panel-collapse panel-body collapse text-center row">
@@ -67,6 +109,11 @@ Projects
               </div>
               <div class="col-lg-2 col-lg-offset-4">
                 {{owner}}
+              </div>
+              <div class="col-md-1 pull-right">
+                <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="Owner" data-value="{{owner}}" data-toggle="modal" data-target="#modify-field-modal">
+                  Modify
+                </button>
               </div>
             </div>
             <div id="owner-panel" class="panel-collapse panel-body collapse text-center">
@@ -90,6 +137,11 @@ Projects
               </div>
               <div class="col-lg-2 col-lg-offset-4">
                 {{ budget.dimension_object.value }}
+              </div>
+              <div class="col-md-1 pull-right">
+              <button class="btn btn-xs btn-default open-modify" data-type="number" data-field="Budget" data-value="{{budget.dimension_object.value}}" data-toggle="modal" data-target="#modify-field-modal">
+                Modify
+              </button>
               </div>
             </div>
             <div id="budget-panel" class="panel-collapse panel-body collapse text-center">
@@ -115,6 +167,11 @@ Projects
                 <div class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
+                <div class="col-md-1 pull-right">
+                  <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-field-modal">
+                    Modify
+                  </button>
+                </div>
               </div>
               <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
                 THIS
@@ -139,6 +196,11 @@ Projects
                 </div>
                 <div class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
+                </div>
+                <div class="col-md-1 pull-right">
+                  <button class="btn btn-xs btn-default open-modify" data-type="number" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-field-modal">
+                    Modify
+                  </button>
                 </div>
               </div>
               <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">

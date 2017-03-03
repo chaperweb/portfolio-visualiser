@@ -6,34 +6,60 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   display: none;
 }
 
-.panel-heading {
-  background-color: rgb(116,116,116) !important;
-  color: white !important;
-  border-color:  rgb(116,116,116) !important;
+/* PANEL CSS */
+
+.container .panel-group .panel-heading {
+  background-color: rgb(116,116,116);
+  color: white;
+  border-color:  rgb(116,116,116);
 }
 
 .title {
   font-size: 300%;
+  padding-bottom: 20px;
 }
 
-.sidebar {
-  top: 0;
-  margin: 0;
-  padding: 0;
-  min-height: 90vh;
+/* SIDENAV CSS */
+
+/* The entire sidenav */
+.navbar-fixed-left {
+  width: 250px;
+  position: relative;
+  border-radius: 5px;
+  height: 100%;
+  min-height: 88vh;
+  background-color: rgb(116,116,116);
+  padding-left: 0;
 }
 
-.sidebar li a {
-  color: #ffffff;
-  text-indent: 20px;
-  margin: 0;
+/* The "Projects" list item*/
+.sidebar-item,
+.sidebar-item:hover,
+.sidebar-item:focus {
+  float: none;
+  border-style: none;
+  width: 250px;
+  color: #fff;
+}
+
+/* The entire collapsable list */
+.sidebar .nav .navbar-collapse {
+  color: #fff;
+  background-color: rgb(150,150,150);
+  width:250px;
+  padding-left: 0;
+}
+
+/* List item in collapsable list */
+.sidebar-subitem {
+  color: #fff;
+  text-indent: 10px;
   width: 250px;
 }
 
-.navbar-collapse li a {
-  background-color: #999;
-}
-
-.navbar-inverse .navbar-toggle {
-  border: 0;
+/* Make textcolor black on list items in
+   collapsable list on hover or focus */
+.sidebar-subitem:hover,
+.sidebar-subitem:focus {
+  color: #000;
 }
