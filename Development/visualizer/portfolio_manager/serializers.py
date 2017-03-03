@@ -19,29 +19,10 @@ class DimensionObjectRelatedField(serializers.RelatedField):
             serializer = AssociatedPersonsSerializer(value)
         elif isinstance(value, AssociatedProjectsDimension):
             serializer = AssociatedProjectsSerializer(value)
-        elif isinstance(value, DecimalReferenceDimension):
-            serializer = DecimalReferenceDimensionSerializer(value)
         else:
             raise Exception('Unexpected type of dimesion object: '+value.__class__.__name__)
 
         return serializer.data
-
-class DecimalReferenceDimensionHistorySerializer(serializers.ModelSerializer):
-
-  value = serializers.DecimalField(max_digits=20, decimal_places=2, coerce_to_string=False)
-  at = serializers.DateTimeField()
-
-  class Meta:
-    model = HistoricalDecimalDimension
-    fields = ('id', 'value', 'at', 'history_date')
-
-class DecimalReferenceDimensionSerializer(serializers.ModelSerializer):
-
-  history = DecimalReferenceDimensionHistorySerializer(many=True)
-
-  class Meta:
-    model = DecimalReferenceDimension
-    fields = ('id', 'name', 'history')
 
 class DecimalDimensionHistorySerializer(serializers.ModelSerializer):
 
@@ -57,7 +38,7 @@ class DecimalDimensionSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = DecimalDimension
-    fields = ('id', 'name', 'history')
+    fields = ('name', 'history')
 
 
 class TextDimensionHistorySerializer(serializers.ModelSerializer):
@@ -74,7 +55,7 @@ class TextDimensionSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = TextDimension
-    fields = ('id', 'name', 'history')
+    fields = ('name', 'history')
 
 class DateDimensionHistorySerializer(serializers.ModelSerializer):
 
@@ -90,7 +71,7 @@ class DateDimensionSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = DateDimension
-    fields = ('id', 'name', 'history')
+    fields = ('name', 'history')
 
 class PersonSerializer(serializers.ModelSerializer):
 
@@ -112,7 +93,7 @@ class AssociatedPersonSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = AssociatedPersonDimension
-    fields = ('id', 'name', 'history')
+    fields = ('name', 'history')
 
 
 class AssociatedPersonsSerializer(serializers.ModelSerializer):
@@ -121,7 +102,7 @@ class AssociatedPersonsSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = AssociatedPersonsDimension
-    fields = ('id', 'name', 'persons')
+    fields = ('name', 'persons')
 
 class OrganizationSerializer(serializers.ModelSerializer):
 
@@ -143,7 +124,7 @@ class AssociatedOrganizationSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = AssociatedOrganizationDimension
-    fields = ('id', 'name', 'history')
+    fields = ('name', 'history')
 
 class AssociatedProjectsSerializer(serializers.ModelSerializer):
 
@@ -151,7 +132,7 @@ class AssociatedProjectsSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = AssociatedProjectsDimension
-    fields = ('id', 'name', 'projects')
+    fields = ('name', 'projects')
 
 class ProjectDimensionSerializer(serializers.ModelSerializer):
 
@@ -161,14 +142,55 @@ class ProjectDimensionSerializer(serializers.ModelSerializer):
         model = ProjectDimension
         fields = ('id', 'dimension_object')
 
+class DecimalMilestoneSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = DecimalMilestone
+    fields = ('value',)
+
+class DimensionMilestoneObjectRelatedField(serializers.RelatedField):
+
+    def to_representation(self, value):
+        if isinstance(value, DecimalMilestone):
+            serializer = DecimalMilestoneSerializer(value)
+        else:
+            raise Exception('Unexpected type of dimesion milestone object: '+value.__class__.__name__)
+
+        return serializer.data
+
+
+class DimensionMilestoneSerializer(serializers.ModelSerializer):
+
+  dimension_milestone_object = DimensionMilestoneObjectRelatedField(read_only=True)
+
+  class Meta:
+    model = DimensionMilestone
+    fields = ('dimension_milestone_object', 'project_dimension')
+
+class MilestoneHistorySerializer(serializers.ModelSerializer):
+
+  dimensions = DimensionMilestoneSerializer(many=True)
+
+  class Meta:
+    model = HistoricalMilestone
+    fields = ('history_date', 'due_date', 'dimensions')
+
+class MilestoneSerializer(serializers.ModelSerializer):
+
+  history = MilestoneHistorySerializer(many=True)
+
+  class Meta:
+    model = Milestone
+    fields = ('history','id')
 
 class ProjectSerializer(serializers.ModelSerializer):
 
     dimensions = ProjectDimensionSerializer(many=True)
+    milestones = MilestoneSerializer(many=True)
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'dimensions')
+        fields = ('id', 'name', 'dimensions', 'milestones')
 
 
 

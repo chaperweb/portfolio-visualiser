@@ -35,8 +35,7 @@ class Project (models.Model):
   parent = models.ForeignKey('Organization', null=True,on_delete=models.CASCADE)
   history = HistoricalRecords()
 
-
-
+    
 #Model for a project dimension
 class ProjectDimension (models.Model):
   project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='dimensions')
@@ -54,6 +53,34 @@ def dimension_cleanup(sender, instance, *args, **kwargs):
   instance.dimension_object.delete()
 
 pre_delete.connect(dimension_cleanup, sender=ProjectDimension)
+
+class BaseHistoricalMilestone(models.Model):
+    class Meta:
+        abstract = True
+
+    def __getattr__(self, attrname):
+        if attrname == 'dimensions':
+          return DimensionMilestone.objects.filter(milestone_id=self.id)
+
+        return super(BaseHistoricalMilestone, self).__getattr__(attrname)
+
+class Milestone(models.Model):
+  project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='milestones')
+  history = HistoricalRecords(bases=[BaseHistoricalMilestone])
+  due_date = models.DateTimeField()
+  __history_date = None
+
+class DimensionMilestone(models.Model):
+  milestone = models.ForeignKey(Milestone, on_delete=models.CASCADE, related_name='dimensions')
+  project_dimension = models.ForeignKey(ProjectDimension, on_delete=models.CASCADE, related_name='milestones')
+  content_type = models.ForeignKey(ContentType)
+  object_id = models.PositiveIntegerField()
+  dimension_milestone_object = GenericForeignKey('content_type', 'object_id')
+
+def milestone_cleanup(sender, instance, *args, **kwargs):
+  instance.milestone_object.delete()
+
+pre_delete.connect(milestone_cleanup, sender=DimensionMilestone)
 
 #model for a Dimension to use in comparisons
 class Dimension (models.Model):
@@ -73,34 +100,16 @@ class Person (models.Model):
   first_name = models.CharField(max_length=64)
   last_name = models.CharField(max_length=64)
 
-  def __str__(self):
-    return str(self.first_name + " " + self.last_name)
-
-  def __unicode__(self):
-    return self.first_name + " " + self.last_name
-
-
 class DecimalDimension (Dimension):
   value = models.DecimalField(max_digits = 20, decimal_places = 2)
   history = HistoricalRecords()
   __history_date = None
 
-class DecimalReferenceDimension (Dimension):
+class DecimalMilestone(models.Model):
   value = models.DecimalField(max_digits = 20, decimal_places=2)
-  at = models.DateTimeField()
-  history = HistoricalRecords()
-  __history_date = None
 
-  def from_sheet(self, value, history_date):
-    parts = value.split(';')
-    self.value = parts[1]
-
-    at_tmp = parse(parts[0])
-    if at_tmp.tzinfo is None or at_tmp.tzinfo.utcoffset(at_tmp) is None:
-      at_tmp = at_tmp.replace(tzinfo=pytz.utc)
-
-    self.at = at_tmp
-    self._history_date = history_date
+  def from_sheet(self, value):
+    self.value = value
 
 class TextDimension (Dimension):
   value = models.TextField()
@@ -275,14 +284,14 @@ class PhaseDimension (TextDimension):
   class Meta:
     proxy = True
 
-class SizeMoneyReferenceDimension (DecimalReferenceDimension):
+class SizeMoneyMilestone (DecimalMilestone):
   class Meta:
     proxy = True
 
-class SizeManDaysReferenceDimension (DecimalReferenceDimension):
+class SizeManDaysMilestone (DecimalMilestone):
   class Meta:
     proxy = True
 
-class SizeEffectReferenceDimension (DecimalReferenceDimension):
+class SizeEffectMilestone (DecimalMilestone):
   class Meta:
     proxy = True
