@@ -78,7 +78,7 @@ class DimensionMilestone(models.Model):
   dimension_milestone_object = GenericForeignKey('content_type', 'object_id')
 
 def milestone_cleanup(sender, instance, *args, **kwargs):
-  instance.milestone_object.delete()
+  instance.dimension_milestone_object.delete()
 
 pre_delete.connect(milestone_cleanup, sender=DimensionMilestone)
 
