@@ -3,7 +3,7 @@ from portfolio_manager.models import *
 from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import logging
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from portfolio_manager.serializers import ProjectSerializer
 from portfolio_manager.importer import from_google_sheet
 
@@ -190,7 +190,12 @@ def importer(request):
 
     return redirect('homepage')     # If something fails redirect to homepage
 
-
+def get_sheets(request):
+    if request.method == "GET":
+        sheetObjects = GoogleSheet.objects.all()
+        sheets = [sheet.name for sheet in sheetObjects]
+        return HttpResponse(sheets)
+    return redirect('homepage')
 
 def json(request):
     serializer = ProjectSerializer(Project.objects.all(), many=True)

@@ -9,7 +9,27 @@ Administrative Tools
 <link rel="stylesheet" href="{% static 'portfolio_manager/css/admin_tools.css' %}" />
 {% endblock %}
 
+{% block javascript %}
+{% load static %}
+<script src="{% static 'portfolio_manager/js/admin_tools.js' %}"></script>
+{% endblock %}
+
 {% block content %}
+<!-- Modal -->
+<div class="modal fade" id="history-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3>HISTORY</h3>
+        <div class="well">
+          <ul id="history-well-ul">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Title of body -->
 <div class="row text-center" style="padding-bottom:20px;">
   <h3>Administrative Tools</h3  >
@@ -18,7 +38,7 @@ Administrative Tools
 <!-- First row of boxes -->
 <div class="row">
   <!-- Upload sheet box -->
-  <div style="min-height:30vh;" class="well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
+  <div style="min-height:30vh;" class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
     <div class="row text-center" style="padding-bottom:2vh;">
       <h3>Upload Sheet</h3>
     </div>
@@ -36,14 +56,14 @@ Administrative Tools
           <input id="sheetUrl" class="form-control" name="url" placeholder="Url of sheet" type="text"/>
         </div>
       </div>
-      <button class="btn btn-default col-md-3 col-md-offset-2">History</button>
+      <a role="button" id="sheetHistory" data-sheeturl="{% url 'get_sheets' %}" class="btn btn-default col-md-3 col-md-offset-2">History</a>
       <button type="submit" class="btn btn-success col-md-3 col-md-offset-2">Upload</button>
     </form>
   </div>
   <!-- /upload sheet box -->
 
   <!-- Add project box -->
-  <div style="min-height:30vh;" class="well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
+  <div style="min-height:30vh;" class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
     <div class="row text-center" style="padding-bottom:4vh;">
       <h3>Add Project</h3>
     </div>
@@ -66,7 +86,7 @@ Administrative Tools
 <!-- Second row of boxes -->
 <div class="row">
   <!-- Add organizations box -->
-  <div style="min-height:30vh;" class="well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
+  <div style="min-height:30vh;" class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
     <div class="row text-center" style="padding-bottom:4vh;">
       <h3>Add Organization</h3>
     </div>
@@ -87,7 +107,7 @@ Administrative Tools
   <!-- /add organization box -->
 
   <!-- Add person box -->
-  <div style="min-height:30vh;" class="well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
+  <div style="min-height:30vh;" class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
     <div class="row text-center" style="padding-bottom:2vh;">
       <h3>Add Person</h3>
     </div>

@@ -26,4 +26,5 @@ urlpatterns = [
     url(r"^about\.html$", TemplateView.as_view(template_name="about.html"), name='about'),
     url(r'^projektit$', views.projektit, name='projektit'),
     url(r'^admin_tools$', TemplateView.as_view(template_name="admin_tools.html"), name='admin_tools'),
+    url(r'^get_sheets$', views.get_sheets, name='get_sheets'),
 ]
