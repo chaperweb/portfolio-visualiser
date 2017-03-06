@@ -125,21 +125,6 @@ class ImporterTestCase(TestCase):
         self.assertEqual(Organization.objects.get(name='Org1'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[2].value)
         self.assertEqual(Organization.objects.get(name='Org1'), Project.objects.get(id=1).parent)
 
-
-    def test_size_money_reference(self):
-        data = [[u'id', u'__history_date', u'Name', u'SizeMoneyReference'],
-                [u'1', '2013-03-16T17:41:28+00:00', 'Project1', '03/18/2013;5'],
-                [u'1', '2013-03-18T17:41:28+00:00', u'', '04/18/2013;9'],
-                ]
-        from_data_array(data)
-        self.assertEqual(2, Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all().count())
-        self.assertEqual(9, Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all()[0].value)
-        self.assertEqual(parse('04/18/2013').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all()[0].at)
-
-        self.assertEqual(5, Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all()[1].value)
-        self.assertEqual(parse('03/18/2013').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[1].dimension_object.history.all()[1].at)
-
-
     def test_overwrite_project(self):
         project = Project()
         project.id = 1
@@ -184,3 +169,29 @@ class ImporterTestCase(TestCase):
         self.assertEqual(2, Project.objects.all().count())
         self.assertEqual(1, Project.objects.get(id=1).dimensions.all().count())
         self.assertTrue(isinstance(Project.objects.get(id=1).dimensions.all()[0].dimension_object, DecimalDimension))
+
+    def test_importer_unknown_column(self):
+        from_data_array([[u'id', u'__history_date', u'UnknownDimensionType'],
+                        [u'2', '2013-03-16T17:41:28+00:00', 'foo']])
+        self.assertEqual(0, Project.objects.get(id=2).dimensions.all().count())
+
+    def test_importer_size_money_milestone(self):
+        from_data_array([[u'id', u'__history_date', u'Name', u'SizeMoney'],
+                        [u'1', '2012-03-16T17:41:28+00:00', 'foo', '4'],
+                        [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
+                        [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9']])
+
+        milestones = Project.objects.get(id=1).milestones.all()
+
+        self.assertEqual(2, milestones.count())
+        self.assertEqual(parse('28/6/2015').replace(tzinfo=pytz.utc), milestones[0].history.all()[0].due_date)
+        self.assertEqual(parse('29/6/2016').replace(tzinfo=pytz.utc), milestones[1].history.all()[0].due_date)
+        self.assertEqual(1, milestones[0].history.all().count())
+        self.assertEqual(parse('2013-03-16T17:41:28+00:00'), milestones[0].history.all()[0].history_date)
+        self.assertEqual(5, milestones[0].history.all()[0].dimensions.all()[0].dimension_milestone_object.value)
+        self.assertEqual(9, milestones[1].history.all()[0].dimensions.all()[0].dimension_milestone_object.value)
+        self.assertEquals(milestones[1].history.all()[0].dimensions.all()[0].project_dimension, Project.objects.get(id=1).dimensions.all()[1])
+        
+        
+        
+

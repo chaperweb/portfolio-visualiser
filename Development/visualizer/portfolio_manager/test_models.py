@@ -5,286 +5,134 @@ from django.utils import timezone
 from decimal import *
 from portfolio_manager.serializers import ProjectSerializer
 from rest_framework.renderers import JSONRenderer
+from portfolio_manager.importer import from_data_array
 
-class ModelsTestCase(TestCase):
+class DimensionsTestCase(TestCase):
 
     def setUp(self):
         pass
 
-    def test_size_money_dimension(self):
+    fixtures = ['projects', 'persons', 'organizations']
 
-        d1 = SizeMoneyDimension()
-        d1.name = 'size_money'
-        d1.value = 0
-        d1.save()
-
-        d1.update_value(1)
-        d1.update_value(5.4)
-
-        versions = Version.objects.get_for_object(d1)
-        self.assertEqual(len(versions), 2)
-
-        self.assertEqual(versions[0].field_dict['value'], Decimal(
-            '5.4').quantize(Decimal(10) ** -2))
-        self.assertEqual(versions[1].field_dict['value'], 1)
-
-    def test_development_method_dimension(self):
-
-        d1 = DevelopmentMethodDimension()
-        d1.name = 'development method'
-        d1.value = ''
-        d1.save()
-
-        d1.update_value('java')
-        d1.update_value('scala')
-
-        versions = Version.objects.get_for_object(d1)
-        self.assertEqual(len(versions), 2)
-
-        self.assertEqual(versions[0].field_dict['value'], 'scala')
-        self.assertEqual(versions[1].field_dict['value'], 'java')
-
-    def test_project_id(self):
-        project = Project()
-        project.name = 'projekti'
-        project.save()
-        self.assertEqual(project.id, 1)
-
-    def test_start_time_dimension(self):
-
-        d1 = StartTimeDimension()
-        d1.name = 'start time'
-        d1.value = timezone.now()
-        d1.save()
+    def test_date_dimension(self):
 
         now = timezone.now()
-        d1.update_value(now)
-        d1.update_value(now + timedelta(days=5))
 
-        versions = Version.objects.get_for_object(d1)
-        self.assertEqual(len(versions), 2)
+        d = DateDimension()
+        d.from_sheet('5/6/2015', now)
+        d.save()
 
-        self.assertEqual(versions[0].field_dict['value'].replace(
-            microsecond=0), now.replace(microsecond=0) + timedelta(days=5))
-        self.assertEqual(versions[1].field_dict['value'].replace(
-            microsecond=0), now.replace(microsecond=0))
+        self.assertEquals(1, d.history.all().count())
+        self.assertEqual(parse('5/6/2015').replace(tzinfo=pytz.utc), d.history.all()[0].value)
+        self.assertEqual(now, d.history.all()[0].history_date)
 
-    def test_milestones_dimension(self):
-        project = Project()
-        project.name = 'projekti'
-        project.save()
+    def test_associated_projects_dimension(self):
 
-        d1 = MilestonesDimension()
-        d1.name = 'milestones'
-        d1.save()
+        project1 = Project.objects.get(pk=1)
 
-        pd1 = ProjectDimension()
-        pd1.project = project
-        pd1.dimension_object = d1
-        pd1.save()
+        d = AssociatedProjectsDimension()
+        d.from_sheet('1,2', None)
+        d.save()
 
-        now = timezone.now()
-        p_milestone1 = ProjectMilestone()
-        p_milestone1.deadline = now + timedelta(days=4)
-        p_milestone1.save()
+        project2 = Project.objects.get(pk=2)
 
-        p_milestone2 = ProjectMilestone()
-        p_milestone2.deadline = now + timedelta(days=5)
-        p_milestone2.save()
+        self.assertEquals(project1, d.projects.all()[0])
+        self.assertEquals(project2, d.projects.all()[1])
 
-        d1.set_milestones([p_milestone1, p_milestone2])
-        d1.set_milestones([p_milestone2])
+    def test_associated_persons_dimension(self):
 
-        p_milestone2.deadline = now + timedelta(days=6)
-        p_milestone2.save()
-        d1.save()
+        person1 = Person.objects.get(pk=1)
+        person2 = Person.objects.get(pk=2)
 
-        first_version = Version.objects.get_for_object(d1)[1]
-        first_version_project_milestones = first_version.revision.version_set.filter(
-            content_type=ContentType.objects.get_for_model(ProjectMilestone))
-        self.assertEqual(len(first_version_project_milestones), 2)
-        self.assertEqual(first_version_project_milestones[0].field_dict['deadline'].replace(
-            microsecond=0), now.replace(microsecond=0) + timedelta(days=4))
-        self.assertEqual(first_version_project_milestones[1].field_dict['deadline'].replace(
-            microsecond=0), now.replace(microsecond=0) + timedelta(days=5))
+        d = AssociatedPersonsDimension()
+        d.from_sheet('person1,person2,person3', None)
+        d.save()
 
-    def test_project_dimensions_and_milestones(self):
-        """Test project dimensions and milestones"""
+        person3 = Person.objects.get(first_name='person3')
+        
+        self.assertEquals(person1, d.persons.all()[0])
+        self.assertEquals(person2, d.persons.all()[1])
+        self.assertEquals(person3, d.persons.all()[2])
 
-        project = Project()
-        project.name = 'projekti'
-        project.save()
 
-        d1 = NumericDimension()
-        d1.name = 'budjetti'
-        d1.value = 5
-        d1.save()
-
-        d2 = MilestonesDimension()
-        d2.name = 'milestones'
-        d2.save()
-
-        pd1 = ProjectDimension()
-        pd1.project = project
-        pd1.dimension_object = d1
-        pd1.save()
-
-        pd2 = ProjectDimension()
-        pd2.project = project
-        pd2.dimension_object = d2
-        pd2.save()
+    def test_associated_person_dimension_person_exists(self):
 
         now = timezone.now()
-        project_milestone = ProjectMilestone()
-        project_milestone.deadline = now + timedelta(days=4)
-        project_milestone.save()
-        d2.set_milestones([project_milestone])
+        person1 = Person.objects.get(pk=1)
 
-        d1_milestone = NumericDimensionMilestone()
-        d1_milestone.numeric_dimension = d1
-        d1_milestone.value = 7
-        d1_milestone.save()
+        d = AssociatedPersonDimension()
+        d.from_sheet('person1', now)
+        d.save()
+        
+        self.assertEquals(person1, d.value)
+        self.assertEquals(person1, d.history.all()[0].value)
+        self.assertEqual(now, d.history.all()[0].history_date)
 
-        project_milestone_d1_milestone = ProjectMilestoneDimensionMilestone()
-        project_milestone_d1_milestone.project_milestone = project_milestone
-        project_milestone_d1_milestone.dimension_milestone_object = d1_milestone
-        project_milestone_d1_milestone.save()
+    def test_associated_person_dimension_person_doesnt_exists(self):
 
-        self.assertEqual(len(project.dimensions.all()), 2)
-        self.assertEqual(project.dimensions.all()[
-                         0].dimension_object.name, 'budjetti')
-        self.assertEqual(project.dimensions.all()[
-                         1].dimension_object.name, 'milestones')
-        self.assertEqual(len(project.dimensions.all()[
-                         1].dimension_object.milestones.all()), 1)
-        self.assertEqual(project.dimensions.all()[1].dimension_object.milestones.all()[
-                         0].dimension_milestones.all()[0].dimension_milestone_object.value, 7)
+        now = timezone.now()
 
-        project.dimensions.all()[0].dimension_object.update_value(
-            4, now + timedelta(days=1))
-        project.dimensions.all()[0].dimension_object.update_value(
-            6, now + timedelta(days=2))
+        d = AssociatedPersonDimension()
+        d.from_sheet('person3', now)
+        d.save()
 
-        self.assertEqual(project.dimensions.all()[0].dimension_object.value, 6)
-        self.assertEqual(project.dimensions.all()[
-                         1].dimension_object.milestones.all()[0].on_schedule(), False)
+        person3 = Person.objects.get(first_name='person3')
+        
+        self.assertEquals(person3, d.value)
+        self.assertEquals(person3, d.history.all()[0].value)
+        self.assertEqual(now, d.history.all()[0].history_date)
 
-        project.dimensions.all()[0].dimension_object.update_value(
-            7, now + timedelta(days=3))
-        self.assertEqual(project.dimensions.all()[
-                         1].dimension_object.milestones.all()[0].on_schedule(), True)
+    def test_associated_organization_dimension_org_exists(self):
 
-    def test_project_manager_dimension(self):
-        d1 = ProjectManagerDimension()
-        d1.save()
+        now = timezone.now()
+        org1 = Organization.objects.get(pk='org1')
 
-        person1 = Person()
-        person1.first_name = 'first first'
-        person1.last_name = 'first last'
-        person1.save()
+        d = AssociatedOrganizationDimension()
+        d.from_sheet('org1', now)
+        d.save()
 
-        person2 = Person()
-        person2.first_name = 'second first'
-        person2.last_name = 'second last'
-        person2.save()
+        self.assertEquals(org1, d.value)
+        self.assertEquals(org1, d.history.all()[0].value)
+        self.assertEqual(now, d.history.all()[0].history_date)
 
-        d1.update_value(person1)
-        d1.update_value(person2)
+    def test_associated_organization_dimension_org_not_exists(self):
 
-        person2.first_name = 'updated second first'
-        person2.save()
+        now = timezone.now()
+        
+        d = AssociatedOrganizationDimension()
+        d.from_sheet('org2', now)
+        d.save()
 
-        versions = Version.objects.get_for_object(d1)
-        self.assertEqual(len(versions), 2)
-        self.assertEqual(Person.objects.get(pk=versions[0].field_dict[
-                         'value_id']).first_name, 'updated second first')
-        self.assertEqual(Person.objects.get(pk=versions[1].field_dict[
-                         'value_id']).first_name, 'first first')
+        org1 = Organization.objects.get(pk='org2')
 
-    def test_members_dimension(self):
+        self.assertEquals(org1, d.value)
+        self.assertEquals(org1, d.history.all()[0].value)
+        self.assertEqual(now, d.history.all()[0].history_date)
 
-        project = Project()
-        project.name = 'projekti'
-        project.save()
+class CascadeDeleteTestCase(TestCase):
 
-        d1 = MembersDimension()
-        d1.save()
+    def test_delete_organization(self):
 
-        pd1 = ProjectDimension()
-        pd1.project = project
-        pd1.dimension_object = d1
-        pd1.save()
+        from_data_array([[u'id', u'__history_date', u'Name', u'SizeMoney', u'OwningOrganization'],
+                        [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4', 'org1'],
+                        [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
+                        [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9']])
 
-        person1 = Person()
-        person1.first_name = 'first first'
-        person1.last_name = 'first last'
-        person1.save()
+        Organization.objects.get(pk='org1').delete()
+        self.assertFalse(Organization.objects.all())
+        self.assertFalse(Project.objects.all())
+        self.assertFalse(ProjectDimension.objects.all())
+        self.assertFalse(Milestone.objects.all())
+        self.assertFalse(DimensionMilestone.objects.all())
+        self.assertFalse(DecimalMilestone.objects.all())
+        self.assertFalse(NameDimension.objects.all())
 
-        person2 = Person()
-        person2.first_name = 'second first'
-        person2.last_name = 'second last'
-        person2.save()
 
-        d1.set_members([person1])
-        d1.set_members([person1, person2])
-        d1.set_members([person2])
+    
+    
 
-        self.assertEqual(len(d1.members.all()), 1)
-        self.assertEqual(d1.members.all()[0].first_name, 'second first')
 
-        versions = Version.objects.get_for_object(d1)
-        self.assertEqual(len(versions), 3)
+   
 
-        self.assertEqual(len(versions[1].field_dict['members']), 2)
-        self.assertEqual(Person.objects.get(pk=versions[1].field_dict[
-                         'members'][0]).first_name, 'first first')
-        self.assertEqual(Person.objects.get(pk=versions[1].field_dict[
-                         'members'][1]).first_name, 'second first')
-
-    def test_project_dependencies_dimension(self):
-        d1 = ProjectDependenciesDimension()
-        d1.save()
-
-        project1 = Project()
-        project1.name = 'projekti1'
-        project1.save()
-
-        project2 = Project()
-        project2.name = 'projekti2'
-        project2.save()
-
-        d1.set_dependencies([project1])
-        d1.set_dependencies([project1, project2])
-
-        versions = Version.objects.get_for_object(d1)
-        self.assertEqual(len(versions), 2)
-
-        self.assertEqual(len(versions[0].field_dict['dependencies']), 2)
-        self.assertEqual(versions[0].field_dict[
-                         'dependencies'][0], project1.id)
-        self.assertEqual(versions[0].field_dict[
-                         'dependencies'][1], project2.id)
-
-    def test_suppliers_dimension(self):
-        d1 = SuppliersDimension()
-        d1.save()
-
-        supplier1 = Supplier()
-        supplier1.name = 'supplier1'
-        supplier1.save()
-
-        supplier2 = Supplier()
-        supplier2.name = 'supplier2'
-        supplier2.save()
-
-        d1.set_suppliers([supplier1])
-        d1.set_suppliers([supplier1, supplier2])
-
-        versions = Version.objects.get_for_object(d1)
-        self.assertEqual(len(versions), 2)
-
-        self.assertEqual(len(versions[0].field_dict['suppliers']), 2)
-        self.assertEqual(Supplier.objects.get(pk=versions[0].field_dict[
-                         'suppliers'][0]).name, supplier1.name)
-        self.assertEqual(Supplier.objects.get(pk=versions[0].field_dict[
-                         'suppliers'][1]).name, supplier2.name)
+   
+    
