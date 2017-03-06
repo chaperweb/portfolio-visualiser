@@ -92,11 +92,8 @@ def add_new_org(request):
         if form.is_valid():
             organization = Organization(name = form.cleaned_data['name'])
             organization.save()
-        return redirect('add_new_project')
-
-    elif request.method == 'GET':
-        form = OrganizationForm()
-    return render(request, 'new_org.html', {'form':form})
+        return redirect('admin_tools')
+    return redirect('homepage')
 
 # Site to add a new person
 def add_new_person(request):
@@ -105,11 +102,8 @@ def add_new_person(request):
         if form.is_valid():
             person = Person(first_name=form.cleaned_data['first'], last_name=form.cleaned_data['last'])
             person.save()
-        return redirect('add_new_project')
-
-    elif request.method == 'GET':
-        form = PersonForm()
-    return render(request, 'new_person.html', {'form':form})
+        return redirect('admin_tools') # Rediret to admin_tools if success
+    return redirect('homepage') # If it failed redirect to homepage
 
 # Site to see all projects
 def projects(request):
@@ -184,18 +178,19 @@ def delete_google_sheet(request, google_sheet_id):
 def load_google_sheet(request, google_sheet_id):
     google_sheet = GoogleSheet.objects.get(id=google_sheet_id)
     from_google_sheet(google_sheet.url)
-    return redirect('importer')
+    return redirect('admin_tools')
 
 def importer(request):
     if request.method == "POST":
         form = GoogleSheetForm(request.POST)
 
         if form.is_valid():
-            form.save()
+            sheet = form.save()
+            return load_google_sheet(request, sheet.id)     # Load sheet and redirect to admin_tools
 
-        return redirect('importer')
-    else:
-        return render(request, 'importer.html', { 'google_sheets': GoogleSheet.objects.all(), 'form': GoogleSheetForm() } )
+    return redirect('homepage')     # If something fails redirect to homepage
+
+
 
 def json(request):
     serializer = ProjectSerializer(Project.objects.all(), many=True)
