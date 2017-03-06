@@ -1,0 +1,185 @@
+from django.test import TestCase
+from portfolio_manager.models import *
+from datetime import datetime, timedelta
+from django.utils import timezone
+from decimal import *
+from portfolio_manager.serializers import *
+from rest_framework.renderers import JSONRenderer
+from django.test import Client
+from django.core.urlresolvers import reverse
+import json
+from portfolio_manager.importer import from_data_array
+from portfolio_manager import views
+
+class SerializersTestCase(TestCase):
+
+        def setUp(self):
+                pass
+
+
+        def test_milestones_serializer(self):
+                from_data_array([[u'id', u'__history_date', u'Name', u'SizeMoney'],
+                        [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4'],
+                        [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
+                        [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9']])
+                
+                milestones_serializer = MilestoneSerializer(Project.objects.get(id=1).milestones.all(), many=True)
+
+                expected_serialization = [
+                                           {
+                                              
+                                              'history':[
+                                                 {
+                                                    'dimensions':[
+                                                       {
+                                                          'dimension_milestone_object':{
+                                                             'value':'5.00'
+                                                          },
+                                                          'project_dimension':2
+                                                       }
+                                                    ],
+                                                    'history_date':'2013-03-16T17:41:28Z',
+                                                    'due_date':'2015-06-28T00:00:00Z'
+                                                 }
+                                              ],
+                                              'id': 1
+                                           },
+                                           {
+                                              'history':[
+                                                 {
+                                                    'dimensions':[
+                                                       {
+                                                          'dimension_milestone_object':{
+                                                             'value':'9.00'
+                                                          },
+                                                          'project_dimension':2
+                                                       }
+                                                    ],
+                                                    'history_date':'2014-03-16T17:41:28Z',
+                                                    'due_date':'2016-06-29T00:00:00Z'
+                                                 }
+                                              ],
+                                              'id': 2
+                                           }
+                                        ]
+
+                self.assertEquals(expected_serialization, milestones_serializer.data)
+
+        def test_project_serializer(self):
+
+                from_data_array([[u'id', u'__history_date', u'Name', u'SizeMoney'],
+                        [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4'],
+                        [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
+                        [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9'],
+                        [u'2', '2017-03-16T17:41:28+00:00', 'biz', u'4']])
+                
+                projects_serializer = ProjectSerializer(Project.objects.all(), many=True)
+
+                expected_serialization = [
+                           {
+                              'id':1,
+                              'name':'foo',
+                              'dimensions':[
+                                 {
+                                    'id':1,
+                                    'dimension_object':{
+                                       'history':[
+                                          {
+                                             'value':'foo',
+                                             'id':1,
+                                             'history_date':'2012-03-16T17:41:28Z'
+                                          }
+                                       ],
+                                       'name':'Name'
+                                    }
+                                 },
+                                 {
+                                    'id':2,
+                                    'dimension_object':{
+                                       'history':[
+                                          {
+                                             'value':4.0,
+                                             'id':1,
+                                             'history_date':'2012-03-16T17:41:28Z'
+                                          }
+                                       ],
+                                       'name':'SizeMoney'
+                                    }
+                                 }
+                              ],
+                              'milestones':[
+                                 {
+                                    'id': 1,
+                                    'history':[
+                                       {
+                                          'due_date':'2015-06-28T00:00:00Z',
+                                          'dimensions':[
+                                             {
+                                                'dimension_milestone_object':{
+                                                   'value':'5.00'
+                                                },
+                                                'project_dimension':2
+                                             }
+                                          ],
+                                          'history_date':'2013-03-16T17:41:28Z'
+                                       }
+                                    ]
+                                 },
+                                 {
+                                    'id': 2,
+                                    'history':[
+                                       {
+                                          'due_date':'2016-06-29T00:00:00Z',
+                                          'dimensions':[
+                                             {
+                                                'dimension_milestone_object':{
+                                                   'value':'9.00'
+                                                },
+                                                'project_dimension':2
+                                             }
+                                          ],
+                                          'history_date':'2014-03-16T17:41:28Z'
+                                       }
+                                    ]
+                                 }
+                              ]
+                           },
+                           {
+                              'id':2,
+                              'name':'biz',
+                              'dimensions':[
+                                 {
+                                    'id':3,
+                                    'dimension_object':{
+                                       'history':[
+                                          {
+                                             'value':'biz',
+                                             'id':2,
+                                             'history_date':'2017-03-16T17:41:28Z'
+                                          }
+                                       ],
+                                       'name':'Name'
+                                    }
+                                 },
+                                 {
+                                    'id':4,
+                                    'dimension_object':{
+                                       'history':[
+                                          {
+                                             'value':4.0,
+                                             'id':2,
+                                             'history_date':'2017-03-16T17:41:28Z'
+                                          }
+                                       ],
+                                       'name':'SizeMoney'
+                                    }
+                                 }
+                              ],
+                              'milestones':[
+
+                              ]
+                           }
+                        ]
+                self.assertEquals(expected_serialization, projects_serializer.data)
+
+        
