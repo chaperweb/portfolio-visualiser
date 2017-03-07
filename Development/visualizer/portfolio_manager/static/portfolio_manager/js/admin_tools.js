@@ -91,6 +91,45 @@ function create_org()
   });
 }
 
+function create_person()
+{
+  var csrftoken = getCookie("csrftoken");
+
+  function csrfSafeMethod(method)
+  {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+  $.ajax({
+    method: "POST",
+    url: $('#person-form').attr('action'),
+    data: {'first': $("#first_name").val(), 'last': $("#last_name").val()},
+    success: function(json) {
+      // Remove old modal content
+      $("#conf-modal-body > h3").remove();
+      $("#conf-modal-body > h4").remove();
+
+      // Add new modal content
+      var result = "<h3><strong>" + json.result + "</strong></h5>"
+      var org = "<h4>Person created: " + json.name + "</h4>"
+      $(result).appendTo($("#conf-modal-body"));
+      $(org).appendTo($("#conf-modal-body"));
+      $("#confirmation-modal").modal('show');
+    },
+    error: function() {
+      alert("Failed to add new person");
+    }
+  });
+}
 
 $(function(){
   // When you click the history button the history-modal opens
@@ -104,10 +143,16 @@ $(function(){
     get_sheet_history();
   });
 
-
+  // When you submit the organization form it stops the default
+  // behaviour and submit the form with ajax
   $('#org-form').on('submit', function(event){
     event.preventDefault();
-    console.log("form submitted!")  // DEBUG
     create_org();
+  });
+
+  $('#person-form').on('submit', function(event){
+    event.preventDefault();
+    console.log("Personform submitted!")  // DEBUG
+    create_person();
   });
 });

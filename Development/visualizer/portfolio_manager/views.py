@@ -96,7 +96,7 @@ def add_new_org(request):
             organization.save()
 
             response_data = {}
-            response_data['result'] = 'Create organization successful!'
+            response_data['result'] = 'Created organization successfully!'
             response_data['orgName'] = organization.name
             return HttpResponse(
                 json_module.dumps(response_data),
@@ -104,19 +104,29 @@ def add_new_org(request):
             )
 
     return HttpResponse(
-    json_module.dumps({"nothing to see": "this isn't happening"}),
+        json_module.dumps({"nothing to see": "this isn't happening"}),
         content_type="application/json"
     )
 
 # Site to add a new person
 def add_new_person(request):
     if request.method == 'POST':
-        form = PersonForm(request.POST)
+        data = {'first': request.POST.get('first'), 'last': request.POST.get('last')}
+        form = PersonForm(data)
         if form.is_valid():
             person = Person(first_name=form.cleaned_data['first'], last_name=form.cleaned_data['last'])
             person.save()
-        return redirect('admin_tools') # Rediret to admin_tools if success
-    return redirect('homepage') # If it failed redirect to homepage
+            response_data = {}
+            response_data['result'] = 'Created person successfully!'
+            response_data['name'] = person.first_name + " " + person.last_name
+            return HttpResponse(
+                json_module.dumps(response_data),
+                content_type="application/json"
+            )
+    return HttpResponse(
+        json_module.dumps({"nothing to see": "this isn't happening"}),
+        content_type="application/json"
+    )
 
 # Site to see all projects
 def projects(request):
