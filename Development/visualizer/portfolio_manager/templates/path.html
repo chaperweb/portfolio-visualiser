@@ -143,6 +143,10 @@ li {
       return true;
     });
 
+    if (data.length == 1) {
+      data[1] = data[0];
+    }
+
     pathData = data.map(function(val) {
       parts = val.history_date.split('T');
       val.date = parts[0]
