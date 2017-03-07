@@ -24,7 +24,7 @@ def from_data_array(data):
     if 'm;' in update[0]: # milestone row
 
       parts = update[0].split(';')
-      milestone_due_date = parse(parts[1])
+      milestone_due_date = parse(parts[1], dayfirst=True)
       if milestone_due_date.tzinfo is None or milestone_due_date.tzinfo.utcoffset(milestone_due_date) is None:
         milestone_due_date = milestone_due_date.replace(tzinfo=pytz.utc)
 

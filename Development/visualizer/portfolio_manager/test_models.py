@@ -23,7 +23,7 @@ class DimensionsTestCase(TestCase):
         d.save()
 
         self.assertEquals(1, d.history.all().count())
-        self.assertEqual(parse('5/6/2015').replace(tzinfo=pytz.utc), d.history.all()[0].value)
+        self.assertEqual(datetime(2015,6,5,tzinfo=pytz.utc), d.history.all()[0].value)
         self.assertEqual(now, d.history.all()[0].history_date)
 
     def test_associated_projects_dimension(self):

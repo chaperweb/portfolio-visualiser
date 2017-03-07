@@ -55,8 +55,8 @@ class ImporterTestCase(TestCase):
                 ]
         from_data_array(data)
         self.assertEqual(2, Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all().count())
-        self.assertEqual(parse('5/6/2017').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
-        self.assertEqual(parse('3/4/2015').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
+        self.assertEqual(datetime(2017,6,5,tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
+        self.assertEqual(datetime(2015,4,3,tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
 
     def test_import_startdate(self):
         data = [[u'id', u'__history_date', u'StartDate'],
@@ -183,14 +183,14 @@ class ImporterTestCase(TestCase):
     def test_importer_size_money_milestone(self):
         from_data_array([[u'id', u'__history_date', u'Name', u'SizeMoney'],
                         [u'1', '2012-03-16T17:41:28+00:00', 'foo', '4'],
-                        [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
-                        [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9']])
+                        [u'm;1/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
+                        [u'm;1/7/2016', '2014-03-16T17:41:28+00:00', u'', u'9']])
 
         milestones = Project.objects.get(id=1).milestones.all()
 
         self.assertEqual(2, milestones.count())
-        self.assertEqual(parse('28/6/2015').replace(tzinfo=pytz.utc), milestones[0].history.all()[0].due_date)
-        self.assertEqual(parse('29/6/2016').replace(tzinfo=pytz.utc), milestones[1].history.all()[0].due_date)
+        self.assertEqual(datetime(2015, 6, 1, tzinfo=pytz.utc), milestones[0].history.all()[0].due_date)
+        self.assertEqual(datetime(2016, 7, 1, tzinfo=pytz.utc), milestones[1].history.all()[0].due_date)
         self.assertEqual(1, milestones[0].history.all().count())
         self.assertEqual(parse('2013-03-16T17:41:28+00:00'), milestones[0].history.all()[0].history_date)
         self.assertEqual(5, milestones[0].history.all()[0].dimensions.all()[0].dimension_milestone_object.value)
