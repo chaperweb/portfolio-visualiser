@@ -149,6 +149,7 @@ li {
       return val;
     });
 
+    //debugger;
     // pathData = [{"date": "01-05-16", "y": 150.10, "x": "Teuvo"},
     //                  {"date": "15-05-16", "y": 170.10, "x": "Teppo"},
     //                  {"date": "01-06-16", "y": 50.03, "x": "Matti"},
@@ -203,10 +204,12 @@ li {
   }
 
   function get_dimension(project, id) {
-    for (var j = 0; j < project.dimensions.length; j++) {
-        if(project.dimensions[j].id == id) {
-          return project.dimensions[j];
-        }
+    if (project) {
+      for (var j = 0; j < project.dimensions.length; j++) {
+          if(project.dimensions[j].id == id) {
+            return project.dimensions[j];
+          }
+      }
     }
     return null;
   }
@@ -230,6 +233,10 @@ li {
 
     $('#project-selector').on('change', function(){
       project_id = $(this).find("option:selected").val();
+
+      preserved_x_name = $('#x-selector').find("option:selected").text();
+      preserved_y_name = $('#y-selector').find("option:selected").text();
+
       $('#x-selector').html('<option>---</option>');
       $('#y-selector').html('<option>---</option>');
       for (var i = 0, len = db_json.length; i < len; i++) {
@@ -237,13 +244,18 @@ li {
           project = db_json[i];
           for (var j = 0; j < project.dimensions.length; j++) {
             if('history' in project.dimensions[j].dimension_object) {
-              $('#x-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
-              $('#y-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
+
+              x_selected = (project.dimensions[j].dimension_object.name == preserved_x_name) ? 'selected' : '';
+              y_selected = (project.dimensions[j].dimension_object.name == preserved_y_name) ? 'selected' : '';
+
+              $('#x-selector').append('<option '+x_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
+              $('#y-selector').append('<option '+y_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
             }
           }
           break;
         }
       }
+      dimension_selector_change();
     });
 
     $('#x-selector').on('change', dimension_selector_change);
