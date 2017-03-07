@@ -49,6 +49,9 @@ class ProjectDimension (models.Model):
   def __str__(self):
     return self.dimension_object.__class__.__name__
 
+  def dimension_type(self):
+    return self.dimension_object.__class__.__name__
+
 def dimension_cleanup(sender, instance, *args, **kwargs):
   instance.dimension_object.delete()
 

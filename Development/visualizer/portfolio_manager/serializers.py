@@ -140,7 +140,7 @@ class ProjectDimensionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectDimension
-        fields = ('id', 'dimension_object')
+        fields = ('id', 'dimension_object', 'dimension_type')
 
 class DecimalMilestoneSerializer(serializers.ModelSerializer):
 
