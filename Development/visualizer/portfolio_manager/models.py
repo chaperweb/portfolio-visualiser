@@ -35,7 +35,7 @@ class Project (models.Model):
   parent = models.ForeignKey('Organization', null=True,on_delete=models.CASCADE)
   history = HistoricalRecords()
 
-    
+
 #Model for a project dimension
 class ProjectDimension (models.Model):
   project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='dimensions')
@@ -173,8 +173,8 @@ class AssociatedPersonsDimension(Dimension):
 
       self.persons.add(person)
 
-  def __str__(self):
-    return self.first_name+" "+self.last_name
+ # def __str__(self):
+#    return self.first_name+" "+self.last_name
 
 #Storing the project dependencies as list of project IDs
 class AssociatedProjectsDimension(Dimension):

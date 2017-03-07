@@ -25,4 +25,5 @@ urlpatterns = [
     url(r"^importer\.html/load/(?P<google_sheet_id>[0-9]+)$", views.load_google_sheet, name='load_google_sheet'),
     url(r"^about\.html$", TemplateView.as_view(template_name="about.html"), name='about'),
     url(r'^projektit$', views.projektit, name='projektit'),
+    url(r'^database$', views.databaseview, name='databaseview'),
 ]
