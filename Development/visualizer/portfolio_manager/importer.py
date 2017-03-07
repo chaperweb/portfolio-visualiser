@@ -17,7 +17,7 @@ def from_data_array(data):
 
   for update in data[1:]:
 
-    history_date = parse(update[1])
+    history_date = parse(update[1], dayfirst=True)
     if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
       history_date = history_date.replace(tzinfo=pytz.utc)
 

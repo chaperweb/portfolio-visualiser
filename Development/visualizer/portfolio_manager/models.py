@@ -224,7 +224,7 @@ class DateDimension (Dimension):
 
   def from_sheet(self, value, history_date):
 
-    d = parse(value)
+    d = parse(value, dayfirst=True)
     if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
       d = d.replace(tzinfo=pytz.utc)
 
