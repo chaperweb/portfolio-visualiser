@@ -30,7 +30,7 @@ class DecimalDimensionHistorySerializer(serializers.ModelSerializer):
 
   class Meta:
     model = HistoricalDecimalDimension
-    fields = ('id', 'value', 'history_date')
+    fields = ('id', 'value', 'history_date', 'string')
 
 class DecimalDimensionSerializer(serializers.ModelSerializer):
 
@@ -47,7 +47,7 @@ class TextDimensionHistorySerializer(serializers.ModelSerializer):
 
   class Meta:
     model = HistoricalTextDimension
-    fields = ('id', 'value', 'history_date')
+    fields = ('id', 'value', 'history_date', 'string')
 
 class TextDimensionSerializer(serializers.ModelSerializer):
 
@@ -63,7 +63,7 @@ class DateDimensionHistorySerializer(serializers.ModelSerializer):
 
   class Meta:
     model = HistoricalDateDimension
-    fields = ('id', 'value', 'history_date')
+    fields = ('id', 'value', 'history_date', 'string')
 
 class DateDimensionSerializer(serializers.ModelSerializer):
 
@@ -85,7 +85,7 @@ class AssociatedPersonHistorySerializer(serializers.ModelSerializer):
 
   class Meta:
     model = HistoricalAssociatedPersonDimension
-    fields = ('id', 'value', 'history_date')
+    fields = ('id', 'value', 'history_date', 'string')
 
 class AssociatedPersonSerializer(serializers.ModelSerializer):
 
@@ -102,7 +102,7 @@ class AssociatedPersonsSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = AssociatedPersonsDimension
-    fields = ('name', 'persons')
+    fields = ('id', 'name', 'persons', 'string')
 
 class OrganizationSerializer(serializers.ModelSerializer):
 
@@ -116,7 +116,7 @@ class AssociatedOrganizationHistorySerializer(serializers.ModelSerializer):
 
   class Meta:
     model = HistoricalAssociatedOrganizationDimension
-    fields = ('id', 'value', 'history_date')
+    fields = ('id', 'value', 'history_date', 'string')
 
 class AssociatedOrganizationSerializer(serializers.ModelSerializer):
 
@@ -132,7 +132,7 @@ class AssociatedProjectsSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = AssociatedProjectsDimension
-    fields = ('name', 'projects')
+    fields = ('id', 'name', 'projects', 'string')
 
 class ProjectDimensionSerializer(serializers.ModelSerializer):
 
