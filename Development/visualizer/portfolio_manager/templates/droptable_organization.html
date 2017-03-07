@@ -7,15 +7,20 @@ Droptable Organization
 
 {# JAVASCRIPT HERE #}
 {% block javascript %}
-<script>$('[href*="{% url 'select_org' %}"]').addClass('active');</script>
 {% endblock %}
 
 {# CONTENT HERE #}
 {% block content %}
 <br />
-  <form action="{% url 'select_org' %}" method="POST">
+  <form action="{% url 'databaseview' %}" method="POST">
     {% csrf_token %}
     {{ form }}
   <input type="submit" name="submit" value="Vahvista">
 </form>
+
+{% for d in dims %}
+<p>
+  {{  d}}
+</p>
+{% endfor %}
 {% endblock %}

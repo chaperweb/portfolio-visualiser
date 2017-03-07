@@ -66,7 +66,7 @@ $(document).ready(function() {
     <ul class="nav navbar-nav navbar-right hidden-xs hidden-sm hidden-md">
       <li><a class="navbar-item" href="">Workspace</a></li><!-- TODO: Redirect to correct site -->
       <li><a class="navbar-item" href="{% url 'admin_tools' %}">Admin</a></li>   <!-- TODO: Hide if not admin -->
-      <li><a class="navbar-item" href="">Database</a></li>   <!-- TODO: Redirect to correct site and hide if not admin -->
+      <li><a class="navbar-item" href="{% url 'databaseview' %}">Database</a></li>   <!-- TODO: Hide if not admin -->
       <li><a class="navbar-item" href="{% url 'about' %}">About</a></li>
       <li><a class="navbar-item" href="">Log Out</a></li>   <!-- TODO: Redirect to correct site -->
     </ul>
@@ -75,7 +75,7 @@ $(document).ready(function() {
       <ul class="nav navbar-nav hidden-lg">
         <li><a class="navbar-item" href="{% url 'homepage' %}">Workspace</a></li> <!-- TODO: Redirect to correct site -->
         <li><a class="navbar-item" href="{% url 'admin_tools' %}">Admin</a></li>   <!-- TODO: Hide if not admin -->
-        <li><a class="navbar-item" href="{% url 'homepage' %}">Database</a></li>   <!-- TODO: Redirect to correct site and hide if not admin -->
+        <li><a class="navbar-item" href="{% url 'databaseview' %}">Database</a></li>   <!-- TODO: Hide if not admin -->
         <li><a class="navbar-item" href="{% url 'about' %}">About</a></li>
         <li><a class="navbar-item" href="{% url 'homepage' %}">Log Out</a></li>   <!-- TODO: Redirect to correct site -->
       </ul>

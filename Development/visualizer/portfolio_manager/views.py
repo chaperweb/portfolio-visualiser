@@ -291,3 +291,28 @@ def projektit(request):
     projects_all = Project.objects.all()
     organizations_all = Organization.objects.all()
     return render(request, 'projektit.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
+
+def databaseview(request):
+    if request.method == "POST":
+       form = CronForm(request.POST)
+
+       if form.is_valid:
+          projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
+
+          dimensions = []
+          dims = []
+
+          for p in projs:
+              dimensions += ProjectDimension.objects.filter(project=p)
+
+          for dim in dimensions:
+              if dim.dimension_object.name not in dims:
+                  dims.append(dim.dimension_object.name)
+
+
+
+          #redirect to the url where you'll process the input
+          return render(request, 'droptable_organization.html', {'form':form, 'projs':projs, 'dims':dims}) # insert reverse or url
+    else:
+         form = CronForm()
+    return render(request, 'droptable_organization.html', {'form':form})
