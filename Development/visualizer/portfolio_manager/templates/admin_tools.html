@@ -48,6 +48,8 @@ Administrative Tools
   </div>
 </div>
 
+<!-- Actual body of page -->
+
 <!-- Title of body -->
 <div class="row text-center" style="padding-bottom:20px;">
   <h3>Administrative Tools</h3  >
@@ -60,7 +62,7 @@ Administrative Tools
     <div class="row text-center" style="padding-bottom:2vh;">
       <h3>Upload Sheet</h3>
     </div>
-    <form action="{% url 'importer' %}" method="POST">
+    <form action="{% url 'importer' %}" method="POST" id="sheet-form">
       {% csrf_token %}
       <div class="form-group row">
         <label class="col-lg-2 col-form-label" for="inputName">Name</label>

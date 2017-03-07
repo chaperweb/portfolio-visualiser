@@ -201,17 +201,28 @@ def delete_google_sheet(request, google_sheet_id):
 def load_google_sheet(request, google_sheet_id):
     google_sheet = GoogleSheet.objects.get(id=google_sheet_id)
     from_google_sheet(google_sheet.url)
-    return redirect('admin_tools')
+
+    response_data = {}
+    response_data['result'] = 'Loaded sheet successfully!'
+    response_data['name'] = google_sheet.name
+
+    return HttpResponse(
+        json_module.dumps(response_data),
+        content_type="application/json"
+    )
 
 def importer(request):
     if request.method == "POST":
-        form = GoogleSheetForm(request.POST)
-
+        data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
+        form = GoogleSheetForm(data)
         if form.is_valid():
             sheet = form.save()
-            return load_google_sheet(request, sheet.id)     # Load sheet and redirect to admin_tools
+            return load_google_sheet(request, sheet.id)
 
-    return redirect('homepage')     # If something fails redirect to homepage
+    return HttpResponse(
+        json_module.dumps({"nothing to see": "this isn't happening"}),
+        content_type="application/json"
+    )
 
 def get_sheets(request):
     if request.method == "GET":
