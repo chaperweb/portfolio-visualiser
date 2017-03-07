@@ -3,9 +3,10 @@ from portfolio_manager.models import *
 from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import logging
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from portfolio_manager.serializers import ProjectSerializer
 from portfolio_manager.importer import from_google_sheet
+import json as json_module
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -88,28 +89,44 @@ def add_new_project(request):
 # Site to add a new organization
 def add_new_org(request):
     if request.method == 'POST':
-        form = OrganizationForm(request.POST)
+        data = {'name': request.POST.get('orgName')}
+        form = OrganizationForm(data)
         if form.is_valid():
             organization = Organization(name = form.cleaned_data['name'])
             organization.save()
-        return redirect('add_new_project')
 
-    elif request.method == 'GET':
-        form = OrganizationForm()
-    return render(request, 'new_org.html', {'form':form})
+            response_data = {}
+            response_data['result'] = 'Created organization successfully!'
+            response_data['orgName'] = organization.name
+            return HttpResponse(
+                json_module.dumps(response_data),
+                content_type="application/json"
+            )
+
+    return HttpResponse(
+        json_module.dumps({"nothing to see": "this isn't happening"}),
+        content_type="application/json"
+    )
 
 # Site to add a new person
 def add_new_person(request):
     if request.method == 'POST':
-        form = PersonForm(request.POST)
+        data = {'first': request.POST.get('first'), 'last': request.POST.get('last')}
+        form = PersonForm(data)
         if form.is_valid():
             person = Person(first_name=form.cleaned_data['first'], last_name=form.cleaned_data['last'])
             person.save()
-        return redirect('add_new_project')
-
-    elif request.method == 'GET':
-        form = PersonForm()
-    return render(request, 'new_person.html', {'form':form})
+            response_data = {}
+            response_data['result'] = 'Created person successfully!'
+            response_data['name'] = person.first_name + " " + person.last_name
+            return HttpResponse(
+                json_module.dumps(response_data),
+                content_type="application/json"
+            )
+    return HttpResponse(
+        json_module.dumps({"nothing to see": "this isn't happening"}),
+        content_type="application/json"
+    )
 
 # Site to see all projects
 def projects(request):
@@ -184,18 +201,36 @@ def delete_google_sheet(request, google_sheet_id):
 def load_google_sheet(request, google_sheet_id):
     google_sheet = GoogleSheet.objects.get(id=google_sheet_id)
     from_google_sheet(google_sheet.url)
-    return redirect('importer')
+
+    response_data = {}
+    response_data['result'] = 'Loaded sheet successfully!'
+    response_data['name'] = google_sheet.name
+
+    return HttpResponse(
+        json_module.dumps(response_data),
+        content_type="application/json"
+    )
 
 def importer(request):
     if request.method == "POST":
-        form = GoogleSheetForm(request.POST)
-
+        data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
+        form = GoogleSheetForm(data)
         if form.is_valid():
-            form.save()
+            sheet = form.save()
+            return load_google_sheet(request, sheet.id)
 
-        return redirect('importer')
-    else:
-        return render(request, 'importer.html', { 'google_sheets': GoogleSheet.objects.all(), 'form': GoogleSheetForm() } )
+    return HttpResponse(
+        json_module.dumps({"nothing to see": "this isn't happening"}),
+        content_type="application/json"
+    )
+
+def get_sheets(request):
+    if request.method == "GET":
+        sheetObjects = GoogleSheet.objects.all()
+        sheets = [sheet.name for sheet in sheetObjects]
+        sheetJSON = json_module.dumps(sheets)
+        return HttpResponse(sheetJSON)
+    return redirect('homepage')
 
 def json(request):
     serializer = ProjectSerializer(Project.objects.all(), many=True)

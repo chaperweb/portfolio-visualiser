@@ -1,5 +1,5 @@
-from django.conf.urls import url
 from django.conf import settings
+from django.conf.urls import url
 from django.views.generic import TemplateView
 
 from . import views
@@ -25,5 +25,7 @@ urlpatterns = [
     url(r"^importer\.html/load/(?P<google_sheet_id>[0-9]+)$", views.load_google_sheet, name='load_google_sheet'),
     url(r"^about\.html$", TemplateView.as_view(template_name="about.html"), name='about'),
     url(r'^projektit$', views.projektit, name='projektit'),
+    url(r'^admin_tools$', TemplateView.as_view(template_name="admin_tools.html"), name='admin_tools'),
+    url(r'^get_sheets$', views.get_sheets, name='get_sheets'),
     url(r'^database$', views.databaseview, name='databaseview'),
 ]
