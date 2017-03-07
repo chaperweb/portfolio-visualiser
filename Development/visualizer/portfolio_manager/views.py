@@ -6,6 +6,7 @@ import logging
 from django.http import JsonResponse, HttpResponse
 from portfolio_manager.serializers import ProjectSerializer
 from portfolio_manager.importer import from_google_sheet
+import json as json_module
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -194,7 +195,8 @@ def get_sheets(request):
     if request.method == "GET":
         sheetObjects = GoogleSheet.objects.all()
         sheets = [sheet.name for sheet in sheetObjects]
-        return HttpResponse(sheets)
+        sheetJSON = json_module.dumps(sheets)
+        return HttpResponse(sheetJSON)
     return redirect('homepage')
 
 def json(request):

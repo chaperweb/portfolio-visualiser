@@ -38,8 +38,14 @@ function get_sheet_history()
     url: $('#sheetHistory').data('sheeturl'),
     data: {},
     success: function(data) {
-      alert("Successfully saved score!");
-      alert(data);
+      var listitems = $("#history-well-ul > li");
+      listitems.remove();
+      var names = JSON.parse(data);
+      for(i=0;i<names.length;i++)
+      {
+        var row = "<li class='list-group-item'><a>" + names[i] + "</a></li>"
+        $(row).appendTo("#history-well-ul");
+      }
     },
     error: function() {
       error("Score could not be submitted!");
