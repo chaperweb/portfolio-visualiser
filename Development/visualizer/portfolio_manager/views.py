@@ -89,12 +89,24 @@ def add_new_project(request):
 # Site to add a new organization
 def add_new_org(request):
     if request.method == 'POST':
-        form = OrganizationForm(request.POST)
+        data = {'name': request.POST.get('orgName')}
+        form = OrganizationForm(data)
         if form.is_valid():
             organization = Organization(name = form.cleaned_data['name'])
             organization.save()
-        return redirect('admin_tools')
-    return redirect('homepage')
+
+            response_data = {}
+            response_data['result'] = 'Create organization successful!'
+            response_data['orgName'] = organization.name
+            return HttpResponse(
+                json_module.dumps(response_data),
+                content_type="application/json"
+            )
+
+    return HttpResponse(
+    json_module.dumps({"nothing to see": "this isn't happening"}),
+        content_type="application/json"
+    )
 
 # Site to add a new person
 def add_new_person(request):

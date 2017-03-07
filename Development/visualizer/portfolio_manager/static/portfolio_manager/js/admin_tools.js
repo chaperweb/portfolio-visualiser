@@ -38,8 +38,7 @@ function get_sheet_history()
     url: $('#sheetHistory').data('sheeturl'),
     data: {},
     success: function(data) {
-      var listitems = $("#history-well-ul > li");
-      listitems.remove();
+      $("#history-well-ul > li").remove();
       var names = JSON.parse(data);
       for(i=0;i<names.length;i++)
       {
@@ -48,21 +47,67 @@ function get_sheet_history()
       }
     },
     error: function() {
-      error("Score could not be submitted!");
+      alert("Failed to load sheet history!");
+    }
+  });
+}
+
+function create_org()
+{
+  var csrftoken = getCookie("csrftoken");
+
+  function csrfSafeMethod(method)
+  {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+  $.ajax({
+    method: "POST",
+    url: $('#org-form').attr('action'),
+    data: {'orgName': $("#orgName").val()},
+    success: function(json) {
+      // Remove old modal content
+      $("#conf-modal-body > h3").remove();
+      $("#conf-modal-body > h4").remove();
+
+      // Add new modal content
+      var result = "<h3><strong>" + json.result + "</strong></h5>"
+      var org = "<h4>Organization created: " + json.orgName + "</h4>"
+      $(result).appendTo($("#conf-modal-body"));
+      $(org).appendTo($("#conf-modal-body"));
+      $("#confirmation-modal").modal('show');
+    },
+    error: function() {
+      alert("Failed to add new organization");
     }
   });
 }
 
 
 $(function(){
-  // When you clik the history button the history-modal opens
+  // When you click the history button the history-modal opens
   $("#sheetHistory").on("click", function(){
     $("#history-modal").modal('show');
   });
-
+  // Show the history modal and add the content with
+  // get_sheet_history
   $("#history-modal").on("show.bs.modal", function(e){
     var modal = $(this);
     get_sheet_history();
   });
 
+
+  $('#org-form').on('submit', function(event){
+    event.preventDefault();
+    console.log("form submitted!")  // DEBUG
+    create_org();
+  });
 });
