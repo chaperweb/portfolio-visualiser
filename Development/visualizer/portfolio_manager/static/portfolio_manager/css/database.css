@@ -1,0 +1,39 @@
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+
+}
+
+td, th {
+    /*border: 1px solid #dddddd;*/
+    text-align: left;
+    padding: 8px;
+
+}
+
+tr:nth-child(even) {
+    background-color: rgb(156,156,156);
+}
+
+.itemleft {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+
+.itemright {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+#footer > .navbar {
+  background-color: white !important;
+  border: none;
+}
+
+.btn-success, .btn-success:hover, .btn-success:active:focus, .btn-success:visited {
+  background-color: rgb(156,156,156);
+  border-color: rgb(156,156,156);
+}

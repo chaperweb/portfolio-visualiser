@@ -31,7 +31,8 @@ class PersonForm(forms.Form):
 
 
 class CronForm(forms.Form):
-    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="(Nothing)")
+    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="(Nothing)",
+    widget=forms.Select(attrs={"onChange":'submit()'}))
 
 class TableSpecification(forms.Form):
     name = forms.CharField(label = 'Field name', max_length=50, required = True,
