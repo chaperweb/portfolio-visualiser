@@ -67,7 +67,7 @@ class SerializersTestCase(TestCase):
                         [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4'],
                         [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
                         [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9'],
-                        [u'2', '2017-03-16T17:41:28+00:00', 'biz', u'4']])
+                        [u'2', '2017-16-03T17:41:28+00:00', 'biz', u'4']])
                 
                 projects_serializer = ProjectSerializer(Project.objects.all(), many=True)
 

@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "test": "node_modules/.bin/tape portfolio_manager/static/portfolio_manager/js/test_path.js"
+  },
+  "devDependencies": {
+    "tape": "^4.6.3"
+  }
+}
