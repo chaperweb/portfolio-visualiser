@@ -300,19 +300,19 @@ def databaseview(request):
           projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
 
           dimensions = []
-          dims = []
+          dims = {}
 
           for p in projs:
               dimensions += ProjectDimension.objects.filter(project=p)
 
           for dim in dimensions:
               if dim.dimension_object.name not in dims:
-                  dims.append(dim.dimension_object.name)
+                  dims[dim.dimension_object.name] = str(dim).replace("Dimension", "")
 
 
 
           #redirect to the url where you'll process the input
-          return render(request, 'droptable_organization.html', {'form':form, 'projs':projs, 'dims':dims}) # insert reverse or url
+          return render(request, 'droptable_organization.html', {'form':form, 'projs':projs, 'dims':dims, 'dimensions':dimensions}) # insert reverse or url
     else:
          form = CronForm()
     return render(request, 'droptable_organization.html', {'form':form})
