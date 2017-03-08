@@ -33,7 +33,7 @@ tr:nth-child(even) {
   border: none;
 }
 
-.btn-success, .btn-success:hover, .btn-success:active:focus, .btn-success:visited {
+.btn-success,  .btn-success:visited, .btn-success:hover, .btn-success:active:focus, .btn-success:focus  {
   background-color: rgb(156,156,156);
   border-color: rgb(156,156,156);
 }
