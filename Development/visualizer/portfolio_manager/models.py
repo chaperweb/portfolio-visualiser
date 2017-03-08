@@ -49,6 +49,9 @@ class ProjectDimension (models.Model):
   def __str__(self):
     return self.dimension_object.__class__.__name__
 
+  def dimension_type(self):
+    return self.dimension_object.__class__.__name__
+
 def dimension_cleanup(sender, instance, *args, **kwargs):
   instance.dimension_object.delete()
 
@@ -100,9 +103,22 @@ class Person (models.Model):
   first_name = models.CharField(max_length=64)
   last_name = models.CharField(max_length=64)
 
+  def __str__(self):
+    return str(self.first_name + " " + self.last_name)
+
+  def __unicode__(self):
+    return self.first_name + " " + self.last_name
+
+class BaseDimensionHistory(models.Model):
+  class Meta:
+        abstract = True
+
+  def string(self):
+    return str(self.value)
+
 class DecimalDimension (Dimension):
   value = models.DecimalField(max_digits = 20, decimal_places = 2)
-  history = HistoricalRecords()
+  history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
 class DecimalMilestone(models.Model):
@@ -113,13 +129,13 @@ class DecimalMilestone(models.Model):
 
 class TextDimension (Dimension):
   value = models.TextField()
-  history = HistoricalRecords()
+  history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
 
 class AssociatedOrganizationDimension (Dimension):
   value = models.ForeignKey(Organization, null=True)
-  history = HistoricalRecords()
+  history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
   def from_sheet(self, value, history_date):
@@ -135,9 +151,10 @@ class AssociatedOrganizationDimension (Dimension):
     self.value = organization
     self._history_date = history_date
 
+
 class AssociatedPersonDimension (Dimension):
   value = models.ForeignKey(Person, null=True)
-  history = HistoricalRecords()
+  history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
   def from_sheet(self, value, history_date):
@@ -152,7 +169,6 @@ class AssociatedPersonDimension (Dimension):
 
     self.value = person
     self._history_date = history_date
-
 
 #Dimension for project participant management
 class AssociatedPersonsDimension(Dimension):
@@ -173,8 +189,11 @@ class AssociatedPersonsDimension(Dimension):
 
       self.persons.add(person)
 
- # def __str__(self):
-#    return self.first_name+" "+self.last_name
+  def __str__(self):
+    return ', '.join([' '.join([ n for n in [p.first_name, p.last_name] if n]) for p in self.persons.all()])
+
+  def string(self):
+    return str(self)
 
 #Storing the project dependencies as list of project IDs
 class AssociatedProjectsDimension(Dimension):
@@ -195,14 +214,17 @@ class AssociatedProjectsDimension(Dimension):
 
       self.projects.add(project)
 
+  def string(self):
+    return ', '.join([p.name for p in self.projects.all()])
+
 class DateDimension (Dimension):
   value = models.DateTimeField()
-  history = HistoricalRecords()
+  history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
   def from_sheet(self, value, history_date):
 
-    d = parse(value)
+    d = parse(value, dayfirst=True)
     if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
       d = d.replace(tzinfo=pytz.utc)
 

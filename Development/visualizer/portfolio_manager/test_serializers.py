@@ -12,11 +12,7 @@ from portfolio_manager.importer import from_data_array
 from portfolio_manager import views
 
 class SerializersTestCase(TestCase):
-
-        def setUp(self):
-                pass
-
-
+  
         def test_milestones_serializer(self):
                 from_data_array([[u'id', u'__history_date', u'Name', u'SizeMoney'],
                         [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4'],
@@ -71,7 +67,7 @@ class SerializersTestCase(TestCase):
                         [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4'],
                         [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
                         [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9'],
-                        [u'2', '2017-03-16T17:41:28+00:00', 'biz', u'4']])
+                        [u'2', '2017-16-03T17:41:28+00:00', 'biz', u'4']])
                 
                 projects_serializer = ProjectSerializer(Project.objects.all(), many=True)
 
@@ -87,11 +83,13 @@ class SerializersTestCase(TestCase):
                                           {
                                              'value':'foo',
                                              'id':1,
-                                             'history_date':'2012-03-16T17:41:28Z'
+                                             'history_date':'2012-03-16T17:41:28Z',
+                                             'string': 'foo'
                                           }
                                        ],
                                        'name':'Name'
-                                    }
+                                    },
+                                    'dimension_type': 'TextDimension'
                                  },
                                  {
                                     'id':2,
@@ -100,11 +98,13 @@ class SerializersTestCase(TestCase):
                                           {
                                              'value':4.0,
                                              'id':1,
-                                             'history_date':'2012-03-16T17:41:28Z'
+                                             'history_date':'2012-03-16T17:41:28Z',
+                                             'string': '4.00'
                                           }
                                        ],
                                        'name':'SizeMoney'
-                                    }
+                                    },
+                                    'dimension_type': 'DecimalDimension'
                                  }
                               ],
                               'milestones':[
@@ -155,11 +155,13 @@ class SerializersTestCase(TestCase):
                                           {
                                              'value':'biz',
                                              'id':2,
-                                             'history_date':'2017-03-16T17:41:28Z'
+                                             'history_date':'2017-03-16T17:41:28Z',
+                                             'string': 'biz'
                                           }
                                        ],
                                        'name':'Name'
-                                    }
+                                    },
+                                    'dimension_type': 'TextDimension'
                                  },
                                  {
                                     'id':4,
@@ -168,11 +170,13 @@ class SerializersTestCase(TestCase):
                                           {
                                              'value':4.0,
                                              'id':2,
-                                             'history_date':'2017-03-16T17:41:28Z'
+                                             'history_date':'2017-03-16T17:41:28Z',
+                                             'string': '4.00'
                                           }
                                        ],
                                        'name':'SizeMoney'
-                                    }
+                                    },
+                                    'dimension_type': 'DecimalDimension'
                                  }
                               ],
                               'milestones':[

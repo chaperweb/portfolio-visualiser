@@ -17,14 +17,14 @@ def from_data_array(data):
 
   for update in data[1:]:
 
-    history_date = parse(update[1])
+    history_date = parse(update[1], dayfirst=True)
     if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
       history_date = history_date.replace(tzinfo=pytz.utc)
 
     if 'm;' in update[0]: # milestone row
 
       parts = update[0].split(';')
-      milestone_due_date = parse(parts[1])
+      milestone_due_date = parse(parts[1], dayfirst=True)
       if milestone_due_date.tzinfo is None or milestone_due_date.tzinfo.utcoffset(milestone_due_date) is None:
         milestone_due_date = milestone_due_date.replace(tzinfo=pytz.utc)
 

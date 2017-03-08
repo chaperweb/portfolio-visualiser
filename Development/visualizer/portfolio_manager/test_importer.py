@@ -55,19 +55,24 @@ class ImporterTestCase(TestCase):
                 ]
         from_data_array(data)
         self.assertEqual(2, Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all().count())
-        self.assertEqual(parse('5/6/2017').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
-        self.assertEqual(parse('3/4/2015').replace(tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
+        self.assertEqual(datetime(2017,6,5,tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
+        self.assertEqual(datetime(2015,4,3,tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
 
     def test_import_startdate(self):
         data = [[u'id', u'__history_date', u'StartDate'],
                 [u'1', '2013-03-16T17:41:28+00:00', '2013-05-16T17:41:28+00:00'],
                 [u'1', '2013-03-18T17:41:28+00:00', '2013-07-16T17:41:28+00:00'],
+                [u'1', '2013-03-15T17:41:28+00:00', '1/8/2012'],
+                [u'1', '2013-03-14T17:41:28+00:00', '2015-01-08T00:00:00+00:00'],
                 ]
         from_data_array(data)
         self.assertEqual(1, Project.objects.all().count())
-        self.assertEqual(2, Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all().count())
+        self.assertEqual(4, Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all().count())
         self.assertEqual(parse('2013-07-16T17:41:28+00:00'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
         self.assertEqual(parse('2013-05-16T17:41:28+00:00'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
+        self.assertEqual(datetime(2012, 8, 1, tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[2].value)
+        self.assertEqual(datetime(2015, 8, 1, tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[3].value)
+        
 
     def test_import_projectmanager(self):
         data = [[u'id', u'__history_date', u'ProjectManager'],
@@ -178,19 +183,32 @@ class ImporterTestCase(TestCase):
     def test_importer_size_money_milestone(self):
         from_data_array([[u'id', u'__history_date', u'Name', u'SizeMoney'],
                         [u'1', '2012-03-16T17:41:28+00:00', 'foo', '4'],
-                        [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
-                        [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9']])
+                        [u'm;1/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
+                        [u'm;1/7/2016', '2014-03-16T17:41:28+00:00', u'', u'9']])
 
         milestones = Project.objects.get(id=1).milestones.all()
 
         self.assertEqual(2, milestones.count())
-        self.assertEqual(parse('28/6/2015').replace(tzinfo=pytz.utc), milestones[0].history.all()[0].due_date)
-        self.assertEqual(parse('29/6/2016').replace(tzinfo=pytz.utc), milestones[1].history.all()[0].due_date)
+        self.assertEqual(datetime(2015, 6, 1, tzinfo=pytz.utc), milestones[0].history.all()[0].due_date)
+        self.assertEqual(datetime(2016, 7, 1, tzinfo=pytz.utc), milestones[1].history.all()[0].due_date)
         self.assertEqual(1, milestones[0].history.all().count())
         self.assertEqual(parse('2013-03-16T17:41:28+00:00'), milestones[0].history.all()[0].history_date)
         self.assertEqual(5, milestones[0].history.all()[0].dimensions.all()[0].dimension_milestone_object.value)
         self.assertEqual(9, milestones[1].history.all()[0].dimensions.all()[0].dimension_milestone_object.value)
         self.assertEquals(milestones[1].history.all()[0].dimensions.all()[0].project_dimension, Project.objects.get(id=1).dimensions.all()[1])
+
+    def test_dayfirst_in_history_date(self):
+        data = [[u'id', u'__history_date', u'Name   '],
+                [u'1', '1/8/2015', 'foo'],
+                [u'1', '2014-03-09T00:00:00+00:00', 'bar'],
+                ]
+        from_data_array(data)
+        actual_history_date = Project.objects.get(pk=1).dimensions.all()[0].dimension_object.history.all()[0].history_date
+        self.assertEqual(datetime(2015, 8, 1, tzinfo=pytz.utc),  actual_history_date)
+        actual_history_date = Project.objects.get(pk=1).dimensions.all()[0].dimension_object.history.all()[1].history_date
+        self.assertEqual(datetime(2014, 9, 3, tzinfo=pytz.utc),  actual_history_date)
+
+
         
         
         
