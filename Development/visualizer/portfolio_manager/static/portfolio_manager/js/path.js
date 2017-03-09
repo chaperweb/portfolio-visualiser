@@ -162,8 +162,8 @@ function dimension_selector_change() {
   update_path_visualization(get_dimension(get_selected_project(), x_dimension_id), get_dimension(get_selected_project(), y_dimension_id));
 }
 
-module.exports = {
+// module.exports = {
 
-  generate_path_data: generate_path_data
+//   generate_path_data: generate_path_data
 
-};
+// };
