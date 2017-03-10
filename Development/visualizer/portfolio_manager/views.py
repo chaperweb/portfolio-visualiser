@@ -149,28 +149,45 @@ def organizations(request):
 
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
-        pod = ContentType.objects.get_for_model(ProjectOwnerDimension)
         dd = ContentType.objects.get_for_model(DecimalDimension)
-        # nd = ContentType.objects.get_for_model(NumericDimension)
         td = ContentType.objects.get_for_model(TextDimension)
+        dated = ContentType.objects.get_for_model(DateDimension)
+        assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
+        assPersonsD = ContentType.objects.get_for_model(AssociatedPersonsDimension)
+        assOrgD = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
+        assProjsD = ContentType.objects.get_for_model(AssociatedProjectsDimension)
 
         # Default fields
-        # owner = ProjectDimension.objects.filter(content_type=pod, project_id=theProject.id).first().dimension_object.assPerson.value   # ONLY WORKS IF THERE IS ONLY ONE OWNER
         budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
 
+        # All dimensions
+        dims = ProjectDimension.objects.filter(project_id=theProject.id)
         # Added text fields
-        texts = ProjectDimension.objects.filter(project_id=theProject.id)
-
-        # Added integer fields
-        # intfields = ProjectDimension.objects.filter(content_type=nd, project_id=theProject.id)
-
+        texts = dims.filter(content_type=td)
         # Added decimal fields, removing budget from the query set
-        # decfields = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).exclude(pk=budget.pk)
+        decfields = dims.filter(content_type=dd).exclude(pk=budget.pk)
+        # Date dimensions
+        dateds = dims.filter(content_type=dated)
+        # Associated person dimensions
+        assPersonDs = dims.filter(content_type=assPersonD)
+        # Associated persons dimensions
+        assPersonsDs = dims.filter(content_type=assPersonsD)
+        # Associated persons dimensions
+        assOrgDs = dims.filter(content_type=assOrgD)
+        # Associated projects dimensions
+        assProjsDs = dims.filter(content_type=assProjsD)
 
         context = {}
         context['project'] = theProject
         context['budget'] = budget
         context['text'] = texts
+        context['decfield'] = decfields
+        context['dates'] = dateds
+        context['assPerson'] = assPersonDs
+        context['assPersons'] = assPersonsDs
+        context['assOrg'] = assOrgDs
+        context['assProjs'] = assProjsDs
+
         context['projects'] = Project.objects.all()
 
         return render(request, 'project.html', context)
