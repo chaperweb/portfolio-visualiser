@@ -11,14 +11,32 @@ function dependancies(json) {
 	//d3.json(json, function(error,json) {
 	//if (error) throw error;
 	var nodes = {};
-	/* factor is used to decrease the value of nodes. Large numbers (>2 000 000)
-		are not handled well in d3 linearScale
-	*/
-	var factor = 10;
+
 	var links = []
 	var jsonlen = json.length //shoud be generated range
 	console.log(json)
-
+	var valueArray = [];
+	for (j = 0; j < jsonlen; j++) {
+		
+		if(json[j].dimensions == undefined) {
+			throw error("project dimensions missing");
+			//break; 
+		}
+		var size = json[j].dimensions.length
+		for (i = 0; i < size; i++) {
+		if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
+			valueArray.push(gimmeBudget(json[j].id))
+			if(json[j].dimensions[i].dimension_object.projects != undefined) {
+				valueArray.push(gimmeBudget(json[j].dimensions[i].dimension_object.projects[0]))
+			}
+		}
+		}
+	}
+	var denominator = 1;
+	if(d3.max(valueArray) > 1000000) {
+	denominator = d3.max(valueArray) / 100000;	
+	}
+	
 	// Compute the distinct nodes from the links. Each node is only created once
 	for (j = 0; j < jsonlen; j++) {
 		
@@ -29,10 +47,10 @@ function dependancies(json) {
 		var size = json[j].dimensions.length
 		for (i = 0; i < size; i++) {
 		if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
-			var budgetS = gimmeBudget(json[j].id)
+			var budgetS = gimmeBudget(json[j].id) / denominator
 			var budgetT = 0;
 			if(json[j].dimensions[i].dimension_object.projects != undefined) {
-				budgetT = gimmeBudget(json[j].dimensions[i].dimension_object.projects[0])
+				budgetT = gimmeBudget(json[j].dimensions[i].dimension_object.projects[0]) / denominator
 			}
 			var nameS = "";
 			if(json[j].dimensions[0].dimension_object.history != undefined) {
@@ -40,10 +58,10 @@ function dependancies(json) {
 			}
 			var nameT = gimmeName(json[j].dimensions[i].dimension_object.projects[0])
 		    json[j].id = nodes[json[j].id] ||
-			(nodes[json[j].id] = {name: nameS, value: budgetS / factor });
+			(nodes[json[j].id] = {name: nameS, value: budgetS });
 		    json[j].dimensions[i].dimension_object.projects[0] = nodes[json[j].dimensions[i].dimension_object.projects[0]] ||
-			  (nodes[json[j].dimensions[i].dimension_object.projects[0]] = {name: nameT, value: budgetT / factor});
-		    links.push({"source": json[j].id, "target": json[j].dimensions[i].dimension_object.projects[0], "budgetS":budgetS / factor, "budgetT":budgetT / factor})
+			  (nodes[json[j].dimensions[i].dimension_object.projects[0]] = {name: nameT, value: budgetT });
+		    links.push({"source": json[j].id, "target": json[j].dimensions[i].dimension_object.projects[0], "budgetS":budgetS, "budgetT":budgetT })
 	   }
 	  }
 	}
@@ -54,9 +72,24 @@ function dependancies(json) {
 	d3.values(nodes).forEach(function(node) {
 		values.push(node.value)
 		nameArray.push(node.name)
-		valueArray.push(node.value)
-		nodevalueArray.push(node.name + " " +node.value);
+		//valueArray.push(node.value)
+		nodevalueArray.push(node.name + " " + (node.value * denominator));
 	});
+	/*
+	if(d3.max(values) > 1000000) {
+		var denominator = d3.max(values) / 100000
+		d3.values(nodes).forEach(function(bignode) {
+			bignode.value = bignode.value / denominator;
+		});
+		links.forEach(function(biglink) {
+			biglink.budgetS = biglink.budgetS / denominator
+			biglink.budgetT = biglink.budgetT / denominator;
+		});
+		values.forEach(function(value) {
+			value = value / denominator;
+		});
+	}
+	*/
 	
 	/*
 	links.forEach(function(link) {
@@ -79,41 +112,40 @@ function dependancies(json) {
 
 	// searches the name of the project with the given ID. currently relies on correct order of projects.
 	function gimmeName(id) {
-		var projects = json.filter(function(d) { return d.id == id});
-		if(projects.length == 0) {
-			//project id is not found
-			return ""; 				
-		}
-		var projectDimensions = projects[0].dimensions
-		var filtered = projectDimensions.filter(function(d) {return d.dimension_object.name == "Name"} );
-			if(filtered.length == 0) {
-				// project does not have a name
-				return ""
-			} else {
-				return filtered[0].dimension_object.history[0].value
-			}
-	}
-	// searches the budget of the project with the given ID. if no such id is found, or if the project doesn't have budget, returns 0
-	function gimmeBudget(id) {
-		var projects = json.filter(function(d) { return d.id == id});
-		if(projects.length == 0) {
-			//project id is not found
-			return 0;
-		}
-		var projectDimensions = projects[0].dimensions
-		var filtered = projectDimensions.filter(function(d) {return d.dimension_object.name == "SizeMoney"} );
-			if(filtered.length == 0) {
-				// project does not have a budget
-				return 0; 
-			} else {
-				var budget = filtered[0].dimension_object.history[0].value
-				if( !isNaN(budget) ) {
-					return budget;
+		
+		for(z = 0; z < jsonlen; z++) {
+			if(json[z].id == id) {
+				var name = json[z].dimensions[0].dimension_object.history[0].value
+				if (name != undefined) {
+					return name;
 				} else {
-					return 0;
+					return "";
 				}
 			}
+		}
+		return "";
 	}
+	// searches the budget of the project with the given ID. if no such id is found, or if the project doesn't have budget, returns 0
+	function gimmeBudget(id) {	
+		for(z = 0; z < jsonlen; z++) {
+			if(json[z].id == id) {
+				for(m = 0; m < json[z].dimensions.length ; m++ ){
+					if(json[z].dimensions[m].dimension_object.name == "SizeMoney") {
+						var budget = json[z].dimensions[m].dimension_object.history[0].value
+						if (name != undefined) {
+							return budget;
+						} else {
+							return 0;
+						}						
+					}
+				}
+
+			}
+		}
+		return 0;
+	}
+	
+
 	// function to ditch duplicate values from a array. used in "names" since links have duplicate nodes. works on strings only
 	function uniq(a) {
 		var seen = {};
