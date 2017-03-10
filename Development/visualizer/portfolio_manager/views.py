@@ -4,7 +4,7 @@ from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import logging
 from django.http import JsonResponse, HttpResponse
-from portfolio_manager.serializers import ProjectSerializer
+from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
 
@@ -159,40 +159,36 @@ def show_project(request, project_id):
         budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
 
         # Added text fields
-        texts = ProjectDimension.objects.filter(content_type=td, project_id=theProject.id)
+        texts = ProjectDimension.objects.filter(project_id=theProject.id)
 
         # Added integer fields
         # intfields = ProjectDimension.objects.filter(content_type=nd, project_id=theProject.id)
 
         # Added decimal fields, removing budget from the query set
-        decfields = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).exclude(pk=budget.pk)
+        # decfields = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).exclude(pk=budget.pk)
 
         context = {}
         context['project'] = theProject
         context['budget'] = budget
         context['text'] = texts
-        context['decfield'] = decfields
         context['projects'] = Project.objects.all()
 
         return render(request, 'project.html', context)
 
-def project_edit(request, project_id):
+def project_edit(request, project_id, field_name):
     proj = get_object_or_404(Project, pk=project_id)
-    if request.method == "POST":
-        form = ProjectForm(request.POST)
-
-        if form.is_valid():
-            # Update the projects info
-            proj.name = form.cleaned_data['name']
-            org = get_object_or_404(Organization, name=form.cleaned_data['organization'])
-            proj.parent = org
-            proj.save()
-
-        return redirect('show_project', project_id=proj.pk)
+    if field_name == "Organization":
+        try:
+            org = Organization.objects.get(name=request.POST.get('name'))
+        except Organization.DoesNotExist:
+            org = Organization(name=request.POST.get('name'))
+            org.save()
+        proj.parent = org
+        proj.save()
+        return JsonResponse({"name": request.POST.get('name')})
     else:
-        data = { 'name': proj.name, 'parent': proj.parent }
-        form = ProjectForm(data)
-    return render(request, 'project_edit.html', {'form': form})
+        return JsonResponse({"name": field_name}, safe=True)
+
 
 def delete_google_sheet(request, google_sheet_id):
     GoogleSheet.objects.get(id=google_sheet_id).delete()
@@ -316,3 +312,7 @@ def databaseview(request):
     else:
          form = CronForm()
     return render(request, 'droptable_organization.html', {'form':form})
+
+def get_orgs(request):
+    serializer = OrganizationSerializer(Organization.objects.all(), many=True)
+    return JsonResponse(serializer.data, safe=False)

@@ -12,16 +12,8 @@ Projects
 {% endblock %}
 
 {% block javascript %}
-<script>
-  $(document).on("click", ".open-modify", function () {
-    var field = $(this).data('field');
-    var value = $(this).data('value');
-    $(".modal-body h3").html("Modify: " + field);
-    $(".modal-body h4").html("Current value: " + value);
-    document.getElementById("newValue").type = $(this).data('type');
-    document.getElementById("newValue").value = $(this).data('value');
-  });
-</script>
+{% load static%}
+<script src="{% static "portfolio_manager/js/modify_project.js" %}"></script>
 {% endblock %}
 
 {# CONTENT HERE #}
@@ -45,28 +37,10 @@ Projects
 </div>
 <!-- /sidebar -->
 
-<!-- Page Content -->
 <!-- Modal -->
-<div class="modal fade" id="modify-field-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h3></h3>
-        <form id="modifyForm" method="GET" action="">
-          {% csrf_token %}
-          <h4></h4>
-          <label id="new-value-label" for="new-value">New value: </label>
-          <input type="" name="newValue" id="newValue"/>
-          <center style="margin-top: 15px;">
-            <button type="submit" class="btn btn-success">Save change</button>
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-          </center>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+{% include "modals/modify_text_modal.html" %}
+{% include "modals/modify_org_modal.html" %}
+<!-- Page Content -->
 <div id="page-content-wrapper">
   <div class="container col-lg-10">
     <div class="row">
@@ -84,11 +58,11 @@ Projects
               <div class="col-md-2">
                 Organization
               </div>
-              <div class="col-md-2 col-md-offset-4">
+              <div id="projectparent" class="col-md-2 col-md-offset-4">
                 {{ project.parent }}
               </div>
               <div class="col-md-1 pull-right">
-                <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="Organization" data-value="{{project.parent}}" data-toggle="modal" data-target="#modify-field-modal">
+                <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="Organization" data-value="{{project.parent}}" data-toggle="modal" data-target="#modify-org-modal">
                   Modify
                 </button>
               </div>
@@ -168,7 +142,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-field-modal">
+                  <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
                     Modify
                   </button>
                 </div>
@@ -184,7 +158,7 @@ Projects
             </div>
           {% endfor %}
           <!-- DECIMAL FIELDS -->
-          {% for x in decfield %}
+          <!-- {% for x in decfield %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
                 <div class="col-lg-1">
@@ -212,7 +186,7 @@ Projects
                 <br />COMES
               </div>
             </div>
-          {% endfor %}
+          {% endfor %}-->
         </div>
       </div>
     </div>
