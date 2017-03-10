@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{# TITLE HERE #}
+{% block title %}
+Four field
+{% endblock %}
+
+{# CSS HERE #}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/fourField.css" %}">
+{% endblock %}
+
+{# JAVASCRIPT HERE #}
+{% block javascript %}
+{% load static %}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/fourField.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/fourfield_loader.js' %}"></script>
+{% endblock %}
+
+{# CONTENT HERE #}
+{% block content %}
+  <div class="col-lg-4 col-md-3 col-sm-2 col-xs-12" id="controls">
+          <div class="form-group">
+            <label for="sel1">Select project:</label>
+            <select class="form-control" id="project-selector">
+            <option>---</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sel1">Select x-axis dimension:</label>
+            <select class="form-control" id="x-selector">
+            <option>---</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sel1">Select y-axis dimension:</label>
+            <select class="form-control" id="y-selector">
+            <option>---</option>
+            </select>
+          </div>
+		  
+		  <div class="form-group">
+            <label for="sel1">Select radius dimension:</label>
+            <select class="form-control" id="r-selector">
+            <option>---</option>
+            </select>
+          </div>
+  </div>
+{% endblock %}

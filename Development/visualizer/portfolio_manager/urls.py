@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^path\.html$', TemplateView.as_view(template_name="path.html"), name='path'),
     url(r'^datapath\.html$', TemplateView.as_view(template_name="datapath.html")),
     url(r'^$', views.home, name='homepage'),
+	url(r'^fourfield\.html$', TemplateView.as_view(template_name="fourfield.html"), name='fourfield'),
     url(r"^importer\.html$", views.importer, name='importer'),
     url(r"^importer\.html/delete/(?P<google_sheet_id>[0-9]+)$", views.delete_google_sheet, name='delete_google_sheet'),
     url(r"^importer\.html/load/(?P<google_sheet_id>[0-9]+)$", views.load_google_sheet, name='load_google_sheet'),
