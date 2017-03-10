@@ -24,6 +24,7 @@ urlpatterns = [
     url(r"^importer\.html/delete/(?P<google_sheet_id>[0-9]+)$", views.delete_google_sheet, name='delete_google_sheet'),
     url(r"^importer\.html/load/(?P<google_sheet_id>[0-9]+)$", views.load_google_sheet, name='load_google_sheet'),
     url(r"^about\.html$", TemplateView.as_view(template_name="about.html"), name='about'),
+	url(r'^projectdependencies\.html$', TemplateView.as_view(template_name="projectdependencies.html"), name='projectdependencies'),
     url(r'^projektit$', views.projektit, name='projektit'),
     url(r'^admin_tools$', TemplateView.as_view(template_name="admin_tools.html"), name='admin_tools'),
     url(r'^get_sheets$', views.get_sheets, name='get_sheets'),
