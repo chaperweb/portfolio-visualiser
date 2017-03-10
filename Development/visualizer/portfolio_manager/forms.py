@@ -74,3 +74,10 @@ class TableSpecification(forms.Form):
                 raise forms.ValidationError(
                     "ERROERRORERROR."
                 )
+
+# class AddProjectForm(forms.Form):
+#     def __init__(self, orgFields, *args, **kwargs):
+#         super(AddprojectForm, self).__init__(*args, **kwargs)
+#
+#         for name, datatype in orgFields:
+#             self.fields['name'] = datatype

@@ -20,12 +20,12 @@ PROJECTS
   <div class="panel panel-default col-lg-3">
     <div class="panel-heading row" data-toggle="collapse" data-target="#{{org}}" aria-controls="#org-panel" aria-expanded="false">
 
-    <div >
+    <div class="{{org}}preview">
       <div class="col-lg-1">
 
 
-      <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-      <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+      <span class="{{org}}glyph glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+      <span class="{{org}}glyph glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
       </div>
       <div class="col-lg-4">{{ org.name }}</div>
     </div>
@@ -55,6 +55,7 @@ PROJECTS
               {% endif %}
             {% endfor %}
 
+
           </div>
           </a>
         {% endif %}
@@ -65,6 +66,12 @@ PROJECTS
     <!-- This script moves first 4 projects of an organization to div "alwaysvisible" -->
     <script>
       $(".{{org}}").slice(0,4).detach().appendTo("#alwaysvisible{{org}}");
+      var n = $(".{{org}}").length;
+      if (n <= 4) {
+        $(".{{org}}glyph").hide();
+      }
+
+      $(".{{org}}preview").append("<span class='badge pull-right'>" + n + "</span>");
     </script>
     <br />
     <br />
