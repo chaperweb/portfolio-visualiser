@@ -94,3 +94,10 @@ $(function(){
     });
   })
 });
+
+$(function(){
+  $(".open-modify-text").click(function(event){
+    var field_name = $(this).data('field');
+    $("#hidden-text-info").val(field_name);
+  });
+})

@@ -186,6 +186,21 @@ def project_edit(request, project_id, field_name):
         proj.parent = org
         proj.save()
         return JsonResponse({"name": request.POST.get('name')})
+
+    elif field_name == "text":
+        ct = ContentType.objects.get_for_model(TextDimension)
+        td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+        tds = []
+        # Manual filtering
+        for t in td:
+            if t.dimension_object.name == request.POST.get('field'):
+                tds = t.dimension_object
+                break;
+
+        tds.value = request.POST.get('newValue')
+        tds.save()
+
+        return JsonResponse({"name": tds.name, "value": tds.value}, safe=True)
     else:
         return JsonResponse({"name": field_name}, safe=True)
 
