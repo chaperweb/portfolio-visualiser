@@ -89,6 +89,7 @@ function generate_path_svg(pathData) {
   //                  {"date": "01-06-16", "y": 50.03, "x": "Matti"},
   //                  {"date": "01-07-16", "y": 200.04, "x": "Teppo"}];
 
+  //debugger;
 
   var svg = d3.select("#visualization")
               .append("svg")
@@ -105,7 +106,7 @@ function generate_path_svg(pathData) {
       z = d3.scaleLinear().range([0,width]);
 
   x.domain([0, (pathData.length-1)]);
-  y.domain([0, d3.max(pathData, function(d){return d.y})]);
+  y.domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})]);
   z.domain([0, (pathData.length-1)]);
 
   var valueLine = d3.line()
