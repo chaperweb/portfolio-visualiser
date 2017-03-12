@@ -19,7 +19,7 @@ function fourField(json) {
 		var data = [{"X": xToBe, "Y": yToBe}]
 		for (j = 0; j < jsonlen; j++) {
 			var size = json[j].dimensions.length
-			var inProgress = {"name": json[j].name, "organization": "It'll all be better tomorrow", "xAxisActual": [],"xAxisPlanned": [],"xAxis": 0,"radius":[],"yAxisActual":[],"yAxisPlanned":[],"yAxis":0};
+			var inProgress = {"name": json[j].name, "organization": "", "xAxisActual": [],"xAxisPlanned": [],"xAxis": 0,"radius":[],"yAxisActual":[],"yAxisPlanned":[],"yAxis":0};
 			var xID = 0
 			var yID = 0			
 			for (i = 0; i < size; i++) {
@@ -44,8 +44,10 @@ function fourField(json) {
 						inProgress.yAxisActual = (collectVal).reverse();
 					} else if (valueName === radToBe) {
 						inProgress.radius =(collectVal)
-					};
-				}
+					}
+				} else if (json[j].dimensions[i].dimension_type === 'AssociatedOrganizationDimension' ) {
+					inProgress.organization = json[j].dimensions[i].dimension_object.history[0].value.name
+				};
 				
 			}
 			//console.log(xID)
