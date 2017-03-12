@@ -48,28 +48,28 @@ function fourField(json) {
 				}
 				
 			}
-			console.log(xID)
-			console.log(yID)
+			//console.log(xID)
+			//console.log(yID)
 		var collectXPlan = []
 		var collectYPlan = []
 		if(json[j].milestones != undefined) {
 
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
-				if(json[j].milestones[e].dimensions != undefined) {
-				for(q = 0; q < json[j].milestones[e].dimensions.length ; q++ ) {
-					console.log(json[j].milestones[e].dimensions[q].project_dimension)
-						if(json[j].milestones[e].dimensions[q].project_dimension == xID) {
+				if(json[j].milestones[e].history[0].dimensions != undefined) {
+				for(q = 0; q < json[j].milestones[e].history[0].dimensions.length ; q++ ) {
+					console.log(json[j].milestones[e].history[0].dimensions[q].project_dimension)
+						if(json[j].milestones[e].history[0].dimensions[q].project_dimension == xID) {
 							//lisää X
-							var date = json[j].milestones[e].due_date
+							var date = json[j].milestones[e].history[0].due_date
 							var parsedDate = new Date(date).getTime() / 1000
-							var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
+							var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
 							console.log(milestoneValue)
 							collectXPlan.push([parsedDate,milestoneValue])
-						} else if( json[j].milestones[e].dimensions[q].project_dimension == yID ) {
+						} else if( json[j].milestones[e].history[0].dimensions[q].project_dimension == yID ) {
 							// lisää Y
-							var date = json[j].milestones[e].due_date
+							var date = json[j].milestones[e].history[0].due_date
 							var parsedDate = new Date(date).getTime() / 1000
-							var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
+							var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
 							console.log(milestoneValue)
 							collectYPlan.push([parsedDate,milestoneValue])
 						}
@@ -242,12 +242,8 @@ console.log(projects);
 		  return {
 			name: d.name,
 			organization: d.organization,
-			xAxisActual: interpolateValues(d.xAxisActual, date),
-			xAxisPlanned: interpolateValues(d.xAxisPlanned, date),
-			xAxis: processValues(d.xAxisActual,d.xAxisPlanned),
-			yAxisActual: interpolateValues(d.yAxisActual, date),
-			yAxisPlanned: interpolateValues(d.yAxisPlanned, date),
-			yAxis: processValues(d.yAxisActual,d.yAxisPlanned),
+			xAxis: processValues(interpolateValues(d.xAxisActual, date),interpolateValues(d.xAxisPlanned, date)),
+			yAxis: processValues(interpolateValues(d.yAxisActual, date),interpolateValues(d.yAxisPlanned, date)),
 			radius: interpolateValues(d.radius, date)
 		  };
 		});
@@ -257,7 +253,7 @@ console.log(projects);
 			return ((actual/planned)*100); // to revert the ballmovement *-1 these lines
 		} else {
 			return (-(planned/actual)*100);
-		}		
+		}
 	}
 	/*
 	this function does mathematical miracles and interpolates the values where the circles will be drawn.
