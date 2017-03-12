@@ -173,20 +173,18 @@ class MilestoneHistorySerializer(serializers.ModelSerializer):
 
   class Meta:
     model = HistoricalMilestone
-    fields = ('history_date', 'due_date', 'dimensions')
+    fields = ('due_date', 'dimensions')
 
-class MilestoneSerializer(serializers.ModelSerializer):
+class MilestoneSerializer(serializers.RelatedField):
 
-  history = MilestoneHistorySerializer(many=True)
-
-  class Meta:
-    model = Milestone
-    fields = ('history','id')
+  def to_representation(self, value):
+    serializer = MilestoneHistorySerializer(value.history.all()[0])
+    return serializer.data
 
 class ProjectSerializer(serializers.ModelSerializer):
 
     dimensions = ProjectDimensionSerializer(many=True)
-    milestones = MilestoneSerializer(many=True)
+    milestones = MilestoneSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project
