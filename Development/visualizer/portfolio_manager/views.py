@@ -213,7 +213,7 @@ def project_edit(request, project_id, field_name):
             if t.dimension_object.name == request.POST.get('field'):
                 tds = t.dimension_object
                 break;
-
+                
         tds.value = request.POST.get('textValue')
         tds.save()
         return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)

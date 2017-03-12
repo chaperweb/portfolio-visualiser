@@ -136,6 +136,45 @@ $(function(){
 });
 
 $(function(){
+  $("#modify-text-form").on("submit", function(event)
+  {
+    event.preventDefault();
+
+    var csrftoken = getCookie("csrftoken");
+
+    function csrfSafeMethod(method)
+    {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+    $.ajax({
+      method: "POST",
+      url: $('#modify-text-form').attr('action'),
+      data: { 'textValue': $("#newTextValue").val(),
+              'field': $("#hidden-text-info").val()
+            },
+      success: function(json) {
+        var textToChange = "#" + json.field
+        $(textToChange).text(json.value);
+        $("#modify-text-modal").modal('hide');
+      },
+      error: function() {
+        $("#modify-text-modal").modal('hide');
+        alert("Failed to modify text field");
+      }
+    });
+  })
+});
+
+$(function(){
   $(".open-modify-text").click(function(event){
     var field_name = $(this).data('field');
     $("#hidden-text-info").val(field_name);
