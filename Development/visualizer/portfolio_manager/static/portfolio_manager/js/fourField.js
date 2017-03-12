@@ -38,10 +38,10 @@ function fourField(json) {
 					var valueName = json[j].dimensions[i].dimension_object.name;
 					if ( valueName === xToBe) {
 						xID = json[j].dimensions[i].id
-						inProgress.xAxisActual = (collectVal)
+						inProgress.xAxisActual = (collectVal).reverse();
 					} else if (valueName === yToBe) {
 						yID = json[j].dimensions[i].id
-						inProgress.yAxisActual = (collectVal)
+						inProgress.yAxisActual = (collectVal).reverse();
 					} else if (valueName === radToBe) {
 						inProgress.radius =(collectVal)
 					};
@@ -119,8 +119,8 @@ console.log(projects);
 		yTimes = axisLenghtY/(2*sliderValues) // 200 is the amount of the % in the graph (100 - (-100))
 
 
-	var startDate = 1478044800
-	var endDate = 1599325278
+	var startDate = 1419465600
+	var endDate = 1480464000
 
 	// The scales for the x and y axis.
 	//range means the length of the line and domain the numbers beneath it

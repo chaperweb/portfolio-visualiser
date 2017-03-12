@@ -37,8 +37,9 @@ function dimension_selector_change() {
             x_selected = (project.dimensions[j].dimension_object.name == preserved_x_name) ? 'selected' : '';
             y_selected = (project.dimensions[j].dimension_object.name == preserved_y_name) ? 'selected' : '';
 
-            $('#x-selector').append('<option '+x_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
-
+            if (project.dimensions[j].dimension_type == 'DecimalDimension') {
+              $('#x-selector').append('<option '+y_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
+            }
             if (project.dimensions[j].dimension_type == 'DecimalDimension') {
               $('#y-selector').append('<option '+y_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
             }
