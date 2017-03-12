@@ -60,7 +60,8 @@ $(function(){
   });
 });
 
-$(function(){
+$(function()
+{
   $("#modify-org-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -89,7 +90,46 @@ $(function(){
         $("#modify-org-modal").modal('hide');
       },
       error: function() {
-        alert("Failed to add new organization");
+        alert("Failed to modify organization");
+      }
+    });
+  })
+});
+
+$(function(){
+  $("#modify-dec-form").on("submit", function(event)
+  {
+    event.preventDefault();
+
+    var csrftoken = getCookie("csrftoken");
+
+    function csrfSafeMethod(method)
+    {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+    $.ajax({
+      method: "POST",
+      url: $('#modify-dec-form').attr('action'),
+      data: { 'decValue': $("#newDecValue").val(),
+              'field': $("#hidden-dec-info").val()
+            },
+      success: function(json) {
+        var textToChange = "#" + json.field
+        $(textToChange).text(json.value);
+        $("#modify-dec-modal").modal('hide');
+      },
+      error: function() {
+        $("#modify-dec-modal").modal('hide');
+        alert("Failed to modify decimal field");
       }
     });
   })
@@ -100,4 +140,11 @@ $(function(){
     var field_name = $(this).data('field');
     $("#hidden-text-info").val(field_name);
   });
-})
+});
+$(function(){
+  $(".open-modify-dec").click(function(event){
+    var field_name = $(this).data('field');
+    console.log(field_name);
+    $("#hidden-dec-info").val(field_name);
+  });
+});

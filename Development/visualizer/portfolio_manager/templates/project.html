@@ -40,6 +40,7 @@ Projects
 <!-- Modal -->
 {% include "modals/modify_text_modal.html" %}
 {% include "modals/modify_org_modal.html" %}
+{% include "modals/modify_dec_modal.html" %}
 <!-- Page Content -->
 <div id="page-content-wrapper">
   <div class="container col-lg-10">
@@ -107,13 +108,13 @@ Projects
                 <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
               </div>
               <div class="col-lg-2">
-                Budget:
+                {{ budget.dimension_object.name }}:
               </div>
-              <div class="col-lg-2 col-lg-offset-4">
+              <div id="{{ budget.dimension_object.name }}" class="col-lg-2 col-lg-offset-4">
                 {{ budget.dimension_object.value }}
               </div>
               <div class="col-md-1 pull-right">
-              <button class="btn btn-xs btn-default open-modify" data-type="number" data-field="Budget" data-value="{{budget.dimension_object.value}}" data-toggle="modal" data-target="#modify-field-modal">
+              <button class="btn btn-xs btn-default open-modify-dec" data-type="number" data-field="{{ budget.dimension_object.name }}" data-value="{{budget.dimension_object.value}}" data-toggle="modal" data-target="#modify-dec-modal">
                 Modify
               </button>
               </div>
@@ -157,7 +158,7 @@ Projects
               </div>
             </div>
           {% endfor %}
-          <!-- DATE FIELDS -->
+          <!-- TEXT FIELDS -->
           {% for x in text %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
@@ -188,7 +189,7 @@ Projects
             </div>
           {% endfor %}
           <!-- DECIMAL FIELDS -->
-          {% for x in decfield %}
+            {% for x in decfield %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
                 <div class="col-lg-1">
@@ -202,7 +203,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify" data-type="number" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-field-modal">
+                  <button class="btn btn-xs btn-default open-modify-dec" data-type="number" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-dec-modal">
                     Modify
                   </button>
                 </div>
