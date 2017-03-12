@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{# TITLE HERE #}
+{% block title %}
+PROJECTS
+{% endblock %}
+
+{# CSS HERE #}
+{% block css %}
+{% load static %}
+<!-- <link rel="stylesheet" href="{% static "" %}"> -->
+{% endblock %}
+
+
+
+{% block content %}
+
+
+
+
+<form action="" method="POST">
+  {% csrf_token %}
+{{ form }}
+
+<button type="submit" class="btn btn-success col-md-3 col-md-offset-2">Upload</button>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

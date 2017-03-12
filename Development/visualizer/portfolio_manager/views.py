@@ -14,6 +14,7 @@ logger = logging.getLogger('django.request')
 def home(request):
     context = {}
     context["projects"] = Project.objects.all()
+    context["orgform"] = OrgForm()
     return render(request, 'homepage.html', context)
 
 # Site to see history of projects
@@ -316,3 +317,15 @@ def databaseview(request):
     else:
          form = CronForm()
     return render(request, 'droptable_organization.html', {'form':form})
+
+
+
+def addproject(request):
+    name = request.POST.get('name')
+    org = request.POST.get('orgs')
+    print(name + " " + org)
+
+    form = AddProjectForm(projOrg = org)
+
+
+    return render(request, 'add_project.html', {'form':form})

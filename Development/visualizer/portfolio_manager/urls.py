@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^admin_tools$', TemplateView.as_view(template_name="admin_tools.html"), name='admin_tools'),
     url(r'^get_sheets$', views.get_sheets, name='get_sheets'),
     url(r'^database$', views.databaseview, name='databaseview'),
+    url(r'^addproject$', views.addproject, name='addproject'),
 ]
