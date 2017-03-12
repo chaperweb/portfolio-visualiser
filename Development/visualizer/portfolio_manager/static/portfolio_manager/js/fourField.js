@@ -94,7 +94,13 @@ console.log(projects);
 		if(d.yAxis > 0) {return (d.yAxis*yTimes + height/2 - sliderValues*yTimes);
 		} else {return (d.yAxis*yTimes + height/2 + sliderValues*yTimes);}
 	}
-	function radius(d) { return d.radius; }
+	function radius(d) {
+		if (d.radius === undefined) { // probably not needed, here just to be sure
+		  	return 5;
+		} else {
+			return d.radius;
+		}
+	}
 	function color(d) { return d.organization; }
 	function key(d) { return d.name; }
 
