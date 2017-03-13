@@ -139,7 +139,7 @@ Projects
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
@@ -189,7 +189,7 @@ Projects
             </div>
           {% endfor %}
           <!-- DECIMAL FIELDS -->
-            {% for x in decfield %}
+          {% for x in decfield %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
                 <div class="col-lg-1">
@@ -199,7 +199,7 @@ Projects
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
@@ -229,7 +229,7 @@ Projects
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
@@ -260,7 +260,7 @@ Projects
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
@@ -290,7 +290,7 @@ Projects
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
@@ -321,7 +321,7 @@ Projects
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
