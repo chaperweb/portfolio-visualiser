@@ -37,12 +37,14 @@ Projects
 </div>
 <!-- /sidebar -->
 
-<!-- Modal -->
+<!-- Modals -->
 {% include "modals/modify_text_modal.html" %}
 {% include "modals/modify_org_modal.html" %}
 {% include "modals/modify_dec_modal.html" %}
 {% include "modals/modify_per_modal.html" %}
 {% include "modals/modify_date_modal.html" %}
+{% include "modals/modify_assorg_modal.html" %}
+
 <!-- Page Content -->
 <div id="page-content-wrapper">
   <div class="container col-lg-10">
@@ -270,7 +272,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-text" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
+                  <button class="btn btn-xs btn-default open-modify-assorg" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-assorg-modal">
                     Modify
                   </button>
                 </div>

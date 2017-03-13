@@ -57,6 +57,45 @@ $(function()
   })
 });
 
+//  To submit modify-assorg-form
+$(function()
+{
+  $("#modify-assorg-form").on("submit", function(event)
+  {
+    event.preventDefault();
+
+    var csrftoken = getCookie("csrftoken");
+
+    function csrfSafeMethod(method)
+    {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+
+    $.ajax({
+      method: "POST",
+      url: $('#modify-assorg-form').attr('action'),
+      data: { 'org': $("#org").val(), 'field': $("#hidden-assorg-info").val() },
+      success: function(json) {
+        var textToChange = "#" + json.field
+        $(textToChange).text(json.value);
+        $("#modify-assorg-modal").modal('hide');
+      },
+      error: function() {
+        alert("Failed to modify organization");
+      }
+    });
+  })
+});
+
 //  To submit modify-per-form
 $(function()
 {
@@ -96,7 +135,8 @@ $(function()
 });
 
 // To submit modify-dec-form
-$(function(){
+$(function()
+{
   $("#modify-dec-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -136,7 +176,8 @@ $(function(){
 });
 
 // To submit modify-text-form
-$(function(){
+$(function()
+{
   $("#modify-text-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -176,7 +217,8 @@ $(function(){
 });
 
 // To submit modify-date-form
-$(function(){
+$(function()
+{
   $("#modify-date-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -221,7 +263,8 @@ $(function(){
 //  ############################
 
 //  To populate organizationlist in modify_org_modal
-$(function(){
+$(function()
+{
   var csrftoken = getCookie("csrftoken");
 
   function csrfSafeMethod(method)
@@ -255,8 +298,45 @@ $(function(){
   });
 });
 
+//  To populate organizationlist in modify_assorg_modal
+$(function()
+{
+  var csrftoken = getCookie("csrftoken");
+
+  function csrfSafeMethod(method)
+  {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+  $.ajax({
+    method: "GET",
+    url: "/get_orgs",
+    data: {},
+    success: function(json) {
+      for(i=0;i<json.length;i++)
+      {
+        var option = "<option value= " + json[i].name + ">" + json[i].name + "</option>";
+        $(option).appendTo($("#org"));
+      }
+    },
+    error: function() {
+      alert("Failed to load all organizations");
+    }
+  });
+});
+
 //  To populate personslist in modify_per_modal
-$(function(){
+$(function()
+{
   var csrftoken = getCookie("csrftoken");
 
   function csrfSafeMethod(method)
@@ -316,5 +396,10 @@ $(function(){
   $(".open-modify-date").click(function(event){
     var field_name = $(this).data('field');
     $("#hidden-date-info").val(field_name);
+  });
+  //  Adding assorg field info
+  $(".open-modify-assorg").click(function(event){
+    var field_name = $(this).data('field');
+    $("#hidden-assorg-info").val(field_name);
   });
 });

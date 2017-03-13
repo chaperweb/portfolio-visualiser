@@ -205,6 +205,26 @@ def project_edit(request, project_id, field_name):
         proj.save()
         return JsonResponse({"name": request.POST.get('name')})
 
+    # If you want to modify a associated organization
+    if field_name == "assorg":
+        try:
+            org = Organization.objects.get(name=request.POST.get('org'))
+            ct = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
+            td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+            tds = []
+            # Manual filtering
+            for t in td:
+                if t.dimension_object.name == request.POST.get('field'):
+                    tds = t.dimension_object
+                    break;
+
+            tds.value = org
+            tds.save()
+            return JsonResponse({"field": tds.name, "value": tds.value.name}, safe=True)
+
+        except Organization.DoesNotExist:
+            print("Couldn't find the organization")
+
     # If you want to modify a text field
     elif field_name == "text":
         ct = ContentType.objects.get_for_model(TextDimension)
@@ -250,9 +270,9 @@ def project_edit(request, project_id, field_name):
 
             tds.value = p
             tds.save()
+            return JsonResponse({"value": p.first_name + " " + p.last_name, "field": tds.name})
         except Person.DoesNotExist:
             print("Couldn't find the person")
-        return JsonResponse({"value": p.first_name + " " + p.last_name, "field": tds.name})
 
     # If you want to modify a date field
     elif field_name == "date":
