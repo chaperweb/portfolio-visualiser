@@ -1,3 +1,4 @@
+//  COOOOOOOKIES
 function getCookie(name)
 {
   var cookieValue = null;
@@ -15,77 +16,9 @@ function getCookie(name)
   return cookieValue;
 }
 
-
-//  To populate organizationlist in modify_org_modal
-$(function(){
-  var csrftoken = getCookie("csrftoken");
-
-  function csrfSafeMethod(method)
-  {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-      }
-    }
-  });
-
-  $.ajax({
-    method: "GET",
-    url: "/get_orgs",
-    data: {},
-    success: function(json) {
-      for(i=0;i<json.length;i++)
-      {
-        var option = "<option value= " + json[i].name + ">";
-        $(option).appendTo($("#organizations"));
-      }
-    },
-    error: function() {
-      alert("Failed to load all organizations");
-    }
-  });
-});
-
-//  To populate personslist in modify_per_modal
-$(function(){
-  var csrftoken = getCookie("csrftoken");
-
-  function csrfSafeMethod(method)
-  {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-      }
-    }
-  });
-
-  $.ajax({
-    method: "GET",
-    url: "/get_pers",
-    data: {},
-    success: function(json) {
-      for(i=0;i<json.length;i++)
-      {
-        var fullname = json[i].first_name + " " + json[i].last_name
-        var option = "<option value= " + json[i].id + ">" + fullname + "</option>";
-        $(option).appendTo($("#person"));
-      }
-    },
-    error: function() {
-      alert("Failed to load all persons");
-    }
-  });
-});
+//  ############################
+//  ### SUBMITTING FUNCTIONS ###
+//  ############################
 
 //  To submit modify-org-form
 $(function()
@@ -283,26 +216,103 @@ $(function(){
   })
 });
 
-// These are to add the hidden field input of all modals that need it
+//  ############################
+//  ### POPULATION FUNCTIONS ###
+//  ############################
+
+//  To populate organizationlist in modify_org_modal
 $(function(){
+  var csrftoken = getCookie("csrftoken");
+
+  function csrfSafeMethod(method)
+  {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+  $.ajax({
+    method: "GET",
+    url: "/get_orgs",
+    data: {},
+    success: function(json) {
+      for(i=0;i<json.length;i++)
+      {
+        var option = "<option value= " + json[i].name + ">";
+        $(option).appendTo($("#organizations"));
+      }
+    },
+    error: function() {
+      alert("Failed to load all organizations");
+    }
+  });
+});
+
+//  To populate personslist in modify_per_modal
+$(function(){
+  var csrftoken = getCookie("csrftoken");
+
+  function csrfSafeMethod(method)
+  {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+  $.ajax({
+    method: "GET",
+    url: "/get_pers",
+    data: {},
+    success: function(json) {
+      for(i=0;i<json.length;i++)
+      {
+        var fullname = json[i].first_name + " " + json[i].last_name
+        var option = "<option value= " + json[i].id + ">" + fullname + "</option>";
+        $(option).appendTo($("#person"));
+      }
+    },
+    error: function() {
+      alert("Failed to load all persons");
+    }
+  });
+});
+
+//  #############################
+//  ### HIDDEN INFO FUNCTIONS ###
+//  #############################
+// These are to add the hidden field input of all modals that need it
+
+$(function(){
+  //  Adding text field info
   $(".open-modify-text").click(function(event){
     var field_name = $(this).data('field');
     $("#hidden-text-info").val(field_name);
   });
-});
-$(function(){
+  //  Adding decimal field info
   $(".open-modify-dec").click(function(event){
     var field_name = $(this).data('field');
     $("#hidden-dec-info").val(field_name);
   });
-});
-$(function(){
+  //  Adding person field info
   $(".open-modify-per").click(function(event){
     var field_name = $(this).data('field');
     $("#hidden-per-info").val(field_name);
   });
-});
-$(function(){
+  //  Adding date field info
   $(".open-modify-date").click(function(event){
     var field_name = $(this).data('field');
     $("#hidden-date-info").val(field_name);

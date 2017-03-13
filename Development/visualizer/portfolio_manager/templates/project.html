@@ -74,35 +74,6 @@ Projects
               <div>THIS<br />IS<br />WHERE<br />THE<br />HISTORY<br />COMES</div>
             </div>
           </div>
-          <!-- OWNER -->
-          <!--<div class="panel panel-default">
-            <div class="panel-heading row" data-toggle="collapse" href="#owner-panel" aria-controls="#owner-panel" aria-expanded="false">
-              <div class="col-lg-1">
-                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-              </div>
-              <div class="col-lg-2">
-                Owner:
-              </div>
-              <div class="col-lg-2 col-lg-offset-4">
-                {{owner}}
-              </div>
-              <div class="col-md-1 pull-right">
-                <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="Owner" data-value="{{owner}}" data-toggle="modal" data-target="#modify-field-modal">
-                  Modify
-                </button>
-              </div>
-            </div>
-            <div id="owner-panel" class="panel-collapse panel-body collapse text-center">
-              THIS
-              <br />IS
-              <br />WHERE
-              <br />THE
-              <br />HISTORY
-              <br />COMES
-            </div>
-          </div>-->
-
           <!-- BUDGET -->
           <div class="panel panel-default">
             <div class="panel-heading row" data-toggle="collapse" href="#budget-panel" aria-controls="#budget-panel" aria-expanded="false">
@@ -132,7 +103,6 @@ Projects
             </div>
           </div>
           <!-- DATE FIELDS -->
-          <!-- TODO: Implement -->
           {% for x in dates %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
