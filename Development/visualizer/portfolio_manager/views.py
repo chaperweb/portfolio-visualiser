@@ -4,7 +4,7 @@ from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import logging
 from django.http import JsonResponse, HttpResponse
-from portfolio_manager.serializers import ProjectSerializer
+from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
 
@@ -149,50 +149,149 @@ def organizations(request):
 
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
-        pod = ContentType.objects.get_for_model(ProjectOwnerDimension)
         dd = ContentType.objects.get_for_model(DecimalDimension)
-        # nd = ContentType.objects.get_for_model(NumericDimension)
         td = ContentType.objects.get_for_model(TextDimension)
+        dated = ContentType.objects.get_for_model(DateDimension)
+        assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
+        assPersonsD = ContentType.objects.get_for_model(AssociatedPersonsDimension)
+        assOrgD = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
+        assProjsD = ContentType.objects.get_for_model(AssociatedProjectsDimension)
 
         # Default fields
-        # owner = ProjectDimension.objects.filter(content_type=pod, project_id=theProject.id).first().dimension_object.assPerson.value   # ONLY WORKS IF THERE IS ONLY ONE OWNER
         budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
 
+        # All dimensions
+        dims = ProjectDimension.objects.filter(project_id=theProject.id)
         # Added text fields
-        texts = ProjectDimension.objects.filter(content_type=td, project_id=theProject.id)
-
-        # Added integer fields
-        # intfields = ProjectDimension.objects.filter(content_type=nd, project_id=theProject.id)
-
+        texts = dims.filter(content_type=td)
         # Added decimal fields, removing budget from the query set
-        decfields = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).exclude(pk=budget.pk)
+        decfields = dims.filter(content_type=dd).exclude(pk=budget.pk)
+        # Date dimensions
+        dateds = dims.filter(content_type=dated)
+        # Associated person dimensions
+        assPersonDs = dims.filter(content_type=assPersonD)
+        # Associated persons dimensions
+        assPersonsDs = dims.filter(content_type=assPersonsD)
+        # Associated persons dimensions
+        assOrgDs = dims.filter(content_type=assOrgD)
+        # Associated projects dimensions
+        assProjsDs = dims.filter(content_type=assProjsD)
 
         context = {}
         context['project'] = theProject
         context['budget'] = budget
         context['text'] = texts
         context['decfield'] = decfields
+        context['dates'] = dateds
+        context['assPerson'] = assPersonDs
+        context['assPersons'] = assPersonsDs
+        context['assOrg'] = assOrgDs
+        context['assProjs'] = assProjsDs
+
         context['projects'] = Project.objects.all()
 
         return render(request, 'project.html', context)
 
-def project_edit(request, project_id):
+def project_edit(request, project_id, field_name):
     proj = get_object_or_404(Project, pk=project_id)
-    if request.method == "POST":
-        form = ProjectForm(request.POST)
+    # If you want to modify the owning organization
+    if field_name == "Organization":
+        try:
+            org = Organization.objects.get(name=request.POST.get('name'))
+        except Organization.DoesNotExist:
+            org = Organization(name=request.POST.get('name'))
+            org.save()
+        proj.parent = org
+        proj.save()
+        return JsonResponse({"name": request.POST.get('name')})
 
-        if form.is_valid():
-            # Update the projects info
-            proj.name = form.cleaned_data['name']
-            org = get_object_or_404(Organization, name=form.cleaned_data['organization'])
-            proj.parent = org
-            proj.save()
+    # If you want to modify a associated organization
+    if field_name == "assorg":
+        try:
+            org = Organization.objects.get(name=request.POST.get('org'))
+            ct = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
+            td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+            tds = []
+            # Manual filtering
+            for t in td:
+                if t.dimension_object.name == request.POST.get('field'):
+                    tds = t.dimension_object
+                    break;
 
-        return redirect('show_project', project_id=proj.pk)
+            tds.value = org
+            tds.save()
+            return JsonResponse({"field": tds.name, "value": tds.value.name}, safe=True)
+
+        except Organization.DoesNotExist:
+            print("Couldn't find the organization")
+
+    # If you want to modify a text field
+    elif field_name == "text":
+        ct = ContentType.objects.get_for_model(TextDimension)
+        td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+        tds = []
+        # Manual filtering
+        for t in td:
+            if t.dimension_object.name == request.POST.get('field'):
+                tds = t.dimension_object
+                break;
+
+        tds.value = request.POST.get('textValue')
+        tds.save()
+        return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
+
+    # If you want to modify a decimal field
+    elif field_name == "decimal":
+        ct = ContentType.objects.get_for_model(DecimalDimension)
+        td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+        tds = []
+        # Manual filtering
+        for t in td:
+            if t.dimension_object.name == request.POST.get('field'):
+                tds = t.dimension_object
+                break;
+
+        tds.value = request.POST.get('decValue')
+        tds.save()
+        return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
+
+    # If you want to modify a single person field
+    elif field_name == "person":
+        try:
+            p = Person.objects.get(pk=request.POST.get('perID'))
+            ct = ContentType.objects.get_for_model(AssociatedPersonDimension)
+            td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+            tds = []
+            # Manual filtering
+            for t in td:
+                if t.dimension_object.name == request.POST.get('field'):
+                    tds = t.dimension_object
+                    break;
+
+            tds.value = p
+            tds.save()
+            return JsonResponse({"value": p.first_name + " " + p.last_name, "field": tds.name})
+        except Person.DoesNotExist:
+            print("Couldn't find the person")
+
+    # If you want to modify a date field
+    elif field_name == "date":
+        ct = ContentType.objects.get_for_model(DateDimension)
+        td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+        tds = []
+        # Manual filtering
+        for t in td:
+            if t.dimension_object.name == request.POST.get('field'):
+                tds = t.dimension_object
+                break;
+
+        tds.update_date(request.POST.get('date'))
+        tds.save()
+        return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
+
     else:
-        data = { 'name': proj.name, 'parent': proj.parent }
-        form = ProjectForm(data)
-    return render(request, 'project_edit.html', {'form': form})
+        return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
+
 
 def delete_google_sheet(request, google_sheet_id):
     GoogleSheet.objects.get(id=google_sheet_id).delete()
@@ -316,3 +415,11 @@ def databaseview(request):
     else:
          form = CronForm()
     return render(request, 'droptable_organization.html', {'form':form})
+
+def get_orgs(request):
+    serializer = OrganizationSerializer(Organization.objects.all(), many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+def get_pers(request):
+    serializer = PersonSerializer(Person.objects.all(), many=True)
+    return JsonResponse(serializer.data, safe=False)
