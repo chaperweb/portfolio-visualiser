@@ -194,6 +194,7 @@ def show_project(request, project_id):
 
 def project_edit(request, project_id, field_name):
     proj = get_object_or_404(Project, pk=project_id)
+    # If you want to modify the owning organization
     if field_name == "Organization":
         try:
             org = Organization.objects.get(name=request.POST.get('name'))
@@ -204,6 +205,7 @@ def project_edit(request, project_id, field_name):
         proj.save()
         return JsonResponse({"name": request.POST.get('name')})
 
+    # If you want to modify a text field
     elif field_name == "text":
         ct = ContentType.objects.get_for_model(TextDimension)
         td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
@@ -218,6 +220,7 @@ def project_edit(request, project_id, field_name):
         tds.save()
         return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
 
+    # If you want to modify a decimal field
     elif field_name == "decimal":
         ct = ContentType.objects.get_for_model(DecimalDimension)
         td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
@@ -232,6 +235,7 @@ def project_edit(request, project_id, field_name):
         tds.save()
         return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
 
+    # If you want to modify a single person field
     elif field_name == "person":
         try:
             p = Person.objects.get(pk=request.POST.get('perID'))
@@ -249,8 +253,24 @@ def project_edit(request, project_id, field_name):
         except Person.DoesNotExist:
             print("Couldn't find the person")
         return JsonResponse({"value": p.first_name + " " + p.last_name, "field": tds.name})
+
+    # If you want to modify a date field
+    elif field_name == "date":
+        ct = ContentType.objects.get_for_model(DateDimension)
+        td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+        tds = []
+        # Manual filtering
+        for t in td:
+            if t.dimension_object.name == request.POST.get('field'):
+                tds = t.dimension_object
+                break;
+
+        tds.update_date(request.POST.get('date'))
+        tds.save()
+        return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
+
     else:
-        return JsonResponse({"name": field_name}, safe=True)
+        return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
 
 def delete_google_sheet(request, google_sheet_id):

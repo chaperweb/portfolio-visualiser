@@ -1,12 +1,3 @@
-$(document).on("click", ".open-modify", function () {
-  var field = $(this).data('field');
-  var value = $(this).data('value');
-  $(".modal-body h3").html("Modify: " + field);
-  $(".modal-body h4").html("Current value: " + value);
-  document.getElementById("newValue").type = $(this).data('type');
-  document.getElementById("newValue").value = $(this).data('value');
-});
-
 function getCookie(name)
 {
   var cookieValue = null;
@@ -25,7 +16,7 @@ function getCookie(name)
 }
 
 
-//  To add all organizations to the modify org modal
+//  To populate organizationlist in modify_org_modal
 $(function(){
   var csrftoken = getCookie("csrftoken");
 
@@ -60,7 +51,7 @@ $(function(){
   });
 });
 
-//  To add all persons to the modify per modal
+//  To populate personslist in modify_per_modal
 $(function(){
   var csrftoken = getCookie("csrftoken");
 
@@ -96,6 +87,7 @@ $(function(){
   });
 });
 
+//  To submit modify-org-form
 $(function()
 {
   $("#modify-org-form").on("submit", function(event)
@@ -132,6 +124,7 @@ $(function()
   })
 });
 
+//  To submit modify-per-form
 $(function()
 {
   $("#modify-per-form").on("submit", function(event)
@@ -169,6 +162,7 @@ $(function()
   })
 });
 
+// To submit modify-dec-form
 $(function(){
   $("#modify-dec-form").on("submit", function(event)
   {
@@ -208,6 +202,7 @@ $(function(){
   })
 });
 
+// To submit modify-text-form
 $(function(){
   $("#modify-text-form").on("submit", function(event)
   {
@@ -247,6 +242,48 @@ $(function(){
   })
 });
 
+// To submit modify-date-form
+$(function(){
+  $("#modify-date-form").on("submit", function(event)
+  {
+    event.preventDefault();
+
+    var csrftoken = getCookie("csrftoken");
+
+    function csrfSafeMethod(method)
+    {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+
+    $.ajax({
+      method: "POST",
+      url: $('#modify-date-form').attr('action'),
+      data: { 'date': $("#date").val(),
+              'field': $("#hidden-date-info").val()
+            },
+      success: function(json) {
+        var textToChange = "#" + json.field
+        $(textToChange).text(json.value);
+        $("#modify-date-modal").modal('hide');
+      },
+      error: function() {
+        $("#modify-date-modal").modal('hide');
+        alert("Failed to modify date field");
+      }
+    });
+  })
+});
+
+// These are to add the hidden field input of all modals that need it
 $(function(){
   $(".open-modify-text").click(function(event){
     var field_name = $(this).data('field');
@@ -262,7 +299,12 @@ $(function(){
 $(function(){
   $(".open-modify-per").click(function(event){
     var field_name = $(this).data('field');
-    console.log(field_name);
     $("#hidden-per-info").val(field_name);
+  });
+});
+$(function(){
+  $(".open-modify-date").click(function(event){
+    var field_name = $(this).data('field');
+    $("#hidden-date-info").val(field_name);
   });
 });

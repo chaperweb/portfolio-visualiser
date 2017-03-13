@@ -42,6 +42,7 @@ Projects
 {% include "modals/modify_org_modal.html" %}
 {% include "modals/modify_dec_modal.html" %}
 {% include "modals/modify_per_modal.html" %}
+{% include "modals/modify_date_modal.html" %}
 <!-- Page Content -->
 <div id="page-content-wrapper">
   <div class="container col-lg-10">
@@ -131,6 +132,7 @@ Projects
             </div>
           </div>
           <!-- DATE FIELDS -->
+          <!-- TODO: Implement -->
           {% for x in dates %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
@@ -145,7 +147,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-text" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-date-modal">
+                  <button class="btn btn-xs btn-default open-modify-date" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-date-modal">
                     Modify
                   </button>
                 </div>
@@ -252,6 +254,7 @@ Projects
           {% endfor %}
           <!-- ASSOCIATED PERSONS FIELDS -->
           <!-- TODO: Loop through people and add their names as values -->
+          <!-- TODO: Implement -->
           {% for x in assPersons %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
@@ -282,6 +285,7 @@ Projects
             </div>
           {% endfor %}
           <!-- ASSOCIATED ORGANIZATION FIELDS -->
+          <!-- TODO: Implement -->
           {% for x in assOrg %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
@@ -313,6 +317,7 @@ Projects
           {% endfor %}
           <!-- ASSOCIATED PROJECTS FIELDS -->
           <!-- TODO: Loop through projects and add them, maybe as dropdown list? -->
+          <!-- TODO: Implement -->
           {% for x in assProjs %}
             <div class="panel panel-default">
               <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">

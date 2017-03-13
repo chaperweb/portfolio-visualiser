@@ -1,0 +1,20 @@
+<div class="modal fade" id="modify-date-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3>Change Date</h3>
+        <form id="modify-date-form" method="POST" action="{% url 'project_edit' project_id=project.pk field_name="date" %}">
+          {% csrf_token %}
+          <label for="date">New date: </label>
+          <input id="hidden-date-info" type="hidden" name="field"/>
+          <input type="date" id="date" name="date"/> 
+          <center style="margin-top: 15px;">
+            <button type="submit" class="btn btn-success">Save change</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          </center>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
