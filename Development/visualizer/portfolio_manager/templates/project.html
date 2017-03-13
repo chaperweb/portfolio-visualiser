@@ -41,6 +41,7 @@ Projects
 {% include "modals/modify_text_modal.html" %}
 {% include "modals/modify_org_modal.html" %}
 {% include "modals/modify_dec_modal.html" %}
+{% include "modals/modify_per_modal.html" %}
 <!-- Page Content -->
 <div id="page-content-wrapper">
   <div class="container col-lg-10">
@@ -73,7 +74,7 @@ Projects
             </div>
           </div>
           <!-- OWNER -->
-          <div class="panel panel-default">
+          <!--<div class="panel panel-default">
             <div class="panel-heading row" data-toggle="collapse" href="#owner-panel" aria-controls="#owner-panel" aria-expanded="false">
               <div class="col-lg-1">
                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
@@ -99,7 +100,8 @@ Projects
               <br />HISTORY
               <br />COMES
             </div>
-          </div>
+          </div>-->
+
           <!-- BUDGET -->
           <div class="panel panel-default">
             <div class="panel-heading row" data-toggle="collapse" href="#budget-panel" aria-controls="#budget-panel" aria-expanded="false">
@@ -233,7 +235,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-text" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
+                  <button class="btn btn-xs btn-default open-modify-per" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-per-modal">
                     Modify
                   </button>
                 </div>

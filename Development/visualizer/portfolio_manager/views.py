@@ -4,7 +4,7 @@ from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import logging
 from django.http import JsonResponse, HttpResponse
-from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer
+from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
 
@@ -213,7 +213,7 @@ def project_edit(request, project_id, field_name):
             if t.dimension_object.name == request.POST.get('field'):
                 tds = t.dimension_object
                 break;
-                
+
         tds.value = request.POST.get('textValue')
         tds.save()
         return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
@@ -221,7 +221,6 @@ def project_edit(request, project_id, field_name):
     elif field_name == "decimal":
         ct = ContentType.objects.get_for_model(DecimalDimension)
         td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
-        print(request.POST.get('field'))
         tds = []
         # Manual filtering
         for t in td:
@@ -233,6 +232,23 @@ def project_edit(request, project_id, field_name):
         tds.save()
         return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
 
+    elif field_name == "person":
+        try:
+            p = Person.objects.get(pk=request.POST.get('perID'))
+            ct = ContentType.objects.get_for_model(AssociatedPersonDimension)
+            td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+            tds = []
+            # Manual filtering
+            for t in td:
+                if t.dimension_object.name == request.POST.get('field'):
+                    tds = t.dimension_object
+                    break;
+
+            tds.value = p
+            tds.save()
+        except Person.DoesNotExist:
+            print("Couldn't find the person")
+        return JsonResponse({"value": p.first_name + " " + p.last_name, "field": tds.name})
     else:
         return JsonResponse({"name": field_name}, safe=True)
 
@@ -362,4 +378,8 @@ def databaseview(request):
 
 def get_orgs(request):
     serializer = OrganizationSerializer(Organization.objects.all(), many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+def get_pers(request):
+    serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)

@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^database$', views.databaseview, name='databaseview'),
     url(r'^get_orgs$', views.get_orgs, name='get_orgs'),
     url(r'^projects/(?P<project_id>[0-9]+)/edit/(?P<field_name>[A-Za-z]+)$', views.project_edit, name='project_edit'),
+    url(r'^get_pers$', views.get_pers, name='get_pers'),
 ]
