@@ -97,9 +97,10 @@ console.log(projects);
 		} else {return (d.yAxis*yTimes + height/2 + sliderValues*yTimes);}
 	}
 	function radius(d) {
-		if (d.radius === undefined) { // probably not needed, here just to be sure
-		  	return 5;
+		if (d.xAxis !== 0 && d.yAxis !== 0 && d.yAxis !== -Infinity && d.yAxis !== Infinity && d.xAxis !== Infinity && d.xAxis !== -Infinity) {
+			return d.radius;
 		} else {
+			d.radius = 0
 			return d.radius;
 		}
 	}
