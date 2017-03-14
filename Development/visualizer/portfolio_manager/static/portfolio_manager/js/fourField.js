@@ -252,11 +252,11 @@ console.log(projects);
 		});
 	}
 	function processValues(actual,planned) {
-		if(actual > planned) {
-			return ((actual/planned)*100); // to revert the ballmovement *-1 these lines
-		} else {
-			return (-(planned/actual)*100);
-		}
+	  if(actual > planned && actual/planned !== Infinity) {
+	    return ((actual/planned)*100); // to revert the ballmovement *-1 these lines
+	  } else if (planned/actual !== -Infinity) {
+	    return (-(planned/actual)*100);
+	  }
 	}
 	/*
 	this function does mathematical miracles and interpolates the values where the circles will be drawn.
