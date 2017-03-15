@@ -12,8 +12,27 @@ import json as json_module
 logger = logging.getLogger('django.request')
 
 def home(request):
+
+    # milestones for project sneak peeks (only future milestones, ordered by date)
+    milestones = Milestone.objects.filter(due_date__gte = datetime.now()).order_by('due_date')
+
+    # dictionary for project -> next milestone
+    mils = {}
+    for m in milestones:
+        if m.project not in mils:
+            mils[m.project] = m.due_date
+
+    # dimensions for project manager and end date of project, for project sneak peeks
+    dims = ProjectDimension.objects.all()
+    assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
+    dated = ContentType.objects.get_for_model(DateDimension)
+    assPersonDs = dims.filter(content_type=assPersonD)
+    dateds = dims.filter(content_type=dated)
     context = {}
     context["projects"] = Project.objects.all()
+    context['assPerson'] = assPersonDs
+    context["mils"] = mils
+    context['dates'] = dateds
     return render(request, 'homepage.html', context)
 
 # Site to see history of projects
