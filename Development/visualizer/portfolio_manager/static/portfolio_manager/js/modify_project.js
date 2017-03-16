@@ -390,6 +390,7 @@ $(function()
     // Buttons data variables
     var field = $(this).data('field');
     var projectID = $(this).data('projectid');
+    var type = $(this).data('type');
 
     // Add title
     $("#multiple-title").html(field);
@@ -412,10 +413,10 @@ $(function()
 
     $.ajax({
       method: "GET",
-      url: "/get_multiple/" + projectID + "/" + field,
+      url: "/get_multiple/" + projectID + "/" + type + "/" + field,
       data: {},
       success: function(json) {
-        alert(json.field);
+        alert(json.names);
       },
       error: function() {
         alert("Failed to load all persons");

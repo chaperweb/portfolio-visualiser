@@ -443,5 +443,21 @@ def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
-def get_multiple(request, project_id, field_name):
+def get_multiple(request, project_id, type, field_name):
+    theProject = get_object_or_404(Project, pk=project_id)
+    if type == "asspersons":
+        assPersonsD = ContentType.objects.get_for_model(AssociatedPersonsDimension)
+        dims = ProjectDimension.objects.filter(project_id=theProject.id)
+        assPersonsDs = dims.filter(content_type=assPersonsD)
+        persons = []
+        names = []
+        for dim in assPersonsDs:
+            dimO = dim.dimension_object
+            if dimO.name == field_name:
+                print(dimO.persons)
+                for pers in dimO.persons:
+                    persons.append(pers.first_name)
+        print(names)
+
+        return JsonResponse({"names":names})
     return JsonResponse({"field": field_name})
