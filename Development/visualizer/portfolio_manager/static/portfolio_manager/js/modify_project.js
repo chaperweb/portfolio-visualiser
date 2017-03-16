@@ -16,6 +16,18 @@ function getCookie(name)
   return cookieValue;
 }
 
+//  #######################################
+//  ### PREVENTING AUTOMATIC EXPANSIONS ###
+//  #######################################
+$(function(){
+  $(".modify-button").click(function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var modalId = $(this).data('target');
+    $(modalId).modal('toggle');
+  });
+})
+
 //  ############################
 //  ### SUBMITTING FUNCTIONS ###
 //  ############################

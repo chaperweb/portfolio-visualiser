@@ -55,7 +55,7 @@ Projects
         <div class="panel-group">
           <!-- ORGANIZATION -->
           <div class="panel panel-default">
-            <div class="panel-heading row" data-toggle="collapse" href="#org-panel" aria-controls="#org-panel" aria-expanded="false">
+            <div class="panel-heading row" data-toggle="collapse" data-target="#org-panel" aria-controls="#org-panel" aria-expanded="false">
               <div class="col-md-1">
                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
                 <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
@@ -66,8 +66,8 @@ Projects
               <div id="projectparent" class="col-md-2 col-md-offset-4">
                 {{ project.parent }}
               </div>
-              <div class="col-md-1 pull-right">
-                <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="Organization" data-value="{{project.parent}}" data-toggle="modal" data-target="#modify-org-modal">
+              <div class="col-md-1 pull-right modifybutton">
+                <button class="btn btn-xs btn-default open-modify modify-button" data-type="text" data-field="Organization" data-value="{{project.parent}}" data-toggle="modal" data-target="#modify-org-modal">
                   Modify
                 </button>
               </div>
@@ -90,7 +90,7 @@ Projects
                 {{ budget.dimension_object.value }}
               </div>
               <div class="col-md-1 pull-right">
-              <button class="btn btn-xs btn-default open-modify-dec" data-type="number" data-field="{{ budget.dimension_object.name }}" data-value="{{budget.dimension_object.value}}" data-toggle="modal" data-target="#modify-dec-modal">
+              <button class="btn btn-xs btn-default open-modify-dec modify-button" data-type="number" data-field="{{ budget.dimension_object.name }}" data-value="{{budget.dimension_object.value}}" data-toggle="modal" data-target="#modify-dec-modal">
                 Modify
               </button>
               </div>
@@ -119,7 +119,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-date" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-date-modal">
+                  <button class="btn btn-xs btn-default open-modify-date modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-date-modal">
                     Modify
                   </button>
                 </div>
@@ -149,7 +149,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-text" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
+                  <button class="btn btn-xs btn-default open-modify-text modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
                     Modify
                   </button>
                 </div>
@@ -179,7 +179,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-dec" data-type="number" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-dec-modal">
+                  <button class="btn btn-xs btn-default open-modify-dec modify-button" data-type="number" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-dec-modal">
                     Modify
                   </button>
                 </div>
@@ -209,7 +209,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-per" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-per-modal">
+                  <button class="btn btn-xs btn-default open-modify-per modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-per-modal">
                     Modify
                   </button>
                 </div>
@@ -238,10 +238,21 @@ Projects
                   {{x.dimension_object.name}}:
                 </div>
                 <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                  <button type="button" class="btn btn-xs btn-success modify-button" data-toggle="modal" data-target="#{{x.dimension_object.name}}-list" aria-expanded="false" aria-controls="#{{devgame.pk}}-salesdata">
+                    Click to see members
+                  </button>
+                  <div id="{{x.dimension_object.name}}-list" class="collapse">
+                    <ul class="list-group">
+                      <li class="list-group-item">HEJ</li>
+                      <li class="list-group-item">HEJ</li>
+                      <li class="list-group-item">HEJ</li>
+                      <li class="list-group-item">HEJ</li>
+                    </ul>
+                  </div>
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-text" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
+                  <button class="btn btn-xs btn-default open-modify-text modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
                     Modify
                   </button>
                 </div>
@@ -271,7 +282,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-assorg" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-assorg-modal">
+                  <button class="btn btn-xs btn-default open-modify-assorg modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-assorg-modal">
                     Modify
                   </button>
                 </div>
@@ -303,7 +314,7 @@ Projects
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-text" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
+                  <button class="btn btn-xs btn-default open-modify-text modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
                     Modify
                   </button>
                 </div>
