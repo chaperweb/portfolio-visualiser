@@ -44,6 +44,7 @@ Projects
 {% include "modals/modify_per_modal.html" %}
 {% include "modals/modify_date_modal.html" %}
 {% include "modals/modify_assorg_modal.html" %}
+{% include "modals/multiple_items_modal.html" %}
 
 <!-- Page Content -->
 <div id="page-content-wrapper">
@@ -238,17 +239,7 @@ Projects
                   {{x.dimension_object.name}}:
                 </div>
                 <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
-                  <button type="button" class="btn btn-xs btn-success modify-button" data-toggle="modal" data-target="#{{x.dimension_object.name}}-list" aria-expanded="false" aria-controls="#{{devgame.pk}}-salesdata">
-                    Click to see members
-                  </button>
-                  <div id="{{x.dimension_object.name}}-list" class="collapse">
-                    <ul class="list-group">
-                      <li class="list-group-item">HEJ</li>
-                      <li class="list-group-item">HEJ</li>
-                      <li class="list-group-item">HEJ</li>
-                      <li class="list-group-item">HEJ</li>
-                    </ul>
-                  </div>
+                  <button type="button" class="btn btn-xs btn-success modify-button" data-toggle="modal" data-target="#multiple-items-modal">Click to see members</button>
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
