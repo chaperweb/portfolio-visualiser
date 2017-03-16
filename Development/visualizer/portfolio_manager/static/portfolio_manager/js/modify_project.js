@@ -383,6 +383,47 @@ $(function()
   });
 });
 
+// To populate associated persons in multiple-items-modal
+$(function()
+{
+  $(".multiple-button").click(function(e){
+    // Buttons data variables
+    var field = $(this).data('field');
+    var projectID = $(this).data('projectid');
+
+    // Add title
+    $("#multiple-title").html(field);
+
+    var csrftoken = getCookie("csrftoken");
+
+    function csrfSafeMethod(method)
+    {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+
+    $.ajax({
+      method: "GET",
+      url: "/get_multiple/" + projectID + "/" + field,
+      data: {},
+      success: function(json) {
+        alert(json.field);
+      },
+      error: function() {
+        alert("Failed to load all persons");
+      }
+    });
+  });
+});
+
 //  #############################
 //  ### HIDDEN INFO FUNCTIONS ###
 //  #############################

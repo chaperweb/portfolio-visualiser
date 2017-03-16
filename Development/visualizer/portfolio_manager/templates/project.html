@@ -239,7 +239,7 @@ Projects
                   {{x.dimension_object.name}}:
                 </div>
                 <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
-                  <button type="button" class="btn btn-xs btn-success modify-button" data-toggle="modal" data-target="#multiple-items-modal">Click to see members</button>
+                  <button type="button" class="btn btn-xs btn-success multiple-button modify-button" data-projectid="{{project.pk}}" data-field="{{ x.dimension_object.name }}" data-toggle="modal" data-target="#multiple-items-modal">Click to see members</button>
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">

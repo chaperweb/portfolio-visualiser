@@ -442,3 +442,6 @@ def get_orgs(request):
 def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
+
+def get_multiple(request, project_id, field_name):
+    return JsonResponse({"field": field_name})
