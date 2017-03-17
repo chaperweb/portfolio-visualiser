@@ -454,10 +454,11 @@ def get_multiple(request, project_id, type, field_name):
         for dim in assPersonsDs:
             dimO = dim.dimension_object
             if dimO.name == field_name:
-                print(dimO.persons)
-                for pers in dimO.persons:
-                    persons.append(pers.first_name)
-        print(names)
-
+                for pers in dimO.persons.all():
+                    print(pers.first_name + " " + pers.last_name)
+                    persons.append(pers)
+        for p in persons:
+            names.append(p.first_name + " " + p.last_name)
         return JsonResponse({"names":names})
-    return JsonResponse({"field": field_name})
+
+    return JsonResponse({"error": True, "field": field_name})

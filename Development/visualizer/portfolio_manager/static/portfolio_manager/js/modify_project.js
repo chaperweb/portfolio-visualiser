@@ -19,7 +19,8 @@ function getCookie(name)
 //  #######################################
 //  ### PREVENTING AUTOMATIC EXPANSIONS ###
 //  #######################################
-$(function(){
+$(function()
+{
   $(".modify-button").click(function(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -416,7 +417,13 @@ $(function()
       url: "/get_multiple/" + projectID + "/" + type + "/" + field,
       data: {},
       success: function(json) {
-        alert(json.names);
+        $("#multiple-well-ul > li").remove();
+        for(i=0; i<json.names.length; i++)
+        {
+          console.log(json.names[i])
+          var row = '<li class="list-group-item">' + json.names[i] + '</li>';
+          $(row).appendTo("#multiple-well-ul");
+        }
       },
       error: function() {
         alert("Failed to load all persons");
