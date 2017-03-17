@@ -444,21 +444,33 @@ def get_pers(request):
     return JsonResponse(serializer.data, safe=False)
 
 def get_multiple(request, project_id, type, field_name):
+    # Get the project
     theProject = get_object_or_404(Project, pk=project_id)
+    # If AssociatedPersonsDimension
     if type == "asspersons":
+        # ContentType
         assPersonsD = ContentType.objects.get_for_model(AssociatedPersonsDimension)
-        dims = ProjectDimension.objects.filter(project_id=theProject.id)
-        assPersonsDs = dims.filter(content_type=assPersonsD)
+        # The dimensions of correct content_type and for the correct project_id
+        assPersonsDs = ProjectDimension.objects.filter(content_type=assPersonsD, project_id=theProject.id)
         persons = []
         names = []
+        # Loop through the dimensions
         for dim in assPersonsDs:
+            # Get the object
             dimO = dim.dimension_object
+            # If it's the correct field
             if dimO.name == field_name:
+                # loop through persons in dimension
                 for pers in dimO.persons.all():
-                    print(pers.first_name + " " + pers.last_name)
                     persons.append(pers)
         for p in persons:
             names.append(p.first_name + " " + p.last_name)
         return JsonResponse({"names":names})
 
-    return JsonResponse({"error": True, "field": field_name})
+    # If AssociatedProjectsDimension
+    elif type == "assprojects":
+        return JsonResponse({"error": False, "names": "Projuprojuproju"})
+
+    # If no types matched return error = true and the field name received 
+    else:
+        return JsonResponse({"error": True, "field": field_name})
