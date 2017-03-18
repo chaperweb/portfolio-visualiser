@@ -8,79 +8,76 @@ $(function(){
 function fourField(json) {
 	//d3.json('outputData.json', function(error,json) {
 	//if (error) throw error;
-		console.log(json);
+	console.log(json);
 	var projects = []
 	//console.log(json[8].dimensions[0].dimension_object.name);
 		var xToBe = "SizeMoney"
 		var yToBe = "SizeManDays"
 		var radToBe = "SizeEffect"
+		var colorToBe = 'AssociatedOrganizationDimension'
 		var jsonlen = json.length
 		var projects = []
 		var data = [{"X": xToBe, "Y": yToBe}]
 		for (j = 0; j < jsonlen; j++) {
 			var size = json[j].dimensions.length
+			//inProgress is object which will contain the data from 1 project.
 			var inProgress = {"name": json[j].name, "organization": "", "xAxisActual": [],"xAxisPlanned": [],"xAxis": 0,"radius":[],"yAxisActual":[],"yAxisPlanned":[],"yAxis":0};
 			var xID = 0
 			var yID = 0			
 			for (i = 0; i < size; i++) {
 		    if (json[j].dimensions[i].dimension_type == 'DecimalDimension' ) {
-
+					//collectVal is array which will contain a value and a corresponding date. The type of the values is determined later (budget, manHours etc.).
 					var collectVal = []
 					var historyLen = json[j].dimensions[i].dimension_object.history.length;
 					for (h = 0; h < historyLen; h++) {
 						var date = json[j].dimensions[i].dimension_object.history[h].history_date;
 						var planned = json[j].dimensions[i].dimension_object.history[h].value;
-						//var actual = json[j].dimensions[i].dimension_object.history[h].value; // hardcoded since there is no milestones
-						var parsedDate = new Date(date).getTime() / 1000
+						var parsedDate = new Date(date).getTime() / 1000 // parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
 						collectVal.push([parsedDate, planned])
 						//console.log(collectVal);
 					};
+					// here we determine the type of the array, set the inProgress arrays.
 					var valueName = json[j].dimensions[i].dimension_object.name;
 					if ( valueName === xToBe) {
-						xID = json[j].dimensions[i].id
-						inProgress.xAxisActual = (collectVal).reverse();
+						xID = json[j].dimensions[i].id // x-axis id is saved. This value is used in the milestone-loop.
+						inProgress.xAxisActual = (collectVal).reverse(); 
 					} else if (valueName === yToBe) {
-						yID = json[j].dimensions[i].id
+						yID = json[j].dimensions[i].id // y-axis id is saved. This value is used in the milestone-loop.
 						inProgress.yAxisActual = (collectVal).reverse();
 					} else if (valueName === radToBe) {
 						inProgress.radius =(collectVal)
 					}
-				} else if (json[j].dimensions[i].dimension_type === 'AssociatedOrganizationDimension' ) {
+				} else if (json[j].dimensions[i].dimension_type === colorToBe ) {
 					inProgress.organization = json[j].dimensions[i].dimension_object.history[0].value.name
 				};
 				
 			}
 			//console.log(xID)
 			//console.log(yID)
-		var collectXPlan = []
-		var collectYPlan = []
+		var collectXPlan = [] // array for x-axis milestones
+		var collectYPlan = [] // array for y-axis milestones
 		if(json[j].milestones != undefined) {
-
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
 				if(json[j].milestones[e].history[0].dimensions != undefined) {
 				for(q = 0; q < json[j].milestones[e].history[0].dimensions.length ; q++ ) {
 					console.log(json[j].milestones[e].history[0].dimensions[q].project_dimension)
 						if(json[j].milestones[e].history[0].dimensions[q].project_dimension == xID) {
-							//lisää X
+							//adding x-axis milestones. 
 							var date = json[j].milestones[e].history[0].due_date
 							var parsedDate = new Date(date).getTime() / 1000
 							var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
-							console.log(milestoneValue)
 							collectXPlan.push([parsedDate,milestoneValue])
 						} else if( json[j].milestones[e].history[0].dimensions[q].project_dimension == yID ) {
-							// lisää Y
+							//adding y-axis milestones
 							var date = json[j].milestones[e].history[0].due_date
 							var parsedDate = new Date(date).getTime() / 1000
 							var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
-							console.log(milestoneValue)
 							collectYPlan.push([parsedDate,milestoneValue])
 						}
 					}
 				}
 			}
-		
-			
-				
+		//pushing the milestone-arrays to inProgress, and push inProgress to projects-array.
 		inProgress.xAxisPlanned =(collectXPlan)
 		inProgress.yAxisPlanned =(collectYPlan)	
 		projects.push(inProgress);			
@@ -88,14 +85,17 @@ function fourField(json) {
 
 	}
 console.log(projects);
+	//function to determine the x-coordinates of a circle in the graph. 
 	function x(d) {
 		if(d.xAxis > 0) { return (width/2-d.xAxis*xTimes + sliderValues*xTimes);
 		} else {return (width/2-d.xAxis*xTimes - sliderValues*xTimes)}
 	}
+	//function to determine the y-coordinates of a circle in the graph.
 	function y(d) {
 		if(d.yAxis > 0) {return (d.yAxis*yTimes + height/2 - sliderValues*yTimes);
 		} else {return (d.yAxis*yTimes + height/2 + sliderValues*yTimes);}
 	}
+	//function to determine the radius of a circle in the graph. If either y- or x-coordinates are infinite (the ball lacks milestones or dimension values), the radius is set to 0, and the circle is not displayed
 	function radius(d) {
 		if (d.xAxis !== 0 && d.yAxis !== 0 && d.yAxis !== -Infinity && d.yAxis !== Infinity && d.xAxis !== Infinity && d.xAxis !== -Infinity) {
 			return d.radius;
@@ -104,6 +104,7 @@ console.log(projects);
 			return d.radius;
 		}
 	}
+	//function to determine color of the circle. Currently is set to color the circles by their "AssociatedOrganizationDimension"
 	function color(d) { return d.organization; }
 	function key(d) { return d.name; }
 
@@ -118,7 +119,7 @@ console.log(projects);
 		axisLenghtY = height * 0.8,
 		sliderY = height - margin.bottom
 		sliderValues = 100		
-		xTimes = axisLenghtX/(2*sliderValues) // 200 is the amount of the % in the graph (100 - (-100))
+		xTimes = axisLenghtX/(2*sliderValues) // 200 is the amount of the % in the graph (100 - (-100)). This value is used to correctly position the circles in the box since the coordinates are percentages.
 		yTimes = axisLenghtY/(2*sliderValues) // 200 is the amount of the % in the graph (100 - (-100))
 
 
@@ -156,6 +157,7 @@ console.log(projects);
 	//slider start & stop values
 	var labelStart = parseDate(startDate * 1000)
 	var labelEnd = parseDate(endDate * 1000)
+	//label for the start date next to the slider
 	var sSLabel = svg.append("text")
 					 .attr("class", "sliderLabel")
 					 .attr("text-anchor", "start")
@@ -163,6 +165,7 @@ console.log(projects);
 					 .attr("y", height)
 					 .text("Start date: " + labelStart);
 
+	//label for the end date next to the slider				 
 	var sELabel = svg.append("text")
 					.attr("class", "sliderLabel")
 					.attr("text-anchor", "end")
@@ -251,38 +254,24 @@ console.log(projects);
 		  };
 		});
 	}
+	// this function returns the required % to position the circle correctly.
 	function processValues(actual,planned) {
-	  if(actual > planned && actual/planned !== Infinity) {
-	    return ((actual/planned)*100); // to revert the ballmovement *-1 these lines
-	  } else if (planned/actual !== -Infinity) {
-	    return (-(planned/actual)*100);
-	  }
+		if(actual > planned && actual/planned !== Infinity) {
+			// if actual value is larger than the planned value, the following calculation is done to position the ball above its axis
+			return ((actual/planned)*100);
+		} else if (planned/actual !== -Infinity) {
+			// if actual value is smaller than the planned value, the ball is then positioned below its axis. The Division is reversed to that the received percentage is not "skewed".  
+			return (-(planned/actual)*100);
+		}
 	}
 	/*
-	this function does mathematical miracles and interpolates the values where the circles will be drawn.
+    this function interpolates the values of the given array "values", and returns the value that is in the date "date". 
+    is used in interpolateData-function.
 	*/
-	function interpolateValues2(values, date) {
-		if(values == undefined || date == undefined) {
-			//console.log("taas yksi")
-			return 0;
-		}
-		var i = bisect.left(values, date, 0, values.length - 1),
-			a = values[i];
-		if (i > 0) {
-		  var b = values[i - 1],
-			  t = (date - a[0]) / (b[0] - a[0]);
-		  var planned = a[1] * (1 - t) + b[1] * t
-		  var actual = a[2] * (1 - t) + b[2] * t
-		  if(actual > planned) {return ((actual/planned)*100); // to revert the ballmovement *-1 these lines
-		  } else {return (-(planned/actual)*100)}
-		}
-		if(a[2] > a[1]) {return ((a[2]/a[1]))*100; // this is the starting values
-		} else {return -((a[1]/a[2])*100)}
-	  }
 
 	function interpolateValues(values, date) {
 		if(values == undefined || date == undefined) {
-			//console.log("taas yksi")
+			//array containing the data is undefined, most likely the data never existed. The radius will be eventyally set to 0.
 			return 0;
 		}
 		var i = bisect.left(values, date, 0, values.length - 1),
