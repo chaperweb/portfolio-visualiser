@@ -147,11 +147,6 @@ def add_new_person(request):
         content_type="application/json"
     )
 
-# Site to see all projects
-def projects(request):
-    projects_all = Project.objects.all()
-    return render(request, 'projects.html', {'projects': projects_all})
-
 # Site to see all organizations
 def organizations(request):
    if request.method == "POST":
@@ -403,12 +398,13 @@ def insert_field(request, project_id):
         formt = TableSpecification()
         return render(request, 'insert_field.html', {'formt':formt})
 
-def projektit(request):
+ # site to see all projects, grouped by organization
+def projects(request):
     dd = ContentType.objects.get_for_model(DecimalDimension)
     budgets = ProjectDimension.objects.filter(content_type=dd)
     projects_all = Project.objects.all()
     organizations_all = Organization.objects.all()
-    return render(request, 'projektit.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
+    return render(request, 'projects.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
 
 def databaseview(request):
     if request.method == "POST":
