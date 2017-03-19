@@ -349,54 +349,6 @@ def json(request):
     serializer = ProjectSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
-def insert_field(request, project_id):
-    proj = get_object_or_404(Project, pk=project_id)
-    if request.method == 'POST':
-        form = TableSpecification(request.POST)
-        if form.is_valid():
-            if form.cleaned_data['datatype']=='TXT': #Trying to add a text field
-                # Project dimension for text
-                pd_text = ProjectDimension(dimension_object=proj, project=proj)
-                pd_text.save()
-
-                # Make text dimension
-                text = TextDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
-                text.save()
-
-                # Link text to project
-                pd_text.dimension_object=text
-                pd_text.save()
-                return redirect('show_project', project_id=proj.pk)
-            elif form.cleaned_data['datatype']=='DEC': # Trying to add a decimal field
-                pd_num = ProjectDimension(dimension_object=proj, project=proj)
-                pd_num.save()
-
-                # Make decimal dimension
-                dec = DecimalDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
-                dec.save()
-
-                # Link decimal to project
-                pd_num.dimension_object=dec
-                pd_num.save()
-                return redirect('show_project', project_id=proj.pk)
-            else: # Not text or decimal, so it is integer
-                pd_num = ProjectDimension(dimension_object=proj, project=proj)
-                pd_num.save()
-
-                # Make numeric dimension
-                num = NumericDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
-                num.save()
-
-                # Link numeric to project
-                pd_num.dimension_object=num
-                pd_num.save()
-                return redirect('show_project', project_id=proj.pk)
-        else: # if form is not valid, return to form again
-            formt = TableSpecification()
-            return render(request, 'insert_field.html', {'formt':formt})
-    elif request.method == 'GET':
-        formt = TableSpecification()
-        return render(request, 'insert_field.html', {'formt':formt})
 
  # site to see all projects, grouped by organization
 def projects(request):
@@ -406,6 +358,7 @@ def projects(request):
     organizations_all = Organization.objects.all()
     return render(request, 'projects.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
 
+# site to show datafields by organization
 def databaseview(request):
     if request.method == "POST":
        form = CronForm(request.POST)
