@@ -430,10 +430,10 @@ def databaseview(request):
 
 
           #redirect to the url where you'll process the input
-          return render(request, 'droptable_organization.html', {'form':form, 'projs':projs, 'dims':dims, 'dimensions':dimensions}) # insert reverse or url
+          return render(request, 'database.html', {'form':form, 'projs':projs, 'dims':dims, 'dimensions':dimensions}) # insert reverse or url
     else:
          form = CronForm()
-    return render(request, 'droptable_organization.html', {'form':form})
+    return render(request, 'database.html', {'form':form})
 
 def get_orgs(request):
     serializer = OrganizationSerializer(Organization.objects.all(), many=True)
