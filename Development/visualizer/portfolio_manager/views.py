@@ -122,11 +122,6 @@ def add_new_org(request):
                 content_type="application/json"
             )
 
-    return HttpResponse(
-        json_module.dumps({"nothing to see": "this isn't happening"}),
-        content_type="application/json"
-    )
-
 # Site to add a new person
 def add_new_person(request):
     if request.method == 'POST':
@@ -142,10 +137,6 @@ def add_new_person(request):
                 json_module.dumps(response_data),
                 content_type="application/json"
             )
-    return HttpResponse(
-        json_module.dumps({"nothing to see": "this isn't happening"}),
-        content_type="application/json"
-    )
 
 # Site to see all organizations
 def organizations(request):
@@ -306,7 +297,6 @@ def project_edit(request, project_id, field_name):
     else:
         return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
-
 def delete_google_sheet(request, google_sheet_id):
     GoogleSheet.objects.get(id=google_sheet_id).delete()
     return redirect('importer')
@@ -349,6 +339,7 @@ def json(request):
 
 
  # site to see all projects, grouped by organization
+
 def projects(request):
     dd = ContentType.objects.get_for_model(DecimalDimension)
     budgets = ProjectDimension.objects.filter(content_type=dd)
@@ -387,11 +378,9 @@ def get_orgs(request):
     return JsonResponse(serializer.data, safe=False)
 
 # Gets all persons and return them in a JSON string
-
 def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
-
 
 #   Function that gets the multiple entries in a dimension that has multiple
 #   items.
