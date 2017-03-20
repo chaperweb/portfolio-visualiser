@@ -93,7 +93,7 @@ class Dimension (models.Model):
   name = models.CharField(max_length=64)
 
   def get_content_type(self):
-    return ContentType.objects.get_for_model(self).id
+    return ContentType.objects.get_for_model(self)
 
   def from_sheet(self, value, history_date):
     self.value = value
@@ -230,6 +230,15 @@ class DateDimension (Dimension):
 
     self.value = d
     self._history_date = history_date
+
+class ProjectTemplate(models.Model):
+  name = models.CharField(max_length=50)
+  organization = models.ForeignKey(Organization, null=False, on_delete=models.CASCADE, related_name='templates')
+
+class ProjectTemplateDimension(models.Model):
+  template = models.ForeignKey(ProjectTemplate, null=False, on_delete=models.CASCADE, related_name='dimensions')
+  name = models.CharField(max_length=50)
+  content_type = models.ForeignKey(ContentType, null=False, on_delete=models.CASCADE)
 
 # THESE ARE ONLY FOR GOOGLE SHEET IMPORTER
 class NameDimension (TextDimension):
