@@ -1,19 +1,21 @@
-$(function(){
-  $.ajax({
-    url: "json"
-  }).done(function(data) {
-    fourField(data)
-  });	
-});
-function fourField(json) {
+
+
+	$(function(){
+	  $.ajax({
+		url: "json"
+	  }).done(function(data) {
+		json = data;
+	  });	
+	});
+function fourField(xToBe,yToBe,radToBe) {	
 	//d3.json('outputData.json', function(error,json) {
 	//if (error) throw error;
 	console.log(json);
 	var projects = []
 	//console.log(json[8].dimensions[0].dimension_object.name);
-		var xToBe = "SizeMoney"
-		var yToBe = "SizeManDays"
-		var radToBe = "SizeEffect"
+		//var xToBe = "SizeMoney"
+		//var yToBe = "SizeManDays"
+		//var radToBe = "SizeEffect"
 		var colorToBe = 'AssociatedOrganizationDimension'
 		var jsonlen = json.length
 		var projects = []
@@ -34,7 +36,6 @@ function fourField(json) {
 						var planned = json[j].dimensions[i].dimension_object.history[h].value;
 						var parsedDate = new Date(date).getTime() / 1000 // parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
 						collectVal.push([parsedDate, planned])
-						//console.log(collectVal);
 					};
 					// here we determine the type of the array, set the inProgress arrays.
 					var valueName = json[j].dimensions[i].dimension_object.name;
@@ -52,15 +53,12 @@ function fourField(json) {
 				};
 				
 			}
-			//console.log(xID)
-			//console.log(yID)
 		var collectXPlan = [] // array for x-axis milestones
 		var collectYPlan = [] // array for y-axis milestones
 		if(json[j].milestones != undefined) {
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
 				if(json[j].milestones[e].history[0].dimensions != undefined) {
 				for(q = 0; q < json[j].milestones[e].history[0].dimensions.length ; q++ ) {
-					console.log(json[j].milestones[e].history[0].dimensions[q].project_dimension)
 						if(json[j].milestones[e].history[0].dimensions[q].project_dimension == xID) {
 							//adding x-axis milestones. 
 							var date = json[j].milestones[e].history[0].due_date
@@ -332,5 +330,5 @@ console.log(projects);
 	function order(a, b) {
 		return radius(b) - radius(a);
 	}
-
+return svg;
 }

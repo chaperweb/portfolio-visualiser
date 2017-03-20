@@ -1,25 +1,37 @@
 $(function() {
-
+	$('#x-selector').append($('<option>', {value:1, text:"SizeMoney"}));
+	$('#x-selector').append($('<option>', {value:2, text:"SizeManDays"}));
+	$('#x-selector').append($('<option>', {value:3, text:"SizeEffect"}));
+	
+	$('#y-selector').append($('<option>', {value:1, text:"SizeMoney"}));
+	$('#y-selector').append($('<option>', {value:2, text:"SizeManDays"}));
+	$('#y-selector').append($('<option>', {value:3, text:"SizeEffect"}));
+	
+	$('#r-selector').append($('<option>', {value:1, text:"SizeMoney"}));
+	$('#r-selector').append($('<option>', {value:2, text:"SizeManDays"}));
+	$('#r-selector').append($('<option>', {value:3, text:"SizeEffect"}));
   $.ajax({
-    url: "json"
-  }).done(function(data) {
-    db_json = data;
-    for (var i = 0, len = data.length; i < len; i++) {
-      $('#project-selector').append('<option value="'+data[i].id+'">'+data[i].name+'</option>')
-    }
+	
+
   });
 
 function dimension_selector_change() {
-  x_dimension = $('#x-selector').find("option:selected").val();
-  y_dimension = $('#y-selector').find("option:selected").val();
-  r_dimension = $('#r-selector').find("option:selected").val();
-  startdate
-  enddate
+  x_dimension = $('#x-selector').find("option:selected").text();
+  y_dimension = $('#y-selector').find("option:selected").text();
+  r_dimension = $('#r-selector').find("option:selected").text();
+
   
-  fourfieldjs.lkkjdjdl(x_dimension,y_dimension,r_dimension,startdate,enddate);
+  if(x_dimension == "---" || y_dimension == "---" || r_dimension == "---") {
+	//asdf
+  } else if(y_dimension == x_dimension || y_dimension == r_dimension || x_dimension == r_dimension){
+	  alert("ei saa olla samoja");
+  } else {
+	  fourField(x_dimension,y_dimension,r_dimension);
+  }
 }  
+
   
-  
+  /*
   $('#project-selector').on('change', function(){
     project_id = $(this).find("option:selected").val();
 
@@ -50,8 +62,8 @@ function dimension_selector_change() {
     }
     dimension_selector_change();
   });
-
-  $('#x-selector').on('change', dimension_selector_change);
-  $('#y-selector').on('change', dimension_selector_change);
-
+  */
+	$('#x-selector').on('change', dimension_selector_change);
+	$('#y-selector').on('change', dimension_selector_change);
+	$('#r-selector').on('change', dimension_selector_change);
 });
