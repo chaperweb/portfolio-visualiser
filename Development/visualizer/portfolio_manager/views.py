@@ -52,58 +52,6 @@ def history(request):
 
     return render(request, 'history.html', {'ids':range(1, len(names)+1), 'names':names, 'orgs':orgs, 'dates':dates})
 
-# Site to upload a new project
-def add_new_project(request):
-    if request.method == 'POST':
-        form = ProjectForm(request.POST)
-        if form.is_valid():
-            # Save a new Organization
-            organization = Organization(name = form.cleaned_data['organization'])
-            organization.save()
-
-            # Save a new Project
-            newproject = Project(name = form.cleaned_data['name'], parent = organization)
-            newproject.save()
-
-            # Make ProjectDimension for owner
-            project_dimension_owner = ProjectDimension(dimension_object=newproject, project=newproject)
-            project_dimension_owner.save()
-
-            # Make AssociatedPersonDimension
-            pers = get_object_or_404(Person, pk=form.cleaned_data['owner'].pk)
-            assPerson = AssociatedPersonDimension(value=pers, name=str(pers))
-            assPerson.save()
-
-            # Make ProjectOwnerDimension
-            own = ProjectOwnerDimension(assPerson=assPerson)
-            own.save()
-
-           # Link owner to project
-            project_dimension_owner.dimension_object=own
-            project_dimension_owner.save()
-
-            #######################
-            ####    BUDGET  #######
-            #######################
-
-            #Project Dimension for budget
-            project_dimension_budget = ProjectDimension(dimension_object=newproject, project=newproject)
-            project_dimension_budget.save()
-
-            # Make budjet dimension
-            budget = DecimalDimension(name="budget", value=form.cleaned_data['budget'])
-            budget.save()
-
-            # Link budget to project
-            project_dimension_budget.dimension_object=budget
-            project_dimension_budget.save()
-
-            form = ProjectForm()
-        return redirect('projects')
-
-    elif request.method == 'GET':
-        form = ProjectForm()
-    return render(request, 'uploadproject.html', {'form': form})
 
 # Site to add a new organization
 def add_new_org(request):
@@ -138,19 +86,7 @@ def add_new_person(request):
                 content_type="application/json"
             )
 
-# Site to see all organizations
-def organizations(request):
-   if request.method == "POST":
-      form = OrgForm(request.POST)
 
-      if form.is_valid:
-         projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
-
-         #redirect to the url where you'll process the input
-         return render(request, 'projects_by_organization.html', {'projs':projs}) # insert reverse or url
-   else:
-        form = OrgForm()
-   return render(request, 'droptable_organization.html', {'form':form})
 
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
