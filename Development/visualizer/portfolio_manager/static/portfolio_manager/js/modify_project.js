@@ -32,10 +32,10 @@ $(function()
 //  ############################
 //  ### SUBMITTING FUNCTIONS ###
 //  ############################
-
-//  To submit modify-org-form
 $(function()
 {
+  //  To submit modify-org-form
+
   $("#modify-org-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -67,12 +67,10 @@ $(function()
         alert("Failed to modify organization");
       }
     });
-  })
-});
+  });
 
-//  To submit modify-assorg-form
-$(function()
-{
+  //  To submit modify-assorg-form
+
   $("#modify-assorg-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -106,12 +104,9 @@ $(function()
         alert("Failed to modify organization");
       }
     });
-  })
-});
+  });
 
-//  To submit modify-per-form
-$(function()
-{
+  //  To submit modify-per-form
   $("#modify-per-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -144,12 +139,10 @@ $(function()
         alert("Failed to modify organization");
       }
     });
-  })
-});
+  });
 
-// To submit modify-dec-form
-$(function()
-{
+  // To submit modify-dec-form
+
   $("#modify-dec-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -185,12 +178,10 @@ $(function()
         alert("Failed to modify decimal field");
       }
     });
-  })
-});
+  });
 
-// To submit modify-text-form
-$(function()
-{
+  // To submit modify-text-form
+
   $("#modify-text-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -226,12 +217,10 @@ $(function()
         alert("Failed to modify text field");
       }
     });
-  })
-});
+  });
 
-// To submit modify-date-form
-$(function()
-{
+  // To submit modify-date-form
+
   $("#modify-date-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -268,24 +257,21 @@ $(function()
         alert("Failed to modify date field");
       }
     });
-  })
+  });
 });
 
 //  ############################
 //  ### POPULATION FUNCTIONS ###
 //  ############################
-
-//  To populate organizationlist in modify_org_modal
 $(function()
 {
+  // Cookies and csrf
   var csrftoken = getCookie("csrftoken");
-
   function csrfSafeMethod(method)
   {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
   }
-
   $.ajaxSetup({
     beforeSend: function(xhr, settings) {
       if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -294,6 +280,7 @@ $(function()
     }
   });
 
+  //  To populate organizationlist in modify_org_modal
   $.ajax({
     method: "GET",
     url: "/get_orgs",
@@ -309,27 +296,8 @@ $(function()
       alert("Failed to load all organizations");
     }
   });
-});
 
-//  To populate organizationlist in modify_assorg_modal
-$(function()
-{
-  var csrftoken = getCookie("csrftoken");
-
-  function csrfSafeMethod(method)
-  {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-      }
-    }
-  });
-
+  //  To populate organizationlist in modify_assorg_modal
   $.ajax({
     method: "GET",
     url: "/get_orgs",
@@ -345,27 +313,8 @@ $(function()
       alert("Failed to load all organizations");
     }
   });
-});
 
-//  To populate personslist in modify_per_modal
-$(function()
-{
-  var csrftoken = getCookie("csrftoken");
-
-  function csrfSafeMethod(method)
-  {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-      }
-    }
-  });
-
+  //  To populate personslist in modify_per_modal
   $.ajax({
     method: "GET",
     url: "/get_pers",
@@ -382,11 +331,8 @@ $(function()
       alert("Failed to load all persons");
     }
   });
-});
 
-// To populate the list in multiple-items-modal
-$(function()
-{
+  // To populate the list in multiple-items-modal
   $(".multiple-button").click(function(e){
     // Buttons data variables
     var field = $(this).data('field');
@@ -395,22 +341,6 @@ $(function()
 
     // Add title
     $("#multiple-title").html(field);
-
-    var csrftoken = getCookie("csrftoken");
-
-    function csrfSafeMethod(method)
-    {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });
 
     // Send ajax request to get the items and then populate the list
     $.ajax({
@@ -436,7 +366,6 @@ $(function()
 //  ### HIDDEN INFO FUNCTIONS ###
 //  #############################
 // These are to add the hidden field input of all modals that need it
-
 $(function()
 {
   //  Adding text field info

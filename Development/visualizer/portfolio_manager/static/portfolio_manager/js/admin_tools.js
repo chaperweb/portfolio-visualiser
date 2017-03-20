@@ -15,8 +15,6 @@ function getCookie(name)
   return cookieValue;
 }
 
-
-
 function get_sheet_history()
 {
   var csrftoken = getCookie("csrftoken");

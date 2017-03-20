@@ -43,7 +43,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 }
 
 /* The entire collapsable list */
-.sidebar .nav .navbar-collapse {
+.sidebar .collapse {
   color: #fff;
   background-color: rgb(150,150,150);
   width:250px;
@@ -55,6 +55,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   color: #fff;
   text-indent: 10px;
   width: 250px;
+  border-bottom: 1px solid rgb(116,116,116);
 }
 
 /* Make textcolor black on list items in

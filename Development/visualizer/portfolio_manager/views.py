@@ -122,11 +122,6 @@ def add_new_org(request):
                 content_type="application/json"
             )
 
-    return HttpResponse(
-        json_module.dumps({"nothing to see": "this isn't happening"}),
-        content_type="application/json"
-    )
-
 # Site to add a new person
 def add_new_person(request):
     if request.method == 'POST':
@@ -142,10 +137,6 @@ def add_new_person(request):
                 json_module.dumps(response_data),
                 content_type="application/json"
             )
-    return HttpResponse(
-        json_module.dumps({"nothing to see": "this isn't happening"}),
-        content_type="application/json"
-    )
 
 # Site to see all organizations
 def organizations(request):
@@ -306,7 +297,6 @@ def project_edit(request, project_id, field_name):
     else:
         return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
-
 def delete_google_sheet(request, google_sheet_id):
     GoogleSheet.objects.get(id=google_sheet_id).delete()
     return redirect('importer')
@@ -324,6 +314,8 @@ def load_google_sheet(request, google_sheet_id):
         content_type="application/json"
     )
 
+#   Import google sheet
+#   Doesn't return anything if it isn't a POST to trigger the ajax error function
 def importer(request):
     if request.method == "POST":
         data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
@@ -332,11 +324,7 @@ def importer(request):
             sheet = form.save()
             return load_google_sheet(request, sheet.id)
 
-    return HttpResponse(
-        json_module.dumps({"nothing to see": "this isn't happening"}),
-        content_type="application/json"
-    )
-
+#   Gets all previously uploaded sheets and returns them in JSON
 def get_sheets(request):
     if request.method == "GET":
         sheetObjects = GoogleSheet.objects.all()
@@ -351,6 +339,7 @@ def json(request):
 
 
  # site to see all projects, grouped by organization
+
 def projects(request):
     dd = ContentType.objects.get_for_model(DecimalDimension)
     budgets = ProjectDimension.objects.filter(content_type=dd)
@@ -383,14 +372,15 @@ def databaseview(request):
          form = OrgForm()
     return render(request, 'database.html', {'form':form})
 
+# Gets all organizations and return them in a JSON string
 def get_orgs(request):
     serializer = OrganizationSerializer(Organization.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
+# Gets all persons and return them in a JSON string
 def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
-
 
 #   Function that gets the multiple entries in a dimension that has multiple
 #   items.
@@ -404,6 +394,7 @@ def get_pers(request):
 
 #   As this function is only to be called with ajax a else statement has
 #   purposefully been left out to trigger the errorfunction in the ajax call
+
 def get_multiple(request, project_id, type, field_name):
     # Get the project
     theProject = get_object_or_404(Project, pk=project_id)
