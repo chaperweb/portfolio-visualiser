@@ -30,54 +30,6 @@ class PersonForm(forms.Form):
     #
 
 
-class CronForm(forms.Form):
-    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="(Nothing)",
+class OrgForm(forms.Form):
+    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="Select an organization",
     widget=forms.Select(attrs={"onChange":'submit()'}))
-
-class TableSpecification(forms.Form):
-    name = forms.CharField(label = 'Field name', max_length=50, required = True,
-                            error_messages={'required': 'Your field needs a name!'})
-    DATATYPES = (('TXT', 'Teksti'),('NUM', 'Numeerinen'),('DEC','Desimaali'))
-    datatype = forms.ChoiceField(choices=DATATYPES)
-    value = forms.CharField(label = 'Value', max_length=64, required = True,
-                            error_messages={'required': 'value!'})
-
-    def clean(self):
-        cleaned_data = super(TableSpecification, self).clean()
-        name = cleaned_data.get("name")
-        datatype = cleaned_data.get("datatype")
-        value = cleaned_data.get("value")
-
-        if datatype == 'NUM':
-            try:
-                val = int(value)
-            except ValueError:
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-                print("That's not an int!")
-
-            if not isinstance(val, numbers.Number):
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-        if datatype == 'DEC':
-            try:
-                val = float(value)
-            except ValueError:
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-                print("That's not an int!")
-
-            if not isinstance(val, numbers.Number):
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-
-# class AddProjectForm(forms.Form):
-#     def __init__(self, orgFields, *args, **kwargs):
-#         super(AddprojectForm, self).__init__(*args, **kwargs)
-#
-#         for name, datatype in orgFields:
-#             self.fields['name'] = datatype

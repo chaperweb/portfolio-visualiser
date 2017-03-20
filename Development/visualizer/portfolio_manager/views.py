@@ -16,7 +16,7 @@ def home(request):
     # milestones for project sneak peeks (only future milestones, ordered by date)
     milestones = Milestone.objects.filter(due_date__gte = datetime.now()).order_by('due_date')
 
-    # dictionary for project -> next milestone
+    # dictionary for (project -> next milestone)
     mils = {}
     for m in milestones:
         if m.project not in mils:
@@ -150,7 +150,7 @@ def add_new_person(request):
 # Site to see all organizations
 def organizations(request):
    if request.method == "POST":
-      form = CronForm(request.POST)
+      form = OrgForm(request.POST)
 
       if form.is_valid:
          projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
@@ -158,7 +158,7 @@ def organizations(request):
          #redirect to the url where you'll process the input
          return render(request, 'projects_by_organization.html', {'projs':projs}) # insert reverse or url
    else:
-        form = CronForm()
+        form = OrgForm()
    return render(request, 'droptable_organization.html', {'form':form})
 
 def show_project(request, project_id):
@@ -349,54 +349,6 @@ def json(request):
     serializer = ProjectSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
-def insert_field(request, project_id):
-    proj = get_object_or_404(Project, pk=project_id)
-    if request.method == 'POST':
-        form = TableSpecification(request.POST)
-        if form.is_valid():
-            if form.cleaned_data['datatype']=='TXT': #Trying to add a text field
-                # Project dimension for text
-                pd_text = ProjectDimension(dimension_object=proj, project=proj)
-                pd_text.save()
-
-                # Make text dimension
-                text = TextDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
-                text.save()
-
-                # Link text to project
-                pd_text.dimension_object=text
-                pd_text.save()
-                return redirect('show_project', project_id=proj.pk)
-            elif form.cleaned_data['datatype']=='DEC': # Trying to add a decimal field
-                pd_num = ProjectDimension(dimension_object=proj, project=proj)
-                pd_num.save()
-
-                # Make decimal dimension
-                dec = DecimalDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
-                dec.save()
-
-                # Link decimal to project
-                pd_num.dimension_object=dec
-                pd_num.save()
-                return redirect('show_project', project_id=proj.pk)
-            else: # Not text or decimal, so it is integer
-                pd_num = ProjectDimension(dimension_object=proj, project=proj)
-                pd_num.save()
-
-                # Make numeric dimension
-                num = NumericDimension(name=form.cleaned_data['name'], value=form.cleaned_data['value'])
-                num.save()
-
-                # Link numeric to project
-                pd_num.dimension_object=num
-                pd_num.save()
-                return redirect('show_project', project_id=proj.pk)
-        else: # if form is not valid, return to form again
-            formt = TableSpecification()
-            return render(request, 'insert_field.html', {'formt':formt})
-    elif request.method == 'GET':
-        formt = TableSpecification()
-        return render(request, 'insert_field.html', {'formt':formt})
 
  # site to see all projects, grouped by organization
 def projects(request):
@@ -406,29 +358,29 @@ def projects(request):
     organizations_all = Organization.objects.all()
     return render(request, 'projects.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
 
+# site to show datafields by organization
 def databaseview(request):
     if request.method == "POST":
-       form = CronForm(request.POST)
+       form = OrgForm(request.POST)
 
        if form.is_valid:
           projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
 
+        #   all dimensions in every project of the organization
           dimensions = []
-          dims = {}
-
           for p in projs:
               dimensions += ProjectDimension.objects.filter(project=p)
 
+        # (dimension name -> datatype) dictionary
+          dims = {}
           for dim in dimensions:
               if dim.dimension_object.name not in dims:
                   dims[dim.dimension_object.name] = str(dim).replace("Dimension", "")
 
-
-
           #redirect to the url where you'll process the input
-          return render(request, 'database.html', {'form':form, 'projs':projs, 'dims':dims, 'dimensions':dimensions}) # insert reverse or url
+          return render(request, 'database.html', {'form':form, 'projs':projs, 'dims':dims})
     else:
-         form = CronForm()
+         form = OrgForm()
     return render(request, 'database.html', {'form':form})
 
 def get_orgs(request):
