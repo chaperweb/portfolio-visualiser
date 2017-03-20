@@ -16,16 +16,15 @@ PROJECTS
   {% for org in organizations %}
 
 
-
   <div class="panel panel-default col-lg-3">
-    <div class="panel-heading row" data-toggle="collapse" data-target="#{{org}}" aria-controls="#org-panel" aria-expanded="false">
+    <div class="panel-heading row" data-toggle="collapse" data-target="#{{ org.name.split|join:"_" }}" aria-controls="#org-panel" aria-expanded="false">
 
-    <div class="{{org}}preview">
+    <div class="{{org.name.split|join:"_"}}preview">
       <div class="col-lg-1">
 
 
-      <span class="{{org}}glyph glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-      <span class="{{org}}glyph glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+      <span class="{{org.name.split|join:"_"}}glyph glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+      <span class="{{org.name.split|join:"_"}}glyph glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
       </div>
       <div class="col-lg-4">{{ org.name }}</div>
     </div>
@@ -36,15 +35,15 @@ PROJECTS
 <div id="orginprojut" class="col-lg-12">
 
     <!-- DO NOT DELETE - this div is for first four projects  -->
-    <div id="alwaysvisible{{org}}"></div>
+    <div id="alwaysvisible{{org.name.split|join:"_"}}"></div>
 
     <!-- Div for rest of the projects, collapsable -->
-    <div id="{{org}}" class="collapse">
+    <div id="{{org.name.split|join:"_"}}" class="collapse">
       {% for project in projects %}
         {% if project.parent == org %}
 
         <!-- Single project -->
-          <a id="proju" href="{% url 'show_project' project.pk %}" class="{{org}}">
+          <a id="proju" href="{% url 'show_project' project.pk %}" class="{{org.name.split|join:"_"}}">
           <div  class="col-lg-2">
 
 
@@ -66,13 +65,13 @@ PROJECTS
   </div>
     <!-- This script moves first 4 projects of an organization to div "alwaysvisible" -->
     <script>
-      $(".{{org}}").slice(0,4).detach().appendTo("#alwaysvisible{{org}}");
-      var n = $(".{{org}}").length;
+      $(".{{org.name.split|join:"_"}}").slice(0,4).detach().appendTo("#alwaysvisible{{org.name.split|join:"_"}}");
+      var n = $(".{{org.name.split|join:"_"}}").length;
       if (n <= 4) {
-        $(".{{org}}glyph").hide();
+        $(".{{org.name.split|join:"_"}}glyph").hide();
       }
 
-      $(".{{org}}preview").append("<span class='badge pull-right'>" + n + "</span>");
+      $(".{{org.name.split|join:"_"}}preview").append("<span class='badge pull-right'>" + n + "</span>");
     </script>
     <br />
     <br />
