@@ -35,6 +35,11 @@ class Project (models.Model):
   parent = models.ForeignKey('Organization', null=True,on_delete=models.CASCADE)
   history = HistoricalRecords()
 
+  def __str__(self):
+    return str(self.name)
+
+  def __unicode__(self):
+    return self.name
 
 #Model for a project dimension
 class ProjectDimension (models.Model):
@@ -131,7 +136,6 @@ class TextDimension (Dimension):
   value = models.TextField()
   history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
-
 
 class AssociatedOrganizationDimension (Dimension):
   value = models.ForeignKey(Organization, null=True)

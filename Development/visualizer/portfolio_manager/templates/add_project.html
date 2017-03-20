@@ -15,28 +15,14 @@ PROJECTS
 
 {% block content %}
 
-
-
-
-<form action="" method="POST">
+<form action="{% url 'addproject' %}" method="POST">
   {% csrf_token %}
-{{ form }}
+  
+  {% for form in forms %}
+  	{{ form.as_p }}
+  {% endfor %}
 
 <button type="submit" class="btn btn-success col-md-3 col-md-offset-2">Upload</button>
 </form>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 {% endblock %}

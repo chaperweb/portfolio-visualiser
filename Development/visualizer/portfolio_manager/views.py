@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from portfolio_manager.models import *
 from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
+import django.forms
 import logging
 from django.http import JsonResponse, HttpResponse
 from portfolio_manager.serializers import ProjectSerializer
@@ -321,11 +322,48 @@ def databaseview(request):
 
 
 def addproject(request):
-    name = request.POST.get('name')
-    org = request.POST.get('orgs')
-    print(name + " " + org)
+ 
+    add_project_form = None
+    if request.POST:
+        add_project_form = AddProjectForm(request.POST, prefix='add_project_form')
+    else:
+        add_project_form = AddProjectForm(prefix='add_project_form', initial={'name': request.GET.get('name'), 'parent': request.GET.get('organization', ''), 'organization': request.GET.get('organization', '')})
+    
+    forms = [add_project_form]
+    
+    try:
+        organization = Organization.objects.get(pk=request.GET.get('organization', ''))
+        templates = organization.templates.all()
+        if len(templates) > 0:
+            template = templates[0]
+            for template_dimension in template.dimensions.all():
+                template_dimension_form_class = globals()[template_dimension.content_type.model_class().__name__+"Form"]
+                template_dimension_form = None
+                if request.POST:
+                    template_dimension_form = template_dimension_form_class(request.POST, template_dimension.name, add_project_form, prefix=str(template_dimension.content_type.id)+'_form')
+                else:
+                    template_dimension_form = template_dimension_form_class(template_dimension.name, add_project_form, prefix=str(template_dimension.content_type.id)+'_form')
+                    if template_dimension.name == 'OwningOrganization':
+                        template_dimension_form.fields['value'].widget = django.forms.HiddenInput()
+                        template_dimension_form.fields['value'].initial = request.GET.get('organization', '')
+                    if template_dimension.name == 'Name':
+                        template_dimension_form.fields['value'].widget = django.forms.HiddenInput()
+                        template_dimension_form.fields['value'].initial = request.GET.get('name')
+                forms.append(template_dimension_form)
 
-    form = AddProjectForm(projOrg = org)
+    except Organization.DoesNotExist:
+        pass
+      
+    forms_valid = True
+    if request.POST:
+        for form in forms:
+            if form.is_valid():
+                continue
+            else:
+                forms_valid = False
 
+        if forms_valid:
+            for form in forms:
+               form.save()
 
-    return render(request, 'add_project.html', {'form':form})
+    return render(request, 'add_project.html', {'forms': forms })
