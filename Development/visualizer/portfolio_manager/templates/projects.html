@@ -8,7 +8,7 @@ PROJECTS
 {# CSS HERE #}
 {% block css %}
 {% load static %}
-<link rel="stylesheet" href="{% static "portfolio_manager/css/projektit.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/projects.css" %}">
 {% endblock %}
 
 {% block content %}
@@ -46,6 +46,7 @@ PROJECTS
         <!-- Single project -->
           <a id="proju" href="{% url 'show_project' project.pk %}" class="{{org}}">
           <div  class="col-lg-2">
+
 
 
               <p>  {{ project.name }}</p>
