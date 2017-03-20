@@ -2,26 +2,85 @@
 
 {# TITLE HERE #}
 {% block title %}
-All Projects
+PROJECTS
 {% endblock %}
 
-{# JAVASCRIPT HERE #}
-{% block javascript %}
-
+{# CSS HERE #}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/projektit.css" %}">
 {% endblock %}
 
-{# CONTENT HERE #}
 {% block content %}
-<p>Projektit:</p>
-<br />
-<br />
-<div>
-  {% for project in projects %}
+<div class="container">
+  {% for org in organizations %}
+
+
+
+  <div class="panel panel-default col-lg-3">
+    <div class="panel-heading row" data-toggle="collapse" data-target="#{{org}}" aria-controls="#org-panel" aria-expanded="false">
+
+    <div class="{{org}}preview">
+      <div class="col-lg-1">
+
+
+      <span class="{{org}}glyph glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+      <span class="{{org}}glyph glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+      </div>
+      <div class="col-lg-4">{{ org.name }}</div>
+    </div>
+  </div>
+  </div>
+  <br />
+
+<div id="orginprojut" class="col-lg-12">
+
+    <!-- DO NOT DELETE - this div is for first four projects  -->
+    <div id="alwaysvisible{{org}}"></div>
+
+    <!-- Div for rest of the projects, collapsable -->
+    <div id="{{org}}" class="collapse">
+      {% for project in projects %}
+        {% if project.parent == org %}
+
+        <!-- Single project -->
+          <a id="proju" href="{% url 'show_project' project.pk %}" class="{{org}}">
+          <div  class="col-lg-2">
+
+
+              <p>  {{ project.name }}</p>
+            {% for budget in budgets %}
+              {% if budget.project.pk == project.pk and budget.dimension_object.name == "SizeMoney" %}
+                <p>Budjetti: {{ budget.dimension_object.value }}</p>
+              {% endif %}
+            {% endfor %}
+
+
+          </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+    <!-- This script moves first 4 projects of an organization to div "alwaysvisible" -->
+    <script>
+      $(".{{org}}").slice(0,4).detach().appendTo("#alwaysvisible{{org}}");
+      var n = $(".{{org}}").length;
+      if (n <= 4) {
+        $(".{{org}}glyph").hide();
+      }
+
+      $(".{{org}}preview").append("<span class='badge pull-right'>" + n + "</span>");
+    </script>
     <br />
     <br />
-    <b>{{ project.parent.name }}</b>
     <br />
-    <a href="{% url 'show_project' project.pk %}">{{ project.name }}</a>
+    <br />
+
   {% endfor %}
+
+
 </div>
+
 {% endblock %}
