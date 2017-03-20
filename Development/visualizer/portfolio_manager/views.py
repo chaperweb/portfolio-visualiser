@@ -443,6 +443,19 @@ def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
+
+#   Function that gets the multiple entries in a dimension that has multiple
+#   items.
+#   Input:
+#       A request
+#       The id of the project you want to search for
+#       The type of dimension, e.g. assperson( AssociatedPersonsDimension )
+#       The name of the field, e.g. Members
+#   Output:
+#       A JSON string that has the names of the searched for items
+
+#   As this function is only to be called with ajax a else statement has
+#   purposefully been left out to trigger the errorfunction in the ajax call
 def get_multiple(request, project_id, type, field_name):
     # Get the project
     theProject = get_object_or_404(Project, pk=project_id)
@@ -469,8 +482,21 @@ def get_multiple(request, project_id, type, field_name):
 
     # If AssociatedProjectsDimension
     elif type == "assprojects":
-        return JsonResponse({"error": False, "names": "Projuprojuproju"})
-
-    # If no types matched return error = true and the field name received 
-    else:
-        return JsonResponse({"error": True, "field": field_name})
+        # ContentType
+        assProjsD = ContentType.objects.get_for_model(AssociatedProjectsDimension)
+        # The dimensions of correct content_type and for the correct project_id
+        assProjsDs = ProjectDimension.objects.filter(content_type=assProjsD, project_id=theProject.id)
+        projects = []
+        names = []
+        # Loop through the dimensions
+        for dim in assProjsDs:
+            # Get the object
+            dimO = dim.dimension_object
+            # If it's the correct field
+            if dimO.name == field_name:
+                # loop through persons in dimension
+                for proj in dimO.projects.all():
+                    projects.append(proj)
+        for p in projects:
+            names.append(p.name)
+        return JsonResponse({"names":names})

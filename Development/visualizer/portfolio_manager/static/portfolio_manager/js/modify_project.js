@@ -384,7 +384,7 @@ $(function()
   });
 });
 
-// To populate associated persons in multiple-items-modal
+// To populate the list in multiple-items-modal
 $(function()
 {
   $(".multiple-button").click(function(e){
@@ -412,6 +412,7 @@ $(function()
       }
     });
 
+    // Send ajax request to get the items and then populate the list
     $.ajax({
       method: "GET",
       url: "/get_multiple/" + projectID + "/" + type + "/" + field,
@@ -420,13 +421,12 @@ $(function()
         $("#multiple-well-ul > li").remove();
         for(i=0; i<json.names.length; i++)
         {
-          console.log(json.names[i])
           var row = '<li class="list-group-item">' + json.names[i] + '</li>';
           $(row).appendTo("#multiple-well-ul");
         }
       },
       error: function() {
-        alert("Failed to load all persons");
+        alert("Failed to load")
       }
     });
   });
@@ -437,7 +437,8 @@ $(function()
 //  #############################
 // These are to add the hidden field input of all modals that need it
 
-$(function(){
+$(function()
+{
   //  Adding text field info
   $(".open-modify-text").click(function(event){
     var field_name = $(this).data('field');
