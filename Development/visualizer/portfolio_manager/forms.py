@@ -30,6 +30,6 @@ class PersonForm(forms.Form):
     #
 
 
-class CronForm(forms.Form):
-    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="(Nothing)",
+class OrgForm(forms.Form):
+    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="Select an organization",
     widget=forms.Select(attrs={"onChange":'submit()'}))

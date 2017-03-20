@@ -16,7 +16,7 @@ def home(request):
     # milestones for project sneak peeks (only future milestones, ordered by date)
     milestones = Milestone.objects.filter(due_date__gte = datetime.now()).order_by('due_date')
 
-    # dictionary for project -> next milestone
+    # dictionary for (project -> next milestone)
     mils = {}
     for m in milestones:
         if m.project not in mils:
@@ -150,7 +150,7 @@ def add_new_person(request):
 # Site to see all organizations
 def organizations(request):
    if request.method == "POST":
-      form = CronForm(request.POST)
+      form = OrgForm(request.POST)
 
       if form.is_valid:
          projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
@@ -158,7 +158,7 @@ def organizations(request):
          #redirect to the url where you'll process the input
          return render(request, 'projects_by_organization.html', {'projs':projs}) # insert reverse or url
    else:
-        form = CronForm()
+        form = OrgForm()
    return render(request, 'droptable_organization.html', {'form':form})
 
 def show_project(request, project_id):
@@ -361,27 +361,26 @@ def projects(request):
 # site to show datafields by organization
 def databaseview(request):
     if request.method == "POST":
-       form = CronForm(request.POST)
+       form = OrgForm(request.POST)
 
        if form.is_valid:
           projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
 
+        #   all dimensions in every project of the organization
           dimensions = []
-          dims = {}
-
           for p in projs:
               dimensions += ProjectDimension.objects.filter(project=p)
 
+        # (dimension name -> datatype) dictionary
+          dims = {}
           for dim in dimensions:
               if dim.dimension_object.name not in dims:
                   dims[dim.dimension_object.name] = str(dim).replace("Dimension", "")
 
-
-
           #redirect to the url where you'll process the input
-          return render(request, 'database.html', {'form':form, 'projs':projs, 'dims':dims, 'dimensions':dimensions}) # insert reverse or url
+          return render(request, 'database.html', {'form':form, 'projs':projs, 'dims':dims})
     else:
-         form = CronForm()
+         form = OrgForm()
     return render(request, 'database.html', {'form':form})
 
 def get_orgs(request):
