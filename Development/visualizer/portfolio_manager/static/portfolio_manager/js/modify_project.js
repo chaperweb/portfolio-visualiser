@@ -16,6 +16,19 @@ function getCookie(name)
   return cookieValue;
 }
 
+//  #######################################
+//  ### PREVENTING AUTOMATIC EXPANSIONS ###
+//  #######################################
+$(function()
+{
+  $(".modify-button").click(function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var modalId = $(this).data('target');
+    $(modalId).modal('toggle');
+  });
+})
+
 //  ############################
 //  ### SUBMITTING FUNCTIONS ###
 //  ############################
@@ -371,12 +384,61 @@ $(function()
   });
 });
 
+// To populate the list in multiple-items-modal
+$(function()
+{
+  $(".multiple-button").click(function(e){
+    // Buttons data variables
+    var field = $(this).data('field');
+    var projectID = $(this).data('projectid');
+    var type = $(this).data('type');
+
+    // Add title
+    $("#multiple-title").html(field);
+
+    var csrftoken = getCookie("csrftoken");
+
+    function csrfSafeMethod(method)
+    {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+
+    // Send ajax request to get the items and then populate the list
+    $.ajax({
+      method: "GET",
+      url: "/get_multiple/" + projectID + "/" + type + "/" + field,
+      data: {},
+      success: function(json) {
+        $("#multiple-well-ul > li").remove();
+        for(i=0; i<json.names.length; i++)
+        {
+          var row = '<li class="list-group-item">' + json.names[i] + '</li>';
+          $(row).appendTo("#multiple-well-ul");
+        }
+      },
+      error: function() {
+        alert("Failed to load")
+      }
+    });
+  });
+});
+
 //  #############################
 //  ### HIDDEN INFO FUNCTIONS ###
 //  #############################
 // These are to add the hidden field input of all modals that need it
 
-$(function(){
+$(function()
+{
   //  Adding text field info
   $(".open-modify-text").click(function(event){
     var field_name = $(this).data('field');
