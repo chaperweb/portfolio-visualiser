@@ -25,9 +25,6 @@ class Organization (models.Model):
   def __str__(self):
     return str(self.name)
 
-  def __unicode__(self):
-    return self.name
-
 #Model for a Project instance
 #Id generated automatically
 class Project (models.Model):
@@ -43,11 +40,8 @@ class ProjectDimension (models.Model):
   object_id = models.PositiveIntegerField()
   dimension_object = GenericForeignKey('content_type', 'object_id')
 
-  def __unicode__(self):
-    return self.dimension_object.__class__.__name__
-
   def __str__(self):
-    return self.dimension_object.__class__.__name__
+    return str(self.dimension_object.__class__.__name__)
 
   def dimension_type(self):
     return self.dimension_object.__class__.__name__
@@ -105,9 +99,6 @@ class Person (models.Model):
 
   def __str__(self):
     return str(self.first_name + " " + self.last_name)
-
-  def __unicode__(self):
-    return self.first_name + " " + self.last_name
 
 class BaseDimensionHistory(models.Model):
   class Meta:
@@ -190,10 +181,10 @@ class AssociatedPersonsDimension(Dimension):
       self.persons.add(person)
 
   def __str__(self):
-    return ', '.join([' '.join([ n for n in [p.first_name, p.last_name] if n]) for p in self.persons.all()])
+    return str(', '.join([' '.join([ n for n in [p.first_name, p.last_name] if n]) for p in self.persons.all()]))
 
   def string(self):
-    return str(self)
+    return self.__str__()
 
 #Storing the project dependencies as list of project IDs
 class AssociatedProjectsDimension(Dimension):
