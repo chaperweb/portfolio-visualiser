@@ -17,6 +17,31 @@ function fourField(xToBe,yToBe,radToBe) {
 		//var yToBe = "SizeManDays"
 		//var radToBe = "SizeEffect"
 		var colorToBe = 'AssociatedOrganizationDimension'
+		// size of the display box
+		var width = 1000,
+			height = 1000,
+			margin = {right: width * 0.1, left: width * 0.1, top: height * 0.1, bottom: 50},
+			axisLenghtX = width * 0.8,
+			axisLenghtY = height * 0.8,
+			sliderY = height - margin.bottom
+			sliderValues = 100
+			percentInPx = (axisLenghtX / (2*sliderValues)) * 100
+
+		var startDate = 1419465600
+		var endDate = 1480464000
+
+		// The scales for the x and y axis.
+		//range means the length of the line and domain the numbers beneath it
+		var scaleX = d3.scaleLinear()
+					   .range([0,axisLenghtX])
+					   .domain([-1 * sliderValues, sliderValues]);
+
+		var scaleY = d3.scaleLinear()
+					   .range([0,axisLenghtY])
+					   .domain([sliderValues,-1 * sliderValues]);
+
+		var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
 		var jsonlen = json.length
 		var projects = []
 		var data = [{"X": xToBe, "Y": yToBe}]
@@ -25,7 +50,7 @@ function fourField(xToBe,yToBe,radToBe) {
 			//inProgress is object which will contain the data from 1 project.
 			var inProgress = {"name": json[j].name, "organization": "", "xAxisActual": [],"xAxisPlanned": [],"xAxis": 0,"radius":[],"yAxisActual":[],"yAxisPlanned":[],"yAxis":0};
 			var xID = 0
-			var yID = 0			
+			var yID = 0
 			for (i = 0; i < size; i++) {
 		    if (json[j].dimensions[i].dimension_type == 'DecimalDimension' ) {
 					//collectVal is array which will contain a value and a corresponding date. The type of the values is determined later (budget, manHours etc.).
@@ -41,7 +66,7 @@ function fourField(xToBe,yToBe,radToBe) {
 					var valueName = json[j].dimensions[i].dimension_object.name;
 					if ( valueName === xToBe) {
 						xID = json[j].dimensions[i].id // x-axis id is saved. This value is used in the milestone-loop.
-						inProgress.xAxisActual = (collectVal).reverse(); 
+						inProgress.xAxisActual = (collectVal).reverse();
 					} else if (valueName === yToBe) {
 						yID = json[j].dimensions[i].id // y-axis id is saved. This value is used in the milestone-loop.
 						inProgress.yAxisActual = (collectVal).reverse();
@@ -51,190 +76,96 @@ function fourField(xToBe,yToBe,radToBe) {
 				} else if (json[j].dimensions[i].dimension_type === colorToBe ) {
 					inProgress.organization = json[j].dimensions[i].dimension_object.history[0].value.name
 				};
-				
+
 			}
 		var collectXPlan = [] // array for x-axis milestones
 		var collectYPlan = [] // array for y-axis milestones
 		if(json[j].milestones != undefined) {
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
-				if(json[j].milestones[e].history[0].dimensions != undefined) {
-				for(q = 0; q < json[j].milestones[e].history[0].dimensions.length ; q++ ) {
-						if(json[j].milestones[e].history[0].dimensions[q].project_dimension == xID) {
-							//adding x-axis milestones. 
-							var date = json[j].milestones[e].history[0].due_date
-							var parsedDate = new Date(date).getTime() / 1000
-							var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
-							collectXPlan.push([parsedDate,milestoneValue])
-						} else if( json[j].milestones[e].history[0].dimensions[q].project_dimension == yID ) {
-							//adding y-axis milestones
-							var date = json[j].milestones[e].history[0].due_date
-							var parsedDate = new Date(date).getTime() / 1000
-							var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
-							collectYPlan.push([parsedDate,milestoneValue])
-						}
-					}
-				}
-			}
+	      if(json[j].milestones[e].history[0].dimensions != undefined) {
+	      for(q = 0; q < json[j].milestones[e].history[0].dimensions.length ; q++ ) {
+	        console.log(json[j].milestones[e].history[0].dimensions[q].project_dimension)
+	          if(json[j].milestones[e].history[0].dimensions[q].project_dimension == xID) {
+	            //lisää X
+	            var date = json[j].milestones[e].history[0].due_date
+	            var parsedDate = new Date(date).getTime() / 1000
+	            var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
+	            console.log(milestoneValue)
+	            collectXPlan.push([parsedDate,milestoneValue])
+	          } else if( json[j].milestones[e].history[0].dimensions[q].project_dimension == yID ) {
+	            // lisää Y
+	            var date = json[j].milestones[e].history[0].due_date
+	            var parsedDate = new Date(date).getTime() / 1000
+	            var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
+	            console.log(milestoneValue)
+	            collectYPlan.push([parsedDate,milestoneValue])
+	          }
+	        }
+	      }
+	    }
 		//pushing the milestone-arrays to inProgress, and push inProgress to projects-array.
 		inProgress.xAxisPlanned =(collectXPlan)
-		inProgress.yAxisPlanned =(collectYPlan)	
-		projects.push(inProgress);			
+		inProgress.yAxisPlanned =(collectYPlan)
+		projects.push(inProgress);
 		}
 
 	}
 console.log(projects);
-	//function to determine the x-coordinates of a circle in the graph. 
+
+/***********************/
+/* functions live here */
+/***********************/
+
+	//function to determine the x-coordinate of a circle in the graph.
 	function x(d) {
-		if(d.xAxis > 0) { return (width/2-d.xAxis*xTimes + sliderValues*xTimes);
-		} else {return (width/2-d.xAxis*xTimes - sliderValues*xTimes)}
+		return margin.left + (sliderValues/100 + d.xAxis) * percentInPx
 	}
-	//function to determine the y-coordinates of a circle in the graph.
+	//function to determine the y-coordinate of a circle in the graph.
 	function y(d) {
-		if(d.yAxis > 0) {return (d.yAxis*yTimes + height/2 - sliderValues*yTimes);
-		} else {return (d.yAxis*yTimes + height/2 + sliderValues*yTimes);}
+		return margin.top + (sliderValues/100 + d.yAxis) * percentInPx
 	}
-	//function to determine the radius of a circle in the graph. If either y- or x-coordinates are infinite (the ball lacks milestones or dimension values), the radius is set to 0, and the circle is not displayed
+	/*function to determine the radius of a circle in the graph.
+	 *If given location is not valid, the radius is set to 0, and the circle is not displayed
+	 */
 	function radius(d) {
-		if (d.xAxis !== 0 && d.yAxis !== 0 && d.yAxis !== -Infinity && d.yAxis !== Infinity && d.xAxis !== Infinity && d.xAxis !== -Infinity) {
+		if (validLocation(d)) {
 			return d.radius;
 		} else {
 			d.radius = 0
 			return d.radius;
 		}
 	}
+  /* If
+	 * 1) y- or x-coordinates are infinite (the ball lacks milestones or dimension values)
+	 * or
+	 * 2) Ball location is outside of given axis
+	 * the calculated location will not be valid
+	 */
+	function validLocation(d) {
+		return (
+		d.yAxis !== -Infinity &&
+		d.yAxis !== Infinity &&
+		d.xAxis !== Infinity &&
+		d.xAxis !== -Infinity &&
+		y(d) > margin.top  &&
+		x(d) > margin.left &&
+		y(d) < (margin.top + axisLenghtY) &&
+		x(d) < (margin.left + axisLenghtX));
+	}
+
 	//function to determine color of the circle. Currently is set to color the circles by their "AssociatedOrganizationDimension"
 	function color(d) { return d.organization; }
 	function key(d) { return d.name; }
 
-	console.log()
-
-
-	// size of the display box
-	var width = 1000,
-		height = 1000,
-		margin = {right: width * 0.1, left: width * 0.1, top: height * 0.1, bottom: 50},
-		axisLenghtX = width * 0.8,
-		axisLenghtY = height * 0.8,
-		sliderY = height - margin.bottom
-		sliderValues = 100		
-		xTimes = axisLenghtX/(2*sliderValues) // 200 is the amount of the % in the graph (100 - (-100)). This value is used to correctly position the circles in the box since the coordinates are percentages.
-		yTimes = axisLenghtY/(2*sliderValues) // 200 is the amount of the % in the graph (100 - (-100))
-
-
-	var startDate = 1419465600
-	var endDate = 1480464000
-
-	// The scales for the x and y axis.
-	//range means the length of the line and domain the numbers beneath it
-	var scaleX = d3.scaleLinear()
-				   .range([0,axisLenghtX])
-				   .domain([-100,100]);
-
-	var scaleY = d3.scaleLinear()
-				   .range([0,axisLenghtY])
-				   .domain([100,-100]);
-
-	var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-	//container for everything
-	var svg = d3.select("body").append("svg")
-				.attr("width", width)
-				.attr("height", height);
-
-	//Parser for a human readable date format dd. mm. yyyy
-	var parseDate = d3.timeFormat("%d. %m. %Y");
-
-	// Add the date label; the value is set on transition.
-	var dateLabel =  svg.append("text")
-						.attr("class", "currentDate")
-						.attr("text-anchor", "end")
-						.attr("y", height - 100)
-						.attr("x", width )
-						.text(parseDate((new Date(startDate*1000))));
-
-	//slider start & stop values
-	var labelStart = parseDate(startDate * 1000)
-	var labelEnd = parseDate(endDate * 1000)
-	//label for the start date next to the slider
-	var sSLabel = svg.append("text")
-					 .attr("class", "sliderLabel")
-					 .attr("text-anchor", "start")
-					 .attr("x", 0)
-					 .attr("y", height)
-					 .text("Start date: " + labelStart);
-
-	//label for the end date next to the slider				 
-	var sELabel = svg.append("text")
-					.attr("class", "sliderLabel")
-					.attr("text-anchor", "end")
-					.attr("x", width)
-					.attr("y", height)
-					.text("End date: " + labelEnd);
-	//label for project-name. visible when cursor is hovered over the circle representing the project
-	var namelabel =  svg.append("text")
-						.attr("class", "info")
-						.attr("text-anchor", "start")
-						.attr("y", 80)
-						.attr("x", 20)
-						.text("");
-
-	//label for the organizations
-	var orglabel = svg.append("text")
-					  .attr("class", "info")
-					  .attr("text-anchor", "start")
-					  .attr("y", 140)
-					  .attr("x", 20)
-					  .text("");
-	//label for x-axis
-	var xlabel = svg.append("text")
-					  .attr("class", "axisLabel")
-					  .attr("text-anchor", "start")
-					  .attr("y", 240)
-					  .attr("x", 20)
-					  .text("x-axis: "+data[0].X);
-	//label for y-axis
-	var ylabel = svg.append("text")
-					  .attr("class", "axisLabel")
-					  .attr("text-anchor", "start")
-					  .attr("y", 340)
-					  .attr("x", 20)
-					  .text("y-axis: "+data[0].Y);
-
-	var bisect = d3.bisector(function(d) { return d[0]; });
-
-	// Place and colorise circles, and define mouseenter and mouseleave functions
-	var dot = svg.append("g")
-				  .attr("class", "dots")
-				  .selectAll(".dot")
-				  .data(interpolateData(startDate))
-				  .enter().append("circle")
-				  .attr("class", "dot")
-					.attr("name", function(d) { return d.name;})
-					.attr('fill-opacity', 0.8)
-				  .style("fill", function(d) { return colorScale(color(d)); })
-				  .call(position)
-					.sort(order)
-					.on("mouseenter", function(d) {
-						namelabel.text(d.name);
-						orglabel.text(d.organization);
-						dot.style("opacity", .4)
-						d3.select(this).style("opacity", 1)
-						d3.selectAll(".selected").style("opacity", 1)
-					})
-					.on("mouseleave", function(d) {
-						namelabel.text("");
-						orglabel.text("");
-						dot.style("opacity", 1);
-					})
 
 	// Positions the dots based on data.
 	function position(dot) {
 		dot.attr("cx", function(d) { return Math.min(Math.max(x(d),d.radius),height); })
 		   .attr("cy", function(d) { return Math.min(Math.max(y(d),d.radius),height); })
-		   .attr("r", function(d) { return Math.min(Math.max( radius(d),0 ),100); }); // this controls the radius of each circle. !currently has no scaling! size is restricted between 0-100
+		   .attr("r", function(d) { return Math.min(Math.max( radius(d),0 ),100); });
 	}
 
-	// Set ball locations and date label
+	// Set ball locations and date label value
 	function setBalls(date) {
 		dot.data(interpolateData(date), key).call(position).sort(order);
 		  dateLabel.text(parseDate((new Date(date*1000))));
@@ -252,24 +183,20 @@ console.log(projects);
 		  };
 		});
 	}
-	// this function returns the required % to position the circle correctly.
+	// this function returns the required % in decimal form to position the circle correctly.
 	function processValues(actual,planned) {
-		if(actual > planned && actual/planned !== Infinity) {
-			// if actual value is larger than the planned value, the following calculation is done to position the ball above its axis
-			return ((actual/planned)*100);
-		} else if (planned/actual !== -Infinity) {
-			// if actual value is smaller than the planned value, the ball is then positioned below its axis. The Division is reversed to that the received percentage is not "skewed".  
-			return (-(planned/actual)*100);
-		}
+		return ( ((actual/planned) -1))
 	}
+
 	/*
-    this function interpolates the values of the given array "values", and returns the value that is in the date "date". 
+    this function interpolates the values of the given array "values", and returns the value that is in the date "date".
     is used in interpolateData-function.
 	*/
 
 	function interpolateValues(values, date) {
 		if(values == undefined || date == undefined) {
-			//array containing the data is undefined, most likely the data never existed. The radius will be eventyally set to 0.
+			//array containing the data is undefined, most likely the data never existed.
+			//The value will be eventyally set to 0.
 			return 0;
 		}
 		var i = bisect.left(values, date, 0, values.length - 1),
@@ -286,8 +213,108 @@ console.log(projects);
 		}
 		return a[1];
 	  }
+		//Bisector for interpolation
+		var bisect = d3.bisector(function(d) { return d[0]; });
 
-	  //Timescale under the graph
+		// The function compares the radius of circles a and b and
+		//then with the sort command aligns the smaller circle in front of the bigger one
+		function order(a, b) {
+			return radius(b) - radius(a);
+		}
+/*********************************/
+/* Graph elements live down here */
+/*********************************/
+
+		//container for everything
+		var svg = d3.select("body").append("svg")
+					.attr("width", width)
+					.attr("height", height);
+
+		//Parser for a human readable date format dd. mm. yyyy
+		var parseDate = d3.timeFormat("%d. %m. %Y");
+
+		// Add the date label; the value is set on transition.
+		var dateLabel =  svg.append("text")
+							.attr("class", "currentDate")
+							.attr("text-anchor", "end")
+							.attr("y", height - 100)
+							.attr("x", width )
+							.text(parseDate((new Date(startDate*1000))));
+
+		//slider start & stop values
+		var labelStart = parseDate(startDate * 1000)
+		var labelEnd = parseDate(endDate * 1000)
+		//label for the start date next to the slider
+		var sSLabel = svg.append("text")
+						 .attr("class", "sliderLabel")
+						 .attr("text-anchor", "start")
+						 .attr("x", 0)
+						 .attr("y", height)
+						 .text("Start date: " + labelStart);
+
+		//label for the end date next to the slider
+		var sELabel = svg.append("text")
+						.attr("class", "sliderLabel")
+						.attr("text-anchor", "end")
+						.attr("x", width)
+						.attr("y", height)
+						.text("End date: " + labelEnd);
+		//label for project-name. visible when cursor is hovered over the circle representing the project
+		var namelabel =  svg.append("text")
+							.attr("class", "info")
+							.attr("text-anchor", "start")
+							.attr("y", 80)
+							.attr("x", 20)
+							.text("");
+
+		//label for the organizations
+		var orglabel = svg.append("text")
+						  .attr("class", "info")
+						  .attr("text-anchor", "start")
+						  .attr("y", 140)
+						  .attr("x", 20)
+						  .text("");
+		//label for x-axis
+		var xlabel = svg.append("text")
+						  .attr("class", "axisLabel")
+						  .attr("text-anchor", "start")
+						  .attr("y", 240)
+						  .attr("x", 20)
+						  .text("x-axis: "+data[0].X);
+		//label for y-axis
+		var ylabel = svg.append("text")
+						  .attr("class", "axisLabel")
+						  .attr("text-anchor", "start")
+						  .attr("y", 340)
+						  .attr("x", 20)
+						  .text("y-axis: "+data[0].Y);
+
+		// Place and colorise circles, and define mouseenter and mouseleave functions
+		var dot = svg.append("g")
+					  .attr("class", "dots")
+					  .selectAll(".dot")
+					  .data(interpolateData(startDate))
+					  .enter().append("circle")
+					  .attr("class", "dot")
+						.attr("name", function(d) { return d.name;})
+						.attr('fill-opacity', 0.8)
+					  .style("fill", function(d) { return colorScale(color(d)); })
+					  .call(position)
+						.sort(order)
+						.on("mouseenter", function(d) {
+							namelabel.text(d.name);
+							orglabel.text("x: "+ x(d)+", y: "+ y(d));
+							dot.style("opacity", .4)
+							d3.select(this).style("opacity", 1)
+							d3.selectAll(".selected").style("opacity", 1)
+						})
+						.on("mouseleave", function(d) {
+							namelabel.text("");
+							orglabel.text("");
+							dot.style("opacity", 1);
+						})
+
+	//Timescale under the graph
 	var scaleDate = d3.scaleTime()
 						.domain([startDate*1000, endDate*1000])
 						.range([0, axisLenghtX])
@@ -305,9 +332,9 @@ console.log(projects);
 			.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
 			.attr("class", "track-overlay")
 			.call(d3.drag()
-					.on("start drag", function() { //console.log(parseTime(scaleDate.invert(d3.event.x))); //console output to show slider output
-		  /*relocates the balls by given date*/    setBalls((scaleDate.invert(d3.event.x)/1000));
-					  /*moves the slider handle*/  handle.attr("cx", scaleDate(scaleDate.invert(d3.event.x)));
+					.on("start drag", function() {
+		  		setBalls((scaleDate.invert(d3.event.x)/1000)); /*relocates the balls by given date*/
+					handle.attr("cx", scaleDate(scaleDate.invert(d3.event.x))); /*moves the slider handle*/
 												 }));
 
 	// Slider handle
@@ -324,11 +351,5 @@ console.log(projects);
 		 .attr("class", "yAxis")
 		 .attr("transform", "translate("+width / 2+","+margin.top+")")
 		 .call(d3.axisLeft(scaleY));
-
-	// The function compares the radius of circles a and b and
-	//then with the sort command aligns the smaller circle in front of the bigger one
-	function order(a, b) {
-		return radius(b) - radius(a);
-	}
 return svg;
 }
