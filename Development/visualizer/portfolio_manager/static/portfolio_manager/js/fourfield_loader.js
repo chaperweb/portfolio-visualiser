@@ -26,6 +26,7 @@ function dimension_selector_change() {
   } else if(y_dimension == x_dimension || y_dimension == r_dimension || x_dimension == r_dimension){
 	  alert("ei saa olla samoja");
   } else {
+	  d3.select("svg").remove();
 	  fourField(x_dimension,y_dimension,r_dimension);
   }
 }  
