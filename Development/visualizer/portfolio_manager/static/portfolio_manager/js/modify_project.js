@@ -339,6 +339,7 @@ $(function()
     var field = $(this).data('field');
     var projectID = $(this).data('projectid');
     var type = $(this).data('type');
+    console.log("field: " + field + "\nID: " + projectID + "\ntype: " + type);
 
     // Add title
     $("#multiple-title").html(field);
@@ -360,9 +361,9 @@ $(function()
         }
         else if( json.type == "projects" )
         {
-          for(i=0; i<json.names.length; i++)
+          for(i=0; i<json.items.length; i++)
           {
-            var row = '<li class="list-group-item">' + json.names[i] + '</li>';
+            var row = '<li class="list-group-item">' + json.items[i].name + '</li>';
             $(row).appendTo("#multiple-well-ul");
           }
         }
@@ -372,7 +373,8 @@ $(function()
       }
     });
   });
-  // To populate the list in multiple-items-modal
+
+  // To populate the list in multiple-items-modal when modify button is clicked
   $(".multiple-modify-button").click(function(e){
     // Buttons data variables
     var field = $(this).data('field');
@@ -388,39 +390,69 @@ $(function()
       url: "/get_multiple/" + projectID + "/" + type + "/" + field,
       data: {},
       success: function(json) {
+        // Remove old content from the modal
         $("#multiple-well-ul > li").remove();
+
+        // If concerning multiple persons
         if( json.type == "persons" )
         {
           for(i=0; i<json.items.length; i++)
           {
+            // ID to be able to remove the row if person removed
             var id = ' id="multiple-person-' + json.items[i].id + '"';
+            // Data items for the backend to br able to identify the person
             var data = ' data-name="' + json.items[i].name + '"' + ' data-id="' + json.items[i].id + '"';
-            var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
+            var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple-persons"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
+            // Create the list item and add the row to the modal
             var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
             $(row).appendTo("#multiple-well-ul");
           }
         }
+        // If concerning multiple projects
         else if( json.type == "projects" )
         {
-          for(i=0; i<json.names.length; i++)
+          for(i=0; i<json.items.length; i++)
           {
-            var data = ' data-name="' + json.names[i] + '"' + ' data-id="' + json.names[i] + '"';
-            var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
-            var row = '<li class="list-group-item">' + json.names[i] + button + '</li>';
+            // Look above for explanations
+            var id = ' id="multiple-project-' + json.items[i].id + '"';
+            var data = ' data-name="' + json.items[i].name + '"' + ' data-id="' + json.items[i].id + '"';
+            var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple-projects"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
+            var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
             $(row).appendTo("#multiple-well-ul");
           }
         }
-        $(".remove-multiple").click(function(e)
+
+        // If a remove button for a person is clicked
+        // Sends an ajax request to remove the person from the project
+        $(".remove-multiple-persons").click(function(e)
         {
           $.ajax({
             method: "PATCH",
             url: "/remove_person_from_project",
             data: { 'id': $(this).data('id'), 'project_id': projectID },
             success: function(json) {
+              // Remove the row that contained the removed person
               $("#multiple-person-" + json.id).remove()
             },
             error: function() {
-              alert("Failed to remove person from organization");
+              alert("Failed to remove person from project");
+            }
+          });
+        });
+
+        // Sends ajax request to remove the associated project
+        $(".remove-multiple-projects").click(function(e)
+        {
+          $.ajax({
+            method: "PATCH",
+            url: "/remove_project_from_project",
+            data: { 'id': $(this).data('id'), 'project_id': projectID },
+            success: function(json) {
+              // Remove the row that contained the removed person
+              $("#multiple-project-" + json.id).remove()
+            },
+            error: function() {
+              alert("Failed to remove project from project");
             }
           });
         });

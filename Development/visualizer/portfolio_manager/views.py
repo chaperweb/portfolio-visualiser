@@ -344,11 +344,9 @@ def get_multiple(request, project_id, type, field_name):
         personsList = []
         # Loop through the dimensions
         for dim in assPersonsDs:
-            # Get the object
+            # Get the dimension object
             dimO = dim.dimension_object
-            # If it's the correct field
             if dimO.name == field_name:
-                # loop through persons in dimension
                 for pers in dimO.persons.all():
                     persons.append(pers)
         for p in persons:
@@ -362,19 +360,17 @@ def get_multiple(request, project_id, type, field_name):
         # The dimensions of correct content_type and for the correct project_id
         assProjsDs = ProjectDimension.objects.filter(content_type=assProjsD, project_id=theProject.id)
         projects = []
-        names = []
+        projectList = []
         # Loop through the dimensions
         for dim in assProjsDs:
-            # Get the object
+            # Get the dimension object
             dimO = dim.dimension_object
-            # If it's the correct field
             if dimO.name == field_name:
-                # loop through persons in dimension
                 for proj in dimO.projects.all():
                     projects.append(proj)
         for p in projects:
-            names.append(p.name)
-        return JsonResponse({'type': 'projects', 'names': names})
+            projectList.append({'id': p.id, 'name': p.name})
+        return JsonResponse({'type': 'projects', 'items': projectList})
 
 def remove_person_from_project(request):
     if request.is_ajax() and request.method == "PATCH":
@@ -384,4 +380,14 @@ def remove_person_from_project(request):
         ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
         dim = ProjectDimension.objects.get(content_type=ct, project_id=qdict.get('project_id'))
         dim.dimension_object.persons.remove(person)
+        return JsonResponse({"result": True, "id": pid})
+
+def remove_project_from_project(request):
+    if request.is_ajax() and request.method == "PATCH":
+        qdict = QueryDict(request.body)
+        pid = qdict.get('id')
+        project = Project.objects.get(pk=pid)
+        ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=qdict.get('project_id'))
+        dim.dimension_object.projects.remove(project)
         return JsonResponse({"result": True, "id": pid})

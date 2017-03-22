@@ -33,4 +33,5 @@ urlpatterns = [
     url(r'^get_pers$', views.get_pers, name='get_pers'),
     url(r'^get_multiple/(?P<project_id>[0-9]+)/(?P<type>[A-Za-z]+)/(?P<field_name>[A-Za-z]+)$', views.get_multiple, name='get_multiple'),
     url(r'^remove_person_from_project$', views.remove_person_from_project, name='remove_person_from_project'),
+    url(r'^remove_project_from_project$', views.remove_project_from_project, name='remove_project_from_project'),
 ]
