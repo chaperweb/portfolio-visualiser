@@ -35,7 +35,6 @@ $(function()
 $(function()
 {
   //  To submit modify-org-form
-
   $("#modify-org-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -70,7 +69,6 @@ $(function()
   });
 
   //  To submit modify-assorg-form
-
   $("#modify-assorg-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -142,7 +140,6 @@ $(function()
   });
 
   // To submit modify-dec-form
-
   $("#modify-dec-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -181,7 +178,6 @@ $(function()
   });
 
   // To submit modify-text-form
-
   $("#modify-text-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -220,7 +216,6 @@ $(function()
   });
 
   // To submit modify-date-form
-
   $("#modify-date-form").on("submit", function(event)
   {
     event.preventDefault();
@@ -259,6 +254,12 @@ $(function()
     });
   });
 });
+
+//  ############################
+//  #### REMOVING FUNCTIONS ####
+//  ############################
+
+
 
 //  ############################
 //  ### POPULATION FUNCTIONS ###
@@ -349,11 +350,80 @@ $(function()
       data: {},
       success: function(json) {
         $("#multiple-well-ul > li").remove();
-        for(i=0; i<json.names.length; i++)
+        if( json.type == "persons" )
         {
-          var row = '<li class="list-group-item">' + json.names[i] + '</li>';
-          $(row).appendTo("#multiple-well-ul");
+          for(i=0; i<json.items.length; i++)
+          {
+            var row = '<li class="list-group-item">' + json.items[i].name + '</li>';
+            $(row).appendTo("#multiple-well-ul");
+          }
         }
+        else if( json.type == "projects" )
+        {
+          for(i=0; i<json.names.length; i++)
+          {
+            var row = '<li class="list-group-item">' + json.names[i] + '</li>';
+            $(row).appendTo("#multiple-well-ul");
+          }
+        }
+      },
+      error: function() {
+        alert("Failed to load")
+      }
+    });
+  });
+  // To populate the list in multiple-items-modal
+  $(".multiple-modify-button").click(function(e){
+    // Buttons data variables
+    var field = $(this).data('field');
+    var projectID = $(this).data('projectid');
+    var type = $(this).data('type');
+
+    // Add title
+    $("#multiple-title").html(field);
+
+    // Send ajax request to get the items and then populate the list
+    $.ajax({
+      method: "GET",
+      url: "/get_multiple/" + projectID + "/" + type + "/" + field,
+      data: {},
+      success: function(json) {
+        $("#multiple-well-ul > li").remove();
+        if( json.type == "persons" )
+        {
+          for(i=0; i<json.items.length; i++)
+          {
+            var id = ' id="multiple-person-' + json.items[i].id + '"';
+            var data = ' data-name="' + json.items[i].name + '"' + ' data-id="' + json.items[i].id + '"';
+            var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
+            var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
+            $(row).appendTo("#multiple-well-ul");
+          }
+        }
+        else if( json.type == "projects" )
+        {
+          for(i=0; i<json.names.length; i++)
+          {
+            var data = ' data-name="' + json.names[i] + '"' + ' data-id="' + json.names[i] + '"';
+            var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
+            var row = '<li class="list-group-item">' + json.names[i] + button + '</li>';
+            $(row).appendTo("#multiple-well-ul");
+          }
+        }
+        $(".remove-multiple").click(function(e)
+        {
+          $.ajax({
+            method: "PATCH",
+            url: "/remove_person_from_project",
+            data: { 'id': $(this).data('id'), 'project_id': projectID },
+            success: function(json) {
+              $("#multiple-person-" + json.id).remove()
+            },
+            error: function() {
+              alert("Failed to remove person from organization");
+            }
+          });
+        });
       },
       error: function() {
         alert("Failed to load")
