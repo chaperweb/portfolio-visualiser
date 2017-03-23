@@ -74,7 +74,14 @@ Projects
               </div>
             </div>
             <div id="org-panel" class="panel-collapse panel-body collapse text-center row">
-              <div>THIS<br />IS<br />WHERE<br />THE<br />HISTORY<br />COMES</div>
+              <div>
+                {% for date, org in orghistory %}
+                <p>
+                  {{date}}: {{org}}
+                </p>
+
+                {% endfor %}
+              </div>
             </div>
           </div>
           <!-- BUDGET -->
