@@ -4,8 +4,8 @@ from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import django.forms
 import logging
-from django.http import JsonResponse, HttpResponse
-from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer
+from django.http import JsonResponse, HttpResponse, QueryDict
+from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer, ProjectNameIdSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
 
@@ -132,6 +132,15 @@ def show_project(request, project_id):
         context['assProjs'] = assProjsDs
 
         context['projects'] = Project.objects.all()
+
+        # for organization history
+        history_all = theProject.history.all().order_by('history_date')
+        orgs = {}
+        for h in history_all:
+            orgs[h.history_date] = h.parent
+
+        context['orghistory'] = sorted(orgs.items())
+
 
         return render(request, 'project.html', context)
 
@@ -371,6 +380,11 @@ def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
+# Gets all projects and returns them with name and id in a JSON
+def get_proj(request):
+    serializer = ProjectNameIdSerializer(Project.objects.all(), many=True)
+    return JsonResponse(serializer.data, safe=False)
+
 #   Function that gets the multiple entries in a dimension that has multiple
 #   items.
 #   Input:
@@ -394,19 +408,17 @@ def get_multiple(request, project_id, type, field_name):
         # The dimensions of correct content_type and for the correct project_id
         assPersonsDs = ProjectDimension.objects.filter(content_type=assPersonsD, project_id=theProject.id)
         persons = []
-        names = []
+        personsList = []
         # Loop through the dimensions
         for dim in assPersonsDs:
-            # Get the object
+            # Get the dimension object
             dimO = dim.dimension_object
-            # If it's the correct field
             if dimO.name == field_name:
-                # loop through persons in dimension
                 for pers in dimO.persons.all():
                     persons.append(pers)
         for p in persons:
-            names.append(p.first_name + " " + p.last_name)
-        return JsonResponse({"names":names})
+            personsList.append({'id':p.pk, 'name': p.first_name + " " + p.last_name})
+        return JsonResponse({'type': 'persons', 'items': personsList})
 
     # If AssociatedProjectsDimension
     elif type == "assprojects":
@@ -415,16 +427,56 @@ def get_multiple(request, project_id, type, field_name):
         # The dimensions of correct content_type and for the correct project_id
         assProjsDs = ProjectDimension.objects.filter(content_type=assProjsD, project_id=theProject.id)
         projects = []
-        names = []
+        projectList = []
         # Loop through the dimensions
         for dim in assProjsDs:
-            # Get the object
+            # Get the dimension object
             dimO = dim.dimension_object
-            # If it's the correct field
             if dimO.name == field_name:
-                # loop through persons in dimension
                 for proj in dimO.projects.all():
                     projects.append(proj)
         for p in projects:
-            names.append(p.name)
-        return JsonResponse({"names":names})
+            projectList.append({'id': p.id, 'name': p.name})
+        return JsonResponse({'type': 'projects', 'items': projectList})
+
+def remove_person_from_project(request):
+    if request.is_ajax() and request.method == "PATCH":
+        qdict = QueryDict(request.body)
+        pid = qdict.get('id')
+        person = Person.objects.get(pk=pid)
+        ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=qdict.get('project_id'))
+        dim.dimension_object.persons.remove(person)
+        return JsonResponse({"result": True, "id": pid})
+
+def remove_project_from_project(request):
+    if request.is_ajax() and request.method == "PATCH":
+        qdict = QueryDict(request.body)
+        pid = qdict.get('id')
+        project = Project.objects.get(pk=pid)
+        ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=qdict.get('project_id'))
+        dim.dimension_object.projects.remove(project)
+        return JsonResponse({"result": True, "id": pid})
+
+def add_person_to_project(request):
+    if request.is_ajax() and request.method == "POST":
+        projectID = request.POST.get('projectID')
+        personID = request.POST.get('personID')
+        project = Project.objects.get(pk=projectID)
+        person = Person.objects.get(pk=personID)
+        ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=projectID)
+        dim.dimension_object.persons.add(person)
+        return JsonResponse({'result': True, 'id': person.pk, 'name': person.first_name + " " + person.last_name})
+
+def add_project_to_project(request):
+    if request.is_ajax() and request.method == "POST":
+        toBeAddedID = request.POST.get('toBeAddedID')
+        destID = request.POST.get('destID')
+        TBAProject = Project.objects.get(pk=toBeAddedID)
+        destProject = Project.objects.get(pk=destID)
+        ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=destID)
+        dim.dimension_object.projects.add(TBAProject)
+        return JsonResponse({'result': True, 'id': TBAProject.pk, 'name': TBAProject.name})
