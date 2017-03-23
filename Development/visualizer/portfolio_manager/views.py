@@ -131,6 +131,15 @@ def show_project(request, project_id):
 
         context['projects'] = Project.objects.all()
 
+        # for organization history
+        history_all = theProject.history.all().order_by('history_date')
+        orgs = {}
+        for h in history_all:
+            orgs[h.history_date] = h.parent
+
+        context['orghistory'] = sorted(orgs.items())
+
+
         return render(request, 'project.html', context)
 
 def project_edit(request, project_id, field_name):
