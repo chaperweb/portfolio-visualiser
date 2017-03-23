@@ -31,7 +31,10 @@ urlpatterns = [
     url(r'^get_sheets$', views.get_sheets, name='get_sheets'),
     url(r'^get_orgs$', views.get_orgs, name='get_orgs'),
     url(r'^get_pers$', views.get_pers, name='get_pers'),
+    url(r'^get_proj$', views.get_proj, name='get_proj'),
     url(r'^get_multiple/(?P<project_id>[0-9]+)/(?P<type>[A-Za-z]+)/(?P<field_name>[A-Za-z]+)$', views.get_multiple, name='get_multiple'),
     url(r'^remove_person_from_project$', views.remove_person_from_project, name='remove_person_from_project'),
     url(r'^remove_project_from_project$', views.remove_project_from_project, name='remove_project_from_project'),
+    url(r'^add_person_to_project$', views.add_person_to_project, name='add_person_to_project'),
+    url(r'^add_project_to_project$', views.add_project_to_project, name='add_project_to_project'),
 ]

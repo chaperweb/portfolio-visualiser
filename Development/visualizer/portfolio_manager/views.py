@@ -4,7 +4,7 @@ from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import logging
 from django.http import JsonResponse, HttpResponse, QueryDict
-from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer
+from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer, ProjectNameIdSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
 
@@ -318,6 +318,11 @@ def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
+# Gets all projects and returns them with name and id in a JSON
+def get_proj(request):
+    serializer = ProjectNameIdSerializer(Project.objects.all(), many=True)
+    return JsonResponse(serializer.data, safe=False)
+
 #   Function that gets the multiple entries in a dimension that has multiple
 #   items.
 #   Input:
@@ -391,3 +396,25 @@ def remove_project_from_project(request):
         dim = ProjectDimension.objects.get(content_type=ct, project_id=qdict.get('project_id'))
         dim.dimension_object.projects.remove(project)
         return JsonResponse({"result": True, "id": pid})
+
+def add_person_to_project(request):
+    if request.is_ajax() and request.method == "POST":
+        projectID = request.POST.get('projectID')
+        personID = request.POST.get('personID')
+        project = Project.objects.get(pk=projectID)
+        person = Person.objects.get(pk=personID)
+        ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=projectID)
+        dim.dimension_object.persons.add(person)
+        return JsonResponse({'result': True, 'id': person.pk, 'name': person.first_name + " " + person.last_name})
+
+def add_project_to_project(request):
+    if request.is_ajax() and request.method == "POST":
+        toBeAddedID = request.POST.get('toBeAddedID')
+        destID = request.POST.get('destID')
+        TBAProject = Project.objects.get(pk=toBeAddedID)
+        destProject = Project.objects.get(pk=destID)
+        ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=destID)
+        dim.dimension_object.projects.add(TBAProject)
+        return JsonResponse({'result': True, 'id': TBAProject.pk, 'name': TBAProject.name})

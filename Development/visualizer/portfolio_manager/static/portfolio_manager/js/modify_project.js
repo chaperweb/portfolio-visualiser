@@ -256,12 +256,6 @@ $(function()
 });
 
 //  ############################
-//  #### REMOVING FUNCTIONS ####
-//  ############################
-
-
-
-//  ############################
 //  ### POPULATION FUNCTIONS ###
 //  ############################
 $(function()
@@ -339,7 +333,6 @@ $(function()
     var field = $(this).data('field');
     var projectID = $(this).data('projectid');
     var type = $(this).data('type');
-    console.log("field: " + field + "\nID: " + projectID + "\ntype: " + type);
 
     // Add title
     $("#multiple-title").html(field);
@@ -407,6 +400,27 @@ $(function()
             var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
             $(row).appendTo("#multiple-well-ul");
           }
+          var addLabel = '<label for="add-person-to-project" class="pull-left">Add person</label>';
+          var addSelect = '<select id="add-person-to-project" name="perID"></select>';
+          var addBtn = '<button class="btn btn-success btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
+          var addlist = '<li class="list-group-item"><form action="/add_person_to_project" method="POST" id="add-person-to-project-form">' + addLabel + addSelect + addBtn + '</form></li>';
+          $(addlist).appendTo("#multiple-well-ul");
+          $.ajax({
+            method: "GET",
+            url: "/get_pers",
+            data: {},
+            success: function(json) {
+              for(i=0;i<json.length;i++)
+              {
+                var fullname = json[i].first_name + " " + json[i].last_name
+                var option = "<option value= " + json[i].id + ">" + fullname + "</option>";
+                $(option).appendTo($("#add-person-to-project"));
+              }
+            },
+            error: function() {
+              alert("Failed to load all persons");
+            }
+          });
         }
         // If concerning multiple projects
         else if( json.type == "projects" )
@@ -420,7 +434,65 @@ $(function()
             var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
             $(row).appendTo("#multiple-well-ul");
           }
+          var addLabel = '<label for="add-project-to-project" class="pull-left">Add project</label>';
+          var addSelect = '<select id="add-project-to-project" name="projID"></select>';
+          var addBtn = '<button class="btn btn-success btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
+          var addlist = '<li class="list-group-item"><form action="/add_project_to_project" method="POST" id="add-project-to-project-form">' + addLabel + addSelect + addBtn + '</form></li>';
+          $(addlist).appendTo("#multiple-well-ul");
+          $.ajax({
+            method: "GET",
+            url: "/get_proj",
+            data: {},
+            success: function(json) {
+              for(i=0;i<json.length;i++)
+              {
+                var option = "<option value= " + json[i].id + ">" + json[i].name + "</option>";
+                $(option).appendTo($("#add-project-to-project"));
+              }
+            },
+            error: function() {
+              alert("Failed to load all projects");
+            }
+          });
         }
+
+        // If the add person form is submitted
+        $("#add-person-to-project-form").on("submit", function(e)
+        {
+          e.preventDefault();
+          $.ajax({
+            method: "POST",
+            url: $('#add-person-to-project-form').attr('action'),
+            data: { 'projectID': projectID, 'personID': $("#add-person-to-project").val() },
+            success: function(json) {
+              // TODO: Don't alert, just add it to the list
+              alert("Successfully added " + json.name + " to " + field);
+              $("#multiple-items-modal").modal('hide');
+            },
+            error: function() {
+              alert("Failed to add person to " + field);
+            }
+          });
+        });
+
+        // If the add project form is submitted
+        $("#add-project-to-project-form").on("submit", function(e)
+        {
+          e.preventDefault();
+          $.ajax({
+            method: "POST",
+            url: $('#add-project-to-project-form').attr('action'),
+            data: { 'destID': projectID, 'toBeAddedID': $("#add-project-to-project").val() },
+            success: function(json) {
+              // TODO: Don't alert, just add it to the list
+              alert("Successfully added " + json.name + " to " + field);
+              $("#multiple-items-modal").modal('hide');
+            },
+            error: function() {
+              alert("Failed to add project to " + field);
+            }
+          });
+        });
 
         // If a remove button for a person is clicked
         // Sends an ajax request to remove the person from the project
