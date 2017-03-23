@@ -40,7 +40,7 @@ class Project (models.Model):
 
 #Model for a project dimension
 class ProjectDimension (models.Model):
-  project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='dimensions')
+  project = models.ForeignKey(Project, null=False, on_delete=models.CASCADE, related_name='dimensions')
   content_type = models.ForeignKey(ContentType)
   object_id = models.PositiveIntegerField()
   dimension_object = GenericForeignKey('content_type', 'object_id')

@@ -313,17 +313,18 @@ def databaseview(request):
 def addproject(request):
  
     add_project_form = None
+    add_project_form_prefix = 'add_project_form'
     if request.POST:
-        add_project_form = AddProjectForm(request.POST, prefix='add_project_form')
+        add_project_form = AddProjectForm(request.POST, prefix=add_project_form_prefix)
     else:
         add_project_form = AddProjectForm(prefix='add_project_form', initial={'name': request.GET.get('name'), 'parent': request.GET.get('organization', ''), 'organization': request.GET.get('organization', '')})
     
     add_project_form.disable_name_and_organization()
-    
+
     forms = [add_project_form]
     
     try:
-        organization = Organization.objects.get(pk=request.GET.get('organization', ''))
+        organization = Organization.objects.get(pk=request.GET.get('organization', add_project_form.data.get(add_project_form_prefix+'-parent')))
         templates = organization.templates.all()
         if len(templates) > 0:
             template = templates[0]
@@ -331,9 +332,9 @@ def addproject(request):
                 template_dimension_form_class = globals()[template_dimension.content_type.model_class().__name__+"Form"]
                 template_dimension_form = None
                 if request.POST:
-                    template_dimension_form = template_dimension_form_class(request.POST, template_dimension.name, add_project_form, prefix=str(template_dimension.content_type.id)+'_form')
+                    template_dimension_form = template_dimension_form_class(request.POST, dimension_name=template_dimension.name, project_form=add_project_form, prefix=str(template_dimension.id)+'_form')
                 else:
-                    template_dimension_form = template_dimension_form_class(template_dimension.name, add_project_form, prefix=str(template_dimension.content_type.id)+'_form')
+                    template_dimension_form = template_dimension_form_class(dimension_name=template_dimension.name, project_form=add_project_form, prefix=str(template_dimension.id)+'_form')
                     if template_dimension.name == 'OwningOrganization':
                         template_dimension_form.fields['value'].widget = django.forms.HiddenInput()
                         template_dimension_form.fields['value'].initial = request.GET.get('organization', '')
@@ -356,6 +357,7 @@ def addproject(request):
         if forms_valid:
             for form in forms:
                form.save()
+            return redirect('show_project', add_project_form.instance.id)
 
     return render(request, 'add_project.html', {'forms': forms })        
 

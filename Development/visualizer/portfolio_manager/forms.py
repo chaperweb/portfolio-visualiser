@@ -35,12 +35,14 @@ class OrgForm(forms.Form):
 
 class DimensionForm(ModelForm):
 
-    def __init__(self, project_form, *args, **kwargs):
+    def __init__(self, *args, project_form=None, dimension_name='', **kwargs):
         super(DimensionForm, self).__init__(*args, **kwargs)
         self.project_form = project_form
+        self.dimension_name = dimension_name
 
     def save(self, *args, **kwargs):
-        instance = super(TextDimensionForm, self).save(*args, **kwargs)
+        self.instance.name = self.dimension_name
+        instance = super(DimensionForm, self).save(*args, **kwargs)
         project_dimension = ProjectDimension()
         project_dimension.project = self.project_form.instance
         project_dimension.dimension_object = instance
@@ -56,10 +58,9 @@ class TextDimensionForm(DimensionForm):
             'value': forms.TextInput(),
         }
 
-    def __init__(self, name, project_form, *args, **kwargs):
-        
-        super(TextDimensionForm, self).__init__(project_form, *args, **kwargs)
-        self.fields['value'].label = name
+    def __init__(self, *args, **kwargs ):
+        super(TextDimensionForm, self).__init__(*args, **kwargs)
+        self.fields['value'].label = self.dimension_name
 
 class DecimalDimensionForm(DimensionForm):
 
@@ -67,23 +68,22 @@ class DecimalDimensionForm(DimensionForm):
         model = DecimalDimension
         fields = ('value',)
       
-    def __init__(self, name, project_form, *args, **kwargs):
-        super(DecimalDimensionForm, self).__init__(project_form, *args, **kwargs)
-        self.fields['value'].label = name
+    def __init__(self, *args, **kwargs):
+        super(DecimalDimensionForm, self).__init__(*args, **kwargs)
+        self.fields['value'].label = self.dimension_name
     
 class DateDimensionForm(DimensionForm):
+
+    value = forms.DateField(input_formats=["%d/%m/%Y"])
 
     class Meta:
         model = DateDimension
         fields = ('value',)
-        widgets = {
-            'value': forms.DateInput({'input_type': 'date', 'class': 'datepicker'}),
-        }
 
-    def __init__(self, name, project_form, *args, **kwargs):
-        
-        super(DateDimensionForm, self).__init__(project_form, *args, **kwargs)
-        self.fields['value'].label = name
+    def __init__(self, *args, **kwargs):
+        super(DateDimensionForm, self).__init__(*args, **kwargs)
+        self.fields['value'].label = self.dimension_name
+        self.fields['value'].widget.attrs['class'] = 'datepicker'
 
 class AssociatedPersonDimensionForm(DimensionForm):
 
@@ -91,10 +91,9 @@ class AssociatedPersonDimensionForm(DimensionForm):
         model = AssociatedPersonDimension
         fields = ('value',)
 
-    def __init__(self, name, project_form, *args, **kwargs):
-        
-        super(AssociatedPersonDimensionForm, self).__init__(project_form, *args, **kwargs)
-        self.fields['value'].label = name
+    def __init__(self, *args, **kwargs):
+        super(AssociatedPersonDimensionForm, self).__init__(*args, **kwargs)
+        self.fields['value'].label = self.dimension_name
     
 
 class AssociatedOrganizationDimensionForm(DimensionForm):
@@ -103,10 +102,9 @@ class AssociatedOrganizationDimensionForm(DimensionForm):
         model = AssociatedOrganizationDimension
         fields = ('value',)
 
-    def __init__(self, name, project_form, *args, **kwargs):
-        
-        super(AssociatedOrganizationDimensionForm, self).__init__(project_form, *args, **kwargs)
-        self.fields['value'].label = name
+    def __init__(self, *args, **kwargs):
+        super(AssociatedOrganizationDimensionForm, self).__init__(*args, **kwargs)
+        self.fields['value'].label = self.dimension_name
 
 class AssociatedPersonsDimensionForm(DimensionForm):
 
@@ -114,10 +112,9 @@ class AssociatedPersonsDimensionForm(DimensionForm):
         model = AssociatedPersonsDimension
         fields = ('persons',)
 
-    def __init__(self, name, project_form, *args, **kwargs):
-        
-        super(AssociatedPersonsDimensionForm, self).__init__(project_form, *args, **kwargs)
-        self.fields['persons'].label = name
+    def __init__(self, *args, **kwargs):
+        super(AssociatedPersonsDimensionForm, self).__init__(*args, **kwargs)
+        self.fields['persons'].label = self.dimension_name
 
 class AssociatedProjectsDimensionForm(DimensionForm):
 
@@ -125,11 +122,9 @@ class AssociatedProjectsDimensionForm(DimensionForm):
         model = AssociatedProjectsDimension
         fields = ('projects',)
 
-    def __init__(self, name, project_form, *args, **kwargs):
-        
-        super(AssociatedProjectsDimensionForm, self).__init__(project_form, *args, **kwargs)
-        self.fields['projects'].label = name
-    
+    def __init__(self, *args, **kwargs):
+        super(AssociatedProjectsDimensionForm, self).__init__(*args, **kwargs)
+        self.fields['projects'].label = self.dimension_name
 
 class AddProjectForm(ModelForm):
 
