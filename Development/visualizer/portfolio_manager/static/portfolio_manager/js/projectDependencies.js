@@ -318,28 +318,30 @@ function dependancies(json) {
 		return x;
 	}
 
-	/* The values of listed nodes are added below the graph.
-   * Values listed are actual values, not scaled
-  */
+	/* The legend below the graph is given its own svg container in
+   * which we have the project color, name and budget respectively.
+   */
     var legendSpacing = 4;
     var legendRectSize = 30;
+    var legendHeight = legendRectSize + legendSpacing;
 
     var svgLegend = d3.select("body")
                       .append("svg")
                       .attr("width", 500)
-                      .attr("height", 500)
+                      // Scaling the svg based on number of projects
+                      .attr("height", (legendHeight)*(nameArray.length)+legendSpacing)
                       .append("g")
-                      .attr("transform", "translate(0,"+5+")");
+                      .attr("transform", "translate(0,"+(2*legendSpacing)+")");
 
     var legend = svgLegend.selectAll("legend")
                           .data(nameArray)
                           .enter()
                           .append("g")
                           .attr("transform", function(d,i){
-                              var height = legendRectSize + legendSpacing
-                              var offset = legendSpacing
-                              var vertz = i * height - offset
-                              return "translate("+offset+","+vertz+")"
+                              // Offsetting the legend lines from each other
+                              var offsetX = legendSpacing
+                              var offsetY = i * legendHeight - offsetX
+                              return "translate("+offsetX+","+offsetY+")"
                           });
 
     legend.append("rect")
