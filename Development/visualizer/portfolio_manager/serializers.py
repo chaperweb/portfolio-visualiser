@@ -190,8 +190,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ('id', 'name', 'dimensions', 'milestones')
 
+class ProjectNameIdSerializer(serializers.ModelSerializer):
 
-
-
-
-        
+    class Meta:
+        model = Project
+        fields = ('id', 'name')
