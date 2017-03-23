@@ -1,18 +1,18 @@
 from django import forms
-import portfolio_manager.models
+from portfolio_manager.models import *
 import numbers
 from django.forms import ModelForm
 
 class GoogleSheetForm(ModelForm):
     class Meta:
-        model = portfolio_manager.models.GoogleSheet
+        model = GoogleSheet
         fields = ['name','url']
 
 class ProjectForm(forms.Form):
     name = forms.CharField(label = 'Name', max_length=50, required = True,
                             error_messages={'required': 'Your project needs a name!'})
-    organization = forms.ModelChoiceField(queryset=portfolio_manager.models.Organization.objects.all())
-    owner = forms.ModelChoiceField(queryset=portfolio_manager.models.Person.objects.all())
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+    owner = forms.ModelChoiceField(queryset=Person.objects.all())
     budget = forms.DecimalField(max_digits=20, decimal_places=2)
 
 
@@ -29,56 +29,9 @@ class PersonForm(forms.Form):
     # def __init__(self):
     #
 
-
-class CronForm(forms.Form):
-    orgs = forms.ModelChoiceField(queryset=portfolio_manager.models.Organization.objects.all().order_by('name'),empty_label="(Nothing)",
-    widget=forms.Select(attrs={"onChange":'submit()'}))
-
-class TableSpecification(forms.Form):
-    name = forms.CharField(label = 'Field name', max_length=50, required = True,
-                            error_messages={'required': 'Your field needs a name!'})
-    DATATYPES = (('TXT', 'Teksti'),('NUM', 'Numeerinen'),('DEC','Desimaali'))
-    datatype = forms.ChoiceField(choices=DATATYPES)
-    value = forms.CharField(label = 'Value', max_length=64, required = True,
-                            error_messages={'required': 'value!'})
-
-    def clean(self):
-        cleaned_data = super(TableSpecification, self).clean()
-        name = cleaned_data.get("name")
-        datatype = cleaned_data.get("datatype")
-        value = cleaned_data.get("value")
-
-        if datatype == 'NUM':
-            try:
-                val = int(value)
-            except ValueError:
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-                print("That's not an int!")
-
-            if not isinstance(val, numbers.Number):
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-        if datatype == 'DEC':
-            try:
-                val = float(value)
-            except ValueError:
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-                print("That's not an int!")
-
-            if not isinstance(val, numbers.Number):
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-
 class OrgForm(forms.Form):
-    name = forms.CharField(label = 'Name', max_length=50, required = True,
-                                error_messages={'required': 'Your project needs a name!'})
-    organization = forms.ModelChoiceField(queryset=portfolio_manager.models.Organization.objects.all().order_by('name'),empty_label="(Nothing)")
+    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="Select an organization",
+    widget=forms.Select(attrs={"onChange":'submit()'}))
 
 class DimensionForm(ModelForm):
 
@@ -97,7 +50,7 @@ class DimensionForm(ModelForm):
 class TextDimensionForm(DimensionForm):
 
     class Meta:
-        model = portfolio_manager.models.TextDimension
+        model = TextDimension
         fields = ('value',)
         widgets = {
             'value': forms.TextInput(),
@@ -111,7 +64,7 @@ class TextDimensionForm(DimensionForm):
 class DecimalDimensionForm(DimensionForm):
 
     class Meta:
-        model = portfolio_manager.models.DecimalDimension
+        model = DecimalDimension
         fields = ('value',)
       
     def __init__(self, name, project_form, *args, **kwargs):
@@ -121,10 +74,10 @@ class DecimalDimensionForm(DimensionForm):
 class DateDimensionForm(DimensionForm):
 
     class Meta:
-        model = portfolio_manager.models.DateDimension
+        model = DateDimension
         fields = ('value',)
         widgets = {
-            'value': forms.DateInput({'input_type': 'date'}),
+            'value': forms.DateInput({'input_type': 'date', 'class': 'datepicker'}),
         }
 
     def __init__(self, name, project_form, *args, **kwargs):
@@ -135,7 +88,7 @@ class DateDimensionForm(DimensionForm):
 class AssociatedPersonDimensionForm(DimensionForm):
 
     class Meta:
-        model = portfolio_manager.models.AssociatedPersonDimension
+        model = AssociatedPersonDimension
         fields = ('value',)
 
     def __init__(self, name, project_form, *args, **kwargs):
@@ -147,7 +100,7 @@ class AssociatedPersonDimensionForm(DimensionForm):
 class AssociatedOrganizationDimensionForm(DimensionForm):
 
     class Meta:
-        model = portfolio_manager.models.AssociatedOrganizationDimension
+        model = AssociatedOrganizationDimension
         fields = ('value',)
 
     def __init__(self, name, project_form, *args, **kwargs):
@@ -158,7 +111,7 @@ class AssociatedOrganizationDimensionForm(DimensionForm):
 class AssociatedPersonsDimensionForm(DimensionForm):
 
     class Meta:
-        model = portfolio_manager.models.AssociatedPersonsDimension
+        model = AssociatedPersonsDimension
         fields = ('persons',)
 
     def __init__(self, name, project_form, *args, **kwargs):
@@ -169,7 +122,7 @@ class AssociatedPersonsDimensionForm(DimensionForm):
 class AssociatedProjectsDimensionForm(DimensionForm):
 
     class Meta:
-        model = portfolio_manager.models.AssociatedProjectsDimension
+        model = AssociatedProjectsDimension
         fields = ('projects',)
 
     def __init__(self, name, project_form, *args, **kwargs):
@@ -180,10 +133,10 @@ class AssociatedProjectsDimensionForm(DimensionForm):
 
 class AddProjectForm(ModelForm):
 
-    organization = forms.ModelChoiceField(queryset=portfolio_manager.models.Organization.objects.all(), required=False)
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all(), required=False)
 
     class Meta:
-        model = portfolio_manager.models.Project
+        model = Project
         fields = ['name','parent']
         labels = {
             "parent": "Organization",
@@ -192,9 +145,7 @@ class AddProjectForm(ModelForm):
             "parent": forms.HiddenInput()
         }
 
-    def __init__(self, *args, **kwargs):
-        
-        super(AddProjectForm, self).__init__(*args, **kwargs)
-
+    def disable_name_and_organization(self):
         self.fields['organization'].widget.attrs['disabled'] = True
         self.fields['name'].widget.attrs['readonly'] = 'readonly'
+

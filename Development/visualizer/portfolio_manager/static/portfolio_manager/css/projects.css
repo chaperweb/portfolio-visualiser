@@ -14,7 +14,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 #proju > div {
   background-color: rgb(156,156,156) !important;
-  margin-right: 5%;
+  margin-right: 8.333333333%;
   margin-bottom: 30px;
 
   text-decoration-color: white !important;
@@ -28,4 +28,5 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 #orginprojut {
   padding-left: 0px !important;
+
 }

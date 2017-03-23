@@ -11,9 +11,16 @@ PROJECTS
 <!-- <link rel="stylesheet" href="{% static "" %}"> -->
 {% endblock %}
 
-
+{% block javascript %}
+<script>
+$(document).ready(function() {
+    $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd/mm/yy'});
+});
+</script>
+{% endblock %}
 
 {% block content %}
+
 
 <form action="{% url 'addproject' %}" method="POST">
   {% csrf_token %}

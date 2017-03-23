@@ -19,47 +19,36 @@ class SerializersTestCase(TestCase):
                         [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
                         [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9']])
                 
-                milestones_serializer = MilestoneSerializer(Project.objects.get(id=1).milestones.all(), many=True)
+                milestones1_serializer = MilestoneHistorySerializer(Project.objects.get(id=1).milestones.all()[0].history.all()[0])
+                milestones2_serializer = MilestoneHistorySerializer(Project.objects.get(id=1).milestones.all()[1].history.all()[0])
+
 
                 expected_serialization = [
                                            {
-                                              
-                                              'history':[
+                                              'dimensions':[
                                                  {
-                                                    'dimensions':[
-                                                       {
-                                                          'dimension_milestone_object':{
-                                                             'value':'5.00'
-                                                          },
-                                                          'project_dimension':2
-                                                       }
-                                                    ],
-                                                    'history_date':'2013-03-16T17:41:28Z',
-                                                    'due_date':'2015-06-28T00:00:00Z'
+                                                    'dimension_milestone_object':{
+                                                       'value':'5.00'
+                                                    },
+                                                    'project_dimension':2
                                                  }
                                               ],
-                                              'id': 1
+                                              'due_date':'2015-06-28T00:00:00Z'
                                            },
                                            {
-                                              'history':[
-                                                 {
-                                                    'dimensions':[
-                                                       {
-                                                          'dimension_milestone_object':{
-                                                             'value':'9.00'
-                                                          },
-                                                          'project_dimension':2
-                                                       }
-                                                    ],
-                                                    'history_date':'2014-03-16T17:41:28Z',
-                                                    'due_date':'2016-06-29T00:00:00Z'
-                                                 }
-                                              ],
-                                              'id': 2
-                                           }
+                                              'dimensions':[
+                                                   {
+                                                      'dimension_milestone_object':{
+                                                         'value':'9.00'
+                                                      },
+                                                      'project_dimension':2
+                                                   }
+                                                ],
+                                                'due_date':'2016-06-29T00:00:00Z'
+                                            }
                                         ]
 
-                self.assertEquals(expected_serialization, milestones_serializer.data)
+                self.assertEquals(expected_serialization, [milestones1_serializer.data, milestones2_serializer.data])
 
         def test_project_serializer(self):
 
@@ -109,36 +98,24 @@ class SerializersTestCase(TestCase):
                               ],
                               'milestones':[
                                  {
-                                    'id': 1,
-                                    'history':[
+                                    'due_date':'2015-06-28T00:00:00Z',
+                                    'dimensions':[
                                        {
-                                          'due_date':'2015-06-28T00:00:00Z',
-                                          'dimensions':[
-                                             {
-                                                'dimension_milestone_object':{
-                                                   'value':'5.00'
-                                                },
-                                                'project_dimension':2
-                                             }
-                                          ],
-                                          'history_date':'2013-03-16T17:41:28Z'
+                                          'dimension_milestone_object':{
+                                             'value':'5.00'
+                                          },
+                                          'project_dimension':2
                                        }
                                     ]
                                  },
                                  {
-                                    'id': 2,
-                                    'history':[
+                                    'due_date':'2016-06-29T00:00:00Z',
+                                    'dimensions':[
                                        {
-                                          'due_date':'2016-06-29T00:00:00Z',
-                                          'dimensions':[
-                                             {
-                                                'dimension_milestone_object':{
-                                                   'value':'9.00'
-                                                },
-                                                'project_dimension':2
-                                             }
-                                          ],
-                                          'history_date':'2014-03-16T17:41:28Z'
+                                          'dimension_milestone_object':{
+                                             'value':'9.00'
+                                          },
+                                          'project_dimension':2
                                        }
                                     ]
                                  }

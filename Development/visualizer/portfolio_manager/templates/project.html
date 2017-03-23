@@ -12,16 +12,8 @@ Projects
 {% endblock %}
 
 {% block javascript %}
-<script>
-  $(document).on("click", ".open-modify", function () {
-    var field = $(this).data('field');
-    var value = $(this).data('value');
-    $(".modal-body h3").html("Modify: " + field);
-    $(".modal-body h4").html("Current value: " + value);
-    document.getElementById("newValue").type = $(this).data('type');
-    document.getElementById("newValue").value = $(this).data('value');
-  });
-</script>
+{% load static%}
+<script src="{% static "portfolio_manager/js/modify_project.js" %}"></script>
 {% endblock %}
 
 {# CONTENT HERE #}
@@ -33,8 +25,8 @@ Projects
     <li data-toggle="collapse" data-target="#projects" class="navbar-toggle sidebar-item">Projects</li>
     <li>
       <!-- Expandable list with all the projects -->
-      <div id="projects" class="collapse">
-        <ul class="nav navbar-collapse">
+      <div id="projects" class="collapse in">
+        <ul class="nav">
           {% for p in projects %}
             <li><a class="sidebar-subitem" href="/projects/{{p.pk}}">{{p.name}}</a></li>
           {% endfor %}
@@ -45,28 +37,16 @@ Projects
 </div>
 <!-- /sidebar -->
 
+<!-- Modals -->
+{% include "modals/modify_text_modal.html" %}
+{% include "modals/modify_org_modal.html" %}
+{% include "modals/modify_dec_modal.html" %}
+{% include "modals/modify_per_modal.html" %}
+{% include "modals/modify_date_modal.html" %}
+{% include "modals/modify_assorg_modal.html" %}
+{% include "modals/multiple_items_modal.html" %}
+
 <!-- Page Content -->
-<!-- Modal -->
-<div class="modal fade" id="modify-field-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h3></h3>
-        <form id="modifyForm" method="GET" action="">
-          {% csrf_token %}
-          <h4></h4>
-          <label id="new-value-label" for="new-value">New value: </label>
-          <input type="" name="newValue" id="newValue"/>
-          <center style="margin-top: 15px;">
-            <button type="submit" class="btn btn-success">Save change</button>
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-          </center>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 <div id="page-content-wrapper">
   <div class="container col-lg-10">
     <div class="row">
@@ -76,7 +56,7 @@ Projects
         <div class="panel-group">
           <!-- ORGANIZATION -->
           <div class="panel panel-default">
-            <div class="panel-heading row" data-toggle="collapse" href="#org-panel" aria-controls="#org-panel" aria-expanded="false">
+            <div class="panel-heading row" data-toggle="collapse" data-target="#org-panel" aria-controls="#org-panel" aria-expanded="false">
               <div class="col-md-1">
                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
                 <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
@@ -84,45 +64,17 @@ Projects
               <div class="col-md-2">
                 Organization
               </div>
-              <div class="col-md-2 col-md-offset-4">
+              <div id="projectparent" class="col-md-2 col-md-offset-4">
                 {{ project.parent }}
               </div>
-              <div class="col-md-1 pull-right">
-                <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="Organization" data-value="{{project.parent}}" data-toggle="modal" data-target="#modify-field-modal">
+              <div class="col-md-1 pull-right modifybutton">
+                <button class="btn btn-xs btn-default open-modify modify-button" data-type="text" data-field="Organization" data-value="{{project.parent}}" data-toggle="modal" data-target="#modify-org-modal">
                   Modify
                 </button>
               </div>
             </div>
             <div id="org-panel" class="panel-collapse panel-body collapse text-center row">
               <div>THIS<br />IS<br />WHERE<br />THE<br />HISTORY<br />COMES</div>
-            </div>
-          </div>
-          <!-- OWNER -->
-          <div class="panel panel-default">
-            <div class="panel-heading row" data-toggle="collapse" href="#owner-panel" aria-controls="#owner-panel" aria-expanded="false">
-              <div class="col-lg-1">
-                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-              </div>
-              <div class="col-lg-2">
-                Owner:
-              </div>
-              <div class="col-lg-2 col-lg-offset-4">
-                {{owner}}
-              </div>
-              <div class="col-md-1 pull-right">
-                <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="Owner" data-value="{{owner}}" data-toggle="modal" data-target="#modify-field-modal">
-                  Modify
-                </button>
-              </div>
-            </div>
-            <div id="owner-panel" class="panel-collapse panel-body collapse text-center">
-              THIS
-              <br />IS
-              <br />WHERE
-              <br />THE
-              <br />HISTORY
-              <br />COMES
             </div>
           </div>
           <!-- BUDGET -->
@@ -133,13 +85,13 @@ Projects
                 <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
               </div>
               <div class="col-lg-2">
-                Budget:
+                {{ budget.dimension_object.name }}:
               </div>
-              <div class="col-lg-2 col-lg-offset-4">
+              <div id="{{ budget.dimension_object.name }}" class="col-lg-2 col-lg-offset-4">
                 {{ budget.dimension_object.value }}
               </div>
               <div class="col-md-1 pull-right">
-              <button class="btn btn-xs btn-default open-modify" data-type="number" data-field="Budget" data-value="{{budget.dimension_object.value}}" data-toggle="modal" data-target="#modify-field-modal">
+              <button class="btn btn-xs btn-default open-modify-dec modify-button" data-type="number" data-field="{{ budget.dimension_object.name }}" data-value="{{budget.dimension_object.value}}" data-toggle="modal" data-target="#modify-dec-modal">
                 Modify
               </button>
               </div>
@@ -153,6 +105,36 @@ Projects
               <br />COMES
             </div>
           </div>
+          <!-- DATE FIELDS -->
+          {% for x in dates %}
+            <div class="panel panel-default">
+              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+                <div class="col-lg-1">
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                </div>
+                <div class="col-lg-2">
+                  {{x.dimension_object.name}}:
+                </div>
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                  {{ x.dimension_object.value }}
+                </div>
+                <div class="col-md-1 pull-right">
+                  <button class="btn btn-xs btn-default open-modify-date modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-date-modal">
+                    Modify
+                  </button>
+                </div>
+              </div>
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
+                THIS
+                <br />IS
+                <br />WHERE
+                <br />THE
+                <br />HISTORY
+                <br />COMES
+              </div>
+            </div>
+          {% endfor %}
           <!-- TEXT FIELDS -->
           {% for x in text %}
             <div class="panel panel-default">
@@ -164,11 +146,11 @@ Projects
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-field-modal">
+                  <button class="btn btn-xs btn-default open-modify-text modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
                     Modify
                   </button>
                 </div>
@@ -194,11 +176,133 @@ Projects
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify" data-type="number" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-field-modal">
+                  <button class="btn btn-xs btn-default open-modify-dec modify-button" data-type="number" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-dec-modal">
+                    Modify
+                  </button>
+                </div>
+              </div>
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
+                THIS
+                <br />IS
+                <br />WHERE
+                <br />THE
+                <br />HISTORY
+                <br />COMES
+              </div>
+            </div>
+          {% endfor %}
+          <!-- ASSOCIATED PERSON FIELDS -->
+          {% for x in assPerson %}
+            <div class="panel panel-default">
+              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+                <div class="col-lg-1">
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                </div>
+                <div class="col-lg-2">
+                  {{x.dimension_object.name}}:
+                </div>
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                  {{ x.dimension_object.value }}
+                </div>
+                <div class="col-md-1 pull-right">
+                  <button class="btn btn-xs btn-default open-modify-per modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-per-modal">
+                    Modify
+                  </button>
+                </div>
+              </div>
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
+                THIS
+                <br />IS
+                <br />WHERE
+                <br />THE
+                <br />HISTORY
+                <br />COMES
+              </div>
+            </div>
+          {% endfor %}
+          <!-- ASSOCIATED PERSONS FIELDS -->
+          <!-- TODO: Implement modify -->
+          {% for x in assPersons %}
+            <div class="panel panel-default">
+              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+                <div class="col-lg-1">
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                </div>
+                <div class="col-lg-2">
+                  {{x.dimension_object.name}}:
+                </div>
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                  <button type="button" class="btn btn-xs btn-success multiple-button modify-button" data-projectid="{{project.pk}}" data-type="asspersons" data-field="{{ x.dimension_object.name }}" data-toggle="modal" data-target="#multiple-items-modal">Click to see all</button>
+                </div>
+                <div class="col-md-1 pull-right">
+                  <button class="btn btn-xs btn-default open-modify-text modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
+                    Modify
+                  </button>
+                </div>
+              </div>
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
+                THIS
+                <br />IS
+                <br />WHERE
+                <br />THE
+                <br />HISTORY
+                <br />COMES
+              </div>
+            </div>
+          {% endfor %}
+          <!-- ASSOCIATED ORGANIZATION FIELDS -->
+          {% for x in assOrg %}
+            <div class="panel panel-default">
+              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+                <div class="col-lg-1">
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                </div>
+                <div class="col-lg-2">
+                  {{x.dimension_object.name}}:
+                </div>
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                  {{ x.dimension_object.value }}
+                </div>
+                <div class="col-md-1 pull-right">
+                  <button class="btn btn-xs btn-default open-modify-assorg modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-assorg-modal">
+                    Modify
+                  </button>
+                </div>
+              </div>
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
+                THIS
+                <br />IS
+                <br />WHERE
+                <br />THE
+                <br />HISTORY
+                <br />COMES
+              </div>
+            </div>
+          {% endfor %}
+          <!-- ASSOCIATED PROJECTS FIELDS -->
+          <!-- TODO: Implement modify -->
+          {% for x in assProjs %}
+            <div class="panel panel-default">
+              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+                <div class="col-lg-1">
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                </div>
+                <div class="col-lg-2">
+                  {{x.dimension_object.name}}:
+                </div>
+                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                  <button type="button" class="btn btn-xs btn-success multiple-button modify-button" data-projectid="{{project.pk}}" data-type="assprojects" data-field="{{ x.dimension_object.name }}" data-toggle="modal" data-target="#multiple-items-modal">Click to see all</button>
+                </div>
+                <div class="col-md-1 pull-right">
+                  <button class="btn btn-xs btn-default open-modify-text modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-text-modal">
                     Modify
                   </button>
                 </div>
