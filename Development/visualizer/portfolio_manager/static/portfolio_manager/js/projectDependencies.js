@@ -11,7 +11,7 @@ function dependancies(json) {
 	var nodes = {};
 
 	var links = []
-	var jsonlen = json.length 
+	var jsonlen = json.length
 	console.log(json)
 	var valueArray = [];
 
@@ -77,12 +77,12 @@ function dependancies(json) {
 	var values = [];
 	var nameArray = [];
 	var valueArray = [];
-	nodevalueArray = [];
+	var nodeValueArray = [];
 	d3.values(nodes).forEach(function(node) {
 		values.push(node.value)
 		nameArray.push(node.name)
 		//valueArray.push(node.value)
-		nodevalueArray.push(node.name + " " + (node.value * denominator));
+		nodeValueArray.push(node.name + " Budget: " + (node.value * denominator));
 	});
 
 	/* searches the name of the project with the given ID.
@@ -321,11 +321,36 @@ function dependancies(json) {
 	/* The values of listed nodes are added below the graph.
    * Values listed are actual values, not scaled
   */
-	var ul = d3.select('body').append('ul');
+    var legendSpacing = 4;
+    var legendRectSize = 30;
 
-  ul.selectAll('li')
-	  .data(nodevalueArray)
-	  .enter()
-	  .append('li')
-	  .html(String);
+    var svgLegend = d3.select("body")
+                      .append("svg")
+                      .attr("width", 500)
+                      .attr("height", 500)
+                      .append("g")
+                      .attr("transform", "translate(0,"+5+")");
+
+    var legend = svgLegend.selectAll("legend")
+                          .data(nameArray)
+                          .enter()
+                          .append("g")
+                          .attr("transform", function(d,i){
+                              var height = legendRectSize + legendSpacing
+                              var offset = legendSpacing
+                              var vertz = i * height - offset
+                              return "translate("+offset+","+vertz+")"
+                          });
+
+    legend.append("rect")
+          .attr("width", legendRectSize)
+          .attr("height", legendRectSize)
+          .style("fill", function(d){return color(d)});
+
+    legend.append("text")
+          .data(nodeValueArray)
+          .attr("x", legendRectSize + legendSpacing)
+          .attr("y", legendRectSize - legendSpacing)
+          .style("font", "20px sans-serif")
+          .text(function(d){return ""+d+"€"});
 }
