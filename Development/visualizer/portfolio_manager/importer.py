@@ -2,6 +2,7 @@ import gspread
 from portfolio_manager.models import *
 from oauth2client.service_account import ServiceAccountCredentials
 import os
+from dateutil.parser import parse
 
 def from_data_array(data):
 
