@@ -18,14 +18,18 @@ def home(request):
 
     # dictionary for (project -> next milestone)
     mils = {}
+    # Loop through the milestones
     for m in milestones:
+        # Checks if m.project is already in the dictionary for next milestone
         if m.project not in mils:
             mils[m.project] = m.due_date
 
     # dimensions for project manager and end date of project, for project sneak peeks
     dims = ProjectDimension.objects.all()
+    # ContentType
     assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
     dated = ContentType.objects.get_for_model(DateDimension)
+    # Get dimensions of correct content_type for assPersonDs and dateds
     assPersonDs = dims.filter(content_type=assPersonD)
     dateds = dims.filter(content_type=dated)
     context = {}
