@@ -6,7 +6,10 @@ Path
 {% endblock %}
 
 {# CSS HERE #}
+
 {% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/sidebar.css" %}">
 <style>
 .bar {
   fill: none;
@@ -38,6 +41,26 @@ li {
 
 {# CONTENT HERE #}
 {% block content %}
+<!-- Sidebar -->
+<div class="sidebar navbar-fixed-left navbar-inverse xs-hidden col-md-2">
+  <ul class="nav navbar-nav">
+    <!-- Press this list item to show all the visualizations -->
+    <li data-toggle="collapse" data-target="#visus" class="navbar-toggle sidebar-item">Visualizations</li>
+    <li>
+      <!-- Expandable list with all the visualizations -->
+      <div id="visus" class="collapse in">
+        <ul class="nav">
+
+            <li><a class="sidebar-subitem" href="{%url 'path' %}">Path</a></li>
+            <li><a class="sidebar-subitem" href="{%url 'projectdependencies' %}">Dependencies</a></li>
+            <li><a class="sidebar-subitem" href="{%url 'path' %}">4-Field</a></li>
+
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+<!-- /sidebar -->
 
   <div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization">
   </div>
