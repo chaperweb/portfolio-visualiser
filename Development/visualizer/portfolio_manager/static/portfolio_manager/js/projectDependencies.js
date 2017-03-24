@@ -322,12 +322,12 @@ function dependancies(json) {
    * which we have the project color, name and budget respectively.
    */
     var legendSpacing = 4;
-    var legendRectSize = 30;
+    var legendRectSize = 25;
     var legendHeight = legendRectSize + legendSpacing;
 
     var svgLegend = d3.select("body")
                       .append("svg")
-                      .attr("width", 500)
+                      .attr("width", 300)
                       // Scaling the svg based on number of projects
                       .attr("height", (legendHeight)*(nameArray.length)+legendSpacing)
                       .append("g")
@@ -353,6 +353,6 @@ function dependancies(json) {
           .data(nodeValueArray)
           .attr("x", legendRectSize + legendSpacing)
           .attr("y", legendRectSize - legendSpacing)
-          .style("font", "20px sans-serif")
+          .style("font", "16px sans-serif")
           .text(function(d){return ""+d+"€"});
 }
