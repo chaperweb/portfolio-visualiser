@@ -8,28 +8,57 @@ PROJECTS
 {# CSS HERE #}
 {% block css %}
 {% load static %}
-<!-- <link rel="stylesheet" href="{% static "" %}"> -->
+<link rel="stylesheet" href="{% static "portfolio_manager/css/add_project.css" %}">
 {% endblock %}
 
 {% block javascript %}
 <script>
 $(document).ready(function() {
     $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd/mm/yy'});
+    $(".form-row:even").addClass('even-row');
 });
 </script>
 {% endblock %}
 
 {% block content %}
 
+<div id="page-content-wrapper">
+  <div class="container col-lg-12">
+  	<div class="row">
+	  	<div class="col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-11">
+	  		<h2>New project</h2>
+	  	</div>
+  	</div>
+    <form action="{% url 'addproject' %}" method="POST">
+				  {% csrf_token %}
+				  {% for form in forms %}
+				  	{% for field in form.hidden_fields %}
+				  		{{ field }}
+				  	{% endfor %}
+				  	{% for field in form.visible_fields %}
+				  	<div class="row form-row row-eq-height">
+				  		{{ field.errors }}
+				  		<div class="col-xs-5 col-xs-offset-0 col-sm-offset-1 col-sm-4 form-field-label form-col">
+				  		{{ field.label_tag }}
+				  		</div>
+				  		<div class="col-xs-7 col-sm-4 form-field form-col">
+				  		{{ field }}
+				  		</div>
+				  		<div class="col-xs-0 col-sm-3">
+				  		</div>
+				  	</div>
+				  	{% endfor %}
+				  {% endfor %}
+	<div class="row form-row row-eq-height">
+		<div class="col-xs-7 col-xs-offset-5 col-sm-offset-5 col-sm-4 form-field form-col">
+  			<button type="submit" id="submit-project-btn" class="btn btn-success">Add project</button>
+  		</div>
+  		<div class="col-xs-0 col-sm-3">
+  		</div>
 
-<form action="{% url 'addproject' %}" method="POST">
-  {% csrf_token %}
-  
-  {% for form in forms %}
-  	{{ form.as_p }}
-  {% endfor %}
-
-<button type="submit" class="btn btn-success col-md-3 col-md-offset-2">Upload</button>
-</form>
+	</div>
+	</form>
+  </div>
+</div>
 
 {% endblock %}

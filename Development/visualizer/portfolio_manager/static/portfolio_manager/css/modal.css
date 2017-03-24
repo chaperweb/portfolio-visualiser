@@ -1,0 +1,11 @@
+/* MODAL CSS */
+.modal-dialog {
+  padding-top: 20vh;
+  min-height: 50%;
+  min-height: 50vh;
+}
+
+.modal-content {
+  border-radius: 20px;
+  background-color: rgb(200,200,200);
+}

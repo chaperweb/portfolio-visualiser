@@ -59,7 +59,7 @@ class TextDimensionForm(DimensionForm):
         }
 
     def __init__(self, *args, **kwargs ):
-        super(TextDimensionForm, self).__init__(*args, **kwargs)
+        super(TextDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
 
 class DecimalDimensionForm(DimensionForm):
@@ -69,7 +69,7 @@ class DecimalDimensionForm(DimensionForm):
         fields = ('value',)
       
     def __init__(self, *args, **kwargs):
-        super(DecimalDimensionForm, self).__init__(*args, **kwargs)
+        super(DecimalDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
     
 class DateDimensionForm(DimensionForm):
@@ -81,7 +81,7 @@ class DateDimensionForm(DimensionForm):
         fields = ('value',)
 
     def __init__(self, *args, **kwargs):
-        super(DateDimensionForm, self).__init__(*args, **kwargs)
+        super(DateDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
         self.fields['value'].widget.attrs['class'] = 'datepicker'
 
@@ -92,7 +92,7 @@ class AssociatedPersonDimensionForm(DimensionForm):
         fields = ('value',)
 
     def __init__(self, *args, **kwargs):
-        super(AssociatedPersonDimensionForm, self).__init__(*args, **kwargs)
+        super(AssociatedPersonDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
     
 
@@ -103,7 +103,7 @@ class AssociatedOrganizationDimensionForm(DimensionForm):
         fields = ('value',)
 
     def __init__(self, *args, **kwargs):
-        super(AssociatedOrganizationDimensionForm, self).__init__(*args, **kwargs)
+        super(AssociatedOrganizationDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
 
 class AssociatedPersonsDimensionForm(DimensionForm):
@@ -113,7 +113,7 @@ class AssociatedPersonsDimensionForm(DimensionForm):
         fields = ('persons',)
 
     def __init__(self, *args, **kwargs):
-        super(AssociatedPersonsDimensionForm, self).__init__(*args, **kwargs)
+        super(AssociatedPersonsDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['persons'].label = self.dimension_name
 
 class AssociatedProjectsDimensionForm(DimensionForm):
@@ -123,7 +123,7 @@ class AssociatedProjectsDimensionForm(DimensionForm):
         fields = ('projects',)
 
     def __init__(self, *args, **kwargs):
-        super(AssociatedProjectsDimensionForm, self).__init__(*args, **kwargs)
+        super(AssociatedProjectsDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['projects'].label = self.dimension_name
 
 class AddProjectForm(ModelForm):
@@ -140,7 +140,13 @@ class AddProjectForm(ModelForm):
             "parent": forms.HiddenInput()
         }
 
+    def __init__(self, *args, **kwargs):
+        super(AddProjectForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['name'].widget.attrs['placeholder'] = 'Project name'
+        self.fields['organization'].widget.attrs['required'] = True
+
     def disable_name_and_organization(self):
         self.fields['organization'].widget.attrs['disabled'] = True
         self.fields['name'].widget.attrs['readonly'] = 'readonly'
+
 
