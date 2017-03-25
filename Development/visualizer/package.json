@@ -1,6 +1,6 @@
 {
   "name": "portfolio_visualiser",
-  "version": "1.0",
+  "version": "1.0.0",
   "scripts": {
     "test": "tape portfolio_manager/static/portfolio_manager/js/test_path.js"
   },
