@@ -152,6 +152,12 @@ console.log(projects);
 		y(d) < (margin.top + axisLenghtY) &&
 		x(d) < (margin.left + axisLenghtX));
 	}
+	function validXCoordinates(d) {
+		if(!isNaN(d)) {return Math.min(Math.max(d,0),width) } else {return 0};
+	}
+	function validYCoordinates(d) {
+		if(!isNaN(d)) {return Math.min(Math.max(d,0),height) }else {return 0};
+	}	
 
 	//function to determine color of the circle. Currently is set to color the circles by their "AssociatedOrganizationDimension"
 	function color(d) { return d.organization; }
@@ -160,8 +166,8 @@ console.log(projects);
 
 	// Positions the dots based on data.
 	function position(dot) {
-		dot.attr("cx", function(d) { return Math.min(Math.max(x(d),d.radius),height); })
-		   .attr("cy", function(d) { return Math.min(Math.max(y(d),d.radius),height); })
+		dot.attr("cx", function(d) { return validXCoordinates(x(d)) ; })
+		   .attr("cy", function(d) { return validYCoordinates(y(d)); })
 		   .attr("r", function(d) { return Math.min(Math.max( radius(d),0 ),100); });
 	}
 
