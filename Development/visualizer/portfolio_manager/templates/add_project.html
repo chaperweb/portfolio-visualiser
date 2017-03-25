@@ -29,7 +29,7 @@ $(document).ready(function() {
 	  		<h2>New project</h2>
 	  	</div>
   	</div>
-    <form action="{% url 'addproject' %}" method="POST">
+    <form action="{% url 'addproject' %}" id="add-project-form" method="POST">
 				  {% csrf_token %}
 				  {% for form in forms %}
 				  	{% for field in form.hidden_fields %}

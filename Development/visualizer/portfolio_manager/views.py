@@ -37,6 +37,12 @@ def home(request):
     context['dates'] = dateds
     return render(request, 'homepage.html', context)
 
+def admin_tools(request):
+    form = AddProjectForm()
+    form.fields['name'].widget.attrs['class'] = 'form-control'
+    form.fields['organization'].widget.attrs['class'] = 'form-control'
+    return render(request, 'admin_tools.html', {'pre_add_project_form': form})
+
 # Site to see history of projects
 def history(request):
     history_all = Project.history.all()
