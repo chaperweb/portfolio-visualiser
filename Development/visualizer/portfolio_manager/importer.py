@@ -3,6 +3,8 @@ from portfolio_manager.models import *
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 from dateutil.parser import parse
+from  django.db import connection
+from django.core.management.color import no_style
 
 def from_data_array(data):
 
@@ -144,3 +146,8 @@ def from_google_sheet(SheetUrl):
         print("spreadsheet not found")
     except gspread.exceptions.NoValidUrlKeyFound:
         print("URLi paskana")
+    finally:
+      with connection.cursor() as cursor:
+        for stmt in connection.ops.sequence_reset_sql(no_style(), [Project]):
+          cursor.execute(stmt)
+          
