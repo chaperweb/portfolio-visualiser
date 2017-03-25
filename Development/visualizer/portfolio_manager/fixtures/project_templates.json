@@ -1,0 +1,34 @@
+[
+  {
+    "model": "portfolio_manager.ProjectTemplate",
+    "pk": 1,
+    "fields": {
+      "name": "default",
+      "organization": "org1"
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectTemplateDimension",
+    "pk": 1,
+    "fields": {
+      "template": 1,
+      "name": "Phase",
+      "content_type": ["portfolio_manager", "textdimension"]
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectTemplateDimension",
+    "pk": 2,
+    "fields": {
+      "template": 1,
+      "name": "Size",
+      "content_type": ["portfolio_manager", "decimaldimension"]
+    }
+  }
+]
+
+
+      
+   
+  
+

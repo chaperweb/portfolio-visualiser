@@ -1,8 +1,11 @@
 {
+  "name": "portfolio_visualiser",
+  "version": "1.0",
   "scripts": {
-    "test": "node_modules/.bin/tape portfolio_manager/static/portfolio_manager/js/test_path.js"
+    "test": "tape portfolio_manager/static/portfolio_manager/js/test_path.js"
   },
   "devDependencies": {
+    "geckodriver": "^1.4.0",
     "tape": "^4.6.3"
   }
 }

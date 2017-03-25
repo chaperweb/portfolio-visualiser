@@ -1,0 +1,27 @@
+.form-row {
+	margin: 1vh;
+}
+
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+}
+
+.even-row .form-field-label {
+	background-color: rgb(200,200,200);
+}
+
+.form-col {
+	padding-left: 1%;
+}
+
+.form-field-label {
+    display: flex;
+    align-items: center;
+}
+
+#submit-project-btn {
+	margin-left: 0;
+}

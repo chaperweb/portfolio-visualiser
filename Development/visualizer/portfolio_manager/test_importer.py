@@ -209,7 +209,32 @@ class ImporterTestCase(TestCase):
         self.assertEqual(datetime(2014, 9, 3, tzinfo=pytz.utc),  actual_history_date)
 
 
-        
-        
-        
+    def test_import_owningorganization(self):
+        data = [[u'id', u'__history_date', u'OwningOrganization', u'Name', u'SizeMoney'],
+                [u'1', '2013-03-16T17:41:28+00:00', 'Org1', 'boo', '4'],
+                [u'1', '2013-03-18T17:41:28+00:00', 'Org2', 'biz'],
+                [u'1', '2013-03-19T17:41:28+00:00', 'Org1 '],
+                ]
+        from_data_array(data)
+        self.assertEqual(1, Organization.objects.get(name='Org1').templates.all().count())
+        self.assertEqual(1, Organization.objects.get(name='Org2').templates.all().count())
+    
+        org1_template = Organization.objects.get(name='Org1').templates.all()[0]
+        self.assertEqual('default', org1_template.name)
+        self.assertEqual(3, org1_template.dimensions.all().count())
+        self.assertEqual('OwningOrganization', org1_template.dimensions.all()[0].name)
+        self.assertEqual(ContentType.objects.get(model='associatedorganizationdimension'), org1_template.dimensions.all()[0].content_type)
+        self.assertEqual('Name', org1_template.dimensions.all()[1].name)
+        self.assertEqual(ContentType.objects.get(model='textdimension'), org1_template.dimensions.all()[1].content_type)
+        self.assertEqual('SizeMoney', org1_template.dimensions.all()[2].name)
+        self.assertEqual(ContentType.objects.get(model='decimaldimension'), org1_template.dimensions.all()[2].content_type)
+
+        org2_template = Organization.objects.get(name='Org2').templates.all()[0]
+        self.assertEqual(3, org2_template.dimensions.all().count())
+        self.assertEqual('OwningOrganization', org2_template.dimensions.all()[0].name)
+        self.assertEqual(ContentType.objects.get(model='associatedorganizationdimension'), org2_template.dimensions.all()[0].content_type)
+        self.assertEqual('Name', org2_template.dimensions.all()[1].name)
+        self.assertEqual(ContentType.objects.get(model='textdimension'), org2_template.dimensions.all()[1].content_type)
+        self.assertEqual('SizeMoney', org2_template.dimensions.all()[2].name)
+        self.assertEqual(ContentType.objects.get(model='decimaldimension'), org2_template.dimensions.all()[2].content_type)
 

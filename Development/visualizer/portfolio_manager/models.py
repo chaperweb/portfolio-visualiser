@@ -32,10 +32,15 @@ class Project (models.Model):
   parent = models.ForeignKey('Organization', null=True,on_delete=models.CASCADE)
   history = HistoricalRecords()
 
+  def __str__(self):
+    return str(self.name)
+
+  def __unicode__(self):
+    return self.name
 
 #Model for a project dimension
 class ProjectDimension (models.Model):
-  project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='dimensions')
+  project = models.ForeignKey(Project, null=False, on_delete=models.CASCADE, related_name='dimensions')
   content_type = models.ForeignKey(ContentType)
   object_id = models.PositiveIntegerField()
   dimension_object = GenericForeignKey('content_type', 'object_id')
@@ -87,7 +92,7 @@ class Dimension (models.Model):
   name = models.CharField(max_length=64)
 
   def get_content_type(self):
-    return ContentType.objects.get_for_model(self).id
+    return ContentType.objects.get_for_model(self)
 
   def from_sheet(self, value, history_date):
     self.value = value
@@ -122,7 +127,6 @@ class TextDimension (Dimension):
   value = models.TextField()
   history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
-
 
 class AssociatedOrganizationDimension (Dimension):
   value = models.ForeignKey(Organization, null=True)
@@ -228,6 +232,15 @@ class DateDimension (Dimension):
 
     self.value = d
     self._history_date = history_date
+
+class ProjectTemplate(models.Model):
+  name = models.CharField(max_length=50)
+  organization = models.ForeignKey(Organization, null=False, on_delete=models.CASCADE, related_name='templates')
+
+class ProjectTemplateDimension(models.Model):
+  template = models.ForeignKey(ProjectTemplate, null=False, on_delete=models.CASCADE, related_name='dimensions')
+  name = models.CharField(max_length=50)
+  content_type = models.ForeignKey(ContentType, null=False, on_delete=models.CASCADE)
 
 # THESE ARE ONLY FOR GOOGLE SHEET IMPORTER
 class NameDimension (TextDimension):

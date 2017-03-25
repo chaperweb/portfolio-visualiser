@@ -10,6 +10,7 @@ Portfolio Visualizer
 {% load static %}
 <link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
 <link rel="stylesheet" href="{% static "portfolio_manager/css/hover-effects.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/modal.css" %}">
 {% endblock %}
 
 {% block content %}
@@ -19,12 +20,12 @@ Portfolio Visualizer
     <div class="modal-content">
       <div class="modal-body text-center">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h3>Name for new project</h3>
-        <form method="POST" action="/">
+        <h3>Add project</h3>
+        <form method="GET" action="{% url 'addproject' %}" id="pre-add-project-form">
           {% csrf_token %}
-          <input type="text" />
+          {{ pre_add_project_form.as_p }}
           <center style="margin-top: 15px;">
-            <button type="submit" class="btn btn-success">Add project</button>
+            <button type="submit" class="btn btn-success">Continue</button>
             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
           </center>
         </form>
@@ -77,7 +78,7 @@ Portfolio Visualizer
 <div id="projects">
   <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
     <div class="row">
-      <button class="btn btn-success btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal  ">
+      <button class="btn btn-success btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal" id="add-project-btn">
         <span class="glyphicon glyphicon-plus"></span>
         &nbsp;Add Project
       </button>
