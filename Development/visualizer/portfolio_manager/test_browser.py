@@ -12,6 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from decimal import *
+from pyvirtualdisplay import Display
 
 class SeleniumTestCase(LiveServerTestCase):
 
@@ -39,12 +40,20 @@ class BrowserTestCase(SeleniumTestCase):
     fixtures = [ 'organizations', 'project_templates' ]
 
     def setUp(self):
+        
+        self.vdisplay = Display(visible=0, size=(1024, 768))
+        self.vdisplay.start()
         self.selenium = CustomFirefoxWebDriver()
+        self.selenium.maximize_window()
+
         super(BrowserTestCase, self).setUp()
 
     def tearDown(self):
+        
         super(BrowserTestCase, self).tearDown()
+
         self.selenium.quit()
+        self.vdisplay.stop()
 
     def test_add_organization(self):
         self.open(reverse('admin_tools'))
