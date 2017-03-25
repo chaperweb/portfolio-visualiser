@@ -19,14 +19,18 @@ def home(request):
 
     # dictionary for (project -> next milestone)
     mils = {}
+    # Loop through the milestones
     for m in milestones:
+        # Checks if m.project is already in the dictionary for next milestone
         if m.project not in mils:
             mils[m.project] = m.due_date
 
     # dimensions for project manager and end date of project, for project sneak peeks
     dims = ProjectDimension.objects.all()
+    # ContentType
     assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
     dated = ContentType.objects.get_for_model(DateDimension)
+    # Get dimensions of correct content_type for assPersonDs and dateds
     assPersonDs = dims.filter(content_type=assPersonD)
     dateds = dims.filter(content_type=dated)
     context = {}
@@ -53,6 +57,7 @@ def history(request):
         names[h.id] = []
         orgs[h.id] = []
         dates[h.id] = []
+    # Combines the id with the right name, organization and date.
     for h in history_all:
         names[h.id].append(h.name)
         orgs[h.id].append(h.parent)
@@ -67,9 +72,10 @@ def add_new_org(request):
         data = {'name': request.POST.get('orgName')}
         form = OrganizationForm(data)
         if form.is_valid():
+            # Save a new Organization
             organization = Organization(name = form.cleaned_data['name'])
             organization.save()
-
+            # Response for the addition of an organization
             response_data = {}
             response_data['result'] = 'Created organization successfully!'
             response_data['orgName'] = organization.name
@@ -84,8 +90,10 @@ def add_new_person(request):
         data = {'first': request.POST.get('first'), 'last': request.POST.get('last')}
         form = PersonForm(data)
         if form.is_valid():
+            # Save a new person
             person = Person(first_name=form.cleaned_data['first'], last_name=form.cleaned_data['last'])
             person.save()
+            # Response for the addition of a person
             response_data = {}
             response_data['result'] = 'Created person successfully!'
             response_data['name'] = person.first_name + " " + person.last_name
@@ -98,6 +106,7 @@ def add_new_person(request):
 
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
+        # ContentTypes
         dd = ContentType.objects.get_for_model(DecimalDimension)
         td = ContentType.objects.get_for_model(TextDimension)
         dated = ContentType.objects.get_for_model(DateDimension)
@@ -150,15 +159,19 @@ def show_project(request, project_id):
 
         return render(request, 'project.html', context)
 
+# Site for editing a project
 def project_edit(request, project_id, field_name):
     proj = get_object_or_404(Project, pk=project_id)
     # If you want to modify the owning organization
     if field_name == "Organization":
         try:
+            # Existing organizations
             org = Organization.objects.get(name=request.POST.get('name'))
         except Organization.DoesNotExist:
+            # Saves new organization
             org = Organization(name=request.POST.get('name'))
             org.save()
+        # Saves the modified owner of the project
         proj.parent = org
         proj.save()
         return JsonResponse({"name": request.POST.get('name')})
@@ -166,8 +179,11 @@ def project_edit(request, project_id, field_name):
     # If you want to modify a associated organization
     if field_name == "assorg":
         try:
+            # Existing organizations
             org = Organization.objects.get(name=request.POST.get('org'))
+            # ContentType
             ct = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
+            # The dimensions of correct content_type and correct project_id
             td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
             tds = []
             # Manual filtering
@@ -175,7 +191,7 @@ def project_edit(request, project_id, field_name):
                 if t.dimension_object.name == request.POST.get('field'):
                     tds = t.dimension_object
                     break;
-
+            # Saves modified associated organization
             tds.value = org
             tds.save()
             return JsonResponse({"field": tds.name, "value": tds.value.name}, safe=True)
@@ -185,7 +201,9 @@ def project_edit(request, project_id, field_name):
 
     # If you want to modify a text field
     elif field_name == "text":
+        # ContentType
         ct = ContentType.objects.get_for_model(TextDimension)
+        # The dimensions of correct content_type and correct project_id
         td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
         tds = []
         # Manual filtering
@@ -193,14 +211,16 @@ def project_edit(request, project_id, field_name):
             if t.dimension_object.name == request.POST.get('field'):
                 tds = t.dimension_object
                 break;
-
+        # Saves the modified Text field
         tds.value = request.POST.get('textValue')
         tds.save()
         return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
 
     # If you want to modify a decimal field
     elif field_name == "decimal":
+        # ContentType
         ct = ContentType.objects.get_for_model(DecimalDimension)
+        # The dimensions of correct content_type and correct project_id
         td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
         tds = []
         # Manual filtering
@@ -208,7 +228,7 @@ def project_edit(request, project_id, field_name):
             if t.dimension_object.name == request.POST.get('field'):
                 tds = t.dimension_object
                 break;
-
+        # Saves the modified decimal field
         tds.value = request.POST.get('decValue')
         tds.save()
         return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
@@ -216,8 +236,11 @@ def project_edit(request, project_id, field_name):
     # If you want to modify a single person field
     elif field_name == "person":
         try:
+            # Existing persons
             p = Person.objects.get(pk=request.POST.get('perID'))
+            # ContentType
             ct = ContentType.objects.get_for_model(AssociatedPersonDimension)
+            # The dimensions of correct content_type and correct project_id
             td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
             tds = []
             # Manual filtering
@@ -225,7 +248,7 @@ def project_edit(request, project_id, field_name):
                 if t.dimension_object.name == request.POST.get('field'):
                     tds = t.dimension_object
                     break;
-
+            # Saves the modified single person field
             tds.value = p
             tds.save()
             return JsonResponse({"value": p.first_name + " " + p.last_name, "field": tds.name})
@@ -234,7 +257,9 @@ def project_edit(request, project_id, field_name):
 
     # If you want to modify a date field
     elif field_name == "date":
+        # ContentType
         ct = ContentType.objects.get_for_model(DateDimension)
+        # The dimensions of correct content_type and correct project_id
         td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
         tds = []
         # Manual filtering
@@ -242,7 +267,7 @@ def project_edit(request, project_id, field_name):
             if t.dimension_object.name == request.POST.get('field'):
                 tds = t.dimension_object
                 break;
-
+        # Updates and saves the date field
         tds.update_date(request.POST.get('date'))
         tds.save()
         return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
@@ -250,10 +275,12 @@ def project_edit(request, project_id, field_name):
     else:
         return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
+# Delete the google sheet
 def delete_google_sheet(request, google_sheet_id):
     GoogleSheet.objects.get(id=google_sheet_id).delete()
     return redirect('importer')
 
+# Load the google sheet
 def load_google_sheet(request, google_sheet_id):
     google_sheet = GoogleSheet.objects.get(id=google_sheet_id)
     from_google_sheet(google_sheet.url)
@@ -292,11 +319,14 @@ def json(request):
 
 
  # site to see all projects, grouped by organization
-
 def projects(request):
+    # ContentType
     dd = ContentType.objects.get_for_model(DecimalDimension)
+    # The dimensions of correct content_type
     budgets = ProjectDimension.objects.filter(content_type=dd)
+    # Existing projects
     projects_all = Project.objects.all()
+    # Existing organizations
     organizations_all = Organization.objects.all()
     return render(request, 'projects.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
 
@@ -306,19 +336,17 @@ def databaseview(request):
        form = OrgForm(request.POST)
 
        if form.is_valid:
+           # All the projects for that organization
           projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
-
-        #   all dimensions in every project of the organization
+          #   all dimensions in every project of the organization
           dimensions = []
           for p in projs:
               dimensions += ProjectDimension.objects.filter(project=p)
-
-        # (dimension name -> datatype) dictionary
+          # (dimension name -> datatype) dictionary
           dims = {}
           for dim in dimensions:
               if dim.dimension_object.name not in dims:
                   dims[dim.dimension_object.name] = str(dim).replace("Dimension", "")
-
           #redirect to the url where you'll process the input
           return render(request, 'database.html', {'form':form, 'projs':projs, 'dims':dims})
     else:

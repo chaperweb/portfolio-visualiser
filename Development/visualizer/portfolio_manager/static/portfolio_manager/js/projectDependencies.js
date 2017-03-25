@@ -35,7 +35,7 @@ function dependancies(json) {
   		}
 		}
 	}
-
+	
   // defining denominator for scaling overly large values to usable size
 	var denominator = 1;
 	if (d3.max(valueArray) > 1000000) {
@@ -52,25 +52,27 @@ function dependancies(json) {
 		var size = json[j].dimensions.length
 		for (i = 0; i < size; i++) {
   		if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
+			for(p = 0; p < json[j].dimensions[i].dimension_object.projects.length;p++) {
 
-  			var budgetS = gimmeBudget(json[j].id) / denominator
-  			var budgetT = 0;
-        var nameS = "";
-        var nameT = gimmeName(json[j].dimensions[i].dimension_object.projects[0])
+				var budgetS = gimmeBudget(json[j].id) / denominator
+				var budgetT = 0;
+				var nameS = "";
+				var nameT = gimmeName(json[j].dimensions[i].dimension_object.projects[p])
 
-  			if (json[j].dimensions[i].dimension_object.projects != undefined) {
-  				budgetT = gimmeBudget(json[j].dimensions[i].dimension_object.projects[0]) / denominator
-  			}
+				if (json[j].dimensions[i].dimension_object.projects != undefined) {
+					budgetT = gimmeBudget(json[j].dimensions[i].dimension_object.projects[p]) / denominator
+				}
 
-  			if (json[j].dimensions[0].dimension_object.history != undefined) {
-  				nameS = json[j].dimensions[0].dimension_object.history[0].value
-  			}
+				if (json[j].dimensions[0].dimension_object.history != undefined) {
+					nameS = json[j].dimensions[0].dimension_object.history[0].value
+				}
 
-		    json[j].id = nodes[json[j].id] || (nodes[json[j].id] = {name: nameS, value: budgetS });
-		    json[j].dimensions[i].dimension_object.projects[0] = nodes[json[j].dimensions[i].dimension_object.projects[0]] ||
-			  (nodes[json[j].dimensions[i].dimension_object.projects[0]] = {name: nameT, value: budgetT });
+				nameS = nodes[nameS] || (nodes[nameS] = {name: nameS, value: budgetS / denominator });
+				nameT = nodes[nameT] ||
+				  (nodes[nameT] = {name: nameT, value: budgetT / denominator});
 
-		    links.push({"source": json[j].id, "target": json[j].dimensions[i].dimension_object.projects[0], "budgetS":budgetS, "budgetT":budgetT })
+				links.push({"source": nameS, "target": nameT, "budgetS":budgetS / denominator, "budgetT":budgetT / denominator})
+			}
   	   }
 	  }
 	}
@@ -322,12 +324,12 @@ function dependancies(json) {
    * which we have the project color, name and budget respectively.
    */
     var legendSpacing = 4;
-    var legendRectSize = 30;
+    var legendRectSize = 25;
     var legendHeight = legendRectSize + legendSpacing;
 
     var svgLegend = d3.select("body")
                       .append("svg")
-                      .attr("width", 500)
+                      .attr("width", 300)
                       // Scaling the svg based on number of projects
                       .attr("height", (legendHeight)*(nameArray.length)+legendSpacing)
                       .append("g")
@@ -353,6 +355,6 @@ function dependancies(json) {
           .data(nodeValueArray)
           .attr("x", legendRectSize + legendSpacing)
           .attr("y", legendRectSize - legendSpacing)
-          .style("font", "20px sans-serif")
+          .style("font", "16px sans-serif")
           .text(function(d){return ""+d+"€"});
 }
