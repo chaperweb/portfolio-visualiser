@@ -27,8 +27,8 @@ function fourField(xToBe,yToBe,radToBe) {
 			sliderValues = 100
 			percentInPx = (axisLenghtX / (2*sliderValues)) * 100
 
-		var startDate = 1419465600
-		var endDate = 1480464000
+		var startDate = 0
+		var endDate = 0
 
 		// The scales for the x and y axis.
 		//range means the length of the line and domain the numbers beneath it
@@ -60,6 +60,7 @@ function fourField(xToBe,yToBe,radToBe) {
 						var date = json[j].dimensions[i].dimension_object.history[h].history_date;
 						var planned = json[j].dimensions[i].dimension_object.history[h].value;
 						var parsedDate = new Date(date).getTime() / 1000 // parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
+						setDateScale(new Date(date).getTime() / 1000)
 						collectVal.push([parsedDate, planned])
 					};
 					// here we determine the type of the array, set the inProgress arrays.
@@ -100,6 +101,7 @@ function fourField(xToBe,yToBe,radToBe) {
 	            console.log(milestoneValue)
 	            collectYPlan.push([parsedDate,milestoneValue])
 	          }
+		  setDateScale(new Date(date).getTime() / 1000)    
 	        }
 	      }
 	    }
@@ -135,6 +137,23 @@ console.log(projects);
 			return d.radius;
 		}
 	}
+	/*
+	 * Helps to set timescale-slider by min&max values of
+	 * given data points and milestones
+	 */
+	function setDateScale(date) {
+		if (startDate == 0 && endDate == 0) {
+			startDate = date
+			endDate = date
+			return;
+		}
+		if (date > endDate) {
+			endDate = date
+		} else if (date < startDate) {
+			startDate = date
+		}
+	}
+	
   /* If
 	 * 1) y- or x-coordinates are infinite (the ball lacks milestones or dimension values)
 	 * or
