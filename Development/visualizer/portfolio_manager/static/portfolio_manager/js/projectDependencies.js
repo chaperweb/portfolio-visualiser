@@ -51,30 +51,30 @@ function dependancies(json) {
 
 		var size = json[j].dimensions.length
 		for (i = 0; i < size; i++) {
-  		if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
-			for(p = 0; p < json[j].dimensions[i].dimension_object.projects.length;p++) {
+			if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
+				for(p = 0; p < json[j].dimensions[i].dimension_object.projects.length;p++) {
 
-				var budgetS = gimmeBudget(json[j].id) / denominator
-				var budgetT = 0;
-				var nameS = "";
-				var nameT = gimmeName(json[j].dimensions[i].dimension_object.projects[p])
+					var budgetS = gimmeBudget(json[j].id) / denominator
+					var budgetT = 0;
+					var nameS = "";
+					var nameT = gimmeName(json[j].dimensions[i].dimension_object.projects[p])
 
-				if (json[j].dimensions[i].dimension_object.projects != undefined) {
-					budgetT = gimmeBudget(json[j].dimensions[i].dimension_object.projects[p]) / denominator
-				}
+					if (json[j].dimensions[i].dimension_object.projects != undefined) {
+						budgetT = gimmeBudget(json[j].dimensions[i].dimension_object.projects[p]) / denominator
+					}
 
-				if (json[j].dimensions[0].dimension_object.history != undefined) {
-					nameS = json[j].dimensions[0].dimension_object.history[0].value
-				}
+					if (json[j].dimensions[0].dimension_object.history != undefined) {
+						nameS = gimmeName(json[j].id);
+					}
 
-				nameS = nodes[nameS] || (nodes[nameS] = {name: nameS, value: budgetS / denominator });
-				nameT = nodes[nameT] ||
-				  (nodes[nameT] = {name: nameT, value: budgetT / denominator});
+					nameS = nodes[nameS] || (nodes[nameS] = {name: nameS, value: budgetS / denominator });
+					nameT = nodes[nameT] ||
+					  (nodes[nameT] = {name: nameT, value: budgetT / denominator});
 
-				links.push({"source": nameS, "target": nameT, "budgetS":budgetS / denominator, "budgetT":budgetT / denominator})
+					links.push({"source": nameS, "target": nameT, "budgetS":budgetS / denominator, "budgetT":budgetT / denominator})
+					}
 			}
-  	   }
-	  }
+		}
 	}
 	var values = [];
 	var nameArray = [];
@@ -83,7 +83,6 @@ function dependancies(json) {
 	d3.values(nodes).forEach(function(node) {
 		values.push(node.value)
 		nameArray.push(node.name)
-		//valueArray.push(node.value)
 		nodeValueArray.push(node.name + " Budget: " + (node.value * denominator));
 	});
 
