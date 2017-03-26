@@ -43,7 +43,7 @@ li {
 {% block content %}
 <!-- Sidebar -->
 <div class="sidebar navbar-fixed-left navbar-inverse xs-hidden col-md-2">
-  <ul class="nav navbar-nav">
+  <ul class="nav sidebar-nav">
     <!-- Press this list item to show all the visualizations -->
     <li data-toggle="collapse" data-target="#visus" class="navbar-toggle sidebar-item">Visualizations</li>
     <li>
@@ -58,33 +58,38 @@ li {
         </ul>
       </div>
     </li>
+     <li data-toggle="collapse" data-target="#visualization-parameters" class="navbar-toggle sidebar-item">Parameters</li>
+    <li>
+      <!-- Expandable list with all the visualizations -->
+      <div id="visualization-parameters" class="collapse in">
+        <ul class="nav">
+
+            <li class="sidebar-subitem">
+              <label for="sel1">Select project:</label>
+              <select class="form-control" id="project-selector">
+              <option>---</option>
+              </select>
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select x-axis dimension:</label>
+              <select class="form-control" id="x-selector">
+              <option>---</option>
+              </select>
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select y-axis dimension:</label>
+              <select class="form-control" id="y-selector">
+              <option>---</option>
+              </select>
+            </li>
+
+        </ul>
+      </div>
+    </li>
   </ul>
 </div>
 <!-- /sidebar -->
 
-  <div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization">
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-2 col-xs-12" id="controls">
-          <div class="form-group">
-            <label for="sel1">Select project:</label>
-            <select class="form-control" id="project-selector">
-            <option>---</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="sel1">Select x-axis dimension:</label>
-            <select class="form-control" id="x-selector">
-            <option>---</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="sel1">Select y-axis dimension:</label>
-            <select class="form-control" id="y-selector">
-            <option>---</option>
-            </select>
-          </div>
-  </div>
+<div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization"></div>
 
 {% endblock %}
