@@ -37,7 +37,7 @@ class CustomFirefoxWebDriver(Firefox):
 
 class BrowserTestCase(SeleniumTestCase):
 
-    fixtures = [ 'organizations', 'project_templates' ]
+    fixtures = [ 'organizations', 'project_templates', 'persons' ]
 
     def setUp(self):
         
@@ -64,7 +64,60 @@ class BrowserTestCase(SeleniumTestCase):
         self.selenium.wait_for_css('#conf-modal-body > h3');
 
         self.assertTrue('Organization created: '+add_organization_name in self.selenium.page_source)
-        self.assertIsInstance(Organization.objects.get(pk=add_organization_name), Organization)
+        organization = Organization.objects.get(pk=add_organization_name)
+        self.assertIsInstance(organization, Organization)
+        templates = organization.templates.all()
+        self.assertEquals(1, templates.count())
+        template = templates[0]
+        self.assertEquals('default', template.name)
+        self.assertEquals(3, template.dimensions.all().count())
+        template_dimensions = template.dimensions.all()
+        self.assertEquals(DecimalDimension, template_dimensions[0].content_type.model_class())
+        self.assertEquals('SizeMoney', template_dimensions[0].name)
+        self.assertEquals(DateDimension, template_dimensions[1].content_type.model_class())
+        self.assertEquals('EndDate', template_dimensions[1].name)
+        self.assertEquals(AssociatedPersonDimension, template_dimensions[2].content_type.model_class())
+        self.assertEquals('ProjectManager', template_dimensions[2].name)
+
+
+    def test_add_organization_add_project(self):
+        self.open(reverse('admin_tools'))
+
+        organization_name = 'Great organization'
+        self.selenium.find_element_by_id('orgName').send_keys(organization_name)
+        self.selenium.find_element_by_id('org-form').submit()
+        self.selenium.wait_for_css('#conf-modal-body > h3');
+ 
+        self.open(reverse('admin_tools')) # Reload organizations in "Add project" modal
+
+        project_name = "Great project"
+        self.selenium.find_element_by_id('id_name').send_keys(project_name)
+        Select(self.selenium.find_element_by_id('id_organization')).select_by_value(organization_name)
+        self.selenium.find_element_by_id('pre-add-project-form').submit()
+
+        WebDriverWait(self.selenium, 10).until(
+            EC.visibility_of_element_located((By.ID, 'id_add_project_form-name'))
+        )
+
+        organization = Organization.objects.get(pk=organization_name)
+
+        project_size_money = '135151.00'
+        template_dimension = organization.templates.all()[0].dimensions.all()[0]
+        self.selenium.find_element_by_id('id_'+str(template_dimension.id)+'_form-value').send_keys(project_size_money)
+       
+        project_end_date = '1/8/2015'
+        template_dimension = organization.templates.all()[0].dimensions.all()[1]
+        self.selenium.find_element_by_id('id_'+str(template_dimension.id)+'_form-value').send_keys(project_end_date)
+        
+        project_project_manager = Person.objects.get(id=1)
+        template_dimension = organization.templates.all()[0].dimensions.all()[2]
+        Select(self.selenium.find_element_by_id('id_'+str(template_dimension.id)+'_form-value')).select_by_value(str(project_project_manager.id))
+        
+        self.selenium.find_element_by_id('add-project-form').submit()
+
+        WebDriverWait(self.selenium, 10).until(
+            EC.visibility_of_element_located((By.ID, 'project-dimension-panels'))
+        )
 
     def test_add_project_from_admin_tools(self):
         self.open(reverse('admin_tools'))

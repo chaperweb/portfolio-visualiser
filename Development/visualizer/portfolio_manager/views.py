@@ -75,6 +75,32 @@ def add_new_org(request):
             # Save a new Organization
             organization = Organization(name = form.cleaned_data['name'])
             organization.save()
+
+            template = ProjectTemplate()
+            template.name = 'default'
+            template.organization = organization
+            template.save()
+
+            template_dimension = ProjectTemplateDimension()
+            template_dimension.template = template
+            template_dimension.name = 'SizeMoney'
+            template_dimension.content_type = ContentType.objects.get_for_model(DecimalDimension)
+            template_dimension.save()
+
+            template_dimension = ProjectTemplateDimension()
+            template_dimension.template = template
+            template_dimension.name = 'EndDate'
+            template_dimension.content_type = ContentType.objects.get_for_model(DateDimension)
+            template_dimension.save()
+
+            template_dimension = ProjectTemplateDimension()
+            template_dimension.template = template
+            template_dimension.name = 'ProjectManager'
+            template_dimension.content_type = ContentType.objects.get_for_model(AssociatedPersonDimension)
+            template_dimension.save()
+
+
+
             # Response for the addition of an organization
             response_data = {}
             response_data['result'] = 'Created organization successfully!'
