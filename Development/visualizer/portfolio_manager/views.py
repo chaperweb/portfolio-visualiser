@@ -308,8 +308,12 @@ def importer(request):
 def get_sheets(request):
     if request.method == "GET":
         sheetObjects = GoogleSheet.objects.all()
-        sheets = [sheet.name for sheet in sheetObjects]
-        sheetJSON = json_module.dumps(sheets)
+
+        sheetsurls = []
+        for s in sheetObjects:
+            sheetsurls.append(s.name)
+            sheetsurls.append(s.url)
+        sheetJSON = json_module.dumps(sheetsurls)
         return HttpResponse(sheetJSON)
     return redirect('homepage')
 
@@ -354,18 +358,18 @@ def databaseview(request):
     return render(request, 'database.html', {'form':form})
 
 def addproject(request):
- 
+
     add_project_form = None
     add_project_form_prefix = 'add_project_form'
     if request.POST:
         add_project_form = AddProjectForm(request.POST, prefix=add_project_form_prefix)
     else:
         add_project_form = AddProjectForm(prefix='add_project_form', initial={'name': request.GET.get('name'), 'parent': request.GET.get('organization', ''), 'organization': request.GET.get('organization', '')})
-    
+
     add_project_form.disable_name_and_organization()
 
     forms = [add_project_form]
-    
+
     try:
         organization = Organization.objects.get(pk=request.GET.get('organization', add_project_form.data.get(add_project_form_prefix+'-parent')))
         templates = organization.templates.all()
@@ -388,7 +392,7 @@ def addproject(request):
 
     except Organization.DoesNotExist:
         pass
-      
+
     forms_valid = True
     if request.POST:
         for form in forms:
