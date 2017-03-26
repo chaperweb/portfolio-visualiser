@@ -33,6 +33,7 @@ $(function() {
   $('#r-selector').on('change', dimension_selector_change);
   $('#start-date-selector').on('change', dimension_selector_change);
   $('#end-date-selector').on('change', dimension_selector_change);
+  $('#slider-value-selector').on('change', dimension_selector_change);
 
   $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'mm/dd/yy'});
 
@@ -44,6 +45,7 @@ function dimension_selector_change() {
   r_dimension = $('#r-selector').find("option:selected").text();
   start_date = Date.parse($('#start-date-selector').val())/1000;
   end_date = Date.parse($('#end-date-selector').val())/1000;
+  slider_value = $('#slider-value-selector').val();
   $('#visualization').html('');
-  fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date);
+  fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value);
 }  

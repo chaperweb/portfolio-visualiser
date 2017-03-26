@@ -10,7 +10,7 @@ var db_json;
 // });
 
 
-function fourField(json, xToBe, yToBe, radToBe, startDate, endDate) {
+function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues) {
 
 	//d3.json('outputData.json', function(error,json) {
 	//if (error) throw error;
@@ -29,7 +29,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate) {
 			axisLenghtX = width * 0.8,
 			axisLenghtY = height * 0.8,
 			sliderY = height - margin.bottom
-			sliderValues = 100
+			//sliderValues = 100
 			percentInPx = (axisLenghtX / (2*sliderValues)) * 100
 
 		// var startDate = 0
