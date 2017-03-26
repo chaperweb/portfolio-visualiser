@@ -1,0 +1,113 @@
+[
+  {
+    "model": "portfolio_manager.Project",
+    "pk": 1,
+    "fields": {
+      "name": "Project1"
+    }
+  },
+  {
+    "model": "portfolio_manager.Project",
+    "pk": 2,
+    "fields": {
+      "name": "Yet another project"
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectDimension",
+    "fields": {
+      "project": 1,
+      "content_type": ["portfolio_manager", "textdimension"],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "portfolio_manager.TextDimension",
+    "pk": 1,
+    "fields": {
+      "name": "Phase",
+      "value": "Prestudy"
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectDimension",
+    "fields": {
+      "project": 1,
+      "content_type": ["portfolio_manager", "decimaldimension"],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "portfolio_manager.DecimalDimension",
+    "pk": 1,
+    "fields": {
+      "name": "SizeMoney",
+      "value": 1000
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectDimension",
+    "fields": {
+      "project": 1,
+      "content_type": ["portfolio_manager", "datedimension"],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "portfolio_manager.DateDimension",
+    "pk": 1,
+    "fields": {
+      "name": "EndDate",
+      "value": "2015-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectDimension",
+    "fields": {
+      "project": 1,
+      "content_type": ["portfolio_manager", "associatedprojectsdimension"],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "portfolio_manager.AssociatedProjectsDimension",
+    "pk": 1,
+    "fields": {
+      "name": "Dependencies",
+      "projects": [1]
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectDimension",
+    "fields": {
+      "project": 1,
+      "content_type": ["portfolio_manager", "associatedpersondimension"],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "portfolio_manager.AssociatedPersonDimension",
+    "pk": 1,
+    "fields": {
+      "name": "ProjectManager",
+      "value": 1
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectDimension",
+    "fields": {
+      "project": 1,
+      "content_type": ["portfolio_manager", "associatedpersonsdimension"],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "portfolio_manager.AssociatedPersonsDimension",
+    "pk": 1,
+    "fields": {
+      "name": "Members",
+      "persons": [1]
+    }
+  }
+
+]
