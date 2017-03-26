@@ -31,6 +31,8 @@ $(function() {
   $('#x-selector').on('change', dimension_selector_change);
   $('#y-selector').on('change', dimension_selector_change);
   $('#r-selector').on('change', dimension_selector_change);
+  $('#start-date-selector').on('change', dimension_selector_change);
+  $('#end-date-selector').on('change', dimension_selector_change);
 
   $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'mm/dd/yy'});
 
@@ -40,6 +42,8 @@ function dimension_selector_change() {
   x_dimension = $('#x-selector').find("option:selected").text();
   y_dimension = $('#y-selector').find("option:selected").text();
   r_dimension = $('#r-selector').find("option:selected").text();
+  start_date = Date.parse($('#start-date-selector').val())/1000;
+  end_date = Date.parse($('#end-date-selector').val())/1000;
   $('#visualization').html('');
-  fourField(db_json, x_dimension, y_dimension, r_dimension);
+  fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date);
 }  

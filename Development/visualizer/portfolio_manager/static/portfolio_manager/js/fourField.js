@@ -10,7 +10,7 @@ var db_json;
 // });
 
 
-function fourField(json, xToBe, yToBe, radToBe) {
+function fourField(json, xToBe, yToBe, radToBe, startDate, endDate) {
 
 	//d3.json('outputData.json', function(error,json) {
 	//if (error) throw error;
@@ -32,8 +32,8 @@ function fourField(json, xToBe, yToBe, radToBe) {
 			sliderValues = 100
 			percentInPx = (axisLenghtX / (2*sliderValues)) * 100
 
-		var startDate = 0
-		var endDate = 0
+		// var startDate = 0
+		// var endDate = 0
 
 		// The scales for the x and y axis.
 		//range means the length of the line and domain the numbers beneath it
