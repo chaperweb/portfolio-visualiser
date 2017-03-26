@@ -1,0 +1,25 @@
+[
+  {
+    "model": "portfolio_manager.Person",
+    "pk": 1,
+    "fields": {
+      "first_name": "person1"
+    }
+  },
+  {
+    "model": "portfolio_manager.Person",
+    "pk": 2,
+    "fields": {
+      "first_name": "person2",
+      "last_name": "2nd last"
+    }
+  }
+]
+
+
+      
+   
+  
+
+ 
+      

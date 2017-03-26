@@ -404,9 +404,6 @@ def addproject(request):
                     template_dimension_form = template_dimension_form_class(request.POST, dimension_name=template_dimension.name, project_form=add_project_form, prefix=str(template_dimension.id)+'_form')
                 else:
                     template_dimension_form = template_dimension_form_class(dimension_name=template_dimension.name, project_form=add_project_form, prefix=str(template_dimension.id)+'_form')
-                    if template_dimension.name == 'OwningOrganization':
-                        template_dimension_form.fields['value'].widget = django.forms.HiddenInput()
-                        template_dimension_form.fields['value'].initial = request.GET.get('organization', '')
                     if template_dimension.name == 'Name':
                         template_dimension_form.fields['value'].widget = django.forms.HiddenInput()
                         template_dimension_form.fields['value'].initial = request.GET.get('name')
