@@ -40,9 +40,10 @@ function get_sheet_history()
     success: function(data) {
       $("#history-well-ul > li").remove();
       var names = JSON.parse(data);
-      for(i=0;i<names.length;i++)
+        // loop for sheet names and urls
+      for(i=0;i<names.length;i = i + 2)
       {
-        var row = "<li class='list-group-item'><a>" + names[i] + "</a></li>"
+        var row = "<li class='list-group-item'><a href='" + names[i+1] + "'>" + names[i] + "</a></li>"
         $(row).appendTo("#history-well-ul");
       }
     },
