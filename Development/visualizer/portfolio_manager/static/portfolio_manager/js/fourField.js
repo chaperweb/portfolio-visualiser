@@ -1,19 +1,25 @@
-$(function(){
-  $.ajax({
-    url: "json"
-  }).done(function(data) {
-    fourField(data)
-  });	
-});
-function fourField(json) {
+var db_json;
+
+// $(function(){
+//   $.ajax({
+//     url: "json"
+//   }).done(function(data) {
+//     fourField(data)
+//   });	
+// });
+
+
+function fourField(json, xToBe, yToBe, radToBe, startDate, endDate) {
+	console.log("start_date"+startDate);
+	console.log("end_date"+endDate);
 	//d3.json('outputData.json', function(error,json) {
 	//if (error) throw error;
 		console.log(json);
 	var projects = []
 	//console.log(json[8].dimensions[0].dimension_object.name);
-		var xToBe = "SizeMoney"
-		var yToBe = "SizeManDays"
-		var radToBe = "SizeEffect"
+		// var xToBe = "SizeMoney"
+		// var yToBe = "SizeManDays"
+		// var radToBe = "SizeEffect"
 		var jsonlen = json.length
 		var projects = []
 		var data = [{"X": xToBe, "Y": yToBe}]
@@ -121,8 +127,8 @@ console.log(projects);
 		yTimes = axisLenghtY/(2*sliderValues) // 200 is the amount of the % in the graph (100 - (-100))
 
 
-	var startDate = 1419465600
-	var endDate = 1480464000
+	// var startDate = 1419465600
+	// var endDate = 1480464000
 
 	// The scales for the x and y axis.
 	//range means the length of the line and domain the numbers beneath it
@@ -137,7 +143,7 @@ console.log(projects);
 	var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 	//container for everything
-	var svg = d3.select("body").append("svg")
+	var svg = d3.select("#visualization").append("svg")
 				.attr("width", width)
 				.attr("height", height);
 
