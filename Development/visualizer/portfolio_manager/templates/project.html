@@ -74,14 +74,25 @@ Projects | {{project.name}}
                 </button>
               </div>
             </div>
-            <div id="org-panel" class="panel-collapse panel-body collapse text-center row">
+            <div id="org-panel" class="panel-collapse panel-body collapse row">
               <div>
-                {% for date, org in orghistory %}
-                <p>
-                  {{date}}: {{org}}
-                </p>
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
 
+                {% for date, org in orghistory %}
+                <tr>
+                  <td>{{date}}</td>
+                  <td>{{org}}</td>
+                </tr>
                 {% endfor %}
+                </tbody>
+              </table>
               </div>
             </div>
           </div>
@@ -104,13 +115,25 @@ Projects | {{project.name}}
               </button>
               </div>
             </div>
-            <div id="budget-panel" class="panel-collapse panel-body collapse text-center">
-              THIS
-              <br />IS
-              <br />WHERE
-              <br />THE
-              <br />HISTORY
-              <br />COMES
+            <div id="budget-panel" class="panel-collapse panel-body collapse">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for i in budget.dimension_object.history.all %}
+              {% if forloop.counter < 6 %}
+              <tr>
+                <td>{{i.history_date}}</td>
+                <td>{{i.value}}</td>
+              </tr>
+              {% endif %}
+            	{% endfor %}
+            </tbody>
+          </table>
             </div>
           </div>
           <!-- DATE FIELDS -->
@@ -133,13 +156,25 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
-                THIS
-                <br />IS
-                <br />WHERE
-                <br />THE
-                <br />HISTORY
-                <br />COMES
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for i in x.dimension_object.history.all %}
+                {% if forloop.counter < 6 %}
+                <tr>
+                  <td>{{i.history_date}}</td>
+                  <td>{{i.value}}</td>
+                </tr>
+                {% endif %}
+              	{% endfor %}
+              </tbody>
+            </table>
               </div>
             </div>
           {% endfor %}
@@ -163,13 +198,25 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
-                THIS
-                <br />IS
-                <br />WHERE
-                <br />THE
-                <br />HISTORY
-                <br />COMES
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for i in x.dimension_object.history.all %}
+                {% if forloop.counter < 6 %}
+                <tr>
+                  <td>{{i.history_date}}</td>
+                  <td>{{i.value}}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
               </div>
             </div>
           {% endfor %}
@@ -193,13 +240,25 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
-                THIS
-                <br />IS
-                <br />WHERE
-                <br />THE
-                <br />HISTORY
-                <br />COMES
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for i in x.dimension_object.history.all %}
+                {% if forloop.counter < 6 %}
+                <tr>
+                  <td>{{i.history_date}}</td>
+                  <td>{{i.value}}</td>
+                </tr>
+                {% endif %}
+              	{% endfor %}
+              </tbody>
+            </table>
               </div>
             </div>
           {% endfor %}
@@ -223,24 +282,34 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
-                THIS
-                <br />IS
-                <br />WHERE
-                <br />THE
-                <br />HISTORY
-                <br />COMES
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for i in x.dimension_object.history.all %}
+                {% if forloop.counter < 6 %}
+                <tr>
+                  <td>{{i.history_date}}</td>
+                  <td>{{i.value}}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
               </div>
             </div>
           {% endfor %}
           <!-- ASSOCIATED PERSONS FIELDS -->
-          <!-- TODO: Implement modify -->
           {% for x in assPersons %}
             <div class="panel panel-default">
-              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+              <div class="panel-heading row" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
                 <div class="col-lg-1">
-                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+
                 </div>
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
@@ -254,23 +323,15 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
-                THIS
-                <br />IS
-                <br />WHERE
-                <br />THE
-                <br />HISTORY
-                <br />COMES
-              </div>
+
             </div>
           {% endfor %}
           <!-- ASSOCIATED ORGANIZATION FIELDS -->
           {% for x in assOrg %}
             <div class="panel panel-default">
-              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+              <div class="panel-heading row" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
                 <div class="col-lg-1">
-                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+
                 </div>
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
@@ -284,24 +345,15 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
-                THIS
-                <br />IS
-                <br />WHERE
-                <br />THE
-                <br />HISTORY
-                <br />COMES
-              </div>
+
             </div>
           {% endfor %}
           <!-- ASSOCIATED PROJECTS FIELDS -->
-          <!-- TODO: Implement modify -->
           {% for x in assProjs %}
             <div class="panel panel-default">
-              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+              <div class="panel-heading row"  href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
                 <div class="col-lg-1">
-                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+
                 </div>
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
@@ -315,14 +367,7 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse text-center">
-                THIS
-                <br />IS
-                <br />WHERE
-                <br />THE
-                <br />HISTORY
-                <br />COMES
-              </div>
+
             </div>
           {% endfor %}
         </div>

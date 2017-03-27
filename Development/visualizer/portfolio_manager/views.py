@@ -175,12 +175,13 @@ def show_project(request, project_id):
         context['projects'] = Project.objects.all()
 
         # for organization history
-        history_all = theProject.history.all().order_by('history_date')
+        history_all = theProject.history.all().order_by('-history_date')[:5]
+
         orgs = {}
         for h in history_all:
             orgs[h.history_date] = h.parent
 
-        context['orghistory'] = sorted(orgs.items())
+        context['orghistory'] = sorted(orgs.items(), reverse=True)
 
 
         return render(request, 'project.html', context)
@@ -435,7 +436,7 @@ def addproject(request):
                form.save()
             return redirect('show_project', add_project_form.instance.id)
 
-    return render(request, 'add_project.html', {'forms': forms })        
+    return render(request, 'add_project.html', {'forms': forms })
 
 # Gets all organizations and return them in a JSON string
 def get_orgs(request):
