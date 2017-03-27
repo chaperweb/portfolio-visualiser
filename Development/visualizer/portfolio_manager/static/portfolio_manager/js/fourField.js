@@ -85,7 +85,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	            // lisää Y
 	            var date = json[j].milestones[e].due_date
 	            var parsedDate = new Date(date).getTime() / 1000
-	            var milestoneValue = json[j].milestones[e]].dimensions[q].dimension_milestone_object.value
+	            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
 	            collectYPlan.push([parsedDate,milestoneValue])
 	          }
 				setDateScale(new Date(date).getTime() / 1000)    
