@@ -73,19 +73,19 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		var collectYPlan = [] // array for y-axis milestones
 		if(json[j].milestones != undefined) {
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
-	      if(json[j].milestones[e].history[0].dimensions != undefined) {
-	      for(q = 0; q < json[j].milestones[e].history[0].dimensions.length ; q++ ) {
-	          if(json[j].milestones[e].history[0].dimensions[q].project_dimension == xID) {
+	      if(json[j].milestones[e].dimensions != undefined) {
+	      for(q = 0; q < json[j].milestones[e].dimensions.length ; q++ ) {
+	          if(json[j].milestones[e].dimensions[q].project_dimension == xID) {
 	            //lisää X
-	            var date = json[j].milestones[e].history[0].due_date
+	            var date = json[j].milestones[e].due_date
 	            var parsedDate = new Date(date).getTime() / 1000
-	            var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
+	            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
 	            collectXPlan.push([parsedDate,milestoneValue])
-	          } else if( json[j].milestones[e].history[0].dimensions[q].project_dimension == yID ) {
+	          } else if( json[j].milestones[e].dimensions[q].project_dimension == yID ) {
 	            // lisää Y
-	            var date = json[j].milestones[e].history[0].due_date
+	            var date = json[j].milestones[e].due_date
 	            var parsedDate = new Date(date).getTime() / 1000
-	            var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
+	            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
 	            collectYPlan.push([parsedDate,milestoneValue])
 	          }
 				setDateScale(new Date(date).getTime() / 1000)    
@@ -325,7 +325,7 @@ console.log(projects);
 						.sort(order)
 						.on("mouseenter", function(d) {
 							namelabel.text(d.name);
-							orglabel.text("x: "+ x(d)+", y: "+ y(d));
+							orglabel.text(d.organization);
 							dot.style("opacity", .4)
 							d3.select(this).style("opacity", 1)
 							d3.selectAll(".selected").style("opacity", 1)
