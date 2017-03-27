@@ -28,7 +28,6 @@ urlpatterns = [
 
     #For stuff
     url(r"^json$", views.json, name='json'),
-    url(r'^history$', views.history, name='history'),
     # these are for ajax requests
     url(r'^get_sheets$', views.get_sheets, name='get_sheets'),
     url(r'^get_orgs$', views.get_orgs, name='get_orgs'),
