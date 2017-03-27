@@ -101,11 +101,11 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 
 	mmddyy = d3.timeFormat("%m/%d/%Y");
 
-	if (startDate == 0) {
+	if (isNaN(startDate)) {
 		startDate = startDefault;
 		$('#start-date-selector').val(mmddyy(startDate*1000));
 	}
-	if( endDate == 0) {
+	if(isNaN(endDate)) {
 		endDate = endDefault;
 		$('#end-date-selector').val(mmddyy(endDate*1000));
 	}
