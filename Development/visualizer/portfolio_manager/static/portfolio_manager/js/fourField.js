@@ -99,10 +99,18 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		}
 
 	}
-	if (startDate == 0 && endDate == 0) {
-		startDate = startDefault
-		endDate = endDefault
+
+	mmddyy = d3.timeFormat("%m/%d/%Y");
+
+	if (startDate == 0) {
+		startDate = startDefault;
+		$('#start-date-selector').val(mmddyy(startDate*1000));
 	}
+	if( endDate == 0) {
+		endDate = endDefault;
+		$('#end-date-selector').val(mmddyy(endDate*1000));
+	}
+	
 console.log(projects);
 
 /***********************/
