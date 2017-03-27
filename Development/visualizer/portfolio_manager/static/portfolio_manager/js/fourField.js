@@ -73,7 +73,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		var collectYPlan = [] // array for y-axis milestones
 		if(json[j].milestones != undefined) {
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
-	      if(json[j].milestones[e].history[0].dimensions != undefined) {
+	      if(json[j].milestones[e].dimensions != undefined) {
 	      for(q = 0; q < json[j].milestones[e].dimensions.length ; q++ ) {
 	          if(json[j].milestones[e].dimensions[q].project_dimension == xID) {
 	            //lisää X
