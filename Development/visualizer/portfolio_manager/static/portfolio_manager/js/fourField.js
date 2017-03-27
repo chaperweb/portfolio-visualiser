@@ -77,7 +77,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	      for(q = 0; q < json[j].milestones[e].dimensions.length ; q++ ) {
 	          if(json[j].milestones[e].dimensions[q].project_dimension == xID) {
 	            //lisää X
-	            var date = json[j].milestones[e].history[0].due_date
+	            var date = json[j].milestones[e].due_date
 	            var parsedDate = new Date(date).getTime() / 1000
 	            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
 	            collectXPlan.push([parsedDate,milestoneValue])
