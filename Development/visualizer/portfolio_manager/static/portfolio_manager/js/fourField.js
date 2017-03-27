@@ -1,26 +1,10 @@
 
 var db_json;
 
-// $(function(){
-//   $.ajax({
-//     url: "json"
-//   }).done(function(data) {
-//     fourField(data)
-//   });	
-// });
-
-
 function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues) {
-
-	//d3.json('outputData.json', function(error,json) {
-	//if (error) throw error;
 	console.log(json);
 	var projects = []
-	//console.log(json[8].dimensions[0].dimension_object.name);
 
-		//var xToBe = "SizeMoney"
-		//var yToBe = "SizeManDays"
-		//var radToBe = "SizeEffect"
 		var colorToBe = 'AssociatedOrganizationDimension'
 		// size of the display box
 		var width = 1000,
@@ -29,7 +13,6 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			axisLenghtX = width * 0.8,
 			axisLenghtY = height * 0.8,
 			sliderY = height - margin.bottom
-			//sliderValues = 100
 			percentInPx = (axisLenghtX / (2*sliderValues)) * 100
 
 		// var startDate = 0
@@ -90,23 +73,20 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
 	      if(json[j].milestones[e].history[0].dimensions != undefined) {
 	      for(q = 0; q < json[j].milestones[e].history[0].dimensions.length ; q++ ) {
-	        console.log(json[j].milestones[e].history[0].dimensions[q].project_dimension)
 	          if(json[j].milestones[e].history[0].dimensions[q].project_dimension == xID) {
 	            //lisää X
 	            var date = json[j].milestones[e].history[0].due_date
 	            var parsedDate = new Date(date).getTime() / 1000
 	            var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
-	            console.log(milestoneValue)
 	            collectXPlan.push([parsedDate,milestoneValue])
 	          } else if( json[j].milestones[e].history[0].dimensions[q].project_dimension == yID ) {
 	            // lisää Y
 	            var date = json[j].milestones[e].history[0].due_date
 	            var parsedDate = new Date(date).getTime() / 1000
 	            var milestoneValue = json[j].milestones[e].history[0].dimensions[q].dimension_milestone_object.value
-	            console.log(milestoneValue)
 	            collectYPlan.push([parsedDate,milestoneValue])
 	          }
-		  setDateScale(new Date(date).getTime() / 1000)    
+				setDateScale(new Date(date).getTime() / 1000)    
 	        }
 	      }
 	    }
@@ -180,7 +160,7 @@ console.log(projects);
 		if(!isNaN(d)) {return Math.min(Math.max(d,0),width) } else {return 0};
 	}
 	function validYCoordinates(d) {
-		if(!isNaN(d)) {return Math.min(Math.max(d,0),height) }else {return 0};
+		if(!isNaN(d)) {return Math.min(Math.max(d,0),height) } else {return 0};
 	}	
 
 	//function to determine color of the circle. Currently is set to color the circles by their "AssociatedOrganizationDimension"
@@ -221,7 +201,6 @@ console.log(projects);
     this function interpolates the values of the given array "values", and returns the value that is in the date "date".
     is used in interpolateData-function.
 	*/
-
 	function interpolateValues(values, date) {
 		if(values == undefined || date == undefined) {
 			//array containing the data is undefined, most likely the data never existed.
