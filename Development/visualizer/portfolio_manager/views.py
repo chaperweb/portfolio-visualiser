@@ -390,8 +390,14 @@ def addproject(request):
     if request.POST:
         add_project_form = AddProjectForm(request.POST, prefix=add_project_form_prefix)
     else:
+        # Get initial values from referrering page that asked for project name and organization
         add_project_form = AddProjectForm(prefix='add_project_form', initial={'name': request.GET.get('name'), 'parent': request.GET.get('organization', ''), 'organization': request.GET.get('organization', '')})
 
+    # Prevent user from chaning name or organization on "Add project" page.
+    # If it were possible to change organization, every time organization selection is changed
+    # organization project template must be reloaded to the page. Also the name field of project
+    # instance should match the value of TextDimension with name 'Name'. Simpler implementation
+    # when user is not allowed to change these values.
     add_project_form.disable_name_and_organization()
 
     forms = [add_project_form]

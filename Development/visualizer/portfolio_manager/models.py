@@ -94,6 +94,7 @@ class Dimension (models.Model):
   def get_content_type(self):
     return ContentType.objects.get_for_model(self)
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
     self.value = value
     self._history_date = history_date
@@ -120,6 +121,7 @@ class DecimalDimension (Dimension):
 class DecimalMilestone(models.Model):
   value = models.DecimalField(max_digits = 20, decimal_places=2)
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value):
     self.value = value
 
@@ -133,6 +135,7 @@ class AssociatedOrganizationDimension (Dimension):
   history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
 
     organization = None
@@ -152,6 +155,7 @@ class AssociatedPersonDimension (Dimension):
   history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
 
     person = None
@@ -169,6 +173,7 @@ class AssociatedPersonDimension (Dimension):
 class AssociatedPersonsDimension(Dimension):
   persons = models.ManyToManyField(Person)
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
     self.save()
     self.persons.set([])
@@ -194,6 +199,7 @@ class AssociatedPersonsDimension(Dimension):
 class AssociatedProjectsDimension(Dimension):
   projects = models.ManyToManyField(Project)
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
     self.save()
     self.projects.set([])
@@ -224,6 +230,7 @@ class DateDimension (Dimension):
 
       self.value = d
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
 
     d = parse(value, dayfirst=True)

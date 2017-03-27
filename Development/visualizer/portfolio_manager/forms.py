@@ -43,6 +43,9 @@ class DimensionForm(ModelForm):
     def save(self, *args, **kwargs):
         self.instance.name = self.dimension_name
         instance = super(DimensionForm, self).save(*args, **kwargs)
+
+        # Create for each XyxDimension model instance ProjectDimension that
+        # glues project together with XyxDimension
         project_dimension = ProjectDimension()
         project_dimension.project = self.project_form.instance
         project_dimension.dimension_object = instance
@@ -127,6 +130,13 @@ class AssociatedProjectsDimensionForm(DimensionForm):
         self.fields['projects'].label = self.dimension_name
 
 class AddProjectForm(ModelForm):
+
+    # Current implementation requires that the organization (parent field) and name are 
+    # rendered as read-only fields on "Add project" page.
+    # The only way to render dropdown select as read-only is to mark it 'disabled'
+    # Disabled <select> is not sent within POST data. Organization field is only for 
+    # displaying selected organization and data that is saved to db is sent with hidden
+    # field
 
     organization = forms.ModelChoiceField(queryset=Organization.objects.all(), required=False)
 
