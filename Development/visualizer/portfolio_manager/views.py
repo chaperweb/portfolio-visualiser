@@ -47,25 +47,6 @@ def admin_tools(request):
     form.fields['organization'].widget.attrs['class'] = 'form-control'
     return render(request, 'admin_tools.html', {'pre_add_project_form': form})
 
-# Site to see history of projects
-def history(request):
-    history_all = Project.history.all()
-    names = {}
-    orgs = {}
-    dates = {}
-    for h in history_all:
-        names[h.id] = []
-        orgs[h.id] = []
-        dates[h.id] = []
-    # Combines the id with the right name, organization and date.
-    for h in history_all:
-        names[h.id].append(h.name)
-        orgs[h.id].append(h.parent)
-        dates[h.id].append(h.history_date)
-
-    return render(request, 'history.html', {'ids':range(1, len(names)+1), 'names':names, 'orgs':orgs, 'dates':dates})
-
-
 # Site to add a new organization
 def add_new_org(request):
     if request.method == 'POST':

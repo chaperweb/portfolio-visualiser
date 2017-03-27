@@ -26,9 +26,6 @@ class PersonForm(forms.Form):
     last = forms.CharField(label = 'Last Name', max_length=50, required = True,
                                 error_messages={'required': 'Your person needs a name!'})
 
-    # def __init__(self):
-    #
-
 class OrgForm(forms.Form):
     orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="Select an organization",
     widget=forms.Select(attrs={"onChange":'submit()'}))
@@ -70,11 +67,11 @@ class DecimalDimensionForm(DimensionForm):
     class Meta:
         model = DecimalDimension
         fields = ('value',)
-      
+
     def __init__(self, *args, **kwargs):
         super(DecimalDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
-    
+
 class DateDimensionForm(DimensionForm):
 
     value = forms.DateField(input_formats=["%d/%m/%Y"])
@@ -97,7 +94,7 @@ class AssociatedPersonDimensionForm(DimensionForm):
     def __init__(self, *args, **kwargs):
         super(AssociatedPersonDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
-    
+
 
 class AssociatedOrganizationDimensionForm(DimensionForm):
 
@@ -131,10 +128,10 @@ class AssociatedProjectsDimensionForm(DimensionForm):
 
 class AddProjectForm(ModelForm):
 
-    # Current implementation requires that the organization (parent field) and name are 
+    # Current implementation requires that the organization (parent field) and name are
     # rendered as read-only fields on "Add project" page.
     # The only way to render dropdown select as read-only is to mark it 'disabled'
-    # Disabled <select> is not sent within POST data. Organization field is only for 
+    # Disabled <select> is not sent within POST data. Organization field is only for
     # displaying selected organization and data that is saved to db is sent with hidden
     # field
 
@@ -158,5 +155,3 @@ class AddProjectForm(ModelForm):
     def disable_name_and_organization(self):
         self.fields['organization'].widget.attrs['disabled'] = True
         self.fields['name'].widget.attrs['readonly'] = 'readonly'
-
-
