@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^$', views.home, name='homepage'),
         url(r'^path$', TemplateView.as_view(template_name="path.html"), name='path'),
         url(r'^projectdependencies$', TemplateView.as_view(template_name="projectdependencies.html"), name='projectdependencies'),
+        url(r'^fourfield$', TemplateView.as_view(template_name="fourfield.html"), name='fourfield'),
     url(r'^projects$', views.projects, name='projects'),
         url(r"^projects/(?P<project_id>[0-9]+)$", views.show_project, name='show_project'),
             url(r'^projects/(?P<project_id>[0-9]+)/edit/(?P<field_name>[A-Za-z]+)$', views.project_edit, name='project_edit'),

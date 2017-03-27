@@ -45,6 +45,8 @@ def from_data_array(data):
         if milestone_value:
           dimension_name = dimensions[idx].strip()
           milestone_sub_class = globals()[dimension_name+"Milestone"]
+
+          # TODO: Should we check more carefully what is drawn from globals(). Security issue?
           milestone_parent_class = milestone_sub_class.__bases__[0]
           dimension_milestone_object = milestone_parent_class()
           dimension_milestone_object.from_sheet(milestone_value)

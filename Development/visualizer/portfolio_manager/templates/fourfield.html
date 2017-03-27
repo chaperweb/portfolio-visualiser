@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{# TITLE HERE #}
+{% block title %}
+Four field
+{% endblock %}
+
+{# CSS HERE #}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/fourField.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/sidebar.css" %}">
+<style>
+.bar {
+  fill: none;
+}
+.line{
+  fill: none;
+  stroke: black;
+  stroke-width: 5px;
+}
+ul {
+  font-weight: bold;
+}
+li {
+  font-weight: normal;
+}
+</style>
+{% endblock %}
+
+{# JAVASCRIPT HERE #}
+{% block javascript %}
+{% load static %}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/fourField.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/fourfield_loader.js' %}"></script>
+{% endblock %}
+
+{# CONTENT HERE #}
+{% block content %}
+
+  <!-- Sidebar -->
+<div class="sidebar navbar-fixed-left navbar-inverse xs-hidden col-md-2">
+  <ul class="nav sidebar-nav">
+    <!-- Press this list item to show all the visualizations -->
+    <li data-toggle="collapse" data-target="#visus" class="navbar-toggle sidebar-item">Visualizations</li>
+    <li>
+      <!-- Expandable list with all the visualizations -->
+      <div id="visus" class="collapse in">
+        <ul class="nav">
+
+            <li><a class="sidebar-subitem" href="{%url 'path' %}">Path</a></li>
+          <li><a class="sidebar-subitem" href="{%url 'projectdependencies' %}">Dependencies</a></li>
+          <li><a class="sidebar-subitem" href="{%url 'fourfield' %}">4-Field</a></li>
+
+        </ul>
+      </div>
+    </li>
+     <li data-toggle="collapse" data-target="#visualization-parameters" class="navbar-toggle sidebar-item">Parameters</li>
+    <li>
+      <!-- Expandable list with all the visualizations -->
+      <div id="visualization-parameters" class="collapse in">
+        <ul class="nav">
+            <li class="sidebar-subitem">
+              <label for="sel1">Select x-axis dimension:</label>
+              <select class="form-control" id="x-selector">
+              <option>---</option>
+              </select>
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select y-axis dimension:</label>
+              <select class="form-control" id="y-selector">
+              <option>---</option>
+              </select>
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select radius dimension:</label>
+              <select class="form-control" id="r-selector">
+              <option>---</option>
+              </select>
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select start date:</label>
+              <input type="text" class="form-control datepicker" id="start-date-selector" />
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select end date:</label>
+              <input type="text" class="form-control datepicker" id="end-date-selector" />
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Zoom:</label>
+              <select class="form-control" id="slider-value-selector">
+                <option>100</option>
+                <option>50</option>
+                <option>30</option>
+              </select>
+            </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+<!-- /sidebar -->
+
+<div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization"></div>
+
+{% endblock %}

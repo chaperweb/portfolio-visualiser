@@ -410,6 +410,7 @@ def addproject(request):
             template = templates[0]
             for template_dimension in template.dimensions.all():
                 template_dimension_form_class = globals()[template_dimension.content_type.model_class().__name__+"Form"]
+                # TODO: Should we check more carefully what is drawn from globals(). Security issue?
                 template_dimension_form = None
                 if request.POST:
                     template_dimension_form = template_dimension_form_class(request.POST, dimension_name=template_dimension.name, project_form=add_project_form, prefix=str(template_dimension.id)+'_form')
