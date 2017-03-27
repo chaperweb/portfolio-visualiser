@@ -15,8 +15,10 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			sliderY = height - margin.bottom
 			percentInPx = (axisLenghtX / (2*sliderValues)) * 100
 
-		// var startDate = 0
-		// var endDate = 0
+		var startDate = 0
+		var endDate = 0
+		var startDefault = 0
+		var endDefault = 0
 
 		// The scales for the x and y axis.
 		//range means the length of the line and domain the numbers beneath it
@@ -97,6 +99,10 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		}
 
 	}
+	if (startDate == 0 && endDate == 0) {
+		startDate = startDefault
+		endDate = endDefault
+	}
 console.log(projects);
 
 /***********************/
@@ -127,15 +133,15 @@ console.log(projects);
 	 * given data points and milestones
 	 */
 	function setDateScale(date) {
-		if (startDate == 0 && endDate == 0) {
-			startDate = date
-			endDate = date
+		if (startDefault == 0 && endDefault == 0) {
+			startDefault = date
+			endDefault = date
 			return;
 		}
-		if (date > endDate) {
-			endDate = date
-		} else if (date < startDate) {
-			startDate = date
+		if (date > endDefault) {
+			endDefault = date
+		} else if (date < startDefault) {
+			startDefault = date
 		}
 	}
 	
