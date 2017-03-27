@@ -40,9 +40,10 @@ function get_sheet_history()
     success: function(data) {
       $("#history-well-ul > li").remove();
       var names = JSON.parse(data);
-      for(i=0;i<names.length;i++)
+        // loop for sheet names and urls
+      for(i=0;i<names.length;i = i + 2)
       {
-        var row = "<li class='list-group-item'><a>" + names[i] + "</a></li>"
+        var row = "<li class='list-group-item'><a href='" + names[i+1] + "'>" + names[i] + "</a></li>"
         $(row).appendTo("#history-well-ul");
       }
     },
@@ -153,7 +154,9 @@ function upload_sheet()
     method: "POST",
     url: $('#sheet-form').attr('action'),
     data: {'name': $("#inputName").val(), 'url': $("#sheetUrl").val()},
+
     success: function(json) {
+
       // Remove old modal content
       $("#conf-modal-body > h3").remove();
       $("#conf-modal-body > h4").remove();
@@ -164,11 +167,15 @@ function upload_sheet()
       $(result).appendTo($("#conf-modal-body"));
       $(org).appendTo($("#conf-modal-body"));
       $("#confirmation-modal").modal('show');
+      $("#loading").hide();
     },
     error: function() {
       alert("Failed to upload sheet");
+      $("#loading").hide();
     }
   });
+
+
 }
 
 $(function(){
@@ -196,9 +203,11 @@ $(function(){
     create_person();
   });
 
+
   // Same but for the sheets
   $('#sheet-form').on('submit', function(event){
     event.preventDefault();
+     $("#loading").show();
     upload_sheet();
   });
 });

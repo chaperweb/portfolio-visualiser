@@ -12,20 +12,21 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   border-color:  rgb(116,116,116) !important;
 }
 
-#proju > div {
+.proju > div {
   background-color: rgb(156,156,156) !important;
-  margin-right: 5%;
+  margin-right: 8.333333333%;
   margin-bottom: 30px;
 
   text-decoration-color: white !important;
 }
-#proju >div > p {
+.proju >div > p {
   margin-top: 10px;
 }
-#proju {
+.proju {
   color: white !important;
 }
 
-#orginprojut {
+.orginprojut {
   padding-left: 0px !important;
+
 }

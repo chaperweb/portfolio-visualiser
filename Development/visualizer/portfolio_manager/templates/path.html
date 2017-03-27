@@ -6,7 +6,10 @@ Path
 {% endblock %}
 
 {# CSS HERE #}
+
 {% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/sidebar.css" %}">
 <style>
 .bar {
   fill: none;
@@ -38,30 +41,55 @@ li {
 
 {# CONTENT HERE #}
 {% block content %}
+<!-- Sidebar -->
+<div class="sidebar navbar-fixed-left navbar-inverse xs-hidden col-md-2">
+  <ul class="nav sidebar-nav">
+    <!-- Press this list item to show all the visualizations -->
+    <li data-toggle="collapse" data-target="#visus" class="navbar-toggle sidebar-item">Visualizations</li>
+    <li>
+      <!-- Expandable list with all the visualizations -->
+      <div id="visus" class="collapse in">
+        <ul class="nav">
 
-  <div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization">
-  </div>
-  <div class="col-lg-4 col-md-3 col-sm-2 col-xs-12" id="controls">
-          <div class="form-group">
-            <label for="sel1">Select project:</label>
-            <select class="form-control" id="project-selector">
-            <option>---</option>
-            </select>
-          </div>
+            <li><a class="sidebar-subitem" href="{%url 'path' %}">Path</a></li>
+            <li><a class="sidebar-subitem" href="{%url 'projectdependencies' %}">Dependencies</a></li>
+            <li><a class="sidebar-subitem" href="{%url 'path' %}">4-Field</a></li>
 
-          <div class="form-group">
-            <label for="sel1">Select x-axis dimension:</label>
-            <select class="form-control" id="x-selector">
-            <option>---</option>
-            </select>
-          </div>
+        </ul>
+      </div>
+    </li>
+     <li data-toggle="collapse" data-target="#visualization-parameters" class="navbar-toggle sidebar-item">Parameters</li>
+    <li>
+      <!-- Expandable list with all the visualizations -->
+      <div id="visualization-parameters" class="collapse in">
+        <ul class="nav">
 
-          <div class="form-group">
-            <label for="sel1">Select y-axis dimension:</label>
-            <select class="form-control" id="y-selector">
-            <option>---</option>
-            </select>
-          </div>
-  </div>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select project:</label>
+              <select class="form-control" id="project-selector">
+              <option>---</option>
+              </select>
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select x-axis dimension:</label>
+              <select class="form-control" id="x-selector">
+              <option>---</option>
+              </select>
+            </li>
+            <li class="sidebar-subitem">
+              <label for="sel1">Select y-axis dimension:</label>
+              <select class="form-control" id="y-selector">
+              <option>---</option>
+              </select>
+            </li>
+
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+<!-- /sidebar -->
+
+<div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization"></div>
 
 {% endblock %}

@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from envparse import env
+import dj_database_url
+
+env.read_envfile()
 
 LOGGING = {
     'version': 1,
@@ -83,7 +87,9 @@ INSTALLED_APPS = [
     'portfolio_manager',
     'simple_history',
     'django_extensions',
-    'rest_framework'
+    'rest_framework',
+    'envparse',
+    'dj_database_url'
 ]
 
 MIDDLEWARE = [
@@ -122,10 +128,7 @@ WSGI_APPLICATION = 'visualizer.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
-    }
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
 }
 
 

@@ -25,9 +25,6 @@ class Organization (models.Model):
   def __str__(self):
     return str(self.name)
 
-  def __unicode__(self):
-    return self.name
-
 #Model for a Project instance
 #Id generated automatically
 class Project (models.Model):
@@ -35,19 +32,21 @@ class Project (models.Model):
   parent = models.ForeignKey('Organization', null=True,on_delete=models.CASCADE)
   history = HistoricalRecords()
 
+  def __str__(self):
+    return str(self.name)
+
+  def __unicode__(self):
+    return self.name
 
 #Model for a project dimension
 class ProjectDimension (models.Model):
-  project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='dimensions')
+  project = models.ForeignKey(Project, null=False, on_delete=models.CASCADE, related_name='dimensions')
   content_type = models.ForeignKey(ContentType)
   object_id = models.PositiveIntegerField()
   dimension_object = GenericForeignKey('content_type', 'object_id')
 
-  def __unicode__(self):
-    return self.dimension_object.__class__.__name__
-
   def __str__(self):
-    return self.dimension_object.__class__.__name__
+    return str(self.dimension_object.__class__.__name__)
 
   def dimension_type(self):
     return self.dimension_object.__class__.__name__
@@ -93,8 +92,9 @@ class Dimension (models.Model):
   name = models.CharField(max_length=64)
 
   def get_content_type(self):
-    return ContentType.objects.get_for_model(self).id
+    return ContentType.objects.get_for_model(self)
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
     self.value = value
     self._history_date = history_date
@@ -105,9 +105,6 @@ class Person (models.Model):
 
   def __str__(self):
     return str(self.first_name + " " + self.last_name)
-
-  def __unicode__(self):
-    return self.first_name + " " + self.last_name
 
 class BaseDimensionHistory(models.Model):
   class Meta:
@@ -124,6 +121,7 @@ class DecimalDimension (Dimension):
 class DecimalMilestone(models.Model):
   value = models.DecimalField(max_digits = 20, decimal_places=2)
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value):
     self.value = value
 
@@ -132,12 +130,12 @@ class TextDimension (Dimension):
   history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
-
 class AssociatedOrganizationDimension (Dimension):
   value = models.ForeignKey(Organization, null=True)
   history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
 
     organization = None
@@ -157,6 +155,7 @@ class AssociatedPersonDimension (Dimension):
   history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
 
     person = None
@@ -174,6 +173,7 @@ class AssociatedPersonDimension (Dimension):
 class AssociatedPersonsDimension(Dimension):
   persons = models.ManyToManyField(Person)
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
     self.save()
     self.persons.set([])
@@ -190,15 +190,16 @@ class AssociatedPersonsDimension(Dimension):
       self.persons.add(person)
 
   def __str__(self):
-    return ', '.join([' '.join([ n for n in [p.first_name, p.last_name] if n]) for p in self.persons.all()])
+    return str(', '.join([' '.join([ n for n in [p.first_name, p.last_name] if n]) for p in self.persons.all()]))
 
   def string(self):
-    return str(self)
+    return self.__str__()
 
 #Storing the project dependencies as list of project IDs
 class AssociatedProjectsDimension(Dimension):
   projects = models.ManyToManyField(Project)
 
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
     self.save()
     self.projects.set([])
@@ -222,6 +223,14 @@ class DateDimension (Dimension):
   history = HistoricalRecords(bases=[BaseDimensionHistory])
   __history_date = None
 
+  def update_date(self, value):
+      d = parse(value, dayfirst=True)
+      if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
+        d = d.replace(tzinfo=pytz.utc)
+
+      self.value = d
+
+  # Updates model's value with a value drawn from a Google Sheet
   def from_sheet(self, value, history_date):
 
     d = parse(value, dayfirst=True)
@@ -230,6 +239,15 @@ class DateDimension (Dimension):
 
     self.value = d
     self._history_date = history_date
+
+class ProjectTemplate(models.Model):
+  name = models.CharField(max_length=50)
+  organization = models.ForeignKey(Organization, null=False, on_delete=models.CASCADE, related_name='templates')
+
+class ProjectTemplateDimension(models.Model):
+  template = models.ForeignKey(ProjectTemplate, null=False, on_delete=models.CASCADE, related_name='dimensions')
+  name = models.CharField(max_length=50)
+  content_type = models.ForeignKey(ContentType, null=False, on_delete=models.CASCADE)
 
 # THESE ARE ONLY FOR GOOGLE SHEET IMPORTER
 class NameDimension (TextDimension):

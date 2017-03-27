@@ -6,10 +6,17 @@
       "name": "Static TestData",
       "url": "https://docs.google.com/spreadsheets/d/1ObVxxUOzOwpX8IIFD_O3NSN8OGE8txRYXmXdn0BY-P0/edit?usp=sharing"
     }
+  },
+  {
+    "model": "portfolio_manager.GoogleSheet",
+    "pk": 2,
+    "fields": {
+      "name": "Master TestData",
+      "url": "https://docs.google.com/spreadsheets/d/1h4qJYKxL7EhjIXh2tUghSdNAEQalc2fPwTSqHu6CrmY/edit#gid=0"
+    }
   }
   
 ]
-
 
       
    

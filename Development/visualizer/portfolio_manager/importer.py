@@ -2,14 +2,13 @@ import gspread
 from portfolio_manager.models import *
 from oauth2client.service_account import ServiceAccountCredentials
 import os
+from dateutil.parser import parse
+from  django.db import connection
+from django.core.management.color import no_style
 
 def from_data_array(data):
 
-  # thefile = open('/tmp/dumppi', 'w')
-  # for item in data:
-  #   thefile.write("%s\n" % ';'.join(item))
-
-  dimensions = data[0][2:]
+  dimensions = data[0][2:] # First row of sheet contains project IDs, dimension names, etc.
   prev_id = -1
   dimension_objects = None
   project_dimension_objects = None
@@ -17,14 +16,21 @@ def from_data_array(data):
 
   for update in data[1:]:
 
-    history_date = parse(update[1], dayfirst=True)
+    history_date = parse(update[1], dayfirst=True) # Timestamp of the update is in second column
+
+    # Set default timezone if timestamp doesn't include it
     if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
       history_date = history_date.replace(tzinfo=pytz.utc)
 
-    if 'm;' in update[0]: # milestone row
+    if 'm;' in update[0]: # Sheet row represents a milestone
 
-      parts = update[0].split(';')
+      # Every milestone row creates a new milestone. Updating previous milestones is not
+      # supported
+
+      parts = update[0].split(';') # ID column format m;[milestone_due_date]
       milestone_due_date = parse(parts[1], dayfirst=True)
+
+      # Set default timezone if missing
       if milestone_due_date.tzinfo is None or milestone_due_date.tzinfo.utcoffset(milestone_due_date) is None:
         milestone_due_date = milestone_due_date.replace(tzinfo=pytz.utc)
 
@@ -44,14 +50,15 @@ def from_data_array(data):
           dimension_milestone_object.from_sheet(milestone_value)
           dimension_milestone_object.save()
 
+          # Connect dimension specific milestone to parent milestone object
           dimension_milestone = DimensionMilestone()
           dimension_milestone.milestone = milestone
           dimension_milestone.dimension_milestone_object = dimension_milestone_object
           dimension_milestone.project_dimension = project_dimension_objects[idx]
           dimension_milestone.save()
 
-    else: 
-      project_id = update[0]
+    else: # Row represents an update to project's dimensions
+      project_id = update[0] # First column contains project id
 
       if project_id != prev_id: # new project
 
@@ -76,7 +83,7 @@ def from_data_array(data):
           dimension_object = None
           create_project_dimension = False
 
-          dimension_object_name = dimensions[idx].strip()
+          dimension_object_name = dimensions[idx].strip() # dimensions = first row of sheet
 
           try:
             dimension_object = dimension_objects[idx]
@@ -95,10 +102,16 @@ def from_data_array(data):
           dimension_object.from_sheet(dimension_update.strip(), history_date)
           dimension_object.save()
 
+          # We should get rid of project.parent and use some AssociatedOrganization type of 
+          # dimension instead. In general all project attributes should be represented by 
+          # Dimensions
           if dimension_object_name == 'OwningOrganization':
             project.parent = dimension_object.value
             project.save()
 
+          # We should get rid of project.name and use some TextDimension type of 
+          # dimension instead. In general all project attributes should be represented by 
+          # Dimensions
           if dimension_object_name == 'Name':
             project.name = dimension_object.value
             project.save()
@@ -112,8 +125,22 @@ def from_data_array(data):
             dimension_objects[idx] = dimension_object
             project_dimension_objects[idx] = project_dimension
 
-# Only sheets shared with reader@portfolio-sheet-data.iam.gserviceaccount.com can be imported!
+      # Create default project template for every organization that some project belongs to.
+      if project.parent and project.parent.templates.all().count() == 0:
+        template = ProjectTemplate()
+        template.name = 'default'
+        template.organization = project.parent
+        template.save()
 
+        for key, dimension_object in dimension_objects.items():
+          template_dimension = ProjectTemplateDimension()
+          template_dimension.template = template
+          template_dimension.name = dimension_object.name
+          template_dimension.content_type = dimension_object.get_content_type()
+          template_dimension.save()
+
+
+# Only sheets shared with reader@portfolio-sheet-data.iam.gserviceaccount.com can be imported!
 def from_google_sheet(SheetUrl):
     try:
         scope = ['https://www.googleapis.com/auth/drive','https://spreadsheets.google.com/feeds','https://docs.google.com/feeds']
@@ -123,7 +150,10 @@ def from_google_sheet(SheetUrl):
         Sheet = gc.open_by_url(SheetUrl)
         worksheet = Sheet.get_worksheet(0)
         from_data_array(worksheet.get_all_values())
-    except gspread.exceptions.SpreadsheetNotFound:
-        print("spreadsheet not found")
-    except gspread.exceptions.NoValidUrlKeyFound:
-        print("URLi paskana")
+    finally:
+      # Importer creates Project model instances with pre-defined IDs. That operation 
+      # messes up Postgresql primary key sequences. Lets reset the sequences.
+      with connection.cursor() as cursor:
+        for stmt in connection.ops.sequence_reset_sql(no_style(), [Project]):
+          cursor.execute(stmt)
+          

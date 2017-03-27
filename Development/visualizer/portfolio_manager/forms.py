@@ -29,48 +29,134 @@ class PersonForm(forms.Form):
     # def __init__(self):
     #
 
-
-class CronForm(forms.Form):
-    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="(Nothing)",
+class OrgForm(forms.Form):
+    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="Select an organization",
     widget=forms.Select(attrs={"onChange":'submit()'}))
 
-class TableSpecification(forms.Form):
-    name = forms.CharField(label = 'Field name', max_length=50, required = True,
-                            error_messages={'required': 'Your field needs a name!'})
-    DATATYPES = (('TXT', 'Teksti'),('NUM', 'Numeerinen'),('DEC','Desimaali'))
-    datatype = forms.ChoiceField(choices=DATATYPES)
-    value = forms.CharField(label = 'Value', max_length=64, required = True,
-                            error_messages={'required': 'value!'})
+class DimensionForm(ModelForm):
 
-    def clean(self):
-        cleaned_data = super(TableSpecification, self).clean()
-        name = cleaned_data.get("name")
-        datatype = cleaned_data.get("datatype")
-        value = cleaned_data.get("value")
+    def __init__(self, *args, project_form=None, dimension_name='', **kwargs):
+        super(DimensionForm, self).__init__(*args, **kwargs)
+        self.project_form = project_form
+        self.dimension_name = dimension_name
 
-        if datatype == 'NUM':
-            try:
-                val = int(value)
-            except ValueError:
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-                print("That's not an int!")
+    def save(self, *args, **kwargs):
+        self.instance.name = self.dimension_name
+        instance = super(DimensionForm, self).save(*args, **kwargs)
 
-            if not isinstance(val, numbers.Number):
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-        if datatype == 'DEC':
-            try:
-                val = float(value)
-            except ValueError:
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
-                print("That's not an int!")
+        # Create for each XyxDimension model instance ProjectDimension that
+        # glues project together with XyxDimension
+        project_dimension = ProjectDimension()
+        project_dimension.project = self.project_form.instance
+        project_dimension.dimension_object = instance
+        project_dimension.save()
+        return instance
 
-            if not isinstance(val, numbers.Number):
-                raise forms.ValidationError(
-                    "ERROERRORERROR."
-                )
+class TextDimensionForm(DimensionForm):
+
+    class Meta:
+        model = TextDimension
+        fields = ('value',)
+        widgets = {
+            'value': forms.TextInput(),
+        }
+
+    def __init__(self, *args, **kwargs ):
+        super(TextDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].label = self.dimension_name
+
+class DecimalDimensionForm(DimensionForm):
+
+    class Meta:
+        model = DecimalDimension
+        fields = ('value',)
+      
+    def __init__(self, *args, **kwargs):
+        super(DecimalDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].label = self.dimension_name
+    
+class DateDimensionForm(DimensionForm):
+
+    value = forms.DateField(input_formats=["%d/%m/%Y"])
+
+    class Meta:
+        model = DateDimension
+        fields = ('value',)
+
+    def __init__(self, *args, **kwargs):
+        super(DateDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].label = self.dimension_name
+        self.fields['value'].widget.attrs['class'] = 'datepicker'
+
+class AssociatedPersonDimensionForm(DimensionForm):
+
+    class Meta:
+        model = AssociatedPersonDimension
+        fields = ('value',)
+
+    def __init__(self, *args, **kwargs):
+        super(AssociatedPersonDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].label = self.dimension_name
+    
+
+class AssociatedOrganizationDimensionForm(DimensionForm):
+
+    class Meta:
+        model = AssociatedOrganizationDimension
+        fields = ('value',)
+
+    def __init__(self, *args, **kwargs):
+        super(AssociatedOrganizationDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].label = self.dimension_name
+
+class AssociatedPersonsDimensionForm(DimensionForm):
+
+    class Meta:
+        model = AssociatedPersonsDimension
+        fields = ('persons',)
+
+    def __init__(self, *args, **kwargs):
+        super(AssociatedPersonsDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['persons'].label = self.dimension_name
+
+class AssociatedProjectsDimensionForm(DimensionForm):
+
+    class Meta:
+        model = AssociatedProjectsDimension
+        fields = ('projects',)
+
+    def __init__(self, *args, **kwargs):
+        super(AssociatedProjectsDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['projects'].label = self.dimension_name
+
+class AddProjectForm(ModelForm):
+
+    # Current implementation requires that the organization (parent field) and name are 
+    # rendered as read-only fields on "Add project" page.
+    # The only way to render dropdown select as read-only is to mark it 'disabled'
+    # Disabled <select> is not sent within POST data. Organization field is only for 
+    # displaying selected organization and data that is saved to db is sent with hidden
+    # field
+
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all(), required=False)
+
+    class Meta:
+        model = Project
+        fields = ['name','parent']
+        labels = {
+            "parent": "Organization",
+        }
+        widgets = {
+            "parent": forms.HiddenInput()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(AddProjectForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['name'].widget.attrs['placeholder'] = 'Project name'
+        self.fields['organization'].widget.attrs['required'] = True
+
+    def disable_name_and_organization(self):
+        self.fields['organization'].widget.attrs['disabled'] = True
+        self.fields['name'].widget.attrs['readonly'] = 'readonly'
+
+
