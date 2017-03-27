@@ -15,8 +15,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			sliderY = height - margin.bottom
 			percentInPx = (axisLenghtX / (2*sliderValues)) * 100
 
-		var startDate = 0
-		var endDate = 0
+
 		var startDefault = 0
 		var endDefault = 0
 
