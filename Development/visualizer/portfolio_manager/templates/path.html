@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_visualization.html" %}
 
 {# TITLE HERE #}
 {% block title %}
@@ -39,26 +39,9 @@ li {
 <script src="{% static 'portfolio_manager/js/path_loader.js' %}"></script>
 {% endblock %}
 
-{# CONTENT HERE #}
-{% block content %}
-<!-- Sidebar -->
-<div class="sidebar navbar-fixed-left navbar-inverse xs-hidden col-md-2">
-  <ul class="nav sidebar-nav">
-    <!-- Press this list item to show all the visualizations -->
-    <li data-toggle="collapse" data-target="#visus" class="navbar-toggle sidebar-item">Visualizations</li>
-    <li>
-      <!-- Expandable list with all the visualizations -->
-      <div id="visus" class="collapse in">
-        <ul class="nav">
+{% block visualization_parameters %}
 
-          <li><a class="sidebar-subitem" href="{%url 'path' %}">Path</a></li>
-          <li><a class="sidebar-subitem" href="{%url 'projectdependencies' %}">Dependencies</a></li>
-          <li><a class="sidebar-subitem" href="{%url 'fourfield' %}">4-Field</a></li>
-
-        </ul>
-      </div>
-    </li>
-     <li data-toggle="collapse" data-target="#visualization-parameters" class="navbar-toggle sidebar-item">Parameters</li>
+ <li data-toggle="collapse" data-target="#visualization-parameters" class="navbar-toggle sidebar-item">Parameters</li>
     <li>
       <!-- Expandable list with all the visualizations -->
       <div id="visualization-parameters" class="collapse in">
@@ -86,10 +69,10 @@ li {
         </ul>
       </div>
     </li>
-  </ul>
-</div>
-<!-- /sidebar -->
-
-<div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization"></div>
 
 {% endblock %}
+
+{% block visualization_content %}
+  <div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization"></div>
+{% endblock %}
+
