@@ -2,7 +2,7 @@ from django.test import TestCase
 from portfolio_manager.models import *
 from portfolio_manager.forms import *
 
-class ViewsTestCase(TestCase):
+class FormsTestCase(TestCase):
 
 	fixtures = [ 'organizations', 'persons' ]
 

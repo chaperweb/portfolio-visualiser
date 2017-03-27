@@ -8,6 +8,8 @@ class ViewsTestCase(TestCase):
 
 	def test_json_unicode_encoding(self):
 
+		# Tests that non-ascii characters are importer successfully
+		
 		from_data_array([[u'id', u'__history_date', u'Name', 
 						  u'ProjectManagerDimension', 
 						  u'ProjectDependenciesDimension', 
