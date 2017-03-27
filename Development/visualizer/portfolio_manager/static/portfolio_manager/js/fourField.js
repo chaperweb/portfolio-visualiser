@@ -325,7 +325,7 @@ console.log(projects);
 						.sort(order)
 						.on("mouseenter", function(d) {
 							namelabel.text(d.name);
-							orglabel.text("x: "+ x(d)+", y: "+ y(d));
+							orglabel.text(d.organization);
 							dot.style("opacity", .4)
 							d3.select(this).style("opacity", 1)
 							d3.selectAll(".selected").style("opacity", 1)
