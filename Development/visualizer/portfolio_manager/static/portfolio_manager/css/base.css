@@ -2,6 +2,7 @@
   background-color: rgb(116,116,116);
   color: white;
   border-color: rgb(116,116,116);
+  border-radius: 0;
 }
 
 .navbar .container-fluid .navbar-item {
