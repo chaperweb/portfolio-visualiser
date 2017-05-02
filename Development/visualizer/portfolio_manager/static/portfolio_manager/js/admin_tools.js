@@ -170,7 +170,7 @@ function upload_sheet()
       $("#loading").hide();
     },
     error: function() {
-      alert("Failed to upload sheet");
+      alert("Failed to download sheet");
       $("#loading").hide();
     }
   });

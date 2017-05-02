@@ -6,27 +6,26 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   display: none;
 }
 
-.panel-heading {
-  background-color: rgb(116,116,116) !important;
-  color: white !important;
-  border-color:  rgb(116,116,116) !important;
+.panel .panel-heading {
+  background-color: rgb(116,116,116);
+  color: white;
+  border: 0;
 }
 
-.proju > div {
-  background-color: rgb(156,156,156) !important;
-  margin-right: 8.333333333%;
-  margin-bottom: 30px;
-
-  text-decoration-color: white !important;
+.proju,
+.proju:hover {
+  color: #ffffff;
+  background-color: rgb(156,156,156);
+  border-radius: 5px;
+  margin: 1% 4%;
 }
-.proju >div > p {
+.proju > p {
   margin-top: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
-.proju {
-  color: white !important;
-}
-
-.orginprojut {
-  padding-left: 0px !important;
-
+.proju > p:hover {
+  text-overflow: none;
+  overflow: visible;
 }

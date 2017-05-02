@@ -5,6 +5,7 @@ import os
 from dateutil.parser import parse
 from  django.db import connection
 from django.core.management.color import no_style
+import sys
 
 def from_data_array(data):
 
@@ -104,15 +105,15 @@ def from_data_array(data):
           dimension_object.from_sheet(dimension_update.strip(), history_date)
           dimension_object.save()
 
-          # We should get rid of project.parent and use some AssociatedOrganization type of 
-          # dimension instead. In general all project attributes should be represented by 
+          # We should get rid of project.parent and use some AssociatedOrganization type of
+          # dimension instead. In general all project attributes should be represented by
           # Dimensions
           if dimension_object_name == 'OwningOrganization':
             project.parent = dimension_object.value
             project.save()
 
-          # We should get rid of project.name and use some TextDimension type of 
-          # dimension instead. In general all project attributes should be represented by 
+          # We should get rid of project.name and use some TextDimension type of
+          # dimension instead. In general all project attributes should be represented by
           # Dimensions
           if dimension_object_name == 'Name':
             project.name = dimension_object.value
@@ -152,10 +153,11 @@ def from_google_sheet(SheetUrl):
         Sheet = gc.open_by_url(SheetUrl)
         worksheet = Sheet.get_worksheet(0)
         from_data_array(worksheet.get_all_values())
+    except Exception as e:
+        print("ERROR: %s" % e)
     finally:
-      # Importer creates Project model instances with pre-defined IDs. That operation 
+      # Importer creates Project model instances with pre-defined IDs. That operation
       # messes up Postgresql primary key sequences. Lets reset the sequences.
       with connection.cursor() as cursor:
         for stmt in connection.ops.sequence_reset_sql(no_style(), [Project]):
           cursor.execute(stmt)
-          
