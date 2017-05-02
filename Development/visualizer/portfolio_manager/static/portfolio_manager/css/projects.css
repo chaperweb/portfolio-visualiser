@@ -13,7 +13,8 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 }
 
 .proju,
-.proju:hover {
+.proju:hover
+.proju:visited {
   color: #ffffff;
   background-color: rgb(156,156,156);
   border-radius: 5px;

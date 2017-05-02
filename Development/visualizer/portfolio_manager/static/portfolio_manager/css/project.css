@@ -11,7 +11,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 .container .panel-group .panel-heading {
   background-color: rgb(116,116,116);
   color: white;
-  border-color:  rgb(116,116,116);
+  border: 0;
 }
 
 .title {
@@ -25,7 +25,6 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 .navbar-fixed-left {
   width: 250px;
   position: relative;
-  border-radius: 5px;
   height: 100%;
   min-height: 88vh;
   background-color: rgb(116,116,116);
@@ -65,4 +64,11 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   color: #000;
 }
 
-
+.panel-group .panel-default {
+  border:0;
+}
+.panel .panel-collapse {
+  border-width: 0 1px 1px 1px;
+  border-style: solid;
+  border-color: rgb(116, 116, 116);
+}

@@ -39,13 +39,15 @@ Projects | {{project.name}}
 <!-- /sidebar -->
 
 <!-- Modals -->
-{% include "modals/modify_text_modal.html" %}
-{% include "modals/modify_org_modal.html" %}
-{% include "modals/modify_dec_modal.html" %}
-{% include "modals/modify_per_modal.html" %}
-{% include "modals/modify_date_modal.html" %}
-{% include "modals/modify_assorg_modal.html" %}
-{% include "modals/multiple_items_modal.html" %}
+<div id="modal-wrapper">
+  {% include "modals/modify_text_modal.html" %}
+  {% include "modals/modify_org_modal.html" %}
+  {% include "modals/modify_dec_modal.html" %}
+  {% include "modals/modify_per_modal.html" %}
+  {% include "modals/modify_date_modal.html" %}
+  {% include "modals/modify_assorg_modal.html" %}
+  {% include "modals/multiple_items_modal.html" %}
+</div>
 
 <!-- Page Content -->
 <div id="page-content-wrapper">
@@ -115,25 +117,25 @@ Projects | {{project.name}}
               </button>
               </div>
             </div>
-            <div id="budget-panel" class="panel-collapse panel-body collapse">
+            <div id="budget-panel" class="panel-collapse panel-body collapse row">
               <table class="table">
                 <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-              {% for i in budget.dimension_object.history.all %}
-              {% if forloop.counter < 6 %}
-              <tr>
-                <td>{{i.history_date}}</td>
-                <td>{{i.value}}</td>
-              </tr>
-              {% endif %}
-            	{% endfor %}
-            </tbody>
-          </table>
+                  <tr>
+                    <th>Date</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in budget.dimension_object.history.all %}
+                  {% if forloop.counter < 6 %}
+                  <tr>
+                    <td>{{i.history_date}}</td>
+                    <td>{{i.value}}</td>
+                  </tr>
+                  {% endif %}
+                	{% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
           <!-- DATE FIELDS -->
@@ -156,7 +158,7 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse">
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse row">
                 <table class="table">
                   <thead>
                   <tr>
@@ -198,7 +200,7 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse">
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse row">
                 <table class="table">
                   <thead>
                   <tr>
@@ -240,7 +242,7 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse">
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse row">
                 <table class="table">
                   <thead>
                   <tr>
@@ -282,7 +284,7 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse">
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse row">
                 <table class="table">
                   <thead>
                   <tr>
@@ -323,7 +325,6 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-
             </div>
           {% endfor %}
           <!-- ASSOCIATED ORGANIZATION FIELDS -->
@@ -331,7 +332,6 @@ Projects | {{project.name}}
             <div class="panel panel-default">
               <div class="panel-heading row" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
                 <div class="col-lg-1">
-
                 </div>
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
@@ -353,7 +353,6 @@ Projects | {{project.name}}
             <div class="panel panel-default">
               <div class="panel-heading row"  href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
                 <div class="col-lg-1">
-
                 </div>
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
