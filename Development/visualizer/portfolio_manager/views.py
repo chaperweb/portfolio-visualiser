@@ -109,8 +109,6 @@ def add_new_person(request):
                 content_type="application/json"
             )
 
-
-
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
         # ContentTypes
@@ -283,34 +281,34 @@ def project_edit(request, project_id, field_name):
     else:
         return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
-# Delete the google sheet
-def delete_google_sheet(request, google_sheet_id):
-    GoogleSheet.objects.get(id=google_sheet_id).delete()
-    return redirect('importer')
-
-# Load the google sheet
-def load_google_sheet(request, google_sheet_id):
-    google_sheet = GoogleSheet.objects.get(id=google_sheet_id)
-    from_google_sheet(google_sheet.url)
-
-    response_data = {}
-    response_data['result'] = 'Loaded sheet successfully!'
-    response_data['name'] = google_sheet.name
-
-    return HttpResponse(
-        json_module.dumps(response_data),
-        content_type="application/json"
-    )
-
 #   Import google sheet
-#   Doesn't return anything if it isn't a POST to trigger the ajax error function
+#   Doesn't return anything if it isn't a POST or a DELETE to trigger the ajax error function
 def importer(request):
     if request.method == "POST":
         data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
         form = GoogleSheetForm(data)
         if form.is_valid():
             sheet = form.save()
-            return load_google_sheet(request, sheet.id)
+            # Load the google sheet
+            google_sheet = GoogleSheet.objects.get(id=sheet.id)
+            from_google_sheet(google_sheet.url)
+
+            response_data = {}
+            response_data['result'] = 'Loaded sheet successfully!'
+            response_data['name'] = google_sheet.name
+
+            return HttpResponse(
+                json_module.dumps(response_data),
+                content_type="application/json"
+            )
+    elif request.method == "DELETE":
+        GoogleSheet.objects.get(id=request.DELETE['sheet_id']).delete()
+        response_data = {}
+        response_data['result'] = 'Deleted sheet successfully!'
+        return HttpResponse(
+            json_module.dumps(response_data),
+            content_type="application/json"
+        )
 
 #   Gets all previously uploaded sheets and returns them in JSON
 def get_sheets(request):
@@ -329,8 +327,7 @@ def json(request):
     serializer = ProjectSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
-
- # site to see all projects, grouped by organization
+# site to see all projects, grouped by organization
 def projects(request):
     # ContentType
     dd = ContentType.objects.get_for_model(DecimalDimension)
@@ -445,7 +442,7 @@ def get_proj(request):
 #   Output:
 #       A JSON string that has the names of the searched for items
 
-#   As this function is only to be called with ajax a else statement has
+#   As this function is only to be called with ajax an else statement has
 #   purposefully been left out to trigger the errorfunction in the ajax call
 
 def get_multiple(request, project_id, type, field_name):
