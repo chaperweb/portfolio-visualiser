@@ -30,33 +30,31 @@ $(document).ready(function() {
 	  	</div>
   	</div>
     <form action="{% url 'addproject' %}" id="add-project-form" method="POST">
-				  {% csrf_token %}
-				  {% for form in forms %}
-				  	{% for field in form.hidden_fields %}
-				  		{{ field }}
-				  	{% endfor %}
-				  	{% for field in form.visible_fields %}
-				  	<div class="row form-row row-eq-height">
-				  		{{ field.errors }}
-				  		<div class="col-xs-5 col-xs-offset-0 col-sm-offset-1 col-sm-4 form-field-label form-col">
-				  		{{ field.label_tag }}
-				  		</div>
-				  		<div class="col-xs-7 col-sm-4 form-field form-col">
-				  		{{ field }}
-				  		</div>
-				  		<div class="col-xs-0 col-sm-3">
-				  		</div>
-				  	</div>
-				  	{% endfor %}
-				  {% endfor %}
-	<div class="row form-row row-eq-height">
-		<div class="col-xs-7 col-xs-offset-5 col-sm-offset-5 col-sm-4 form-field form-col">
-  			<button type="submit" id="submit-project-btn" class="btn btn-success">Add project</button>
-  		</div>
-  		<div class="col-xs-0 col-sm-3">
-  		</div>
+  	  {% csrf_token %}
+  	  {% for form in forms %}
+  	  	{% for field in form.hidden_fields %}
+  	  		{{ field }}
+  	  	{% endfor %}
+  	  	{% for field in form.visible_fields %}
+  	  	<div class="row form-row row-eq-height">
+  	  		{{ field.errors }}
+  	  		<div class="col-xs-5 col-xs-offset-0 col-sm-offset-1 col-sm-4 form-field-label form-col">
+  	  		  {{ field.label_tag }}
+  	  		</div>
+  	  		<div class="col-xs-7 col-sm-4 form-field form-col">
+  	  		  {{ field }}
+  	  		</div>
+  	  	</div>
+  	  	{% endfor %}
+  	  {% endfor %}
+  <div class="row form-row row-eq-height">
+  <div class="col-xs-7 col-xs-offset-5 col-sm-offset-5 col-sm-4 form-field form-col">
+  	<button type="submit" id="submit-project-btn" class="btn btn-success">Add project</button>
+  </div>
+  <div class="col-xs-0 col-sm-3">
+  </div>
 
-	</div>
+  </div>
 	</form>
   </div>
 </div>
