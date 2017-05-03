@@ -13,74 +13,53 @@ Projects
 
 {% block content %}
 <div class="container">
-  {% for org in organizations %}
-
-
-  <div class="panel panel-default col-lg-3">
+{% for org in organizations %}
+  <div class="panel panel-default col-lg-12">
     <div class="panel-heading row" data-toggle="collapse" data-target="#{{ org.name.split|join:"_" }}" aria-controls="#org-panel" aria-expanded="false">
-
-    <div class="{{org.name.split|join:"_"}}preview">
-      <div class="col-lg-1">
-
-
-      <span class="{{org.name.split|join:"_"}}glyph glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-      <span class="{{org.name.split|join:"_"}}glyph glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+      <div class="{{org.name.split|join:"_"}}preview">
+        <div class="col-lg-1">
+          <span class="{{org.name.split|join:"_"}}glyph glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+          <span class="{{org.name.split|join:"_"}}glyph glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+        </div>
+        <div class="col-lg-4">
+          {{ org.name }}
+        </div>
       </div>
-      <div class="col-lg-4">{{ org.name }}</div>
+    </div>
+    <div class="panel-body orginprojut">
+      <!-- DO NOT DELETE - this div is for first four projects  -->
+      <div id="alwaysvisible{{org.name.split|join:"_"}}" class="row"></div>
+
+      <!-- Div for rest of the projects, collapsable -->
+      <div id="{{org.name.split|join:"_"}}" class="collapse row">
+        {% for project in projects %}
+          {% if project.parent == org %}
+            <!-- Single project -->
+            <a href="{% url 'show_project' project.pk %}" class="proju {{org.name.split|join:"_"}} col-lg-2">
+                <p>{{ project.name }}</p>
+                {% for budget in budgets %}
+                  {% if budget.project.pk == project.pk and budget.dimension_object.name == "SizeMoney" %}
+                    <p>Budget: {{ budget.dimension_object.value }}</p>
+                  {% endif %}
+                {% endfor %}
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
   </div>
-  </div>
-  <br />
 
-<div  class="orginprojut col-lg-12">
+  <!-- This script moves first 4 projects of an organization to div "alwaysvisible" -->
+  <script>
+    $(".{{org.name.split|join:"_"}}").slice(0,4).detach().appendTo("#alwaysvisible{{org.name.split|join:"_"}}");
+    var n = $(".{{org.name.split|join:"_"}}").length;
+    if (n <= 4) {
+      $(".{{org.name.split|join:"_"}}glyph").hide();
+    }
 
-    <!-- DO NOT DELETE - this div is for first four projects  -->
-    <div id="alwaysvisible{{org.name.split|join:"_"}}"></div>
-
-    <!-- Div for rest of the projects, collapsable -->
-    <div id="{{org.name.split|join:"_"}}" class="collapse">
-      {% for project in projects %}
-        {% if project.parent == org %}
-
-        <!-- Single project -->
-          <a href="{% url 'show_project' project.pk %}" class="proju {{org.name.split|join:"_"}}">
-          <div  class="col-lg-2">
-
-
-
-              <p>  {{ project.name }}</p>
-            {% for budget in budgets %}
-              {% if budget.project.pk == project.pk and budget.dimension_object.name == "SizeMoney" %}
-                <p>Budjetti: {{ budget.dimension_object.value }}</p>
-              {% endif %}
-            {% endfor %}
-
-
-          </div>
-          </a>
-        {% endif %}
-      {% endfor %}
-    </div>
-
-  </div>
-    <!-- This script moves first 4 projects of an organization to div "alwaysvisible" -->
-    <script>
-      $(".{{org.name.split|join:"_"}}").slice(0,4).detach().appendTo("#alwaysvisible{{org.name.split|join:"_"}}");
-      var n = $(".{{org.name.split|join:"_"}}").length;
-      if (n <= 4) {
-        $(".{{org.name.split|join:"_"}}glyph").hide();
-      }
-
-      $(".{{org.name.split|join:"_"}}preview").append("<span class='badge pull-right'>" + n + "</span>");
-    </script>
-    <br />
-    <br />
-    <br />
-    <br />
-
+    $(".{{org.name.split|join:"_"}}preview").append("<span class='badge pull-right'>" + n + "</span>");
+  </script>
   {% endfor %}
-
-
 </div>
 
 {% endblock %}

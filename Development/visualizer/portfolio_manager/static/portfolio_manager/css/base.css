@@ -1,11 +1,14 @@
 .navbar {
   background-color: rgb(116,116,116);
   color: white;
-  border-color: rgb(116,116,116);
+  border: 0;
+  border-radius: 0;
+  min-height: 4vh;
 }
 
 .navbar .container-fluid .navbar-item {
   font-size: 150%;
+  min-height: 4vh;
 }
 
 .navbar .container-fluid .navbar-nav > li > a {
@@ -13,5 +16,8 @@
 }
 .navbar .container-fluid .navbar-nav > .active > a {
   color: rgb(37,230,32);
-  background-color: rgb(116,116,116);
+  background-color: inherit;
+}
+.navbar-right {
+  padding-right: 15px;
 }

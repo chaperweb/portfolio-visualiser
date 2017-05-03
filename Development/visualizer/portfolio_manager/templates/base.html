@@ -39,7 +39,6 @@
 </head>
 
 <body>
-<br />
 {# NAVIGATION BAR #}
 <script>
 $(document).ready(function() {
@@ -77,7 +76,6 @@ $(document).ready(function() {
         <li><a class="navbar-item" href="{% url 'admin_tools' %}">Admin</a></li>
         <li><a class="navbar-item" href="{% url 'databaseview' %}">Database</a></li>
         <li><a class="navbar-item" href="{% url 'about' %}">About</a></li>
-        
       </ul>
     </div>
   </div>
@@ -91,3 +89,5 @@ $(document).ready(function() {
 
 {# REST OF THE BODY HERE #}
 {% block content %}CONTENT HERE{% endblock %}
+</body>
+</html>
