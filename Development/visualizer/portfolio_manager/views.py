@@ -345,22 +345,19 @@ def projects(request):
 # site to show datafields by organization
 def databaseview(request):
     if request.method == "POST":
-       form = OrgForm(request.POST)
+        form = OrgForm(request.POST)
 
-       if form.is_valid:
-           # All the projects for that organization
-          projs = Project.objects.filter(parent=request.POST.get("orgs", ""))
-          #   all dimensions in every project of the organization
-          dimensions = []
-          for p in projs:
-              dimensions += ProjectDimension.objects.filter(project=p)
-          # (dimension name -> datatype) dictionary
-          dims = {}
-          for dim in dimensions:
-              if dim.dimension_object.name not in dims:
-                  dims[dim.dimension_object.name] = str(dim).replace("Dimension", "")
-          #redirect to the url where you'll process the input
-          return render(request, 'database.html', {'form':form, 'projs':projs, 'dims':dims})
+        if form.is_valid:
+            # (dimension name -> datatype) dictionary
+            dims = {}
+            organization = Organization.objects.get(name=request.POST['orgs'])
+            templates = organization.templates.all()
+            if len(templates) > 0:
+                template = templates[0]
+                for template_dimension in template.dimensions.all():
+                 dims[template_dimension.name] = str(template_dimension.content_type.model_class().__name__).replace("Dimension", "")
+            #redirect to the url where you'll process the input
+            return render(request, 'database.html', {'form':form, 'dims':dims})
     else:
         form = OrgForm()
     return render(request, 'database.html', {'form':form})
