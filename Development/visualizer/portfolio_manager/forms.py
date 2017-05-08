@@ -157,6 +157,7 @@ class AddProjectForm(ModelForm):
         self.fields['name'].widget.attrs['readonly'] = 'readonly'
 
 class ProjectTemplateForm(ModelForm):
+    # TODO: Dont take all content types, only the actual types
     field_type = forms.ModelChoiceField(queryset=ContentType.objects.all(), required=True)
 
     class Meta:

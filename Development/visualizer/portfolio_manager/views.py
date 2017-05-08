@@ -122,9 +122,7 @@ def add_field(request):
             return JsonResponse({"result": "success"})
         else:
             return JsonResponse({"result": "error"})
-    elif request.method == "GET":
-        form = ProjectTemplateForm()
-        return HttpResponse({"form": form})
+
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
         # ContentTypes
@@ -372,7 +370,7 @@ def databaseview(request):
                 template = templates[0]
                 for template_dimension in template.dimensions.all():
                     #TODO: group them by types to make the site easier to view?
-                 dims[template_dimension.name] = str(template_dimension.content_type.model_class().__name__).replace("Dimension", "")
+                    dims[template_dimension.name] = str(template_dimension.content_type.model_class().__name__).replace("Dimension", "")
             #redirect to the url where you'll process the input
             return render(request, 'database.html', {'form':form, 'dims':dims, 'add_field_form': add_field_form})
     else:
