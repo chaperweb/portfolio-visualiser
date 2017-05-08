@@ -157,8 +157,10 @@ class AddProjectForm(ModelForm):
         self.fields['name'].widget.attrs['readonly'] = 'readonly'
 
 class ProjectTemplateForm(ModelForm):
-    # TODO: Dont take all content types, only the actual types
-    field_type = forms.ModelChoiceField(queryset=ContentType.objects.all(), required=True)
+    # Can we filter these with some attribute?
+    base_types = ["textdimension", "datedimension", "associatedpersondimension", "associatedpersonsdimension", "associatedorganizationdimension", "associatedprojectsdimension", "decimaldimension"]
+    cts = ContentType.objects.filter(model__in = base_types)
+    field_type = forms.ModelChoiceField(queryset=cts, required=True)
 
     class Meta:
         model = ProjectTemplate
