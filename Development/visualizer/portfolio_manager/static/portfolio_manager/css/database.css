@@ -1,4 +1,3 @@
-
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -28,12 +27,10 @@ tr:nth-child(even) {
   border-bottom-right-radius: 6px;
 }
 
-#footer > .navbar {
-  background-color: white !important;
-  border: none;
-}
-
-.btn-success,  .btn-success:visited, .btn-success:hover, .btn-success:active:focus, .btn-success:focus  {
-  background-color: rgb(156,156,156);
-  border-color: rgb(156,156,156);
+.container button#open_add_field_modal_btn {
+  position: fixed;
+  width: 20vw;
+  left: 40vw;
+  bottom: 0;
+  margin-bottom: 10px;
 }

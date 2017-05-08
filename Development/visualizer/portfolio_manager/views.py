@@ -109,8 +109,22 @@ def add_new_person(request):
                 content_type="application/json"
             )
 
-
-
+# Function to add field
+def add_field(request):
+    if request.method == "POST":
+        form = ProjectTemplateForm(request.POST)
+        if form.is_valid:
+            org = Organization.objects.get(name=request.POST['organization'])
+            template = ProjectTemplate.objects.get(organization=org)
+            ct = ContentType.objects.get_for_id(request.POST['field_type'])
+            template_dim = ProjectTemplateDimension(name=request.POST['name'], template=template, content_type=ct)
+            template_dim.save()
+            return JsonResponse({"result": "success"})
+        else:
+            return JsonResponse({"result": "error"})
+    elif request.method == "GET":
+        form = ProjectTemplateForm()
+        return HttpResponse({"form": form})
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
         # ContentTypes
@@ -331,6 +345,7 @@ def json(request):
 
 
  # site to see all projects, grouped by organization
+
 def projects(request):
     # ContentType
     dd = ContentType.objects.get_for_model(DecimalDimension)
@@ -348,6 +363,7 @@ def databaseview(request):
         form = OrgForm(request.POST)
 
         if form.is_valid:
+            add_field_form = ProjectTemplateForm(initial={'organization': request.POST['orgs'] })
             # (dimension name -> datatype) dictionary
             dims = {}
             organization = Organization.objects.get(name=request.POST['orgs'])
@@ -355,12 +371,14 @@ def databaseview(request):
             if len(templates) > 0:
                 template = templates[0]
                 for template_dimension in template.dimensions.all():
+                    #TODO: group them by types to make the site easier to view?
                  dims[template_dimension.name] = str(template_dimension.content_type.model_class().__name__).replace("Dimension", "")
             #redirect to the url where you'll process the input
-            return render(request, 'database.html', {'form':form, 'dims':dims})
+            return render(request, 'database.html', {'form':form, 'dims':dims, 'add_field_form': add_field_form})
     else:
+        add_field_form = ProjectTemplateForm()
         form = OrgForm()
-    return render(request, 'database.html', {'form':form})
+    return render(request, 'database.html', {'form':form, 'add_field_form': add_field_form})
 
 def addproject(request):
 

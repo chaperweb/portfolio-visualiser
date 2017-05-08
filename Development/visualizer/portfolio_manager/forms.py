@@ -155,3 +155,17 @@ class AddProjectForm(ModelForm):
     def disable_name_and_organization(self):
         self.fields['organization'].widget.attrs['disabled'] = True
         self.fields['name'].widget.attrs['readonly'] = 'readonly'
+
+class ProjectTemplateForm(ModelForm):
+    field_type = forms.ModelChoiceField(queryset=ContentType.objects.all(), required=True)
+
+    class Meta:
+        model = ProjectTemplate
+        fields = ['name', 'organization']
+        labels = {
+            "name": "Name",
+            "organization": "Organization",
+        }
+        widgets = {
+            "organization": forms.HiddenInput()
+        }

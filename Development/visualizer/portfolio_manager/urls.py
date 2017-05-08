@@ -38,4 +38,5 @@ urlpatterns = [
     url(r'^remove_project_from_project$', views.remove_project_from_project, name='remove_project_from_project'),
     url(r'^add_person_to_project$', views.add_person_to_project, name='add_person_to_project'),
     url(r'^add_project_to_project$', views.add_project_to_project, name='add_project_to_project'),
+    url(r'^add_field$', views.add_field, name='add_field'),
 ]
