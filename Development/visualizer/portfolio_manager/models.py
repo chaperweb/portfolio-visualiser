@@ -283,7 +283,7 @@ class DepartmentDimension (TextDimension):
   class Meta:
     proxy = True
 
-class SizeMoneyDimension (DecimalDimension):
+class SizeBudgetDimension (DecimalDimension):
   class Meta:
     proxy = True
 
@@ -324,7 +324,7 @@ class PhaseDimension (TextDimension):
   class Meta:
     proxy = True
 
-class SizeMoneyMilestone (DecimalMilestone):
+class SizeBudgetMilestone (DecimalMilestone):
   class Meta:
     proxy = True
 

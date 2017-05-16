@@ -19,6 +19,7 @@ Projects | {{project.name}}
 
 {# CONTENT HERE #}
 {% block content %}
+{% load tz %}
 <!-- Sidebar -->
 <div class="sidebar navbar-fixed-left navbar-inverse xs-hidden col-md-2">
   <ul class="nav navbar-nav">
@@ -64,12 +65,8 @@ Projects | {{project.name}}
                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
                 <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
               </div>
-              <div class="col-md-2">
-                Organization
-              </div>
-              <div id="projectparent" class="col-md-2 col-md-offset-4">
-                {{ project.parent }}
-              </div>
+              <div class="col-md-2">Organization</div>
+              <div id="projectparent" class="col-lg-3 col-lg-offset-3">{{ project.parent }}</div>
               <div class="col-md-1 pull-right modifybutton">
                 <button class="btn btn-xs btn-default open-modify modify-button" data-type="text" data-field="Organization" data-value="{{project.parent}}" data-toggle="modal" data-target="#modify-org-modal">
                   Modify
@@ -77,25 +74,22 @@ Projects | {{project.name}}
               </div>
             </div>
             <div id="org-panel" class="panel-collapse panel-body collapse row">
-              <div>
-                <table class="table">
-                  <thead>
+              <table class="table">
+                <thead>
                   <tr>
                     <th>Date</th>
                     <th>Value</th>
                   </tr>
                 </thead>
                 <tbody>
-
                 {% for date, org in orghistory %}
-                <tr>
-                  <td>{{date}}</td>
-                  <td>{{org}}</td>
-                </tr>
+                  <tr>
+                    <td>{{date}}</td>
+                    <td>{{org}}</td>
+                  </tr>
                 {% endfor %}
                 </tbody>
               </table>
-              </div>
             </div>
           </div>
           <!-- BUDGET -->
@@ -106,9 +100,9 @@ Projects | {{project.name}}
                 <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
               </div>
               <div class="col-lg-2">
-                {{ budget.dimension_object.name }}:
+                Budget:
               </div>
-              <div id="{{ budget.dimension_object.name }}" class="col-lg-2 col-lg-offset-4">
+              <div id="{{ budget.dimension_object.name }}" class="col-lg-3 col-lg-offset-3">
                 {{ budget.dimension_object.value }}
               </div>
               <div class="col-md-1 pull-right">
@@ -149,8 +143,8 @@ Projects | {{project.name}}
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
-                  {{ x.dimension_object.value }}
+                <div id="{{x.dimension_object.name}}" class="col-lg-3 col-lg-offset-3">
+                  {{ x.dimension_object.value|date:"F j, Y" }}
                 </div>
                 <div class="col-md-1 pull-right">
                   <button class="btn btn-xs btn-default open-modify-date modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-date-modal">
@@ -191,7 +185,7 @@ Projects | {{project.name}}
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-3 col-lg-offset-3">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
@@ -233,7 +227,7 @@ Projects | {{project.name}}
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-3 col-lg-offset-3">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
@@ -245,22 +239,64 @@ Projects | {{project.name}}
               <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse row">
                 <table class="table">
                   <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for i in x.dimension_object.history.all %}
+                  {% if forloop.counter < 6 %}
                   <tr>
-                    <th>Date</th>
-                    <th>Value</th>
+                    <td>{{i.history_date}}</td>
+                    <td>{{i.value}}</td>
                   </tr>
-                </thead>
-                <tbody>
-                {% for i in x.dimension_object.history.all %}
-                {% if forloop.counter < 6 %}
-                <tr>
-                  <td>{{i.history_date}}</td>
-                  <td>{{i.value}}</td>
-                </tr>
-                {% endif %}
-              	{% endfor %}
-              </tbody>
-            </table>
+                  {% endif %}
+                	{% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          {% endfor %}
+          <!-- ASSOCIATED ORGANIZATION FIELDS -->
+          {% for x in assOrg %}
+            <div class="panel panel-default">
+              <div class="panel-heading row" data-toggle="collapse" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
+                <div class="col-lg-1">
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                </div>
+                <div class="col-lg-2">
+                  {{x.dimension_object.name}}:
+                </div>
+                <div id="{{x.dimension_object.name}}" class="col-lg-3 col-lg-offset-3">
+                  {{ x.dimension_object.value }}
+                </div>
+                <div class="col-md-1 pull-right">
+                  <button class="btn btn-xs btn-default open-modify-assorg modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-assorg-modal">
+                    Modify
+                  </button>
+                </div>
+              </div>
+              <div id="{{x.dimension_object.name}}-panel" class="panel-collapse panel-body collapse row">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for i in x.dimension_object.history.all %}
+                  {% if forloop.counter < 6 %}
+                  <tr>
+                    <td>{{i.history_date}}</td>
+                    <td>{{i.value}}</td>
+                  </tr>
+                  {% endif %}
+                	{% endfor %}
+                  </tbody>
+                </table>
               </div>
             </div>
           {% endfor %}
@@ -275,7 +311,7 @@ Projects | {{project.name}}
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-3 col-lg-offset-3">
                   {{ x.dimension_object.value }}
                 </div>
                 <div class="col-md-1 pull-right">
@@ -316,7 +352,7 @@ Projects | {{project.name}}
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-3 col-lg-offset-3">
                   <button type="button" class="btn btn-xs btn-success multiple-button modify-button" data-projectid="{{project.pk}}" data-type="asspersons" data-field="{{ x.dimension_object.name }}" data-toggle="modal" data-target="#multiple-items-modal">Click to see all</button>
                 </div>
                 <div class="col-md-1 pull-right">
@@ -325,27 +361,6 @@ Projects | {{project.name}}
                   </button>
                 </div>
               </div>
-            </div>
-          {% endfor %}
-          <!-- ASSOCIATED ORGANIZATION FIELDS -->
-          {% for x in assOrg %}
-            <div class="panel panel-default">
-              <div class="panel-heading row" href="#{{x.dimension_object.name}}-panel" aria-controls="#{{x.dimension_object.name}}-panel" aria-expanded="false">
-                <div class="col-lg-1">
-                </div>
-                <div class="col-lg-2">
-                  {{x.dimension_object.name}}:
-                </div>
-                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
-                  {{ x.dimension_object.value }}
-                </div>
-                <div class="col-md-1 pull-right">
-                  <button class="btn btn-xs btn-default open-modify-assorg modify-button" data-type="text" data-field="{{x.dimension_object.name}}" data-value="{{ x.dimension_object.value }}" data-toggle="modal" data-target="#modify-assorg-modal">
-                    Modify
-                  </button>
-                </div>
-              </div>
-
             </div>
           {% endfor %}
           <!-- ASSOCIATED PROJECTS FIELDS -->
@@ -357,7 +372,7 @@ Projects | {{project.name}}
                 <div class="col-lg-2">
                   {{x.dimension_object.name}}:
                 </div>
-                <div id="{{x.dimension_object.name}}" class="col-lg-2 col-lg-offset-4">
+                <div id="{{x.dimension_object.name}}" class="col-lg-3 col-lg-offset-3">
                   <button type="button" class="btn btn-xs btn-success multiple-button modify-button" data-projectid="{{project.pk}}" data-type="assprojects" data-field="{{ x.dimension_object.name }}" data-toggle="modal" data-target="#multiple-items-modal">Click to see all</button>
                 </div>
                 <div class="col-md-1 pull-right">
@@ -374,5 +389,5 @@ Projects | {{project.name}}
     </div>
   </div>
 </div>
-<!-- /#page-content-wrapper -->
+<!-- /page-content-wrapper -->
 {% endblock %}
