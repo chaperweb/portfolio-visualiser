@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^database$', views.databaseview, name='databaseview'),
     url(r"^about$", TemplateView.as_view(template_name="about.html"), name='about'),
     url(r'^addproject$', views.addproject, name='addproject'),
+    url(r'^add_field$', views.add_field, name='add_field'),
 
     #For stuff
     url(r"^json$", views.json, name='json'),
