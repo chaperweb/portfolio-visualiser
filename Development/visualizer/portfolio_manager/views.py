@@ -112,16 +112,32 @@ def add_new_person(request):
 # Function to add field
 def add_field(request):
     if request.method == "POST":
-        form = ProjectTemplateForm(request.POST)
-        if form.is_valid:
+        try:
+            form = ProjectTemplateForm(request.POST)
             org = Organization.objects.get(name=request.POST['organization'])
             template = ProjectTemplate.objects.get(organization=org)
             ct = ContentType.objects.get_for_id(request.POST['field_type'])
             template_dim = ProjectTemplateDimension(name=request.POST['name'], template=template, content_type=ct)
             template_dim.save()
-            return JsonResponse({"result": "success"})
-        else:
-            return JsonResponse({"result": "error"})
+
+            add_field_form = ProjectTemplateForm(initial={'organization': request.POST['organization'] })
+            orgform = OrgForm({'orgs': org})
+            # (dimension name -> datatype) dictionary
+            dims = {}
+            templates = org.templates.all()
+            if len(templates) > 0:
+                template = templates[0]
+                for template_dimension in template.dimensions.all():
+                    #TODO: group them by types to make the site easier to view?
+                    dims[template_dimension.name] = str(template_dimension.content_type.model_class().__name__).replace("Dimension", "")
+
+            resultmsg = "Successfully added the \"%s\"-field" % request.POST['name']
+            return render(request, 'database.html', {'form':orgform, 'dims':dims, 'add_field_form': add_field_form, 'add_field_success': resultmsg})
+        except:
+            orgform = OrgForm()
+            add_field_form = ProjectTemplateForm()
+            resultmsg = "An error occured"
+            return render(request, 'database.html', {'form': orgform, 'add_field_form': add_field_form, 'add_field_fail': resultmsg})
 
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)

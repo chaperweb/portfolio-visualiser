@@ -21,11 +21,14 @@ Database
   <div class="row text-center">
     <h3>Database</h3>
   </div>
-  <form action="{% url 'databaseview' %}" method="POST">
+  <form class="col-lg-4" action="{% url 'databaseview' %}" method="POST">
     {% csrf_token %}
     <h4>Organization:</h4>
     {{ form.orgs }}
   </form>
+
+  {% if add_field_success %}<h4 class="col-lg-4 text-center" style="color: #00ff00;">{{ add_field_success }}</h4>{% endif %}
+  {% if add_field_fail %}<h4 class="col-lg-4 text-center" style="color: #ff0000;">{{ add_field_fail }}</h4>{% endif %}
 
   <div class="col-lg-12">
     <table class="item">
