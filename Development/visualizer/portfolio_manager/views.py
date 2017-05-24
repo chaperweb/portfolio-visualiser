@@ -13,14 +13,15 @@ import json as json_module
 logger = logging.getLogger('django.request')
 
 def home(request):
-
-    # milestones for project sneak peeks (only future milestones, ordered by date)
-    milestones = Milestone.objects.filter(due_date__gte = datetime.now()).order_by('due_date')
+    # milestones for project sneak peeks (only future milestones, ordered by date
+    now = datetime.now()
+    milestones = Milestone.objects.filter(due_date__gte = now)
+    ordered_milestones = milestones.order_by('due_date')
 
     # dictionary for (project -> next milestone)
     mils = {}
     # Loop through the milestones
-    for m in milestones:
+    for m in ordered_milestones:
         # Checks if m.project is already in the dictionary for next milestone
         if m.project not in mils:
             mils[m.project] = m.due_date
@@ -33,6 +34,8 @@ def home(request):
     # Get dimensions of correct content_type for assPersonDs and dateds
     assPersonDs = dims.filter(content_type=assPersonD)
     dateds = dims.filter(content_type=dated)
+
+
     context = {}
     context["projects"] = Project.objects.all()
     context["pre_add_project_form"] = AddProjectForm()
