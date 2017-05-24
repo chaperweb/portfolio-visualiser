@@ -1,21 +1,22 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from portfolio_manager.models import *
-from portfolio_manager.forms import *
+import logging
+import json as json_module
+from itertools import groupby
+
 from django.contrib.contenttypes.models import ContentType
 import django.forms
-import logging
 from django.http import JsonResponse, \
                         HttpResponse, \
                         QueryDict
+from django.shortcuts import render, redirect, get_object_or_404
+from django.view.decorators.http import require_POST
+
+from portfolio_manager.models import *
+from portfolio_manager.forms import *
 from portfolio_manager.serializers import ProjectSerializer, \
                                           OrganizationSerializer, \
                                           PersonSerializer, \
                                           ProjectNameIdSerializer
 from portfolio_manager.importer import from_google_sheet
-import json as json_module
-from itertools import groupby
-
-# TODO: MAKE A CUSTOM CHECK FOR request.method
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -61,133 +62,133 @@ def admin_tools(request):
     return render(request, 'admin_tools.html', {'pre_add_project_form': form})
 
 # Site to add a new organization
+@require_POST()
 def create_org(request):
-    if request.method == 'POST':
-        data = {'name': request.POST.get('orgName')}
-        form = OrganizationForm(data)
-        if form.is_valid():
-            # Save a new Organization
-            organization = Organization(name = form.cleaned_data['name'])
-            organization.save()
+    data = {'name': request.POST.get('orgName')}
+    form = OrganizationForm(data)
+    if form.is_valid():
+        # Save a new Organization
+        organization = Organization(name = form.cleaned_data['name'])
+        organization.save()
 
-            template_data = {
-                'name': 'default',
-                'organization': organization
-            }
-            template = ProjectTemplate(**template_data)
-            template.save()
+        template_data = {
+            'name': 'default',
+            'organization': organization
+        }
+        template = ProjectTemplate(**template_data)
+        template.save()
 
-            ct_objects = ContentType.objects
+        ct_objects = ContentType.objects
 
-            ####    PROJECT TEMPLATES   ###
+        ####    PROJECT TEMPLATES   ###
 
-            # Budget
-            project_template_data_budget = {
-                'template': template,
-                'name': 'SizeBudget',
-                'content_type': ct_objects.get_for_model(DecimalDimension),
-            }
-            pt_dim = ProjectTemplateDimension(**project_template_data_budget)
-            pt_dim.save()
+        # Budget
+        project_template_data_budget = {
+            'template': template,
+            'name': 'SizeBudget',
+            'content_type': ct_objects.get_for_model(DecimalDimension),
+        }
+        pt_dim = ProjectTemplateDimension(**project_template_data_budget)
+        pt_dim.save()
 
-            # End date
-            project_template_data_enddate = {
-                'template': template,
-                'name': 'EndDate',
-                'content_type': ct_objects.get_for_model(DateDimension),
-            }
-            pt_dim_2 = ProjectTemplateDimension(**project_template_data_enddate)
-            pt_dim_2.save()
+        # End date
+        project_template_data_enddate = {
+            'template': template,
+            'name': 'EndDate',
+            'content_type': ct_objects.get_for_model(DateDimension),
+        }
+        pt_dim_2 = ProjectTemplateDimension(**project_template_data_enddate)
+        pt_dim_2.save()
 
-            # Project manager
-            project_template_data_pm = {
-                'template': template,
-                'name': 'ProjectManager',
-                'content_type': ct_objects.get_for_model(AssociatedPersonDimension),
-            }
-            pt_dim_3 = ProjectTemplateDimension(**project_template_data_pm)
-            pt_dim_3.save()
+        # Project manager
+        project_template_data_pm = {
+            'template': template,
+            'name': 'ProjectManager',
+            'content_type': ct_objects.get_for_model(AssociatedPersonDimension),
+        }
+        pt_dim_3 = ProjectTemplateDimension(**project_template_data_pm)
+        pt_dim_3.save()
 
-            ###     RESPONSE    ###
-            response_data = {}
-            response_data['result'] = 'Created organization successfully!'
-            response_data['orgName'] = organization.name
-            return HttpResponse(
-                json_module.dumps(response_data),
-                content_type="application/json"
-            )
+        ###     RESPONSE    ###
+        response_data = {}
+        response_data['result'] = 'Created organization successfully!'
+        response_data['orgName'] = organization.name
+        return HttpResponse(
+            json_module.dumps(response_data),
+            content_type="application/json"
+        )
 
 # Site to add a new person
+@require_POST()
 def create_person(request):
-    if request.method == 'POST':
-        first = request.POST.get('first')
-        last = request.POST.get('last')
-        data = {'first': first, 'last': last}
-        form = PersonForm(data)
-        if form.is_valid():
-            person_data = {
-                'first_name': form.cleaned_data['first'],
-                'last_name': form.cleaned_data['last'],
-            }
-            person = Person(**person_data)
-            person.save()
+    first = request.POST.get('first')
+    last = request.POST.get('last')
+    data = {'first': first, 'last': last}
+    form = PersonForm(data)
+    if form.is_valid():
+        person_data = {
+            'first_name': form.cleaned_data['first'],
+            'last_name': form.cleaned_data['last'],
+        }
+        person = Person(**person_data)
+        person.save()
 
-            response_data = {}
-            response_data['result'] = 'Created person successfully!'
-            response_data['name'] = str(person)
-            return HttpResponse(
-                json_module.dumps(response_data),
-                content_type="application/json"
-            )
+        response_data = {}
+        response_data['result'] = 'Created person successfully!'
+        response_data['name'] = str(person)
+        return HttpResponse(
+            json_module.dumps(response_data),
+            content_type="application/json"
+        )
 
 # Function to add field
+@require_POST()
 def add_field(request):
-    if request.method == "POST":
-        try:
-            form = ProjectTemplateForm(request.POST)
-            org = Organization.objects.get(name=request.POST['organization'])
-            template = ProjectTemplate.objects.get(organization=org)
-            ct = ContentType.objects.get_for_id(request.POST['field_type'])
-            template_dim_data = {
-                'name': request.POST['name'],
-                'template': template,
-                'content_type': ct,
-            }
-            template_dim = ProjectTemplateDimension(**template_dim_data)
-            template_dim.save()
+    try:
+        form = ProjectTemplateForm(request.POST)
+        org = Organization.objects.get(name=request.POST['organization'])
+        template = ProjectTemplate.objects.get(organization=org)
+        ct = ContentType.objects.get_for_id(request.POST['field_type'])
+        template_dim_data = {
+            'name': request.POST['name'],
+            'template': template,
+            'content_type': ct,
+        }
+        template_dim = ProjectTemplateDimension(**template_dim_data)
+        template_dim.save()
 
-            add_field_form = ProjectTemplateForm()
-            add_field_form.initial = {'organization': org.name}
-            orgform = OrgForm({'orgs': org})
-            # (dimension name -> datatype) dictionary
-            dims = {}
-            templates = org.templates.all()
-            if len(templates) > 0:
-                template = templates[0]
-                for t_dim in template.dimensions.all():
-                    #TODO: group them by types to make the site easier to view?
-                    t_dim_name = t_dim.content_type.model_class().__name__
-                    dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
+        add_field_form = ProjectTemplateForm()
+        add_field_form.initial = {'organization': org.name}
+        orgform = OrgForm({'orgs': org})
+        # (dimension name -> datatype) dictionary
+        dims = {}
+        templates = org.templates.all()
+        if len(templates) > 0:
+            template = templates[0]
+            for t_dim in template.dimensions.all():
+                #TODO: group them by types to make the site easier to view?
+                t_dim_name = t_dim.content_type.model_class().__name__
+                dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
 
-            resultmsg = "Successfully added the \"%s\"-field" % request.POST['name']
-            render_data = {
-                'form': orgform,
-                'dims': dims,
-                'add_field_form': add_field_form,
-                'add_field_success': resultmsg,
-            }
-            return render(request, 'database.html', render_data)
-        except Exception as e:
-            orgform = OrgForm()
-            add_field_form = ProjectTemplateForm()
-            resultmsg = "ERROR: %s" % e
-            print(resultmsg)
-            render_data = {
-                'form': orgform,
-                'add_field_form': add_field_form,
-                'add_field_fail': resultmsg,
-            }
-            return render(request, 'database.html', render_data)
+        resultmsg = "Successfully added the \"%s\"-field" % request.POST['name']
+        render_data = {
+            'form': orgform,
+            'dims': dims,
+            'add_field_form': add_field_form,
+            'add_field_success': resultmsg,
+        }
+        return render(request, 'database.html', render_data)
+    except Exception as e:
+        orgform = OrgForm()
+        add_field_form = ProjectTemplateForm()
+        resultmsg = "ERROR: %s" % e
+        print(resultmsg)
+        render_data = {
+            'form': orgform,
+            'add_field_form': add_field_form,
+            'add_field_fail': resultmsg,
+        }
+        return render(request, 'database.html', render_data)
 
 def show_project(request, project_id):
     ###     VERSION WITH TEMPLATES      ###
@@ -261,11 +262,10 @@ def show_project(request, project_id):
 
 # Site for editing a project
 def project_edit(request, project_id, field_name):
-    proj = get_object_or_404(Project, pk=project_id)
+    proj = Project.objects.get(pk=project_id)
     # If you want to modify the owning organization
     if field_name == "Organization":
         try:
-            # Existing organizations
             org = Organization.objects.get(name=request.POST.get('name'))
         except Organization.DoesNotExist:
             # Saves new organization
@@ -279,12 +279,9 @@ def project_edit(request, project_id, field_name):
     # If you want to modify a associated organization
     if field_name == "assorg":
         try:
-            # Existing organizations
             org = Organization.objects.get(name=request.POST.get('org'))
-            # ContentType
             ct = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
-            # The dimensions of correct content_type and correct project_id
-            td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
+            td = ProjectDimension.objects.filter(content_type=ct, project=project_id)
             tds = []
             # Manual filtering
             for t in td:
@@ -376,35 +373,27 @@ def project_edit(request, project_id, field_name):
         return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
 #   Import google sheet
-#   Doesn't return anything if it isn't a POST or a DELETE to trigger the ajax error function
+@require_POST()
 def importer(request):
-    if request.method == "POST":
-        data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
-        form = GoogleSheetForm(data)
-        if form.is_valid():
-            sheet = form.save()
-            # Load the google sheet
-            google_sheet = GoogleSheet.objects.get(id=sheet.id)
-            from_google_sheet(google_sheet.url)
+    data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
+    form = GoogleSheetForm(data)
+    if form.is_valid():
+        sheet = form.save()
+        # Load the google sheet
+        google_sheet = GoogleSheet.objects.get(id=sheet.id)
+        from_google_sheet(google_sheet.url)
 
-            response_data = {}
-            response_data['result'] = 'Loaded sheet successfully!'
-            response_data['name'] = google_sheet.name
-
-            return HttpResponse(
-                json_module.dumps(response_data),
-                content_type="application/json"
-            )
-    elif request.method == "DELETE":
-        GoogleSheet.objects.get(id=request.DELETE['sheet_id']).delete()
         response_data = {}
-        response_data['result'] = 'Deleted sheet successfully!'
+        response_data['result'] = 'Loaded sheet successfully!'
+        response_data['name'] = google_sheet.name
+
         return HttpResponse(
             json_module.dumps(response_data),
             content_type="application/json"
         )
 
 #   Gets all previously uploaded sheets and returns them in JSON
+@require_GET()
 def get_sheets(request):
     if request.method == "GET":
         sheetObjects = GoogleSheet.objects.all()
@@ -457,7 +446,6 @@ def databaseview(request):
     return render(request, 'database.html', {'form':form, 'add_field_form': add_field_form})
 
 def addproject(request):
-
     add_project_form = None
     add_project_form_prefix = 'add_project_form'
     if request.POST:
