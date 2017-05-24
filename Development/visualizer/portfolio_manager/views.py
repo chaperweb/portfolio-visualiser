@@ -13,6 +13,7 @@ from portfolio_manager.serializers import ProjectSerializer, \
                                           ProjectNameIdSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
+from itertools import groupby
 
 # TODO: MAKE A CUSTOM CHECK FOR request.method
 
@@ -189,60 +190,74 @@ def add_field(request):
             return render(request, 'database.html', render_data)
 
 def show_project(request, project_id):
-        theProject = get_object_or_404(Project, pk=project_id)
-        # ContentTypes
-        dd = ContentType.objects.get_for_model(DecimalDimension)
-        td = ContentType.objects.get_for_model(TextDimension)
-        dated = ContentType.objects.get_for_model(DateDimension)
-        assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
-        assPersonsD = ContentType.objects.get_for_model(AssociatedPersonsDimension)
-        assOrgD = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
-        assProjsD = ContentType.objects.get_for_model(AssociatedProjectsDimension)
-
-        # Default fields
-        budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
-
-        # All dimensions
-        dims = ProjectDimension.objects.filter(project_id=theProject.id)
-        # Added text fields
-        texts = dims.filter(content_type=td)
-        # Added decimal fields, removing budget from the query set
-        decfields = dims.filter(content_type=dd).exclude(pk=budget.pk)
-        # Date dimensions
-        dateds = dims.filter(content_type=dated)
-        # Associated person dimensions
-        assPersonDs = dims.filter(content_type=assPersonD)
-        # Associated persons dimensions
-        assPersonsDs = dims.filter(content_type=assPersonsD)
-        # Associated persons dimensions
-        assOrgDs = dims.filter(content_type=assOrgD)
-        # Associated projects dimensions
-        assProjsDs = dims.filter(content_type=assProjsD)
-
-        context = {}
-        context['project'] = theProject
-        context['budget'] = budget
-        context['text'] = texts
-        context['decfield'] = decfields
-        context['dates'] = dateds
-        context['assPerson'] = assPersonDs
-        context['assPersons'] = assPersonsDs
-        context['assOrg'] = assOrgDs
-        context['assProjs'] = assProjsDs
-
-        context['projects'] = Project.objects.all()
-
-        # for organization history
-        history_all = theProject.history.all().order_by('-history_date')[:5]
-
-        orgs = {}
-        for h in history_all:
-            orgs[h.history_date] = h.parent
-
-        context['orghistory'] = sorted(orgs.items(), reverse=True)
+    ###     VERSION WITH TEMPLATES      ###
+    project = Project.objects.get(pk=project_id)
+    org = project.parent
+    template = ProjectTemplate.objects.get(organization=org)
+    dimensions = ProjectTemplateDimension.objects.filter(template=template)
+    testdims = {}
+    for k, g in groupby(dimensions, lambda x: x.content_type):
+        for dim in list(g):
+            dim_type = str(k.model_class().__name__).replace('Dimension', '')
+            testdims.setdefault(dim_type, []).append(dim.name)
+            # dims[k.model_class().__name__].append(dim.name)
+    print(testdims)
 
 
-        return render(request, 'project.html', context)
+
+    ###     WORKING VERSION BELOW       ###
+    theProject = get_object_or_404(Project, pk=project_id)
+    # ContentTypes
+    dd = ContentType.objects.get_for_model(DecimalDimension)
+    td = ContentType.objects.get_for_model(TextDimension)
+    dated = ContentType.objects.get_for_model(DateDimension)
+    assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
+    assPersonsD = ContentType.objects.get_for_model(AssociatedPersonsDimension)
+    assOrgD = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
+    assProjsD = ContentType.objects.get_for_model(AssociatedProjectsDimension)
+
+    # Default fields
+    budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
+
+    # All dimensions
+    dims = ProjectDimension.objects.filter(project_id=theProject.id)
+    # Added text fields
+    texts = dims.filter(content_type=td)
+    # Added decimal fields, removing budget from the query set
+    decfields = dims.filter(content_type=dd).exclude(pk=budget.pk)
+    # Date dimensions
+    dateds = dims.filter(content_type=dated)
+    # Associated person dimensions
+    assPersonDs = dims.filter(content_type=assPersonD)
+    # Associated persons dimensions
+    assPersonsDs = dims.filter(content_type=assPersonsD)
+    # Associated persons dimensions
+    assOrgDs = dims.filter(content_type=assOrgD)
+    # Associated projects dimensions
+    assProjsDs = dims.filter(content_type=assProjsD)
+
+    context = {}
+    context['project'] = theProject
+    context['budget'] = budget
+    context['text'] = texts
+    context['decfield'] = decfields
+    context['dates'] = dateds
+    context['assPerson'] = assPersonDs
+    context['assPersons'] = assPersonsDs
+    context['assOrg'] = assOrgDs
+    context['assProjs'] = assProjsDs
+    context['projects'] = Project.objects.all()
+    context['testdims'] = testdims
+
+    # for organization history
+    history_all = theProject.history.all().order_by('-history_date')[:5]
+
+    orgs = {}
+    for h in history_all:
+        orgs[h.history_date] = h.parent
+    context['orghistory'] = sorted(orgs.items(), reverse=True)
+
+    return render(request, 'project.html', context)
 
 # Site for editing a project
 def project_edit(request, project_id, field_name):
