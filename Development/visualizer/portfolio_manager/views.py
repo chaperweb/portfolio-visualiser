@@ -191,17 +191,17 @@ def add_field(request):
 
 def show_project(request, project_id):
     ###     VERSION WITH TEMPLATES      ###
-    project = Project.objects.get(pk=project_id)
-    org = project.parent
-    template = ProjectTemplate.objects.get(organization=org)
-    dimensions = ProjectTemplateDimension.objects.filter(template=template)
-    testdims = {}
-    for k, g in groupby(dimensions, lambda x: x.content_type):
-        for dim in list(g):
-            dim_type = str(k.model_class().__name__).replace('Dimension', '')
-            testdims.setdefault(dim_type, []).append(dim.name)
-            # dims[k.model_class().__name__].append(dim.name)
-    print(testdims)
+    # project = Project.objects.get(pk=project_id)
+    # org = project.parent
+    # template = ProjectTemplate.objects.get(organization=org)
+    # dimensions = ProjectTemplateDimension.objects.filter(template=template)
+    # testdims = {}
+    # for k, g in groupby(dimensions, lambda x: x.content_type):
+    #     for dim in list(g):
+    #         dim_type = str(k.model_class().__name__).replace('Dimension', '')
+    #         testdims.setdefault(dim_type, []).append(dim.name.replace('Size', ''))
+    #         # dims[k.model_class().__name__].append(dim.name)
+    # print(testdims)
 
 
 
@@ -247,7 +247,7 @@ def show_project(request, project_id):
     context['assOrg'] = assOrgDs
     context['assProjs'] = assProjsDs
     context['projects'] = Project.objects.all()
-    context['testdims'] = testdims
+    # context['testdims'] = testdims
 
     # for organization history
     history_all = theProject.history.all().order_by('-history_date')[:5]
