@@ -14,6 +14,8 @@ from portfolio_manager.serializers import ProjectSerializer, \
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
 
+# TODO: MAKE A CUSTOM CHECK FOR request.method
+
 # LOGGING
 logger = logging.getLogger('django.request')
 
@@ -145,27 +147,46 @@ def add_field(request):
             org = Organization.objects.get(name=request.POST['organization'])
             template = ProjectTemplate.objects.get(organization=org)
             ct = ContentType.objects.get_for_id(request.POST['field_type'])
-            template_dim = ProjectTemplateDimension(name=request.POST['name'], template=template, content_type=ct)
+            template_dim_data = {
+                'name': request.POST['name'],
+                'template': template,
+                'content_type': ct,
+            }
+            template_dim = ProjectTemplateDimension(**template_dim_data)
             template_dim.save()
 
-            add_field_form = ProjectTemplateForm(initial={'organization': request.POST['organization'] })
+            add_field_form = ProjectTemplateForm()
+            add_field_form.initial = {'organization': org.name}
             orgform = OrgForm({'orgs': org})
             # (dimension name -> datatype) dictionary
             dims = {}
             templates = org.templates.all()
             if len(templates) > 0:
                 template = templates[0]
-                for template_dimension in template.dimensions.all():
+                for t_dim in template.dimensions.all():
                     #TODO: group them by types to make the site easier to view?
-                    dims[template_dimension.name] = str(template_dimension.content_type.model_class().__name__).replace("Dimension", "")
+                    t_dim_name = t_dim.content_type.model_class().__name__
+                    dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
 
             resultmsg = "Successfully added the \"%s\"-field" % request.POST['name']
-            return render(request, 'database.html', {'form':orgform, 'dims':dims, 'add_field_form': add_field_form, 'add_field_success': resultmsg})
-        except:
+            render_data = {
+                'form': orgform,
+                'dims': dims,
+                'add_field_form': add_field_form,
+                'add_field_success': resultmsg,
+            }
+            return render(request, 'database.html', render_data)
+        except Exception as e:
             orgform = OrgForm()
             add_field_form = ProjectTemplateForm()
-            resultmsg = "An error occured"
-            return render(request, 'database.html', {'form': orgform, 'add_field_form': add_field_form, 'add_field_fail': resultmsg})
+            resultmsg = "ERROR: %s" % e
+            print(resultmsg)
+            render_data = {
+                'form': orgform,
+                'add_field_form': add_field_form,
+                'add_field_fail': resultmsg,
+            }
+            return render(request, 'database.html', render_data)
 
 def show_project(request, project_id):
         theProject = get_object_or_404(Project, pk=project_id)
