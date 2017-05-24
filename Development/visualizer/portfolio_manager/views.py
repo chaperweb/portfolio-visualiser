@@ -115,18 +115,23 @@ def create_org(request):
             )
 
 # Site to add a new person
-def add_new_person(request):
+def create_person(request):
     if request.method == 'POST':
-        data = {'first': request.POST.get('first'), 'last': request.POST.get('last')}
+        first = request.POST.get('first')
+        last = request.POST.get('last')
+        data = {'first': first, 'last': last}
         form = PersonForm(data)
         if form.is_valid():
-            # Save a new person
-            person = Person(first_name=form.cleaned_data['first'], last_name=form.cleaned_data['last'])
+            person_data = {
+                'first_name': form.cleaned_data['first'],
+                'last_name': form.cleaned_data['last'],
+            }
+            person = Person(**person_data)
             person.save()
-            # Response for the addition of a person
+
             response_data = {}
             response_data['result'] = 'Created person successfully!'
-            response_data['name'] = person.first_name + " " + person.last_name
+            response_data['name'] = str(person)
             return HttpResponse(
                 json_module.dumps(response_data),
                 content_type="application/json"

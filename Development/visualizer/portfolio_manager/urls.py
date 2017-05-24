@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^admin_tools$', views.admin_tools, name='admin_tools'),
         url(r"^importer$", views.importer, name='importer'),
         url(r'^create_org$', views.create_org, name='create_org'),
-        url(r'^add_new_person$', views.add_new_person, name='add_new_person'),
+        url(r'^create_person$', views.create_person, name='create_person'),
     url(r'^database$', views.databaseview, name='databaseview'),
     url(r"^about$", TemplateView.as_view(template_name="about.html"), name='about'),
     url(r'^addproject$', views.addproject, name='addproject'),
