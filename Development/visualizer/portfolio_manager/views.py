@@ -268,10 +268,8 @@ def project_edit(request, project_id, field_name):
         try:
             org = Organization.objects.get(name=request.POST.get('name'))
         except Organization.DoesNotExist:
-            # Saves new organization
             org = Organization(name=request.POST.get('name'))
             org.save()
-        # Saves the modified owner of the project
         proj.parent = org
         proj.save()
         return JsonResponse({"name": request.POST.get('name')})
@@ -410,7 +408,7 @@ def json(request):
     serializer = ProjectSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
- # site to see all projects, grouped by organization
+# site to see all projects, grouped by organization
 def projects(request):
     # ContentType
     dd = ContentType.objects.get_for_model(DecimalDimension)
@@ -420,30 +418,45 @@ def projects(request):
     projects_all = Project.objects.all()
     # Existing organizations
     organizations_all = Organization.objects.all()
-    return render(request, 'projects.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
+
+    response_data = {
+        'projects': projects_all,
+        'organizations': organizations_all,
+        'budgets':budgets
+    }
+    return render(request, 'projects.html', response_data)
 
 # site to show datafields by organization
 def databaseview(request):
     if request.method == "POST":
         form = OrgForm(request.POST)
-
         if form.is_valid:
-            add_field_form = ProjectTemplateForm(initial={'organization': request.POST['orgs'] })
+            add_field_form = ProjectTemplateForm()
+            add_field_form.initial = {'organization': request.POST['orgs']}
             # (dimension name -> datatype) dictionary
             dims = {}
             organization = Organization.objects.get(name=request.POST['orgs'])
             templates = organization.templates.all()
             if len(templates) > 0:
                 template = templates[0]
-                for template_dimension in template.dimensions.all():
+                for t_dim in template.dimensions.all():
                     #TODO: group them by types to make the site easier to view?
-                    dims[template_dimension.name] = str(template_dimension.content_type.model_class().__name__).replace("Dimension", "")
+                    t_dim_name = t_dim.content_type.model_class().__name__
+                    dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
             #redirect to the url where you'll process the input
-            return render(request, 'database.html', {'form':form, 'dims':dims, 'add_field_form': add_field_form})
+            render_data = {
+                'form':form, 'dims':dims,
+                'add_field_form': add_field_form
+            }
+            return render(request, 'database.html', render_data)
     else:
         add_field_form = ProjectTemplateForm()
         form = OrgForm()
-    return render(request, 'database.html', {'form':form, 'add_field_form': add_field_form})
+        render_data = {
+            'form':form,
+            'add_field_form': add_field_form
+        }
+    return render(request, 'database.html', render_data)
 
 def addproject(request):
     add_project_form = None
@@ -452,7 +465,13 @@ def addproject(request):
         add_project_form = AddProjectForm(request.POST, prefix=add_project_form_prefix)
     else:
         # Get initial values from referrering page that asked for project name and organization
-        add_project_form = AddProjectForm(prefix='add_project_form', initial={'name': request.GET.get('name'), 'parent': request.GET.get('organization', ''), 'organization': request.GET.get('organization', '')})
+        add_project_form = AddProjectForm(prefix='add_project_form')
+        initial_data = {
+            'name': request.GET.get('name'),
+            'parent': request.GET.get('organization', ''),
+            'organization': request.GET.get('organization', '')
+        }
+        add_project_form.initial = initial_data
 
     # Prevent user from chaning name or organization on "Add project" page.
     # If it were possible to change organization, every time organization selection is changed
@@ -464,40 +483,43 @@ def addproject(request):
     forms = [add_project_form]
 
     try:
-        organization = Organization.objects.get(pk=request.GET.get('organization', add_project_form.data.get(add_project_form_prefix+'-parent')))
+        form_prefix_parent = add_project_form.data.get(add_project_form_prefix+'-parent')
+        pk = request.GET.get('organization', form_prefix_parent)
+        organization = Organization.objects.get(pk=pk)
         templates = organization.templates.all()
         if len(templates) > 0:
             template = templates[0]
             for template_dimension in template.dimensions.all():
-                template_dimension_form_class = globals()[template_dimension.content_type.model_class().__name__+"Form"]
+                td_modelname = template_dimension.content_type.model_class().__name__
+                template_dimension_form_class = globals()[td_modelname+"Form"]
                 # TODO: Should we check more carefully what is drawn from globals(). Security issue?
-                template_dimension_form = None
-                if request.POST:
-                    template_dimension_form = template_dimension_form_class(request.POST, dimension_name=template_dimension.name, project_form=add_project_form, prefix=str(template_dimension.id)+'_form')
-                else:
-                    template_dimension_form = template_dimension_form_class(dimension_name=template_dimension.name, project_form=add_project_form, prefix=str(template_dimension.id)+'_form')
-                    if template_dimension.name == 'Name':
-                        template_dimension_form.fields['value'].widget = django.forms.HiddenInput()
-                        template_dimension_form.fields['value'].initial = request.GET.get('name')
-                forms.append(template_dimension_form)
+                template_dimension_form = template_dimension_form_class()
 
+                if request.POST:
+                    template_dimension_form = template_dimension_form_class(request.POST)
+                elif template_dimension.name == 'Name':
+                        value_field = template_dimension_form.fields['value']
+                        value_field.widget = django.forms.HiddenInput()
+                        value_field.fields['value'].initial = request.GET.get('name')
+
+                template_dimension_form.dimension_name = template_dimension.name
+                template_dimension_form.project_form = add_project_form
+                template_dimension_form.prefix = str(template_dimension.id)+'_form'
+                forms.append(template_dimension_form)
     except Organization.DoesNotExist:
         pass
 
     forms_valid = True
     if request.POST:
         for form in forms:
-            if form.is_valid():
-                continue
-            else:
+            if not form.is_valid():
                 forms_valid = False
-
         if forms_valid:
             for form in forms:
                form.save()
             return redirect('show_project', add_project_form.instance.id)
 
-    return render(request, 'add_project.html', {'forms': forms })
+    return render(request, 'add_project.html', {'forms': forms})
 
 # Gets all organizations and return them in a JSON string
 def get_orgs(request):
@@ -528,41 +550,45 @@ def get_proj(request):
 #   purposefully been left out to trigger the errorfunction in the ajax call
 
 def get_multiple(request, project_id, type, field_name):
-    # Get the project
-    theProject = get_object_or_404(Project, pk=project_id)
+    project = Project.objects.get(pk=project_id)
+    ct_objects = ContentType.objects
+
     # If AssociatedPersonsDimension
     if type == "asspersons":
-        # ContentType
-        assPersonsD = ContentType.objects.get_for_model(AssociatedPersonsDimension)
+        APersonsD =  ct_objects.get_for_model(AssociatedPersonsDimension)
         # The dimensions of correct content_type and for the correct project_id
-        assPersonsDs = ProjectDimension.objects.filter(content_type=assPersonsD, project_id=theProject.id)
+        APersonsDs = ProjectDimension.objects.filter(content_type=APersonsD, project=project)
         persons = []
         personsList = []
         # Loop through the dimensions
-        for dim in assPersonsDs:
+        for dim in APersonsDs:
             # Get the dimension object
-            dimO = dim.dimension_object
-            if dimO.name == field_name:
-                for pers in dimO.persons.all():
+            dim_obj = dim.dimension_object
+            if dim_obj.name == field_name:
+                for pers in dim_obj.persons.all():
                     persons.append(pers)
         for p in persons:
-            personsList.append({'id':p.pk, 'name': p.first_name + " " + p.last_name})
+            person_data = {
+                'id': p.pk,
+                'name': str(p)
+            }
+            personsList.append(person_data)
         return JsonResponse({'type': 'persons', 'items': personsList})
 
     # If AssociatedProjectsDimension
     elif type == "assprojects":
         # ContentType
-        assProjsD = ContentType.objects.get_for_model(AssociatedProjectsDimension)
+        AProjsD = ct_objects.get_for_model(AssociatedProjectsDimension)
         # The dimensions of correct content_type and for the correct project_id
-        assProjsDs = ProjectDimension.objects.filter(content_type=assProjsD, project_id=theProject.id)
+        AProjsDs = ProjectDimension.objects.filter(content_type=AProjsD, project=project)
         projects = []
         projectList = []
         # Loop through the dimensions
         for dim in assProjsDs:
             # Get the dimension object
-            dimO = dim.dimension_object
-            if dimO.name == field_name:
-                for proj in dimO.projects.all():
+            dim_obj = dim.dimension_object
+            if dim_obj.name == field_name:
+                for proj in dim_obj.projects.all():
                     projects.append(proj)
         for p in projects:
             projectList.append({'id': p.id, 'name': p.name})
@@ -574,7 +600,8 @@ def remove_person_from_project(request):
         pid = qdict.get('id')
         person = Person.objects.get(pk=pid)
         ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=qdict.get('project_id'))
+        proj_id = qdict.get('project_id')
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=proj_id)
         dim.dimension_object.persons.remove(person)
         return JsonResponse({"result": True, "id": pid})
 
@@ -584,7 +611,8 @@ def remove_project_from_project(request):
         pid = qdict.get('id')
         project = Project.objects.get(pk=pid)
         ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=qdict.get('project_id'))
+        proj_id = qdict.get('project_id')
+        dim = ProjectDimension.objects.get(content_type=ct, project_id=proj_id)
         dim.dimension_object.projects.remove(project)
         return JsonResponse({"result": True, "id": pid})
 
@@ -597,7 +625,12 @@ def add_person_to_project(request):
         ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
         dim = ProjectDimension.objects.get(content_type=ct, project_id=projectID)
         dim.dimension_object.persons.add(person)
-        return JsonResponse({'result': True, 'id': person.pk, 'name': person.first_name + " " + person.last_name})
+        response_data = {
+            'result': True,
+            'id': person.pk,
+            'name': str(person)
+        }
+        return JsonResponse(response_data)
 
 def add_project_to_project(request):
     if request.is_ajax() and request.method == "POST":
@@ -608,4 +641,10 @@ def add_project_to_project(request):
         ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
         dim = ProjectDimension.objects.get(content_type=ct, project_id=destID)
         dim.dimension_object.projects.add(TBAProject)
-        return JsonResponse({'result': True, 'id': TBAProject.pk, 'name': TBAProject.name})
+
+        response_data = {
+            'result': True,
+            'id': TBAProject.pk,
+            'name': TBAProject.name
+        }
+        return JsonResponse(response_data)
