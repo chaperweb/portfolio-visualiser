@@ -291,10 +291,9 @@ def importer(request):
             sheet = form.save()
             # Load the google sheet
             google_sheet = GoogleSheet.objects.get(id=sheet.id)
-            from_google_sheet(google_sheet.url)
-
+            import_result = from_google_sheet(google_sheet.url)
             response_data = {}
-            response_data['result'] = 'Loaded sheet successfully!'
+            response_data['result_text'] = import_result['result_text']
             response_data['name'] = google_sheet.name
 
             return HttpResponse(
