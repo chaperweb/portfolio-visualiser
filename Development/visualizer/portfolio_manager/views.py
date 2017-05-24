@@ -4,8 +4,13 @@ from portfolio_manager.forms import *
 from django.contrib.contenttypes.models import ContentType
 import django.forms
 import logging
-from django.http import JsonResponse, HttpResponse, QueryDict
-from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer, ProjectNameIdSerializer
+from django.http import JsonResponse, \
+                        HttpResponse, \
+                        QueryDict
+from portfolio_manager.serializers import ProjectSerializer, \
+                                          OrganizationSerializer, \
+                                          PersonSerializer, \
+                                          ProjectNameIdSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
 
@@ -13,7 +18,8 @@ import json as json_module
 logger = logging.getLogger('django.request')
 
 def home(request):
-    # milestones for project sneak peeks (only future milestones, ordered by date
+    # milestones for project sneak peeks
+    # (only future milestones), ordered by date
     now = datetime.now()
     milestones = Milestone.objects.filter(due_date__gte = now)
     ordered_milestones = milestones.order_by('due_date')
@@ -26,7 +32,8 @@ def home(request):
         if m.project not in mils:
             mils[m.project] = m.due_date
 
-    # dimensions for project manager and end date of project, for project sneak peeks
+    # dimensions for project manager and end date of project
+    # for project sneak peeks
     dims = ProjectDimension.objects.all()
     # ContentType
     assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
@@ -51,7 +58,7 @@ def admin_tools(request):
     return render(request, 'admin_tools.html', {'pre_add_project_form': form})
 
 # Site to add a new organization
-def add_new_org(request):
+def create_org(request):
     if request.method == 'POST':
         data = {'name': request.POST.get('orgName')}
         form = OrganizationForm(data)
@@ -60,32 +67,45 @@ def add_new_org(request):
             organization = Organization(name = form.cleaned_data['name'])
             organization.save()
 
-            template = ProjectTemplate()
-            template.name = 'default'
-            template.organization = organization
+            template_data = {
+                'name': 'default',
+                'organization': organization
+            }
+            template = ProjectTemplate(**template_data)
             template.save()
 
-            template_dimension = ProjectTemplateDimension()
-            template_dimension.template = template
-            template_dimension.name = 'SizeMoney'
-            template_dimension.content_type = ContentType.objects.get_for_model(DecimalDimension)
-            template_dimension.save()
+            ct_objects = ContentType.objects
 
-            template_dimension = ProjectTemplateDimension()
-            template_dimension.template = template
-            template_dimension.name = 'EndDate'
-            template_dimension.content_type = ContentType.objects.get_for_model(DateDimension)
-            template_dimension.save()
+            ####    PROJECT TEMPLATES   ###
 
-            template_dimension = ProjectTemplateDimension()
-            template_dimension.template = template
-            template_dimension.name = 'ProjectManager'
-            template_dimension.content_type = ContentType.objects.get_for_model(AssociatedPersonDimension)
-            template_dimension.save()
+            # Budget
+            project_template_data_budget = {
+                'template': template,
+                'name': 'SizeBudget',
+                'content_type': ct_objects.get_for_model(DecimalDimension),
+            }
+            pt_dim = ProjectTemplateDimension(**project_template_data_budget)
+            pt_dim.save()
 
+            # End date
+            project_template_data_enddate = {
+                'template': template,
+                'name': 'EndDate',
+                'content_type': ct_objects.get_for_model(DateDimension),
+            }
+            pt_dim_2 = ProjectTemplateDimension(**project_template_data_enddate)
+            pt_dim_2.save()
 
+            # Project manager
+            project_template_data_pm = {
+                'template': template,
+                'name': 'ProjectManager',
+                'content_type': ct_objects.get_for_model(AssociatedPersonDimension),
+            }
+            pt_dim_3 = ProjectTemplateDimension(**project_template_data_pm)
+            pt_dim_3.save()
 
-            # Response for the addition of an organization
+            ###     RESPONSE    ###
             response_data = {}
             response_data['result'] = 'Created organization successfully!'
             response_data['orgName'] = organization.name
