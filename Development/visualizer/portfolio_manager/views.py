@@ -8,7 +8,7 @@ from django.http import JsonResponse, \
                         HttpResponse, \
                         QueryDict
 from django.shortcuts import render, redirect, get_object_or_404
-from django.view.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 from portfolio_manager.models import *
 from portfolio_manager.forms import *
@@ -62,7 +62,7 @@ def admin_tools(request):
     return render(request, 'admin_tools.html', {'pre_add_project_form': form})
 
 # Site to add a new organization
-@require_POST()
+@require_POST
 def create_org(request):
     data = {'name': request.POST.get('orgName')}
     form = OrganizationForm(data)
@@ -119,7 +119,7 @@ def create_org(request):
         )
 
 # Site to add a new person
-@require_POST()
+@require_POST
 def create_person(request):
     first = request.POST.get('first')
     last = request.POST.get('last')
@@ -142,7 +142,7 @@ def create_person(request):
         )
 
 # Function to add field
-@require_POST()
+@require_POST
 def add_field(request):
     try:
         form = ProjectTemplateForm(request.POST)
@@ -373,7 +373,7 @@ def project_edit(request, project_id, field_name):
         return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
 #   Import google sheet
-@require_POST()
+@require_POST
 def importer(request):
     data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
     form = GoogleSheetForm(data)
@@ -393,7 +393,7 @@ def importer(request):
         )
 
 #   Gets all previously uploaded sheets and returns them in JSON
-@require_GET()
+@require_GET
 def get_sheets(request):
     if request.method == "GET":
         sheetObjects = GoogleSheet.objects.all()
