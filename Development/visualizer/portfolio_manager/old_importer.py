@@ -1,31 +1,21 @@
 import gspread
-import sys
+from portfolio_manager.models import *
+from oauth2client.service_account import ServiceAccountCredentials
 import os
 from dateutil.parser import parse
+from  django.db import connection
 from django.core.management.color import no_style
-from django.db import connection
-from oauth2client.service_account import ServiceAccountCredentials
-from portfolio_manager.models import *
+import sys
 
 def from_data_array(data):
 
-  dimensions = data[0][2:] # First row of the sheet, contains dimension names
-  dimension_types = data[1][2:] # Types of the dimensions
-  data_types = {
-    'TEXT': TextDimension,
-    'NUM': DecimalDimension,
-    'DATE': DateDimension,
-    'AOR': AssociatedOrganizationDimension,
-    'APR': AssociatedProjectsDimension,
-    'APE': AssociatedPersonDimension,
-    'APS': AssociatedPersonsDimension
-  }
+  dimensions = data[0][2:] # First row of sheet contains project IDs, dimension names, etc.
   prev_id = -1
   dimension_objects = None
   project_dimension_objects = None
   project = None
 
-  for update in data[2:]:
+  for update in data[1:]:
 
     history_date = parse(update[1], dayfirst=True) # Timestamp of the update is in second column
 
@@ -74,7 +64,7 @@ def from_data_array(data):
       project_id = update[0] # First column contains project id
 
       if project_id != prev_id: # new project
-        # If there exists a project with the same id, remove it
+
         try:
           project = Project.objects.get(id=project_id)
           project.delete()
@@ -91,47 +81,49 @@ def from_data_array(data):
 
       for idx, dimension_update in enumerate(update[2:]):
 
-        if dimension_update:    # If there is a value in the cell
-            dimension_object = None
-            create_project_dimension = False  # Chec
+        if dimension_update:
 
-            dimension_object_name = dimensions[idx].strip() # dimensions = first row of sheet
-            print(dimension_object_name)
-            print(dimension_update.strip())
+          dimension_object = None
+          create_project_dimension = False
+
+          dimension_object_name = dimensions[idx].strip() # dimensions = first row of sheet
+
+          try:
+            dimension_object = dimension_objects[idx]
+          except KeyError:
             try:
-                dimension_object = dimension_objects[idx]
+              dimension_sub_class = globals()[dimension_object_name+"Dimension"]
             except KeyError:
-                try:
-                    dimension_object = data_types[dimension_types[idx]]()
-                    dimension_object.name = dimension_object_name
-                    create_project_dimension = True
-                except Exception as e:
-                    print("ERROR {}".format(e))
-            try:
-                dimension_object.from_sheet(dimension_update.strip(), history_date)
-                dimension_object.save()
-            except Exception as e:
-                print("ERROR2: {}".format(e))
+              # Add info to notification
+              continue
 
-            # We should get rid of project.parent and use some AssociatedOrganization type of
-            # dimension instead. In general all project attributes should be represented by
-            # Dimensions
-            if dimension_object_name == 'OwningOrganization':
-                project.parent = dimension_object.value
-                project.save()
+            dimension_parent_class = dimension_sub_class.__bases__[0]
+            dimension_object = dimension_parent_class()
+            dimension_object.name = dimension_object_name
+            create_project_dimension = True
 
-            # We should get rid of project.name and use some TextDimension type of
-            # dimension instead. In general all project attributes should be represented by
-            # Dimensions
-            if dimension_object_name == 'Name':
-                project.name = dimension_object.value
-                project.save()
+          dimension_object.from_sheet(dimension_update.strip(), history_date)
+          dimension_object.save()
 
-            if create_project_dimension:
-                project_dimension = ProjectDimension()
-                project_dimension.project = project
-                project_dimension.dimension_object = dimension_object
-                project_dimension.save()
+          # We should get rid of project.parent and use some AssociatedOrganization type of
+          # dimension instead. In general all project attributes should be represented by
+          # Dimensions
+          if dimension_object_name == 'OwningOrganization':
+            project.parent = dimension_object.value
+            project.save()
+
+          # We should get rid of project.name and use some TextDimension type of
+          # dimension instead. In general all project attributes should be represented by
+          # Dimensions
+          if dimension_object_name == 'Name':
+            project.name = dimension_object.value
+            project.save()
+
+          if create_project_dimension:
+            project_dimension = ProjectDimension()
+            project_dimension.project = project
+            project_dimension.dimension_object = dimension_object
+            project_dimension.save()
 
             dimension_objects[idx] = dimension_object
             project_dimension_objects[idx] = project_dimension
@@ -154,11 +146,7 @@ def from_data_array(data):
 # Only sheets shared with reader@portfolio-sheet-data.iam.gserviceaccount.com can be imported!
 def from_google_sheet(SheetUrl):
     try:
-        scope = [
-            'https://www.googleapis.com/auth/drive',
-            'https://spreadsheets.google.com/feeds',
-            'https://docs.google.com/feeds'
-        ]
+        scope = ['https://www.googleapis.com/auth/drive','https://spreadsheets.google.com/feeds','https://docs.google.com/feeds']
         dir_path = os.path.dirname(os.path.realpath(__file__))
         credentials = ServiceAccountCredentials.from_json_keyfile_name(dir_path+'/data/service_account.json', scope)
         gc = gspread.authorize(credentials)

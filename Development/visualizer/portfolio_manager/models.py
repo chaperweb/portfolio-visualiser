@@ -219,26 +219,26 @@ class AssociatedProjectsDimension(Dimension):
     return ', '.join([p.name for p in self.projects.all()])
 
 class DateDimension (Dimension):
-  value = models.DateTimeField()
-  history = HistoricalRecords(bases=[BaseDimensionHistory])
-  __history_date = None
+    value = models.DateTimeField()
+    history = HistoricalRecords(bases=[BaseDimensionHistory])
+    __history_date = None
 
-  def update_date(self, value):
-      d = parse(value, dayfirst=True)
-      if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
-        d = d.replace(tzinfo=pytz.utc)
+    def update_date(self, value):
+        d = parse(value, dayfirst=True)
+        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
+            d = d.replace(tzinfo=pytz.utc)
 
-      self.value = d
+        self.value = d
 
-  # Updates model's value with a value drawn from a Google Sheet
-  def from_sheet(self, value, history_date):
+    # Updates model's value with a value drawn from a Google Sheet
+    def from_sheet(self, value, history_date):
+        print(history_date)
+        d = parse(value, dayfirst=True)
+        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
+            d = d.replace(tzinfo=pytz.utc)
 
-    d = parse(value, dayfirst=True)
-    if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
-      d = d.replace(tzinfo=pytz.utc)
-
-    self.value = d
-    self._history_date = history_date
+        self.value = d
+        self._history_date = history_date
 
 class ProjectTemplate(models.Model):
   name = models.CharField(max_length=50)
