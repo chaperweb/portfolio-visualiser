@@ -7,43 +7,55 @@ from django.db import connection
 from oauth2client.service_account import ServiceAccountCredentials
 from portfolio_manager.models import *
 
+class TypeHelper:
+    def dimension_by_column(self, idx):
+        abbr = self.dim_types[idx]
+        return self.data_types[abbr]()
+
+    def milestone_by_column(self, idx):
+        abbr = self.dim_types[idx]
+        return self.milestone_types[abbr]()
+
+    def dim_name_by_column(self, idx):
+        return self.dim_names[idx].strip()
+
+    def __init__(self, dim_names, dim_types):
+        self.dim_names = dim_names
+        self.dim_types = dim_types
+        self.data_types = {
+            'TEXT': TextDimension,
+            'NUM': DecimalDimension,
+            'DATE': DateDimension,
+            'AORG': AssociatedOrganizationDimension,
+            'APROJ': AssociatedProjectsDimension,
+            'APER': AssociatedPersonDimension,
+            'APERS': AssociatedPersonsDimension
+        }
+        self.milestone_types = {
+            'NUM': DecimalMilestone
+        }
+
+def parse_date_tz(data):
+    history_date = parse(data, dayfirst=True) # Timestamp of the update is in second column
+    # Set default timezone if timestamp doesn't include it
+    if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
+      history_date = history_date.replace(tzinfo=pytz.utc)
+
+    return history_date
+
 def from_data_array(data):
-    dimensions = data[0][2:] # First row of the sheet, contains dimension names
-    dimension_types = data[1][2:] # Types of the dimensions
-    data_types = {
-        'TEXT': TextDimension,
-        'NUM': DecimalDimension,
-        'DATE': DateDimension,
-        'AORG': AssociatedOrganizationDimension,
-        'APROJ': AssociatedProjectsDimension,
-        'APER': AssociatedPersonDimension,
-        'APERS': AssociatedPersonsDimension
-    }
-    milestone_types = {
-        'NUM': DecimalMilestone
-    }
+    helper = TypeHelper(dim_names=data[0][2:], dim_types=data[1][2:])
     prev_id = -1
     dimension_objects = None
     project_dimension_objects = None
     project = None
 
     for update in data[2:]:
-        history_date = parse(update[1], dayfirst=True) # Timestamp of the update is in second column
-
-        # Set default timezone if timestamp doesn't include it
-        if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
-          history_date = history_date.replace(tzinfo=pytz.utc)
+        history_date = parse_date_tz(update[1])
 
         if 'm;' in update[0]: # Sheet row represents a milestone
-            # Every milestone row creates a new milestone. Updating previous milestones is not
-            # supported
-
             parts = update[0].split(';') # ID column format m;[milestone_due_date]
-            milestone_due_date = parse(parts[1], dayfirst=True)
-
-            # Set default timezone if missing
-            if milestone_due_date.tzinfo is None or milestone_due_date.tzinfo.utcoffset(milestone_due_date) is None:
-                milestone_due_date = milestone_due_date.replace(tzinfo=pytz.utc)
+            milestone_due_date = parse_date_tz(parts[1])
 
             milestone = Milestone()
             milestone.due_date = milestone_due_date
@@ -53,8 +65,8 @@ def from_data_array(data):
 
             for idx, milestone_value in enumerate(update[2:]):
                 if milestone_value:
-                    dimension_name = dimensions[idx].strip()
-                    dimension_milestone_object = milestone_types[dimension_types[idx]]()
+                    dimension_name = helper.dim_name_by_column(idx)
+                    dimension_milestone_object = helper.milestone_by_column(idx)
                     dimension_milestone_object.from_sheet(milestone_value)
                     dimension_milestone_object.save()
 
@@ -87,24 +99,16 @@ def from_data_array(data):
 
                 if dimension_update:    # If there is a value in the cell
                     dimension_object = None
-                    create_project_dimension = False  # Chec
-
-                    dimension_object_name = dimensions[idx].strip() # dimensions = first row of sheet
-                    # print("Dimension: {} ; Value: {}".format(dimension_object_name, dimension_update.strip()))
+                    create_project_dimension = False  # Check
+                    dimension_object_name = helper.dim_name_by_column(idx)
                     try:
                         dimension_object = dimension_objects[idx]
                     except KeyError:
-                        try:
-                            dimension_object = data_types[dimension_types[idx]]()
-                            dimension_object.name = dimension_object_name
-                            create_project_dimension = True
-                        except Exception as e:
-                            print("ERROR {}".format(e))
-                    try:
-                        dimension_object.from_sheet(dimension_update.strip(), history_date)
-                        dimension_object.save()
-                    except Exception as e:
-                        print("ERROR2: {}".format(e))
+                        dimension_object = helper.dimension_by_column(idx)
+                        dimension_object.name = dimension_object_name
+                        create_project_dimension = True
+                    dimension_object.from_sheet(dimension_update.strip(), history_date)
+                    dimension_object.save()
 
                     # We should get rid of project.parent and use some AssociatedOrganization type of
                     # dimension instead. In general all project attributes should be represented by
