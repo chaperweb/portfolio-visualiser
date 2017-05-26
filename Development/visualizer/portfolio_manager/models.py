@@ -112,6 +112,7 @@ class Dimension (models.Model):
 
 
 ####        MILESTONES        ####
+
 class Milestone(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='milestones')
     history = HistoricalRecords(bases=[BaseHistoricalMilestone])
