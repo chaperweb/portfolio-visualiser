@@ -15,10 +15,10 @@ def from_data_array(data):
     'TEXT': TextDimension,
     'NUM': DecimalDimension,
     'DATE': DateDimension,
-    'AOR': AssociatedOrganizationDimension,
-    'APR': AssociatedProjectsDimension,
-    'APE': AssociatedPersonDimension,
-    'APS': AssociatedPersonsDimension
+    'AORG': AssociatedOrganizationDimension,
+    'APROJ': AssociatedProjectsDimension,
+    'APER': AssociatedPersonDimension,
+    'APERS': AssociatedPersonsDimension
   }
   prev_id = -1
   dimension_objects = None
@@ -34,41 +34,41 @@ def from_data_array(data):
       history_date = history_date.replace(tzinfo=pytz.utc)
 
     if 'm;' in update[0]: # Sheet row represents a milestone
-
-      # Every milestone row creates a new milestone. Updating previous milestones is not
-      # supported
-
-      parts = update[0].split(';') # ID column format m;[milestone_due_date]
-      milestone_due_date = parse(parts[1], dayfirst=True)
-
-      # Set default timezone if missing
-      if milestone_due_date.tzinfo is None or milestone_due_date.tzinfo.utcoffset(milestone_due_date) is None:
-        milestone_due_date = milestone_due_date.replace(tzinfo=pytz.utc)
-
-      milestone = Milestone()
-      milestone.due_date = milestone_due_date
-      milestone.project = project;
-      milestone._history_date = history_date
-      milestone.save()
-
-      for idx, milestone_value in enumerate(update[2:]):
-
-        if milestone_value:
-          dimension_name = dimensions[idx].strip()
-          milestone_sub_class = globals()[dimension_name+"Milestone"]
-
-          # TODO: Should we check more carefully what is drawn from globals(). Security issue?
-          milestone_parent_class = milestone_sub_class.__bases__[0]
-          dimension_milestone_object = milestone_parent_class()
-          dimension_milestone_object.from_sheet(milestone_value)
-          dimension_milestone_object.save()
-
-          # Connect dimension specific milestone to parent milestone object
-          dimension_milestone = DimensionMilestone()
-          dimension_milestone.milestone = milestone
-          dimension_milestone.dimension_milestone_object = dimension_milestone_object
-          dimension_milestone.project_dimension = project_dimension_objects[idx]
-          dimension_milestone.save()
+        pass
+    #   # Every milestone row creates a new milestone. Updating previous milestones is not
+    #   # supported
+      #
+    #   parts = update[0].split(';') # ID column format m;[milestone_due_date]
+    #   milestone_due_date = parse(parts[1], dayfirst=True)
+      #
+    #   # Set default timezone if missing
+    #   if milestone_due_date.tzinfo is None or milestone_due_date.tzinfo.utcoffset(milestone_due_date) is None:
+    #     milestone_due_date = milestone_due_date.replace(tzinfo=pytz.utc)
+      #
+    #   milestone = Milestone()
+    #   milestone.due_date = milestone_due_date
+    #   milestone.project = project;
+    #   milestone._history_date = history_date
+    #   milestone.save()
+      #
+    #   for idx, milestone_value in enumerate(update[2:]):
+      #
+    #     if milestone_value:
+    #       dimension_name = dimensions[idx].strip()
+    #       milestone_sub_class = globals()[dimension_name+"Milestone"]
+      #
+    #       # TODO: Should we check more carefully what is drawn from globals(). Security issue?
+    #       milestone_parent_class = milestone_sub_class.__bases__[0]
+    #       dimension_milestone_object = milestone_parent_class()
+    #       dimension_milestone_object.from_sheet(milestone_value)
+    #       dimension_milestone_object.save()
+      #
+    #       # Connect dimension specific milestone to parent milestone object
+    #       dimension_milestone = DimensionMilestone()
+    #       dimension_milestone.milestone = milestone
+    #       dimension_milestone.dimension_milestone_object = dimension_milestone_object
+    #       dimension_milestone.project_dimension = project_dimension_objects[idx]
+    #       dimension_milestone.save()
 
     else: # Row represents an update to project's dimensions
       project_id = update[0] # First column contains project id
@@ -96,8 +96,7 @@ def from_data_array(data):
             create_project_dimension = False  # Chec
 
             dimension_object_name = dimensions[idx].strip() # dimensions = first row of sheet
-            print(dimension_object_name)
-            print(dimension_update.strip())
+            print("Dimension: {} ; Value: {}".format(dimension_object_name, dimension_update.strip()))
             try:
                 dimension_object = dimension_objects[idx]
             except KeyError:
