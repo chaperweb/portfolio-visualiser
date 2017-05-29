@@ -174,7 +174,9 @@ function upload_sheet()
       }
       else
       {
-        var result = "<h3><strong>Import failed!</strong></h5>"
+        var result = "<h3><strong>Import failed!</strong></h5>",
+            errormsg = "<h4>" + json.error_msg + "</h4>";
+        $(errormsg).appendTo($("#conf-modal-body"));
       }
       $(result).prependTo($("#conf-modal-body"));
       $("#confirmation-modal").modal('show');

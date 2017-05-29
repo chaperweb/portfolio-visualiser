@@ -323,7 +323,6 @@ def importer(request):
             google_sheet = GoogleSheet.objects.get(id=sheet.id)
             response_data = from_google_sheet(google_sheet.url)
             
-            response_data['result'] = True
             response_data['name'] = google_sheet.name
 
             return HttpResponse(

@@ -57,6 +57,15 @@ class ImportHelper:
         return history_date
 
 
+    def type_row_is_valid(self):
+        for counter, abbr in enumerate(self.dim_types):
+            if abbr not in self.data_types.keys():
+                self.type_row_valid = False
+                return (False, counter+3)
+
+        return (True, -1)
+
+
     def __init__(self, dim_names, dim_types):
         self.dim_names = dim_names
         self.dim_types = dim_types
@@ -73,6 +82,7 @@ class ImportHelper:
             'NUM': DecimalMilestone
         }
 
+
 def from_data_array(data):
     rows_imported = 0
     milestones_imported = 0
@@ -82,6 +92,17 @@ def from_data_array(data):
     dimension_objects = None
     project_dimension_objects = None
     project = None
+
+    type_row_is_valid, row_num = helper.type_row_is_valid()
+    if not type_row_is_valid:
+        result = {
+            'result': False,
+            'error_msg': 'Fatal error in row 2 column {}'.format(row_num),
+            'rows_imported': 0,
+            'milestones_imported': 0,
+            'rows_skipped': 0
+        }
+        return result
 
     #   Go through each row
     for counter, update in enumerate(data[2:]):
@@ -169,6 +190,7 @@ def from_data_array(data):
                 rows_imported += 1
 
     result = {
+        'result': True,
         'rows_imported': rows_imported,
         'milestones_imported': milestones_imported,
         'rows_skipped': rows_skipped
@@ -178,6 +200,7 @@ def from_data_array(data):
 # Only sheets shared with reader@portfolio-sheet-data.iam.gserviceaccount.com can be imported!
 def from_google_sheet(SheetUrl):
     result = {
+        'result': False,
         'rows_imported': 0,
         'milestones_imported': 0,
         'rows_skipped': 0
