@@ -7,17 +7,55 @@ from django.db import connection
 from oauth2client.service_account import ServiceAccountCredentials
 from portfolio_manager.models import *
 
-class TypeHelper:
+class ImportHelper:
     def dimension_by_column(self, idx):
         abbr = self.dim_types[idx]
         return self.data_types[abbr]()
+
 
     def milestone_by_column(self, idx):
         abbr = self.dim_types[idx]
         return self.milestone_types[abbr]()
 
+
     def dim_name_by_column(self, idx):
         return self.dim_names[idx].strip()
+
+
+    def create_milestone(self, idx, value, milestone, project_dimension):
+        dim_name = self.dim_name_by_column(idx)
+        dim_mile_object = self.milestone_by_column(idx)
+        dim_mile_object.from_sheet(value)
+        dim_mile_object.save()
+
+        dim_mile = DimensionMilestone()
+        dim_mile.milestone = milestone
+        dim_mile.dimension_milestone_object = dim_mile_object
+        dim_mile.project_dimension = project_dimension
+        dim_mile.save()
+
+
+    def remove_and_create_project(self, pid):
+        # If there exists a project with the same id, remove it
+        try:
+            project = Project.objects.get(id=pid)
+            project.delete()
+        except Project.DoesNotExist:
+            pass
+
+        project = Project()
+        project.id = pid
+        project.save()
+        return project
+
+
+    def parse_date_tz(self, data):
+        history_date = parse(data, dayfirst=True) # Timestamp of the update is in second column
+        # Set default timezone if timestamp doesn't include it
+        if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
+            history_date = history_date.replace(tzinfo=pytz.utc)
+        return history_date
+
 
     def __init__(self, dim_names, dim_types):
         self.dim_names = dim_names
@@ -35,19 +73,11 @@ class TypeHelper:
             'NUM': DecimalMilestone
         }
 
-def parse_date_tz(data):
-    history_date = parse(data, dayfirst=True) # Timestamp of the update is in second column
-    # Set default timezone if timestamp doesn't include it
-    if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
-      history_date = history_date.replace(tzinfo=pytz.utc)
-
-    return history_date
-
 def from_data_array(data):
     rows_imported = 0
     milestones_imported = 0
     rows_skipped = 0
-    helper = TypeHelper(dim_names=data[0][2:], dim_types=data[1][2:])
+    helper = ImportHelper(dim_names=data[0][2:], dim_types=data[1][2:])
     prev_id = -1
     dimension_objects = None
     project_dimension_objects = None
@@ -57,12 +87,11 @@ def from_data_array(data):
     for counter, update in enumerate(data[2:]):
         milestonerow = False
         try:
-            history_date = parse_date_tz(update[1])
-
+            history_date = helper.parse_date_tz(update[1])
             if 'm;' in update[0]: # Sheet row represents a milestone
                 milestonerow = True
                 parts = update[0].split(';') # ID column format m;[milestone_due_date]
-                milestone_due_date = parse_date_tz(parts[1])
+                milestone_due_date = helper.parse_date_tz(parts[1])
 
                 milestone = Milestone()
                 milestone.due_date = milestone_due_date
@@ -72,38 +101,14 @@ def from_data_array(data):
 
                 for idx, milestone_value in enumerate(update[2:]):
                     if milestone_value:
-                        dimension_name = helper.dim_name_by_column(idx)
-                        dimension_milestone_object = helper.milestone_by_column(idx)
-                        dimension_milestone_object.from_sheet(milestone_value)
-                        dimension_milestone_object.save()
-
-                        # Connect dimension specific milestone to parent milestone object
-                        dimension_milestone = DimensionMilestone()
-                        dimension_milestone.milestone = milestone
-                        dimension_milestone.dimension_milestone_object = dimension_milestone_object
-                        dimension_milestone.project_dimension = project_dimension_objects[idx]
-                        dimension_milestone.save()
-
+                        helper.create_milestone(idx, milestone_value, milestone, project_dimension_objects[idx])
             else: # Row represents an update to project's dimensions
-                project_id = update[0] # First column contains project id
-
-                if project_id != prev_id: # new project
-                    # If there exists a project with the same id, remove it
-                    try:
-                        project = Project.objects.get(id=project_id)
-                        project.delete()
-                    except Project.DoesNotExist:
-                        pass
-                    project = Project()
-                    project.id = update[0]
-                    project.save()
+                if update[0] != prev_id: # new project
+                    project = helper.remove_and_create_project(update[0])
                     prev_id = update[0]
-
                     dimension_objects = {}
                     project_dimension_objects = {}
-
                 for idx, dimension_update in enumerate(update[2:]):
-
                     if dimension_update:    # If there is a value in the cell
                         dimension_object = None
                         create_project_dimension = False  # Check
@@ -163,9 +168,6 @@ def from_data_array(data):
             else:
                 rows_imported += 1
 
-    print("Rows imported: {}".format(rows_imported))
-    print("Milestones imported: {}".format(milestones_imported))
-    print("Rows skipped: {}".format(rows_skipped))
     result = {
         'rows_imported': rows_imported,
         'milestones_imported': milestones_imported,

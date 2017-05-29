@@ -321,14 +321,9 @@ def importer(request):
             sheet = form.save()
             # Load the google sheet
             google_sheet = GoogleSheet.objects.get(id=sheet.id)
-            result = from_google_sheet(google_sheet.url)
-            try:
-                result_text = "Importer finished!\nRows imported: {}\nMilestones imported: {}\nRows skipped: {}".format(result['rows_imported'], result['milestones_imported'], result['rows_skipped'])
-            except Exception as e:
-                print("Importer error: {}".format(e))
-
-            response_data = {}
-            response_data['result'] = result_text
+            response_data = from_google_sheet(google_sheet.url)
+            
+            response_data['result'] = True
             response_data['name'] = google_sheet.name
 
             return HttpResponse(
