@@ -349,13 +349,13 @@ def json(request):
 
  # site to see all projects, grouped by organization
 def projects(request):
-    # ContentType
     dd = ContentType.objects.get_for_model(DecimalDimension)
-    # The dimensions of correct content_type
-    budgets = ProjectDimension.objects.filter(content_type=dd)
-    # Existing projects
+    decimal_dimensions = ProjectDimension.objects.filter(content_type=dd)
+    budgets = []
+    for dec_dim in decimal_dimensions:
+        if dec_dim.dimension_object.name == "Budget":
+            budgets.append(dec_dim)
     projects_all = Project.objects.all()
-    # Existing organizations
     organizations_all = Organization.objects.all()
     return render(request, 'projects.html', {'projects': projects_all, 'organizations': organizations_all, 'budgets':budgets})
 
