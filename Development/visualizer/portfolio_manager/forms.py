@@ -6,7 +6,7 @@ from django.forms import ModelForm
 class GoogleSheetForm(ModelForm):
     class Meta:
         model = GoogleSheet
-        fields = ['name','url']
+        fields = ['url']
 
 class ProjectForm(forms.Form):
     name = forms.CharField(label = 'Name', max_length=50, required = True,

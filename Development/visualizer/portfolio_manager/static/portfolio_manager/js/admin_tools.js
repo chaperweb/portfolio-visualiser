@@ -153,7 +153,7 @@ function upload_sheet()
   $.ajax({
     method: "POST",
     url: $('#sheet-form').attr('action'),
-    data: {'name': $("#inputName").val(), 'url': $("#sheetUrl").val()},
+    data: {'url': $("#id_url").val()},
 
     success: function(json) {
 
@@ -220,7 +220,7 @@ $(function(){
   // Same but for the sheets
   $('#sheet-form').on('submit', function(event){
     event.preventDefault();
-     $("#loading").show();
+    $("#loading").show();
     upload_sheet();
   });
 });

@@ -45,7 +45,8 @@ def admin_tools(request):
     form = AddProjectForm()
     form.fields['name'].widget.attrs['class'] = 'form-control'
     form.fields['organization'].widget.attrs['class'] = 'form-control'
-    return render(request, 'admin_tools.html', {'pre_add_project_form': form})
+    gc_form = GoogleSheetForm()
+    return render(request, 'admin_tools.html', {'pre_add_project_form': form, 'gc_form': gc_form})
 
 # Site to add a new organization
 def add_new_org(request):
@@ -315,20 +316,11 @@ def project_edit(request, project_id, field_name):
 #   Doesn't return anything if it isn't a POST or a DELETE to trigger the ajax error function
 def importer(request):
     if request.method == "POST":
-        data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
-        form = GoogleSheetForm(data)
-        if form.is_valid():
-            sheet = form.save()
-            # Load the google sheet
-            google_sheet = GoogleSheet.objects.get(id=sheet.id)
-            response_data = from_google_sheet(google_sheet.url)
-            
-            response_data['name'] = google_sheet.name
-
-            return HttpResponse(
-                json_module.dumps(response_data),
-                content_type="application/json"
-            )
+        response_data = from_google_sheet(request.POST.get('url'))
+        return HttpResponse(
+            json_module.dumps(response_data),
+            content_type="application/json"
+        )
     elif request.method == "DELETE":
         GoogleSheet.objects.get(id=request.DELETE['sheet_id']).delete()
         response_data = {}

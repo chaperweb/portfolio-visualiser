@@ -201,9 +201,6 @@ def from_data_array(data):
 def from_google_sheet(SheetUrl):
     result = {
         'result': False,
-        'rows_imported': 0,
-        'milestones_imported': 0,
-        'rows_skipped': 0
     }
     try:
         scope = [
@@ -215,8 +212,12 @@ def from_google_sheet(SheetUrl):
         credentials = ServiceAccountCredentials.from_json_keyfile_name(dir_path+'/data/service_account.json', scope)
         gc = gspread.authorize(credentials)
         Sheet = gc.open_by_url(SheetUrl)
-        worksheet = Sheet.get_worksheet(0)
+        worksheet = Sheet.sheet1
+        sheetname = Sheet.title
+        google_sheet = GoogleSheet(name=sheetname, url=SheetUrl)
+        google_sheet.save()
         result = from_data_array(worksheet.get_all_values())
+        result['name'] = sheetname
     except Exception as e:
         print("from_google_sheet_error: {}".format(e))
     finally:
