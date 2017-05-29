@@ -45,8 +45,7 @@ def admin_tools(request):
     form = AddProjectForm()
     form.fields['name'].widget.attrs['class'] = 'form-control'
     form.fields['organization'].widget.attrs['class'] = 'form-control'
-    gc_form = GoogleSheetForm()
-    return render(request, 'admin_tools.html', {'pre_add_project_form': form, 'gc_form': gc_form})
+    return render(request, 'admin_tools.html', {'pre_add_project_form': form})
 
 # Site to add a new organization
 def add_new_org(request):
