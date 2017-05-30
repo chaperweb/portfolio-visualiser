@@ -559,14 +559,15 @@ def add_project_to_project(request):
         return JsonResponse({'result': True, 'id': TBAProject.pk, 'name': TBAProject.name})
 
 
-def create_pathsnapshot(project_id, x, y):
+def create_pathsnapshot(name, description, project_id, x, y):
     p_snap = PathSnapshot()
     project = Project.objects.get(pk=project_id)
+    p_snap.name = name
+    p_snap.description = description
     p_snap.project = project
     p_snap.dimension_object_x = x
     p_snap.dimension_object_y = y
     p_snap.save()
-    print(p_snap)
     return p_snap
 
 
@@ -581,11 +582,28 @@ def snapshots(request, vis_type, snapshot_id):
     elif vis_type and not snapshot_id:
         text = 'Snapshots of type {} should be displayed!'.format(vis_type)
     elif vis_type and snapshot_id:
-        text = 'Snapshot displayed. TYPE: {}, ID: {}'.format(vis_type, snapshot_id)
+        if vis_type == 'path':
+            snap = PathSnapshot.objects.get(pk=snapshot_id)
+            name = snap.name
+            desc = snap.description
+            proj = snap.project.name
+            x = snap.dimension_object_x.name
+            y = snap.dimension_object_y.name
+            text = 'PATHSNAPSHOT'
+            response_data = {
+                'type': 'PATH',
+                'name': name,
+                'description': desc,
+                'project': proj,
+                'x': x,
+                'y': y
+            }
+        else:
+            text = 'Snapshot displayed. TYPE: {}, ID: {}'.format(vis_type, snapshot_id)
     else:
         text = 'Invalid query!'
     response_data['text'] = text
-    return render(request, 'snapshots.html', {'text': text})
+    return render(request, 'snapshots.html', response_data)
 
 
 def create_snapshot(request):
@@ -595,11 +613,19 @@ def create_snapshot(request):
             x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
             y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
 
+            name = request.POST['name']
+            description = request.POST['description']
             pid = request.POST['project_id']
             x_dim = x_proj_template.dimension_object
             y_dim = y_proj_template.dimension_object
 
-            p_snap = create_pathsnapshot(project_id=pid, x=x_dim, y=y_dim)
+            p_snap = create_pathsnapshot(
+                        name=name,
+                        description=description,
+                        project_id=pid,
+                        x=x_dim,
+                        y=y_dim
+                    )
             url = 'snapshots/path/{}'.format(p_snap.id)
             return redirect(url, permanent=True)
         elif snapshot_type == 'fourfield':
