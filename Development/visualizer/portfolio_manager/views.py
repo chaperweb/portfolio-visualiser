@@ -557,3 +557,16 @@ def add_project_to_project(request):
         dim = ProjectDimension.objects.get(content_type=ct, project_id=destID)
         dim.dimension_object.projects.add(TBAProject)
         return JsonResponse({'result': True, 'id': TBAProject.pk, 'name': TBAProject.name})
+
+def snapshots(request, vis_type, snapshot_id):
+    response_data = {}
+    if not vis_type and not snapshot_id:
+        text = 'LIST OF ALL SNAPSHOTS'
+    elif vis_type and not snapshot_id:
+        text = 'Snapshots of type {} should be displayed!'.format(vis_type)
+    elif vis_type and snapshot_id:
+        text = 'Snapshot displayed. TYPE: {}, ID: {}'.format(vis_type, snapshot_id)
+    else:
+        text = 'Invalid query!'
+    response_data['text'] = text
+    return render(request, 'snapshots.html', {'text': text})
