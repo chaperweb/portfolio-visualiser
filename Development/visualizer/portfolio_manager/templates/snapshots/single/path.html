@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ name }} - Snapshot
+{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
+
+{% block content %}
+<table class="table-bordered col-lg-8 col-lg-offset-2">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Project</th>
+      <th>X</th>
+      <th>Y</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ name }}</td>
+      <td>{{ description }}</td>
+      <td>{{ project }}</td>
+      <td>{{ x }}</td>
+      <td>{{ y }}</td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}

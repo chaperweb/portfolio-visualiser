@@ -577,34 +577,45 @@ def create_fourfieldsnapshot(request):
 
 def snapshots(request, vis_type, snapshot_id):
     response_data = {}
-    if not vis_type and not snapshot_id:
-        text = 'LIST OF ALL SNAPSHOTS'
-    elif vis_type and not snapshot_id:
-        text = 'Snapshots of type {} should be displayed!'.format(vis_type)
-    elif vis_type and snapshot_id:
-        if vis_type == 'path':
-            snap = PathSnapshot.objects.get(pk=snapshot_id)
-            name = snap.name
-            desc = snap.description
-            proj = snap.project.name
-            x = snap.dimension_object_x.name
-            y = snap.dimension_object_y.name
-            text = 'PATHSNAPSHOT'
-            response_data = {
-                'type': 'PATH',
-                'name': name,
-                'description': desc,
-                'project': proj,
-                'x': x,
-                'y': y
-            }
-        else:
-            text = 'Snapshot displayed. TYPE: {}, ID: {}'.format(vis_type, snapshot_id)
-    else:
-        text = 'Invalid query!'
-    response_data['text'] = text
-    return render(request, 'snapshots.html', response_data)
+    template = 'snapshots/error.html'
 
+    #   Show all snapshots
+    if not vis_type and not snapshot_id:
+        template = 'snapshots/multiple/all.html'
+
+    #   Show all snapshots of vis_type
+    elif vis_type and not snapshot_id:
+        if vis_type == 'path':
+            template = 'snapshots/multiple/path.html'
+        elif vis_type == 'fourfield':
+            template = 'snapshots/multiple/fourfield.html'
+
+    #   Show a single snapshot
+    elif vis_type and snapshot_id:
+        try:
+            if vis_type == 'path':
+                snap = PathSnapshot.objects.get(pk=snapshot_id)
+                name = snap.name
+                desc = snap.description
+                proj = snap.project.name
+                x = snap.dimension_object_x.name
+                y = snap.dimension_object_y.name
+                response_data = {
+                    'type': 'PATH',
+                    'name': name,
+                    'description': desc,
+                    'project': proj,
+                    'x': x,
+                    'y': y
+                }
+                template = 'snapshots/single/path.html'
+            elif vis_type == 'fourfield':
+                template = 'snapshots/single/fourfield.html'
+        except Exception as e:
+            pass
+
+    #   Render the appropriate template
+    return render(request, template, response_data)
 
 def create_snapshot(request):
     if request.method == 'POST':
