@@ -14,4 +14,12 @@ Snapshots
 
 {% block content %}
 {{ text }}
+<form method="POST" action="{% url 'create_snapshot' %}">
+  {% csrf_token %}
+  <input type="hidden" name="type" value="path">
+  <input type="hidden" name="project_id" value="4">
+  <input type="hidden" name="x_dim" value="9410">
+  <input type="hidden" name="y_dim" value="9413">
+  <input type="submit" value="Add PathSnapshot">
+</form>
 {% endblock %}

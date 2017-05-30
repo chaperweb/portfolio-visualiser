@@ -335,3 +335,47 @@ class SizeManDaysMilestone (DecimalMilestone):
 class SizeEffectMilestone (DecimalMilestone):
   class Meta:
     proxy = True
+
+####        SNAPSHOTS       ####
+class Snapshot(models.Model):
+    name = models.CharField(max_length=64)
+    description = models.CharField(max_length=140) # Twitterstandards
+
+    class Meta:
+        abstract = True
+
+
+class PathSnapshot(Snapshot):
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="pathsnapshots"
+    )
+    content_type_x = models.ForeignKey(ContentType, related_name="ct_x")
+    object_id_x = models.PositiveIntegerField()
+    dimension_object_x = GenericForeignKey('content_type_x', 'object_id_x')
+
+    content_type_y = models.ForeignKey(ContentType, related_name="ct_y")
+    object_id_y = models.PositiveIntegerField()
+    dimension_object_y = GenericForeignKey('content_type_y', 'object_id_y')
+
+
+class FourFieldSnapshot(Snapshot):
+    x_dimension = models.ForeignKey(
+        DecimalDimension,
+        on_delete=models.CASCADE,
+        related_name="x_dimensions"
+    )
+    y_dimension = models.ForeignKey(
+        DecimalDimension,
+        on_delete=models.CASCADE,
+        related_name="y_dimensions"
+    )
+    radius_dimension = models.ForeignKey(
+        DecimalDimension,
+        on_delete=models.CASCADE,
+        related_name="radius_dimensions"
+    )
+    start_date = models.DateField()
+    end_date = models.DateField()
+    zoom = models.PositiveIntegerField()

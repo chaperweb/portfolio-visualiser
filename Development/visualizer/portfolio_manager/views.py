@@ -558,6 +558,22 @@ def add_project_to_project(request):
         dim.dimension_object.projects.add(TBAProject)
         return JsonResponse({'result': True, 'id': TBAProject.pk, 'name': TBAProject.name})
 
+
+def create_pathsnapshot(project_id, x, y):
+    p_snap = PathSnapshot()
+    project = Project.objects.get(pk=project_id)
+    p_snap.project = project
+    p_snap.dimension_object_x = x
+    p_snap.dimension_object_y = y
+    p_snap.save()
+    print(p_snap)
+    return p_snap
+
+
+def create_fourfieldsnapshot(request):
+    pass
+
+
 def snapshots(request, vis_type, snapshot_id):
     response_data = {}
     if not vis_type and not snapshot_id:
@@ -570,3 +586,23 @@ def snapshots(request, vis_type, snapshot_id):
         text = 'Invalid query!'
     response_data['text'] = text
     return render(request, 'snapshots.html', {'text': text})
+
+
+def create_snapshot(request):
+    if request.method == 'POST':
+        snapshot_type = request.POST['type']
+        if snapshot_type == 'path':
+            x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
+            y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
+
+            pid = request.POST['project_id']
+            x_dim = x_proj_template.dimension_object
+            y_dim = y_proj_template.dimension_object
+
+            p_snap = create_pathsnapshot(project_id=pid, x=x_dim, y=y_dim)
+            url = 'snapshots/path/{}'.format(p_snap.id)
+            return redirect(url, permanent=True)
+        elif snapshot_type == 'fourfield':
+            create_fourfieldsnapshot(request)
+        else:
+            pass

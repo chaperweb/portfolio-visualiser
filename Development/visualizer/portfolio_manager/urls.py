@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^addproject$', views.addproject, name='addproject'),
     url(r'^add_field$', views.add_field, name='add_field'),
     url(r'^snapshots(/(?P<vis_type>[A-Za-z]+))?(/(?P<snapshot_id>[0-9]+))?$', views.snapshots, name='snapshots'),
+    url(r'^create_snapshot$', views.create_snapshot, name='create_snapshot'),
 
     #For stuff
     url(r"^json$", views.json, name='json'),
