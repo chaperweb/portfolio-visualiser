@@ -5,7 +5,11 @@ Pathsnapshots
 {% endblock %}
 
 {% block css %}
-
+<style>
+table thead tr th {
+  text-align: center;
+}
+</style>
 {% endblock %}
 
 {% block js %}
@@ -13,5 +17,29 @@ Pathsnapshots
 {% endblock %}
 
 {% block content %}
-<h1>MANY PATHSNAPSHOTS</h1>
+<div class="row text-center">
+  <h1>All Path Snapshots</h1>
+  <table class="table-bordered col-lg-8 col-lg-offset-2">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Project</th>
+        <th>X</th>
+        <th>Y</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for snap in snaps %}
+      <tr>
+        <td>{{ snap.name }}</td>
+        <td>{{ snap.description }}</td>
+        <td>{{ snap.project.name }}</td>
+        <td>{{ snap.dimension_object_x.name }}</td>
+        <td>{{ snap.dimension_object_y.name }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

@@ -5,7 +5,11 @@ All Snapshots
 {% endblock %}
 
 {% block css %}
-
+<style>
+table thead tr th {
+  text-align: center;
+}
+</style>
 {% endblock %}
 
 {% block js %}
@@ -13,8 +17,7 @@ All Snapshots
 {% endblock %}
 
 {% block content %}
-<div class="row col-lg-offset-5">
-  <h1>ALL SNAPSHOTS</h1>
+<div class="row text-center">
   <form method="POST" action="{% url 'create_snapshot' %}">
     {% csrf_token %}
     <input type="hidden" name="name" value="PATH TEST">
@@ -25,5 +28,26 @@ All Snapshots
     <input type="hidden" name="y_dim" value="9413">
     <input type="submit" value="Add PathSnapshot">
   </form>
+</div>
+<div class="row text-center">
+  <h1>All Snapshots</h1>
+  <table class="table-bordered col-lg-8 col-lg-offset-2">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for snap in snaps %}
+      <tr>
+        <td>{{ snap.name }}</td>
+        <td>{{ snap.description }}</td>
+        <td>{{ snap.get_snap_type_display }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}

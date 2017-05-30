@@ -559,11 +559,14 @@ def add_project_to_project(request):
         return JsonResponse({'result': True, 'id': TBAProject.pk, 'name': TBAProject.name})
 
 
+###############################################################################
+
 def create_pathsnapshot(name, description, project_id, x, y):
     p_snap = PathSnapshot()
     project = Project.objects.get(pk=project_id)
     p_snap.name = name
     p_snap.description = description
+    p_snap.snap_type = 'PA'
     p_snap.project = project
     p_snap.dimension_object_x = x
     p_snap.dimension_object_y = y
@@ -581,11 +584,22 @@ def snapshots(request, vis_type, snapshot_id):
 
     #   Show all snapshots
     if not vis_type and not snapshot_id:
+        snaps = []
+        snap_types = Snapshot.get_subclasses()
+        for snap_type in snap_types:
+            snaps.extend(snap_type.objects.all())
+        response_data = {
+            'snaps': snaps
+        }
         template = 'snapshots/multiple/all.html'
 
     #   Show all snapshots of vis_type
     elif vis_type and not snapshot_id:
         if vis_type == 'path':
+            snaps = PathSnapshot.objects.all()
+            response_data = {
+                'snaps': snaps
+            }
             template = 'snapshots/multiple/path.html'
         elif vis_type == 'fourfield':
             template = 'snapshots/multiple/fourfield.html'

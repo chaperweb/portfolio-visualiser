@@ -11,6 +11,16 @@ from simple_history import register
 from dateutil.parser import parse
 from django.db.models.signals import pre_delete
 
+# Class for getting subclasses of a abstract base class
+class GetSubclassesMixin(object):
+    @classmethod
+    def get_subclasses(cls):
+        content_types = ContentType.objects.filter(app_label=cls._meta.app_label)
+        models = [ct.model_class() for ct in content_types]
+        return [model for model in models
+                if (model is not None and
+                    issubclass(model, cls) and
+                    model is not cls)]
 
 class GoogleSheet (models.Model):
     name = models.CharField(max_length=50)
@@ -337,9 +347,18 @@ class SizeEffectMilestone (DecimalMilestone):
     proxy = True
 
 ####        SNAPSHOTS       ####
-class Snapshot(models.Model):
+class Snapshot(GetSubclassesMixin, models.Model):
+    SNAPSHOT_TYPES = (
+        ('PA', 'Path'),
+        ('FF', 'Fourfield'),
+    )
+
     name = models.CharField(max_length=64)
-    description = models.CharField(max_length=140) # Twitterstandards
+    description = models.CharField(max_length=140)
+    snap_type = models.CharField(
+        max_length=2,
+        choices=SNAPSHOT_TYPES
+    )
 
     class Meta:
         abstract = True
