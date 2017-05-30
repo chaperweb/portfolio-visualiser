@@ -1,0 +1,22 @@
+<div class="modal fade" id="save-path-snap-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3>Save Snapshot</h3>
+        <form method="POST" action="{% url 'create_snapshot' %}">
+          {% csrf_token %}
+          <label class="col-lg-4" for="#snap-name">Name</label>
+          <input id="path-snap-name" class="col-lg-6" type="text" name="name">
+          <label class="col-lg-4" for="#snap-desc">Description</label>
+          <input id="path-snap-desc" class="col-lg-6" type="text" name="description">
+          <input type="hidden" name="type" value="path">
+          <input id="path-snap-project-id" type="hidden" name="project_id">
+          <input id="path-snap-x-id" type="hidden" name="x_dim">
+          <input id="path-snap-y-id" type="hidden" name="y_dim">
+          <input type="submit" value="Save Snapshot">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
