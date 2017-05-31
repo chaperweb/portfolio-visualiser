@@ -155,3 +155,20 @@ class AddProjectForm(ModelForm):
     def disable_name_and_organization(self):
         self.fields['organization'].widget.attrs['disabled'] = True
         self.fields['name'].widget.attrs['readonly'] = 'readonly'
+
+class ProjectTemplateForm(ModelForm):
+    # Can we filter these with some attribute?
+    base_types = ["textdimension", "datedimension", "associatedpersondimension", "associatedpersonsdimension", "associatedorganizationdimension", "associatedprojectsdimension", "decimaldimension"]
+    cts = ContentType.objects.filter(model__in = base_types)
+    field_type = forms.ModelChoiceField(queryset=cts, required=True)
+
+    class Meta:
+        model = ProjectTemplate
+        fields = ['name', 'organization']
+        labels = {
+            "name": "Name",
+            "organization": "Organization",
+        }
+        widgets = {
+            "organization": forms.HiddenInput()
+        }

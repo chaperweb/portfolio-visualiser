@@ -1,4 +1,3 @@
-
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -28,12 +27,18 @@ tr:nth-child(even) {
   border-bottom-right-radius: 6px;
 }
 
-#footer > .navbar {
-  background-color: white !important;
-  border: none;
+.container button#open_add_field_modal_btn {
+  position: fixed;
+  width: 20vw;
+  left: 40vw;
+  bottom: 0;
+  margin-bottom: 10px;
 }
 
-.btn-success,  .btn-success:visited, .btn-success:hover, .btn-success:active:focus, .btn-success:focus  {
-  background-color: rgb(156,156,156);
-  border-color: rgb(156,156,156);
+/* Modal styling */
+div.modal-content form p label {
+  width: 20%;
+}
+div.modal-content form p input, div.modal-content form p select {
+  width: 70%;
 }
