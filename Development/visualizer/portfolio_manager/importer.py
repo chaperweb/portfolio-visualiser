@@ -155,9 +155,11 @@ def from_google_sheet(SheetUrl):
         from_data_array(worksheet.get_all_values())
     except Exception as e:
         print("ERROR: %s" % e)
-    finally:
+        return {'result': False, 'result_text': "Something went wrong!"}
+    else:
       # Importer creates Project model instances with pre-defined IDs. That operation
       # messes up Postgresql primary key sequences. Lets reset the sequences.
       with connection.cursor() as cursor:
         for stmt in connection.ops.sequence_reset_sql(no_style(), [Project]):
           cursor.execute(stmt)
+      return {'result': True, 'result_text': "Loaded sheet successfully!"}
