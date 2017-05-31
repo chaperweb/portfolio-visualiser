@@ -51,6 +51,15 @@ Projects | {{project.name}}
 
 <!-- Page Content -->
 <div id="page-content-wrapper">
+  <!-- For testing new show_project code -->
+  {% if testdims %}
+    {% for key, value in testdims.items %}
+      <strong>{{ key }}: </strong>
+      {% for dim in value %}
+        <p>{{ dim }}</p>
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
   <div class="container col-lg-10">
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
