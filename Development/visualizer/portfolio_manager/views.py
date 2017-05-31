@@ -8,7 +8,7 @@ from django.http import JsonResponse, HttpResponse, QueryDict
 from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer, ProjectNameIdSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
-import datetime
+import datetime as dt
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -574,15 +574,6 @@ def create_pathsnapshot(name, description, project_id, x, y):
 
 
 def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
-    print("NAME: {}".format(name))
-    print("DESCRIPTION: {}".format(description))
-    print("X: {}".format(x.name))
-    print("Y: {}".format(y.name))
-    print("RADIUS: {}".format(r.name))
-    print("START: {}".format(start))
-    print("END: {}".format(end))
-    print("ZOOM: {}".format(zoom))
-
     ff_snap = FourFieldSnapshot()
     ff_snap.name = name
     ff_snap.description = description
@@ -608,8 +599,11 @@ def snapshots(request, vis_type, snapshot_id):
         snap_types = Snapshot.get_subclasses()
         for snap_type in snap_types:
             snaps.extend(snap_type.objects.all())
+
+        sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at)
+        sorted_snaps.reverse()
         response_data = {
-            'snaps': snaps
+            'snaps': sorted_snaps
         }
         template = 'snapshots/multiple/all.html'
 
@@ -706,8 +700,8 @@ def create_snapshot(request):
             x = x_proj_template.dimension_object
             y = y_proj_template.dimension_object
             r = r_proj_template.dimension_object
-            start = datetime.datetime.strptime(start_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
-            end = datetime.datetime.strptime(end_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
+            start = dt.datetime.strptime(start_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
             zoom = request.POST['zoom']
 
             ff_snap = create_fourfieldsnapshot(

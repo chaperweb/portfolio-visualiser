@@ -1,10 +1,11 @@
+.snap-container {
+  margin: 5vh 5vw 0 5vw;
+}
 .snap-wrapper {
   margin-bottom: 5vh;
 }
 
 .hover-link {
-  float: left;
-  overflow: hidden;
   text-align: center;
 }
 
@@ -12,7 +13,7 @@
   position: absolute;
   overflow: hidden;
   width: 80%;
-  height: 98%;
+  height: 94%;
   left: 10%;
   top: 1%;
 }
@@ -43,7 +44,6 @@
 /* Name of snap */
 .hover-link .overlay h2 {
   text-transform: uppercase;
-  text-align: center;
   font-size: 17px;
   color: #FFF;
 

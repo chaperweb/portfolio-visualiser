@@ -359,9 +359,11 @@ class Snapshot(GetSubclassesMixin, models.Model):
         max_length=2,
         choices=SNAPSHOT_TYPES
     )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True
+        ordering = ['created_at']
 
 
 class PathSnapshot(Snapshot):
