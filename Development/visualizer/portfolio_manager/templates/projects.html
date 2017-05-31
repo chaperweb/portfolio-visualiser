@@ -38,7 +38,7 @@ Projects
             <a href="{% url 'show_project' project.pk %}" class="proju {{org.name.split|join:"_"}} col-lg-2">
                 <p>{{ project.name }}</p>
                 {% for budget in budgets %}
-                  {% if budget.project.pk == project.pk and budget.dimension_object.name == "SizeMoney" %}
+                  {% if budget.project.pk == project.pk %}
                     <p>Budget: {{ budget.dimension_object.value }}</p>
                   {% endif %}
                 {% endfor %}

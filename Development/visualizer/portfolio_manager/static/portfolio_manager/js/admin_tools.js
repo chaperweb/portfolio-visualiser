@@ -153,24 +153,36 @@ function upload_sheet()
   $.ajax({
     method: "POST",
     url: $('#sheet-form').attr('action'),
-    data: {'name': $("#inputName").val(), 'url': $("#sheetUrl").val()},
+    data: {'url': $("#id_url").val()},
 
     success: function(json) {
-
       // Remove old modal content
       $("#conf-modal-body > h3").remove();
       $("#conf-modal-body > h4").remove();
 
       // Add new modal content
-      var result = "<h3><strong>" + json.result + "</strong></h5>"
-      var org = "<h4>Sheet uploaded: " + json.name + "</h4>"
-      $(result).appendTo($("#conf-modal-body"));
-      $(org).appendTo($("#conf-modal-body"));
+      if(json.result)
+      {
+        var result = "<h3><strong>" + json.name + " imported!</strong></h5>",
+            rows_imported = "<h4>Rows imported: " + json.rows_imported + "</h4>",
+            milestones_imported = "<h4>Milestones imported: " + json.milestones_imported + "</h4>",
+            rows_skipped = "<h4>Rows skipped: " + json.rows_skipped + "</h4>";
+        $(rows_imported).appendTo($("#conf-modal-body"));
+        $(milestones_imported).appendTo($("#conf-modal-body"));
+        $(rows_skipped).appendTo($("#conf-modal-body"));
+      }
+      else
+      {
+        var result = "<h3><strong>Import failed!</strong></h5>",
+            errormsg = "<h4>" + json.error_msg + "</h4>";
+        $(errormsg).appendTo($("#conf-modal-body"));
+      }
+      $(result).prependTo($("#conf-modal-body"));
       $("#confirmation-modal").modal('show');
       $("#loading").hide();
     },
     error: function() {
-      alert("Failed to download sheet");
+      alert("Failed!");
       $("#loading").hide();
     }
   });
@@ -207,7 +219,7 @@ $(function(){
   // Same but for the sheets
   $('#sheet-form').on('submit', function(event){
     event.preventDefault();
-     $("#loading").show();
+    $("#loading").show();
     upload_sheet();
   });
 });
