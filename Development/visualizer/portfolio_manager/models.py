@@ -154,7 +154,6 @@ class DecimalDimension (Dimension):
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
 
-
 class DateDimension (Dimension):
     value = models.DateTimeField()
     history = HistoricalRecords(bases=[BaseDimensionHistory])

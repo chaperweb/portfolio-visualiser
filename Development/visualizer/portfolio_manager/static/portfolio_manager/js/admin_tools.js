@@ -156,7 +156,6 @@ function upload_sheet()
     data: {'url': $("#id_url").val()},
 
     success: function(json) {
-
       // Remove old modal content
       $("#conf-modal-body > h3").remove();
       $("#conf-modal-body > h4").remove();
@@ -183,7 +182,7 @@ function upload_sheet()
       $("#loading").hide();
     },
     error: function() {
-      alert("Failed to download sheet");
+      alert("Failed!");
       $("#loading").hide();
     }
   });
