@@ -559,8 +559,6 @@ def add_project_to_project(request):
         return JsonResponse({'result': True, 'id': TBAProject.pk, 'name': TBAProject.name})
 
 
-###############################################################################
-
 def create_pathsnapshot(name, description, project_id, x, y):
     p_snap = PathSnapshot()
     project = Project.objects.get(pk=project_id)
@@ -597,12 +595,14 @@ def snapshots(request, vis_type, snapshot_id):
     elif vis_type and not snapshot_id:
         if vis_type == 'path':
             snaps = PathSnapshot.objects.all()
-            response_data = {
-                'snaps': snaps
-            }
             template = 'snapshots/multiple/path.html'
         elif vis_type == 'fourfield':
+            snaps = FourFieldSnapshot.objects.all()
             template = 'snapshots/multiple/fourfield.html'
+
+        response_data = {
+            'snaps': snaps
+        }
 
     #   Show a single snapshot
     elif vis_type and snapshot_id:
@@ -615,7 +615,6 @@ def snapshots(request, vis_type, snapshot_id):
                 x = snap.dimension_object_x.name
                 y = snap.dimension_object_y.name
                 response_data = {
-                    'type': 'PATH',
                     'name': name,
                     'description': desc,
                     'project': proj,
@@ -624,12 +623,32 @@ def snapshots(request, vis_type, snapshot_id):
                 }
                 template = 'snapshots/single/path.html'
             elif vis_type == 'fourfield':
+                snap = FourFieldSnapshot.objects.get(pk=snapshot_id)
+                name = snap.name
+                desc = snap.description
+                x = snap.x_dimension.name
+                y = snap.y_dimension.name
+                radius = snap.radius_dimension.name
+                start_date = snap.start_date
+                end_date = snap.end_date
+                zoom = snap.zoom
+                response_data = {
+                    'name': name,
+                    'description': desc,
+                    'x': x,
+                    'y': y,
+                    'radius': radius,
+                    'start_date': start_date,
+                    'end_date': end_date,
+                    'zoom': zoom
+                }
                 template = 'snapshots/single/fourfield.html'
         except Exception as e:
             pass
 
     #   Render the appropriate template
     return render(request, template, response_data)
+
 
 def create_snapshot(request):
     if request.method == 'POST':
