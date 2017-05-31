@@ -21,32 +21,18 @@ table thead tr th {
 {% block content %}
 <div class="row text-center">
   <h1>All Snapshots</h1>
-  <!--
-  <table class="table-bordered col-lg-8 col-lg-offset-2">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Type</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for snap in snaps %}
-      <tr>
-        <td>{{ snap.name }}</td>
-        <td>{{ snap.description }}</td>
-        <td>{{ snap.get_snap_type_display }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  -->
 </div>
-<div class="row" style="padding: 5vh 5vw 0 5vw;">
+
+<div class="row" style="margin: 5vh 5vw 0 5vw;">
   {% for snap in snaps %}
-  <div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
-    <a href="{% url 'path' %}" class="hover-path">
-      <img class="img-responsive" src='{% static "portfolio_manager/img/paatti.jpg" %}' alt="Path-image">
+  <div class="snap-wrapper col-lg-2 col-md-2 col-sm-4 col-xs-6">
+    {% if snap.snap_type == 'PA' %}
+    <a href="{% url 'snapshots' %}/path/{{snap.id}}" class="hover-link">
+      <img class="img-responsive" src='{% static "portfolio_manager/img/path.jpg" %}' alt="Path-image">
+    {% else %}
+    <a href="{% url 'fourfield' %}" class="hover-link">
+      <img class="img-responsive" src='{% static "portfolio_manager/img/fourfield.jpg" %}' alt="Path-image">
+    {% endif %}
       <div class="overlay">
         <h2>{{ snap.name }}</h2>
 				<p>{{ snap.description }}</p>

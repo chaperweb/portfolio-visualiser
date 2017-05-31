@@ -1,10 +1,14 @@
-.hover-path {
+.snap-wrapper {
+  margin-bottom: 5vh;
+}
+
+.hover-link {
   float: left;
   overflow: hidden;
   text-align: center;
 }
 
-.hover-path .overlay {
+.hover-link .overlay {
   position: absolute;
   overflow: hidden;
   width: 80%;
@@ -14,7 +18,7 @@
 }
 
 /* Snap Description */
-.hover-path .overlay p {
+.hover-link .overlay p {
   color: #FFF;
   font-size: 12px;
   overflow-wrap: break-word;
@@ -30,14 +34,14 @@
   -ms-transform: scale(0);
   transform: scale(0);
 }
-.hover-path .overlay:hover p {
+.hover-link .overlay:hover p {
   -webkit-transform: scale(1);
   -ms-transform: scale(1);
   transform: scale(1);
 }
 
 /* Name of snap */
-.hover-path .overlay h2 {
+.hover-link .overlay h2 {
   text-transform: uppercase;
   text-align: center;
   font-size: 17px;
@@ -53,14 +57,14 @@
   -ms-transform: translate(0, 200%);
   transform: translate(0, 200%);
 }
-.hover-path .overlay:hover h2 {
+.hover-link .overlay:hover h2 {
   -webkit-transform: translate(0);
   -ms-transform: translate(0);
   transform: translate(0);
 }
 
 /* Image of link */
-.hover-path img {
+.hover-link img {
   filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="linear" slope="0.6" /><feFuncG type="linear" slope="0.6" /><feFuncB type="linear" slope="0.6" /></feComponentTransfer></filter></svg>#filter');
   filter: brightness(0.6);
   -webkit-filter: brightness(0.6);
