@@ -4,14 +4,13 @@ $(function() {
     url: "json"
   }).done(function(data) {
     db_json = data;
-    
     dimension_names = {};
 
     for (var i = 0, ilen = db_json.length; i < ilen; i++) {
       for(var j = 0, jlen = db_json[i].dimensions.length; j < jlen; j++) {
         dimension = db_json[i].dimensions[j];
         if(dimension.dimension_type == 'DecimalDimension'){
-          dimension_names[dimension.dimension_object.name] = dimension.dimension_object.name;
+          dimension_names[dimension.id] = dimension.dimension_object.name;
         }
        }
     }
@@ -21,9 +20,9 @@ $(function() {
     $('#r-selector').html('<option>---</option>');
 
     for(var key in dimension_names) {
-      $('#x-selector').append('<option value="'+dimension_names[key]+'">'+dimension_names[key]+'</option>');
-      $('#y-selector').append('<option value="'+dimension_names[key]+'">'+dimension_names[key]+'</option>');
-      $('#r-selector').append('<option value="'+dimension_names[key]+'">'+dimension_names[key]+'</option>');
+      $('#x-selector').append('<option value="'+key+'">'+dimension_names[key]+'</option>');
+      $('#y-selector').append('<option value="'+key+'">'+dimension_names[key]+'</option>');
+      $('#r-selector').append('<option value="'+key+'">'+dimension_names[key]+'</option>');
     }
 
   });
@@ -48,4 +47,4 @@ function dimension_selector_change() {
   slider_value = $('#slider-value-selector').val();
   $('#visualization').html('');
   fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value);
-}  
+}

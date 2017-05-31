@@ -8,6 +8,7 @@ from django.http import JsonResponse, HttpResponse, QueryDict
 from portfolio_manager.serializers import ProjectSerializer, OrganizationSerializer, PersonSerializer, ProjectNameIdSerializer
 from portfolio_manager.importer import from_google_sheet
 import json as json_module
+import datetime
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -572,8 +573,29 @@ def create_pathsnapshot(name, description, project_id, x, y):
     return p_snap
 
 
-def create_fourfieldsnapshot(request):
-    pass
+def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
+    print("NAME: {}".format(name))
+    print("DESCRIPTION: {}".format(description))
+    print("X: {}".format(x.name))
+    print("Y: {}".format(y.name))
+    print("RADIUS: {}".format(r.name))
+    print("START: {}".format(start))
+    print("END: {}".format(end))
+    print("ZOOM: {}".format(zoom))
+
+    ff_snap = FourFieldSnapshot()
+    ff_snap.name = name
+    ff_snap.description = description
+    ff_snap.snap_type = 'FF'
+    ff_snap.x_dimension = x
+    ff_snap.y_dimension = y
+    ff_snap.radius_dimension = r
+    ff_snap.start_date = start
+    ff_snap.end_date = end
+    ff_snap.zoom = zoom
+    ff_snap.save()
+
+    return ff_snap
 
 
 def snapshots(request, vis_type, snapshot_id):
@@ -673,6 +695,32 @@ def create_snapshot(request):
             url = 'snapshots/path/{}'.format(p_snap.id)
             return redirect(url, permanent=True)
         elif snapshot_type == 'fourfield':
-            create_fourfieldsnapshot(request)
+            x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
+            y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
+            r_proj_template = ProjectDimension.objects.get(pk=request.POST['r_dim'])
+            start_ddmmyyyy = request.POST['start-date']
+            end_ddmmyyyy = request.POST['end-date']
+
+            name = request.POST['name']
+            description = request.POST['description']
+            x = x_proj_template.dimension_object
+            y = y_proj_template.dimension_object
+            r = r_proj_template.dimension_object
+            start = datetime.datetime.strptime(start_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
+            end = datetime.datetime.strptime(end_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
+            zoom = request.POST['zoom']
+
+            ff_snap = create_fourfieldsnapshot(
+                        name=name,
+                        description=description,
+                        x=x,
+                        y=y,
+                        r=r,
+                        start=start,
+                        end=end,
+                        zoom=zoom
+                    )
+            url = 'snapshots/fourfield/{}'.format(ff_snap.id)
+            return redirect(url, permanent=True)
         else:
             pass
