@@ -1,0 +1,67 @@
+.hover-path {
+  float: left;
+  overflow: hidden;
+  text-align: center;
+}
+
+.hover-path .overlay {
+  position: absolute;
+  overflow: hidden;
+  width: 80%;
+  height: 98%;
+  left: 10%;
+  top: 1%;
+}
+
+/* Snap Description */
+.hover-path .overlay p {
+  color: #FFF;
+  font-size: 12px;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+
+  /* Transition effects */
+  /* Hide description and reveal it on hover */
+  -webkit-transition: -webkit-transform 0.35s;
+  transition: transform 0.35s;
+  -webkit-transform: scale(0);
+  -ms-transform: scale(0);
+  transform: scale(0);
+}
+.hover-path .overlay:hover p {
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+}
+
+/* Name of snap */
+.hover-path .overlay h2 {
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 17px;
+  color: #FFF;
+
+  /* Transition effects */
+  /* Center name of snap vertically and on hover bring it up */
+  -webkit-transition: -webkit-transform 0.35s;
+  -webkit-transition-timing-function: ease;
+  transition: transform 0.35s;
+  transition-timing-function: ease;
+  -webkit-transform: translate(0, 200%);
+  -ms-transform: translate(0, 200%);
+  transform: translate(0, 200%);
+}
+.hover-path .overlay:hover h2 {
+  -webkit-transform: translate(0);
+  -ms-transform: translate(0);
+  transform: translate(0);
+}
+
+/* Image of link */
+.hover-path img {
+  filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="linear" slope="0.6" /><feFuncG type="linear" slope="0.6" /><feFuncB type="linear" slope="0.6" /></feComponentTransfer></filter></svg>#filter');
+  filter: brightness(0.6);
+  -webkit-filter: brightness(0.6);
+}

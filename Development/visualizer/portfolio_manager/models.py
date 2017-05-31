@@ -353,7 +353,7 @@ class Snapshot(GetSubclassesMixin, models.Model):
         ('FF', 'Fourfield'),
     )
 
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=20)
     description = models.CharField(max_length=140)
     snap_type = models.CharField(
         max_length=2,

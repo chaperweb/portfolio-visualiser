@@ -5,6 +5,8 @@ All Snapshots
 {% endblock %}
 
 {% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/snapshot.css" %}">
 <style>
 table thead tr th {
   text-align: center;
@@ -19,6 +21,7 @@ table thead tr th {
 {% block content %}
 <div class="row text-center">
   <h1>All Snapshots</h1>
+  <!--
   <table class="table-bordered col-lg-8 col-lg-offset-2">
     <thead>
       <tr>
@@ -37,5 +40,19 @@ table thead tr th {
       {% endfor %}
     </tbody>
   </table>
+  -->
+</div>
+<div class="row" style="padding: 5vh 5vw 0 5vw;">
+  {% for snap in snaps %}
+  <div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
+    <a href="{% url 'path' %}" class="hover-path">
+      <img class="img-responsive" src='{% static "portfolio_manager/img/paatti.jpg" %}' alt="Path-image">
+      <div class="overlay">
+        <h2>{{ snap.name }}</h2>
+				<p>{{ snap.description }}</p>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
 </div>
 {% endblock %}
