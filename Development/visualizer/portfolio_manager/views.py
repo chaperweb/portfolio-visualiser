@@ -727,9 +727,13 @@ def snapshots(request, vis_type, snapshot_id):
                 snap = PathSnapshot.objects.get(pk=snapshot_id)
                 name = snap.name
                 desc = snap.description
-                proj = snap.project.name
-                x = snap.dimension_object_x.name
-                y = snap.dimension_object_y.name
+                proj = snap.project
+                x = snap.dimension_object_x
+                y = snap.dimension_object_y
+
+                x = ProjectDimension.objects.get(project=proj, object_id=x.id)
+                y = ProjectDimension.objects.get(project=proj, object_id=y.id)
+
                 response_data = {
                     'name': name,
                     'description': desc,
@@ -760,6 +764,7 @@ def snapshots(request, vis_type, snapshot_id):
                 }
                 template = 'snapshots/single/fourfield.html'
         except Exception as e:
+            print("ERROR: {}".format(e))
             pass
 
     #   Render the appropriate template

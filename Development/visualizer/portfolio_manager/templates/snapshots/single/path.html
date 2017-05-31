@@ -8,8 +8,11 @@
 
 {% endblock %}
 
-{% block js %}
-
+{% block javascript %}
+{% load static %}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/path.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/snapshot/snap_path_loader.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -33,4 +36,7 @@
     </tr>
   </tbody>
 </table>
+<span id="x-dim" data-xdim="{{ x }}"></span>
+<span id="y-dim" data-ydim="{{ y }}"></span>
+<div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization"></div>
 {% endblock %}

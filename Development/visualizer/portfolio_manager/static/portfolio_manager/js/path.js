@@ -3,7 +3,7 @@ var db_json;
 function update_path_visualization(project_x_dimension, project_y_dimension) {
 
   $('#visualization').html('');
-  
+
   generate_path_svg(generate_path_data(jQuery.extend(true, {}, project_x_dimension),
                                        jQuery.extend(true, {}, project_y_dimension)));
 }
@@ -150,6 +150,7 @@ function get_dimension(project, id) {
   if (project) {
     for (var j = 0; j < project.dimensions.length; j++) {
         if(project.dimensions[j].id == id) {
+          console.log(project.dimensions[j]);
           return project.dimensions[j];
         }
     }
