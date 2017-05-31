@@ -373,14 +373,24 @@ def project_edit(request, project_id, field_name):
 #   Import google sheet
 @require_POST
 def importer(request):
-    data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
-    form = GoogleSheetForm(data)
-    if form.is_valid():
-        sheet = form.save()
-        # Load the google sheet
-        google_sheet = GoogleSheet.objects.get(id=sheet.id)
-        from_google_sheet(google_sheet.url)
+    if request.method == "POST":
+        data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
+        form = GoogleSheetForm(data)
+        if form.is_valid():
+            sheet = form.save()
+            # Load the google sheet
+            google_sheet = GoogleSheet.objects.get(id=sheet.id)
+            import_result = from_google_sheet(google_sheet.url)
+            response_data = {}
+            response_data['result_text'] = import_result['result_text']
+            response_data['name'] = google_sheet.name
 
+            return HttpResponse(
+                json_module.dumps(response_data),
+                content_type="application/json"
+            )
+    elif request.method == "DELETE":
+        GoogleSheet.objects.get(id=request.DELETE['sheet_id']).delete()
         response_data = {}
         response_data['result'] = 'Loaded sheet successfully!'
         response_data['name'] = google_sheet.name

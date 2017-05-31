@@ -156,21 +156,21 @@ function upload_sheet()
     data: {'name': $("#inputName").val(), 'url': $("#sheetUrl").val()},
 
     success: function(json) {
-
       // Remove old modal content
       $("#conf-modal-body > h3").remove();
       $("#conf-modal-body > h4").remove();
 
       // Add new modal content
-      var result = "<h3><strong>" + json.result + "</strong></h5>"
-      var org = "<h4>Sheet uploaded: " + json.name + "</h4>"
-      $(result).appendTo($("#conf-modal-body"));
-      $(org).appendTo($("#conf-modal-body"));
+      var result_text = "<h3><strong>" + json.result_text + "</strong></h5>"
+      var sheet_name = "<h4>Sheetname: " + json.name + "</h4>"
+
+      $(result_text).appendTo($("#conf-modal-body"));
+      $(sheet_name).appendTo($("#conf-modal-body"));
       $("#confirmation-modal").modal('show');
       $("#loading").hide();
     },
     error: function() {
-      alert("Failed to download sheet");
+      alert("Failed!");
       $("#loading").hide();
     }
   });
