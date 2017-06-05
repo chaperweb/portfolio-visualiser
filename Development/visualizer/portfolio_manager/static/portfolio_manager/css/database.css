@@ -33,12 +33,3 @@ tr:nth-child(even) {
   bottom: 0;
   margin-bottom: 10px;
 }
-
-/* Modal styling
-div.modal-content form p label {
-  width: 20%;
-}
-div.modal-content form p input, div.modal-content form p select {
-  width: 70%;
-}
-*/
