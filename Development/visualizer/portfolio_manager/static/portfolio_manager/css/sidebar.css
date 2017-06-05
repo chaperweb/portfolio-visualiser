@@ -8,6 +8,12 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 /*Projects specific css*/
 
+.panel .panel-heading {
+  background-color: rgb(116,116,116);
+  color: white;
+  border: 0;
+}
+
 .proju,
 .proju:hover
 .proju:visited {
