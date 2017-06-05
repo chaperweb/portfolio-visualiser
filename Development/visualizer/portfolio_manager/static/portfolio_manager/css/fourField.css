@@ -1,7 +1,8 @@
 
 text {
   fill: #000;
-  font: 10px sans-serif;
+  font-size: 10px;
+  font-family: "Exo 2", sans-serif;
 }
 
 .dot {
@@ -17,7 +18,6 @@ text {
 .currentDate {
   font-weight: : 700;
   font-size: 70px;
-  font-family: Lato;
   fill: black;
   opacity: 0.3;
 }
@@ -25,14 +25,14 @@ text {
 .info {
   font-weight: : 300;
   font-size: 45px;
-  font-family: Lato;
+  font-family: "Exo 2", sans-serif;
   fill: black;
   opacity: 0.3;
 }
 .axisLabel {
   font-weight: : 200;
   font-size: 30px;
-  font-family: Lato;
+  font-family: "Exo 2", sans-serif;
   fill: black;
   opacity: 0.3;
 }
@@ -40,7 +40,7 @@ text {
 .sliderLabel {
   font-weight: 300;
   font-size: 20px;
-  font-family: Lato;
+  font-family: "Exo 2", sans-serif;
   fill: black;
 
 }

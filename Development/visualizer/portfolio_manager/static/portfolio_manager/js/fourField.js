@@ -87,7 +87,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
 	            collectYPlan.push([parsedDate,milestoneValue])
 	          }
-				setDateScale(new Date(date).getTime() / 1000)    
+				setDateScale(new Date(date).getTime() / 1000)
 	        }
 	      }
 	    }
@@ -109,7 +109,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		endDate = endDefault;
 		$('#end-date-selector').val(mmddyy(endDate*1000));
 	}
-	
+
 console.log(projects);
 
 /***********************/
@@ -129,9 +129,11 @@ console.log(projects);
 	 */
 	function radius(d) {
 		if (validLocation(d)) {
+			console.log("true")
 			return d.radius;
 		} else {
 			d.radius = 0
+			console.log("false")
 			return d.radius;
 		}
 	}
@@ -151,7 +153,7 @@ console.log(projects);
 			startDefault = date
 		}
 	}
-	
+
   /* If
 	 * 1) y- or x-coordinates are infinite (the ball lacks milestones or dimension values)
 	 * or
@@ -174,7 +176,7 @@ console.log(projects);
 	}
 	function validYCoordinates(d) {
 		if(!isNaN(d)) {return Math.min(Math.max(d,0),height) } else {return 0};
-	}	
+	}
 
 	//function to determine color of the circle. Currently is set to color the circles by their "AssociatedOrganizationDimension"
 	function color(d) { return d.organization; }
