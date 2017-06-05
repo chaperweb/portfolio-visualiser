@@ -98,6 +98,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 .panel-group .panel-default {
   border:0;
+  font-family: "Exo 2", sans-serif;
 }
 .panel .panel-collapse {
   border-width: 0 1px 1px 1px;
