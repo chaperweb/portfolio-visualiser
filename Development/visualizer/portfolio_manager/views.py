@@ -496,7 +496,7 @@ def addproject(request):
 
                 if request.POST:
                     template_dimension_form = template_dimension_form_class(request.POST)
-                
+
                 template_dimension_form = template_dimension_form_class(
                     dimension_name = template_dimension.name,
                     project_form = add_project_form,
@@ -728,9 +728,9 @@ def snapshots(request, vis_type, snapshot_id):
                 response_data = {
                     'name': name,
                     'description': desc,
-                    'project': proj,
-                    'x': x,
-                    'y': y
+                    'project': proj.id,
+                    'x': x.id,
+                    'y': y.id,
                 }
                 template = 'snapshots/single/path.html'
             elif vis_type == 'fourfield':

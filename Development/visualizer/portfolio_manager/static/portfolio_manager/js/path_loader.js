@@ -22,7 +22,6 @@ $(function() {
         project = db_json[i];
         for (var j = 0; j < project.dimensions.length; j++) {
           if('history' in project.dimensions[j].dimension_object) {
-
             x_selected = (project.dimensions[j].dimension_object.name == preserved_x_name) ? 'selected' : '';
             y_selected = (project.dimensions[j].dimension_object.name == preserved_y_name) ? 'selected' : '';
 

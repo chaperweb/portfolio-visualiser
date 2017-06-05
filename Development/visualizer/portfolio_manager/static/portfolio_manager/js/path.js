@@ -83,7 +83,7 @@ function generate_path_svg(pathData) {
       marginX = 100;
       timeY = height+50
 
-  //debugger;
+  // debugger;
   // pathData = [{"date": "01-05-16", "y": 150.10, "x": "Teuvo"},
   //                  {"date": "15-05-16", "y": 170.10, "x": "Teppo"},
   //                  {"date": "01-06-16", "y": 50.03, "x": "Matti"},
@@ -150,7 +150,6 @@ function get_dimension(project, id) {
   if (project) {
     for (var j = 0; j < project.dimensions.length; j++) {
         if(project.dimensions[j].id == id) {
-          console.log(project.dimensions[j]);
           return project.dimensions[j];
         }
     }
@@ -161,7 +160,13 @@ function get_dimension(project, id) {
 function dimension_selector_change() {
   x_dimension_id = $('#x-selector').find("option:selected").val();
   y_dimension_id = $('#y-selector').find("option:selected").val();
-  update_path_visualization(get_dimension(get_selected_project(), x_dimension_id), get_dimension(get_selected_project(), y_dimension_id));
+
+  selected_project = get_selected_project();
+
+  update_path_visualization(
+    get_dimension(selected_project, x_dimension_id),
+    get_dimension(selected_project, y_dimension_id)
+  );
 }
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {

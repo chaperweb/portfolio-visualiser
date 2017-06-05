@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block css %}
-
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/path.css" %}">
 {% endblock %}
 
 {% block javascript %}
@@ -16,27 +17,15 @@
 {% endblock %}
 
 {% block content %}
-<table class="table-bordered col-lg-8 col-lg-offset-2">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Project</th>
-      <th>X</th>
-      <th>Y</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ name }}</td>
-      <td>{{ description }}</td>
-      <td>{{ project }}</td>
-      <td>{{ x }}</td>
-      <td>{{ y }}</td>
-    </tr>
-  </tbody>
-</table>
-<span id="x-dim" data-xdim="{{ x }}"></span>
-<span id="y-dim" data-ydim="{{ y }}"></span>
-<div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization"></div>
+<div class="text-center">
+  <h2>{{ name }}</h2>
+  <h5>{{ description }}</h5>
+  <!-- Info for the ajax -->
+  <span id="json-url" data-url="{% url 'json' %}"></span>
+  <span id="project" data-project="{{ project }}"></span>
+  <span id="x-dim" data-xdim="{{ x }}"></span>
+  <span id="y-dim" data-ydim="{{ y }}"></span>
+  <!-- Container for visualization -->
+  <div class="col-lg-offset-2 col-lg-8 col-xs-12" id="visualization"></div>
+</div>
 {% endblock %}
