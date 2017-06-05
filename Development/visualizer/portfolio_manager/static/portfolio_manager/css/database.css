@@ -21,7 +21,6 @@ tr:nth-child(even) {
   border-bottom-left-radius: 6px;
 }
 
-
 .itemright {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
@@ -35,10 +34,11 @@ tr:nth-child(even) {
   margin-bottom: 10px;
 }
 
-/* Modal styling */
+/* Modal styling
 div.modal-content form p label {
   width: 20%;
 }
 div.modal-content form p input, div.modal-content form p select {
   width: 70%;
 }
+*/
