@@ -6,6 +6,7 @@
 
 .modal-dialog {
   padding-top: 20vh;
+  font-family: "Exo 2", sans-serif;
   min-height: 50%;
   min-height: 50vh;
 }
