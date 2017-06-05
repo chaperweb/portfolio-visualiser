@@ -129,6 +129,7 @@ console.log(projects);
 	 */
 	function radius(d) {
 		if (validLocation(d)) {
+			console.log("true")
 			return d.radius;
 		} else {
 			d.radius = 0
