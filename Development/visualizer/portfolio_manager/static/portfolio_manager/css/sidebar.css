@@ -37,12 +37,14 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 .container .panel-group .panel-heading {
   background-color: rgb(116,116,116);
+  font-family: "Exo 2", sans-serif;
   color: white;
   border: 0;
 }
 
 .title {
   font-size: 300%;
+  font-family: "Exo 2", sans-serif;
   padding-bottom: 20px;
 }
 
@@ -52,6 +54,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 .navbar-fixed-left {
   width: 250px;
   position: relative;
+  font-family: "Exo 2", sans-serif;
   border-radius: 5px;
   height: 100%;
   min-height: 88vh;
@@ -65,6 +68,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 .sidebar-item:focus {
   float: none;
   border-style: none;
+  font-family: "Exo 2", sans-serif;
   width: 250px;
   color: #fff;
 }
