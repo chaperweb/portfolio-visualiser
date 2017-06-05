@@ -10,6 +10,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 .panel .panel-heading {
   background-color: rgb(116,116,116);
+  font-family: "Exo 2", sans-serif;
   color: white;
   border: 0;
 }
@@ -19,6 +20,7 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 .proju:visited {
   color: #ffffff;
   background-color: rgb(156,156,156);
+  font-family: "Exo 2", sans-serif;
   border-radius: 5px;
   margin: 1% 4%;
 }
