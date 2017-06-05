@@ -493,18 +493,20 @@ def addproject(request):
                 td_modelname = template_dimension.content_type.model_class().__name__
                 template_dimension_form_class = globals()[td_modelname+"Form"]
                 # TODO: Should we check more carefully what is drawn from globals(). Security issue?
-                template_dimension_form = template_dimension_form_class()
 
                 if request.POST:
                     template_dimension_form = template_dimension_form_class(request.POST)
-                elif template_dimension.name == 'Name':
-                        value_field = template_dimension_form.fields['value']
-                        value_field.widget = django.forms.HiddenInput()
-                        value_field.fields['value'].initial = request.GET.get('name')
-
-                template_dimension_form.dimension_name = template_dimension.name
-                template_dimension_form.project_form = add_project_form
-                template_dimension_form.prefix = str(template_dimension.id)+'_form'
+                
+                template_dimension_form = template_dimension_form_class(
+                    dimension_name = template_dimension.name,
+                    project_form = add_project_form,
+                    prefix = str(template_dimension.id)+'_form'
+                )
+                if template_dimension.name == 'Name':
+                    value_field = template_dimension_form.fields['value']
+                    value_field.widget = django.forms.HiddenInput()
+                    value_field.initial = request.GET.get('name')
+                print(template_dimension_form.fields)
                 forms.append(template_dimension_form)
     except Organization.DoesNotExist:
         pass
