@@ -1,3 +1,45 @@
+/* FOR TRIANGLE FLIPPING */
+div[aria-expanded=false ] .glyphicon-triangle-top {
+  display: none;
+}
+div[aria-expanded=true] .glyphicon-triangle-bottom {
+  display: none;
+}
+
+/*Projects specific css*/
+
+.proju,
+.proju:hover
+.proju:visited {
+  color: #ffffff;
+  background-color: rgb(156,156,156);
+  border-radius: 5px;
+  margin: 1% 4%;
+}
+.proju > p {
+  margin-top: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.proju > p:hover {
+  text-overflow: none;
+  overflow: visible;
+}
+
+/* PANEL CSS */
+
+.container .panel-group .panel-heading {
+  background-color: rgb(116,116,116);
+  color: white;
+  border: 0;
+}
+
+.title {
+  font-size: 300%;
+  padding-bottom: 20px;
+}
+
 /* SIDENAV CSS */
 
 /* The entire sidenav */
@@ -42,4 +84,13 @@
 .sidebar-subitem:hover,
 .sidebar-subitem:focus {
   color: #000;
+}
+
+.panel-group .panel-default {
+  border:0;
+}
+.panel .panel-collapse {
+  border-width: 0 1px 1px 1px;
+  border-style: solid;
+  border-color: rgb(116, 116, 116);
 }

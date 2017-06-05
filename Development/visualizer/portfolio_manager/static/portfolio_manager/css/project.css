@@ -63,12 +63,3 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 .sidebar-subitem:focus {
   color: #000;
 }
-
-.panel-group .panel-default {
-  border:0;
-}
-.panel .panel-collapse {
-  border-width: 0 1px 1px 1px;
-  border-style: solid;
-  border-color: rgb(116, 116, 116);
-}
