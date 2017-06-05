@@ -737,9 +737,9 @@ def snapshots(request, vis_type, snapshot_id):
                 snap = FourFieldSnapshot.objects.get(pk=snapshot_id)
                 name = snap.name
                 desc = snap.description
-                x = snap.x_dimension.name
-                y = snap.y_dimension.name
-                radius = snap.radius_dimension.name
+                x = snap.x_dimension
+                y = snap.y_dimension
+                radius = snap.radius_dimension
                 start_date = snap.start_date
                 end_date = snap.end_date
                 zoom = snap.zoom
@@ -785,17 +785,14 @@ def create_snapshot(request):
             url = 'snapshots/path/{}'.format(p_snap.id)
             return redirect(url, permanent=True)
         elif snapshot_type == 'fourfield':
-            x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
-            y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
-            r_proj_template = ProjectDimension.objects.get(pk=request.POST['r_dim'])
+            x = request.POST['x_dim']
+            y = request.POST['y_dim']
+            r = request.POST['r_dim']
             start_ddmmyyyy = request.POST['start-date']
             end_ddmmyyyy = request.POST['end-date']
 
             name = request.POST['name']
             description = request.POST['description']
-            x = x_proj_template.dimension_object
-            y = y_proj_template.dimension_object
-            r = r_proj_template.dimension_object
             start = dt.datetime.strptime(start_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
             end = dt.datetime.strptime(end_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
             zoom = request.POST['zoom']

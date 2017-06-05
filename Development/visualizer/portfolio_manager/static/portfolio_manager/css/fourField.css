@@ -73,3 +73,17 @@ text {
   stroke-opacity: 0.5;
   stroke-width: 1.25px;
 }
+.bar {
+  fill: none;
+}
+.line{
+  fill: none;
+  stroke: black;
+  stroke-width: 5px;
+}
+ul {
+  font-weight: bold;
+}
+li {
+  font-weight: normal;
+}

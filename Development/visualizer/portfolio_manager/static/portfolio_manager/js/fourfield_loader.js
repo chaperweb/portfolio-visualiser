@@ -10,7 +10,7 @@ $(function() {
       for(var j = 0, jlen = db_json[i].dimensions.length; j < jlen; j++) {
         dimension = db_json[i].dimensions[j];
         if(dimension.dimension_type == 'DecimalDimension'){
-          dimension_names[dimension.id] = dimension.dimension_object.name;
+          dimension_names[dimension.dimension_object.name] = dimension.dimension_object.name;
         }
        }
     }

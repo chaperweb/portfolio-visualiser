@@ -5,13 +5,20 @@ Fourfield Snapshot
 {% endblock %}
 
 {% block css %}
-
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/fourField.css" %}">
 {% endblock %}
 
 {% block js %}
-
+{% load static %}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/fourField.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/snapshot/snap_fourfield_loader.js' %}"></script>
 {% endblock %}
 
 {% block content %}
-<h1>FOURFIELDSNAP</h1>
+<div class="text-center">
+  <h2>{{ name }}</h2>
+  <h5>{{ description }}</h5>
+</div>
 {% endblock %}

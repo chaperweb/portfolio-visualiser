@@ -307,21 +307,9 @@ class PathSnapshot(Snapshot):
 
 
 class FourFieldSnapshot(Snapshot):
-    x_dimension = models.ForeignKey(
-        DecimalDimension,
-        on_delete=models.CASCADE,
-        related_name="x_dimensions"
-    )
-    y_dimension = models.ForeignKey(
-        DecimalDimension,
-        on_delete=models.CASCADE,
-        related_name="y_dimensions"
-    )
-    radius_dimension = models.ForeignKey(
-        DecimalDimension,
-        on_delete=models.CASCADE,
-        related_name="radius_dimensions"
-    )
+    x_dimension = models.CharField(max_length=64)
+    y_dimension = models.CharField(max_length=64)
+    radius_dimension = models.CharField(max_length=64)
     start_date = models.DateField()
     end_date = models.DateField()
     zoom = models.PositiveIntegerField()
