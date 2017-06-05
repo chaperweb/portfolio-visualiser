@@ -372,24 +372,13 @@ def project_edit(request, project_id, field_name):
         return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
 #   Import google sheet
-@require_POST
 def importer(request):
     if request.method == "POST":
-        data = {'name': request.POST.get('name'), 'url': request.POST.get('url')}
-        form = GoogleSheetForm(data)
-        if form.is_valid():
-            sheet = form.save()
-            # Load the google sheet
-            google_sheet = GoogleSheet.objects.get(id=sheet.id)
-            import_result = from_google_sheet(google_sheet.url)
-            response_data = {}
-            response_data['result_text'] = import_result['result_text']
-            response_data['name'] = google_sheet.name
-
-            return HttpResponse(
-                json_module.dumps(response_data),
-                content_type="application/json"
-            )
+        response_data = from_google_sheet(request.POST.get('url'))
+        return HttpResponse(
+            json_module.dumps(response_data),
+            content_type="application/json"
+        )
     elif request.method == "DELETE":
         GoogleSheet.objects.get(id=request.DELETE['sheet_id']).delete()
         response_data = {}
@@ -421,13 +410,13 @@ def json(request):
 
 # site to see all projects, grouped by organization
 def projects(request):
-    # ContentType
     dd = ContentType.objects.get_for_model(DecimalDimension)
-    # The dimensions of correct content_type
-    budgets = ProjectDimension.objects.filter(content_type=dd)
-    # Existing projects
+    decimal_dimensions = ProjectDimension.objects.filter(content_type=dd)
+    budgets = []
+    for dec_dim in decimal_dimensions:
+        if dec_dim.dimension_object.name == "Budget":
+            budgets.append(dec_dim)
     projects_all = Project.objects.all()
-    # Existing organizations
     organizations_all = Organization.objects.all()
 
     response_data = {
