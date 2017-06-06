@@ -89,3 +89,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Mac cruft
+*.DS_Store
+
+# PyCharm project
+.idea/

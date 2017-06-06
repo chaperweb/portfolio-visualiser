@@ -41,7 +41,7 @@
     "model": "portfolio_manager.DecimalDimension",
     "pk": 1,
     "fields": {
-      "name": "SizeMoney",
+      "name": "SizeBudget",
       "value": 1000
     }
   },

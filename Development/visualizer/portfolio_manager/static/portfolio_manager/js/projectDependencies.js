@@ -114,7 +114,7 @@ function dependancies(json) {
 		for (z = 0; z < jsonlen; z++) {
 			if (json[z].id == id) {
 				for(m = 0; m < json[z].dimensions.length ; m++ ){
-					if (json[z].dimensions[m].dimension_object.name === "SizeMoney") {
+					if (json[z].dimensions[m].dimension_object.name === "SizeBudget") {
 						var budget = json[z].dimensions[m].dimension_object.history[0].value
 						if (budget != undefined) {
 							return budget;
