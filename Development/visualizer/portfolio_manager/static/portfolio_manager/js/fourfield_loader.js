@@ -1,4 +1,33 @@
 $(function() {
+  function change_if_all_selected() {
+    var xIsChosen = $('#x-selector').val() != '---',
+        yIsChosen = $('#y-selector').val() != '---',
+        rIsChosen = $('#r-selector').val() != '---';
+
+    if (xIsChosen && yIsChosen && rIsChosen) {
+      dimension_selector_change();
+    }
+    return;
+  }
+
+  function dimension_selector_change() {
+    x_dimension = $('#x-selector').find("option:selected").text();
+    y_dimension = $('#y-selector').find("option:selected").text();
+    r_dimension = $('#r-selector').find("option:selected").text();
+    start_date = Date.parse($('#start-date-selector').val())/1000;
+    end_date = Date.parse($('#end-date-selector').val())/1000;
+    slider_value = $('#slider-value-selector').val();
+    $('#visualization').html('');
+    // console.log({
+    //   'x': x_dimension,
+    //   'y': y_dimension,
+    //   'r': r_dimension,
+    //   'start': start_date,
+    //   'end': end_date,
+    //   'slider_value': slider_value
+    // });
+    fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value);
+  }
 
   $.ajax({
     url: "json"
@@ -27,9 +56,9 @@ $(function() {
 
   });
 
-  $('#x-selector').on('change', dimension_selector_change);
-  $('#y-selector').on('change', dimension_selector_change);
-  $('#r-selector').on('change', dimension_selector_change);
+  $('#x-selector').on('change', change_if_all_selected);
+  $('#y-selector').on('change', change_if_all_selected);
+  $('#r-selector').on('change', change_if_all_selected);
   $('#start-date-selector').on('change', dimension_selector_change);
   $('#end-date-selector').on('change', dimension_selector_change);
   $('#slider-value-selector').on('change', dimension_selector_change);
@@ -37,14 +66,3 @@ $(function() {
   $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'mm/dd/yy'});
 
 });
-
-function dimension_selector_change() {
-  x_dimension = $('#x-selector').find("option:selected").text();
-  y_dimension = $('#y-selector').find("option:selected").text();
-  r_dimension = $('#r-selector').find("option:selected").text();
-  start_date = Date.parse($('#start-date-selector').val())/1000;
-  end_date = Date.parse($('#end-date-selector').val())/1000;
-  slider_value = $('#slider-value-selector').val();
-  $('#visualization').html('');
-  fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value);
-}

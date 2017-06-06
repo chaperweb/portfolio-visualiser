@@ -2,21 +2,14 @@
 var db_json;
 
 function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues) {
-	// console.log("JSON");
-	console.log(json);
-	// console.log(xToBe);
-	// console.log(yToBe);
-	// console.log(radToBe);
-	// console.log(startDate);
-	// console.log(endDate);
-	// console.log(sliderValues);
+	// console.log(json);
 
 	var projects = [],
 			colorToBe = 'AssociatedOrganizationDimension',
 			// size of the display box
-			width = Math.min($(window).width()*0.5, $(window).height()*0.9),
+			width = $(window).height()*0.85,
 			height = width,
-			margin = {right: width * 0.1, left: width * 0.1, top: height * 0.1, bottom: 50},
+			margin = {right: width * 0.05, left: width * 0.05, top: height * 0.05, bottom: 50},
 			axisLengthX = width * 0.8,
 			axisLengthY = height * 0.8,
 			sliderY = height - margin.bottom,
@@ -94,23 +87,16 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	      if(milestone.dimensions != undefined) {
 		      for(q = 0; q < milestone.dimensions.length ; q++ ) {
 		        if(milestone.dimensions[q].project_dimension == xID) {	// ADD X
-							// console.log("ADD X");
-		          var date = milestone.due_date
-		          var parsedDate = new Date(date).getTime() / 1000
-		          var milestoneValue = milestone.dimensions[q].dimension_milestone_object.value
+		          var date = milestone.due_date,
+		          		parsedDate = new Date(date).getTime() / 1000,
+		              milestoneValue = milestone.dimensions[q].dimension_milestone_object.value;
 		          collectXPlan.push([parsedDate,milestoneValue])
 		        } else if( milestone.dimensions[q].project_dimension == yID ) {	// ADD Y
-							// console.log("ADD Y");
-		          var date = milestones.due_date
-		          var parsedDate = new Date(date).getTime() / 1000
-		          var milestoneValue = milestone.dimensions[q].dimension_milestone_object.value
+		          var date = milestone.due_date,
+		          		parsedDate = new Date(date).getTime() / 1000,
+		          		milestoneValue = milestone.dimensions[q].dimension_milestone_object.value;
 		          collectYPlan.push([parsedDate,milestoneValue])
-		        } else {
-							// console.log("xID: " + xID);
-							// console.log("yID: " + yID);
-							// console.log("other ID: " + milestone.dimensions[q].project_dimension);
-							// console.log("----------------------------------------------------------");
-						}
+		        }
 						setDateScale(new Date(date).getTime() / 1000)
 		    	}
       	}
@@ -390,7 +376,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	  // The y and x axis are moved in to place
 	  svg.append("g")
 		 .attr("class", "xAxis")
-		 .attr("transform", "translate("+margin.left+","+height / 2+")")
+		 .attr("transform", "translate("+margin.left+","+(height / 2)+")")
 		 .call(d3.axisBottom(scaleX));
 
 	  svg.append("g")

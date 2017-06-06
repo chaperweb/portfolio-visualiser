@@ -313,8 +313,3 @@ class FourFieldSnapshot(Snapshot):
     start_date = models.DateField()
     end_date = models.DateField()
     zoom = models.PositiveIntegerField()
-
-
-class SizeEffectMilestone (DecimalMilestone):
-    class Meta:
-        proxy = True
