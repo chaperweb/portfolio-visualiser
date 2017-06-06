@@ -9,7 +9,7 @@ Fourfield Snapshot
 <link rel="stylesheet" href="{% static "portfolio_manager/css/fourField.css" %}">
 {% endblock %}
 
-{% block js %}
+{% block javascript %}
 {% load static %}
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="{% static 'portfolio_manager/js/fourField.js' %}"></script>
@@ -20,5 +20,17 @@ Fourfield Snapshot
 <div class="text-center">
   <h2>{{ name }}</h2>
   <h5>{{ description }}</h5>
+  <!-- Info for the ajax -->
+  <input id="dj-data" type="hidden"
+      data-url="{% url 'json' %}"
+      data-x="{{ x }}"
+      data-y="{{ y }}"
+      data-r="{{ radius }}"
+      data-start="{{ start_date }}"
+      data-end="{{ end_date }}"
+      data-zoom="{{ zoom }}"
+></span>
+  <!-- Container for visualization -->
+  <div class="col-lg-offset-2 col-lg-8 col-xs-12" id="visualization"></div>
 </div>
 {% endblock %}
