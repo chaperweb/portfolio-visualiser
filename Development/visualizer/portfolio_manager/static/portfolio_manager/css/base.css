@@ -1,3 +1,7 @@
+html, body {
+  font-family: "Exo 2", sans-serif;
+}
+
 .navbar {
   background-color: rgb(116,116,116);
   color: white;

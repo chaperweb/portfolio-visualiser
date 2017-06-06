@@ -77,33 +77,41 @@ function generate_path_data(x_dimension, y_dimension) {
 }
 
 function generate_path_svg(pathData) {
-  var height = 400,
-      width = 700,
-      marginY = 200,
-      marginX = 100;
-      timeY = height+50
+  // Dimension of the svg box
+  var height = $(window).height()*0.7,
+      width = ($(window).width()-250)*0.8,
+      margin = {
+        right: 0,
+        left: width*0.05,
+        top: height*0.02,
+        bottom: height*0.05
+      };
 
-  // debugger;
-  // pathData = [{"date": "01-05-16", "y": 150.10, "x": "Teuvo"},
-  //                  {"date": "15-05-16", "y": 170.10, "x": "Teppo"},
-  //                  {"date": "01-06-16", "y": 50.03, "x": "Matti"},
-  //                  {"date": "01-07-16", "y": 200.04, "x": "Teppo"}];
+  // Length of the axis
+  var axisLengthX = width*0.9,
+      axisLengthY = height * 0.9;
 
-  //debugger;
+  //  Parameters for axis transformations
+  var pathTransformX = margin.left,
+      pathTransformY = margin.top,
+      xAxisTransformX = margin.left,
+      xAxisTransformY = height - (margin.bottom * 2) + margin.top,
+      timeAxisTransformX = margin.left,
+      timeAxisTransformY = height - margin.bottom + margin.top,
+      yAxisTransformX = margin.left,
+      yAxisTransformY = margin.top;
 
+  // The svg box that everything goes in
   var svg = d3.select("#visualization")
               .append("svg")
-              .attr("height", height+marginY)
-              .attr("width", width+marginX)
-              .attr("class", "svg-content")
-              .append("g")
-              .attr("transform", "translate("+50+","+50+")");
+              .attr("height", height)
+              .attr("width", width)
+              .attr("class", "svg-content");
 
-  var parseTime = d3.timeParse("%d-%m-%y");
-
-  var x = d3.scaleLinear().range([0,width]),
-      y = d3.scaleLinear().range([height,0]);
-      z = d3.scaleLinear().range([0,width]);
+  // The scales of the axis
+  var x = d3.scaleLinear().range([0,axisLengthX]),
+      y = d3.scaleLinear().range([axisLengthY,0]);
+      z = d3.scaleLinear().range([0,axisLengthX]);
 
   x.domain([0, (pathData.length-1)]);
   y.domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})]);
@@ -114,26 +122,36 @@ function generate_path_svg(pathData) {
                       .x(function(d,i){return x(i)})
                       .y(function(d){return y(d.y)});
 
+  // The path
   svg.append("path")
       .attr("class", "line")
+      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+      .attr("height", height)
       .attr("d", valueLine(pathData));
 
+  // X-Axis
   svg.append("g")
-     .attr("transform", "translate(0,"+height+")")
+     .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
+     .attr("id", "x-axis")
      .call(d3.axisBottom(x).ticks(pathData.length-1))
      .selectAll("text")
      .data(pathData)
      .text(function(d){return d.x});
 
+  // Time-axis underneath the x-axis
   svg.append("g")
-     .call(d3.axisLeft(y));
+     .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
+     .attr("id", "time-axis")
+     .call(d3.axisBottom(z).ticks(pathData.length-1))
+     .selectAll("text")
+     .data(pathData)
+     .text(function(d){return d.date});
 
+  // Y-axis
   svg.append("g")
-    .attr("transform", "translate(0,"+timeY+")")
-    .call(d3.axisBottom(z).ticks(pathData.length-1))
-    .selectAll("text")
-    .data(pathData)
-    .text(function(d){return d.date});
+     .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
+     .attr("id", "y-axis")
+     .call(d3.axisLeft(y));
 }
 
 function get_selected_project() {

@@ -10,94 +10,101 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	console.log(startDate);
 	console.log(endDate);
 	console.log(sliderValues);
-	var projects = []
 
-		var colorToBe = 'AssociatedOrganizationDimension'
-		// size of the display box
-		var width = 1000,
-			height = 1000,
+	var projects = [],
+			colorToBe = 'AssociatedOrganizationDimension',
+			// size of the display box
+			width = Math.min($(window).width()*0.5, $(window).height()*0.9),
+			height = width,
 			margin = {right: width * 0.1, left: width * 0.1, top: height * 0.1, bottom: 50},
-			axisLenghtX = width * 0.8,
-			axisLenghtY = height * 0.8,
-			sliderY = height - margin.bottom
-			percentInPx = (axisLenghtX / (2*sliderValues)) * 100
+			axisLengthX = width * 0.8,
+			axisLengthY = height * 0.8,
+			sliderY = height - margin.bottom,
+			percentInPx = (axisLengthX / (2*sliderValues)) * 100,
+			// Defaults
+			startDefault = 0,
+			endDefault = 0;
 
+	// The scales for the x and y axis.
+	//range means the length of the line and domain the numbers beneath it
+	var scaleX = d3.scaleLinear()
+				   .range([0,axisLengthX])
+				   .domain([-1 * sliderValues, sliderValues]);
 
-		var startDefault = 0
-		var endDefault = 0
+	var scaleY = d3.scaleLinear()
+				   .range([0,axisLengthY])
+				   .domain([sliderValues,-1 * sliderValues]);
 
-		// The scales for the x and y axis.
-		//range means the length of the line and domain the numbers beneath it
-		var scaleX = d3.scaleLinear()
-					   .range([0,axisLenghtX])
-					   .domain([-1 * sliderValues, sliderValues]);
+	var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-		var scaleY = d3.scaleLinear()
-					   .range([0,axisLenghtY])
-					   .domain([sliderValues,-1 * sliderValues]);
-
-		var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-		var jsonlen = json.length
-		var projects = []
-		var data = [{"X": xToBe, "Y": yToBe}]
-		for (j = 0; j < jsonlen; j++) {
-			var size = json[j].dimensions.length
-			//inProgress is object which will contain the data from 1 project.
-			var inProgress = {"name": json[j].name, "organization": "", "xAxisActual": [],"xAxisPlanned": [],"xAxis": 0,"radius":[],"yAxisActual":[],"yAxisPlanned":[],"yAxis":0};
-			var xID = 0
-			var yID = 0
-			for (i = 0; i < size; i++) {
-		    if (json[j].dimensions[i].dimension_type == 'DecimalDimension' ) {
-					//collectVal is array which will contain a value and a corresponding date. The type of the values is determined later (budget, manHours etc.).
-					var collectVal = []
-					var historyLen = json[j].dimensions[i].dimension_object.history.length;
-					for (h = 0; h < historyLen; h++) {
-						var date = json[j].dimensions[i].dimension_object.history[h].history_date;
-						var planned = json[j].dimensions[i].dimension_object.history[h].value;
-						var parsedDate = new Date(date).getTime() / 1000 // parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
-						setDateScale(new Date(date).getTime() / 1000)
-						collectVal.push([parsedDate, planned])
-					};
-					// here we determine the type of the array, set the inProgress arrays.
-					var valueName = json[j].dimensions[i].dimension_object.name;
-					if ( valueName === xToBe) {
-						xID = json[j].dimensions[i].id // x-axis id is saved. This value is used in the milestone-loop.
-						inProgress.xAxisActual = (collectVal).reverse();
-					} else if (valueName === yToBe) {
-						yID = json[j].dimensions[i].id // y-axis id is saved. This value is used in the milestone-loop.
-						inProgress.yAxisActual = (collectVal).reverse();
-					} else if (valueName === radToBe) {
-						inProgress.radius =(collectVal)
-					}
-				} else if (json[j].dimensions[i].dimension_type === colorToBe ) {
-					inProgress.organization = json[j].dimensions[i].dimension_object.history[0].value.name
+	var jsonlen = json.length
+	for (j = 0; j < jsonlen; j++) {
+		var size = json[j].dimensions.length
+		//inProgress is object which will contain the data from 1 project.
+		var inProgress = {
+			"name": json[j].name,
+			"organization": "",
+			"xAxisActual": [],
+			"xAxisPlanned": [],
+			"xAxis": 0,
+			"radius": [],
+			"yAxisActual": [],
+			"yAxisPlanned": [],
+			"yAxis": 0
+		};
+		var xID = 0,
+				yID = 0;
+		for (i = 0; i < size; i++) {
+	    if (json[j].dimensions[i].dimension_type == 'DecimalDimension' ) {
+				//collectVal is array which will contain a value and a corresponding date. The type of the values is determined later (budget, manHours etc.).
+				var collectVal = []
+				var historyLen = json[j].dimensions[i].dimension_object.history.length;
+				for (h = 0; h < historyLen; h++) {
+					var date = json[j].dimensions[i].dimension_object.history[h].history_date;
+					var planned = json[j].dimensions[i].dimension_object.history[h].value;
+					var parsedDate = new Date(date).getTime() / 1000 // parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
+					setDateScale(new Date(date).getTime() / 1000)
+					collectVal.push([parsedDate, planned])
 				};
+				// here we determine the type of the array, set the inProgress arrays.
+				var valueName = json[j].dimensions[i].dimension_object.name;
+				if ( valueName === xToBe) {
+					xID = json[j].dimensions[i].id // x-axis id is saved. This value is used in the milestone-loop.
+					inProgress.xAxisActual = (collectVal).reverse();
+				} else if (valueName === yToBe) {
+					yID = json[j].dimensions[i].id // y-axis id is saved. This value is used in the milestone-loop.
+					inProgress.yAxisActual = (collectVal).reverse();
+				} else if (valueName === radToBe) {
+					inProgress.radius =(collectVal)
+				}
+			} else if (json[j].dimensions[i].dimension_type === colorToBe ) {
+				inProgress.organization = json[j].dimensions[i].dimension_object.history[0].value.name
+			};
 
-			}
-		var collectXPlan = [] // array for x-axis milestones
-		var collectYPlan = [] // array for y-axis milestones
-		if(json[j].milestones != undefined) {
-			for(e = 0; e < json[j].milestones.length ; e++ ) {
-	      if(json[j].milestones[e].dimensions != undefined) {
-	      for(q = 0; q < json[j].milestones[e].dimensions.length ; q++ ) {
-	          if(json[j].milestones[e].dimensions[q].project_dimension == xID) {
-	            //lisää X
-	            var date = json[j].milestones[e].due_date
-	            var parsedDate = new Date(date).getTime() / 1000
-	            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
-	            collectXPlan.push([parsedDate,milestoneValue])
-	          } else if( json[j].milestones[e].dimensions[q].project_dimension == yID ) {
-	            // lisää Y
-	            var date = json[j].milestones[e].due_date
-	            var parsedDate = new Date(date).getTime() / 1000
-	            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
-	            collectYPlan.push([parsedDate,milestoneValue])
-	          }
-				setDateScale(new Date(date).getTime() / 1000)
-	        }
-	      }
-	    }
+		}
+	var collectXPlan = [] // array for x-axis milestones
+	var collectYPlan = [] // array for y-axis milestones
+	if(json[j].milestones != undefined) {
+		for(e = 0; e < json[j].milestones.length ; e++ ) {
+      if(json[j].milestones[e].dimensions != undefined) {
+      for(q = 0; q < json[j].milestones[e].dimensions.length ; q++ ) {
+          if(json[j].milestones[e].dimensions[q].project_dimension == xID) {
+            //lisää X
+            var date = json[j].milestones[e].due_date
+            var parsedDate = new Date(date).getTime() / 1000
+            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
+            collectXPlan.push([parsedDate,milestoneValue])
+          } else if( json[j].milestones[e].dimensions[q].project_dimension == yID ) {
+            // lisää Y
+            var date = json[j].milestones[e].due_date
+            var parsedDate = new Date(date).getTime() / 1000
+            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
+            collectYPlan.push([parsedDate,milestoneValue])
+          }
+			setDateScale(new Date(date).getTime() / 1000)
+        }
+      }
+    }
 		//pushing the milestone-arrays to inProgress, and push inProgress to projects-array.
 		inProgress.xAxisPlanned =(collectXPlan)
 		inProgress.yAxisPlanned =(collectYPlan)
@@ -175,8 +182,8 @@ console.log(projects);
 		d.xAxis !== -Infinity &&
 		y(d) > margin.top  &&
 		x(d) > margin.left &&
-		y(d) < (margin.top + axisLenghtY) &&
-		x(d) < (margin.left + axisLenghtX));
+		y(d) < (margin.top + axisLengthY) &&
+		x(d) < (margin.left + axisLengthX));
 	}
 	function validXCoordinates(d) {
 		if(!isNaN(d)) {return Math.min(Math.max(d,0),width) } else {return 0};
@@ -310,14 +317,14 @@ console.log(projects);
 						  .attr("text-anchor", "start")
 						  .attr("y", 240)
 						  .attr("x", 20)
-						  .text("x-axis: "+data[0].X);
+						  .text("x-axis: "+xToBe);
 		//label for y-axis
 		var ylabel = svg.append("text")
 						  .attr("class", "axisLabel")
 						  .attr("text-anchor", "start")
 						  .attr("y", 340)
 						  .attr("x", 20)
-						  .text("y-axis: "+data[0].Y);
+						  .text("y-axis: "+yToBe);
 
 		// Place and colorise circles, and define mouseenter and mouseleave functions
 		var dot = svg.append("g")
@@ -347,7 +354,7 @@ console.log(projects);
 	//Timescale under the graph
 	var scaleDate = d3.scaleTime()
 						.domain([startDate*1000, endDate*1000])
-						.range([0, axisLenghtX])
+						.range([0, axisLengthX])
 						.clamp(true); //keeps the slider on the scale
 
 	//building the timeScale-slider
