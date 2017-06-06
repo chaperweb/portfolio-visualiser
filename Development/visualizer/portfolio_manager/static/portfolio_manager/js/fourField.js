@@ -2,14 +2,14 @@
 var db_json;
 
 function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues) {
-	console.log("JSON");
+	// console.log("JSON");
 	console.log(json);
-	console.log(xToBe);
-	console.log(yToBe);
-	console.log(radToBe);
-	console.log(startDate);
-	console.log(endDate);
-	console.log(sliderValues);
+	// console.log(xToBe);
+	// console.log(yToBe);
+	// console.log(radToBe);
+	// console.log(startDate);
+	// console.log(endDate);
+	// console.log(sliderValues);
 
 	var projects = [],
 			colorToBe = 'AssociatedOrganizationDimension',
@@ -26,20 +26,19 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			endDefault = 0;
 
 	// The scales for the x and y axis.
-	//range means the length of the line and domain the numbers beneath it
+	// range means the length of the line and domain the numbers beneath it
 	var scaleX = d3.scaleLinear()
-				   .range([0,axisLengthX])
-				   .domain([-1 * sliderValues, sliderValues]);
+				   			 .range([0,axisLengthX])
+				   	 		 .domain([-1 * sliderValues, sliderValues]);
 
 	var scaleY = d3.scaleLinear()
-				   .range([0,axisLengthY])
-				   .domain([sliderValues,-1 * sliderValues]);
+				   			 .range([0,axisLengthY])
+				   	 		 .domain([sliderValues,-1 * sliderValues]);
 
 	var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-	var jsonlen = json.length
-	for (j = 0; j < jsonlen; j++) {
-		var size = json[j].dimensions.length
+	for (j = 0; j < json.length; j++) {
+		var size = json[j].dimensions.length;
 		//inProgress is object which will contain the data from 1 project.
 		var inProgress = {
 			"name": json[j].name,
@@ -54,63 +53,73 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		};
 		var xID = 0,
 				yID = 0;
+
 		for (i = 0; i < size; i++) {
-	    if (json[j].dimensions[i].dimension_type == 'DecimalDimension' ) {
-				//collectVal is array which will contain a value and a corresponding date. The type of the values is determined later (budget, manHours etc.).
-				var collectVal = []
-				var historyLen = json[j].dimensions[i].dimension_object.history.length;
+			var dimension = json[j].dimensions[i];
+	    if (dimension.dimension_type == 'DecimalDimension' ) {
+				// collectVal is array which will contain a value and a corresponding
+				// date. The type of the values is determined later (budget, manHours etc.).
+				var collectVal = [];
+				var historyList = dimension.dimension_object.history;
+				var historyLen = historyList.length;
 				for (h = 0; h < historyLen; h++) {
-					var date = json[j].dimensions[i].dimension_object.history[h].history_date;
-					var planned = json[j].dimensions[i].dimension_object.history[h].value;
+					var date = historyList[h].history_date;
+					var planned = historyList[h].value;
 					var parsedDate = new Date(date).getTime() / 1000 // parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
-					setDateScale(new Date(date).getTime() / 1000)
+					setDateScale(parsedDate)
 					collectVal.push([parsedDate, planned])
 				};
 				// here we determine the type of the array, set the inProgress arrays.
-				var valueName = json[j].dimensions[i].dimension_object.name;
+				var valueName = dimension.dimension_object.name;
 				if ( valueName === xToBe) {
-					xID = json[j].dimensions[i].id // x-axis id is saved. This value is used in the milestone-loop.
+					xID = dimension.id // x-axis id is saved. This value is used in the milestone-loop.
 					inProgress.xAxisActual = (collectVal).reverse();
 				} else if (valueName === yToBe) {
-					yID = json[j].dimensions[i].id // y-axis id is saved. This value is used in the milestone-loop.
+					yID = dimension.id // y-axis id is saved. This value is used in the milestone-loop.
 					inProgress.yAxisActual = (collectVal).reverse();
 				} else if (valueName === radToBe) {
-					inProgress.radius =(collectVal)
+					inProgress.radius = (collectVal)
 				}
-			} else if (json[j].dimensions[i].dimension_type === colorToBe ) {
-				inProgress.organization = json[j].dimensions[i].dimension_object.history[0].value.name
+			} else if (dimension.dimension_type === colorToBe ) {
+				inProgress.organization = dimension.dimension_object.history[0].value.name
 			};
 
 		}
-	var collectXPlan = [] // array for x-axis milestones
-	var collectYPlan = [] // array for y-axis milestones
-	if(json[j].milestones != undefined) {
-		for(e = 0; e < json[j].milestones.length ; e++ ) {
-      if(json[j].milestones[e].dimensions != undefined) {
-      for(q = 0; q < json[j].milestones[e].dimensions.length ; q++ ) {
-          if(json[j].milestones[e].dimensions[q].project_dimension == xID) {
-            //lisää X
-            var date = json[j].milestones[e].due_date
-            var parsedDate = new Date(date).getTime() / 1000
-            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
-            collectXPlan.push([parsedDate,milestoneValue])
-          } else if( json[j].milestones[e].dimensions[q].project_dimension == yID ) {
-            // lisää Y
-            var date = json[j].milestones[e].due_date
-            var parsedDate = new Date(date).getTime() / 1000
-            var milestoneValue = json[j].milestones[e].dimensions[q].dimension_milestone_object.value
-            collectYPlan.push([parsedDate,milestoneValue])
-          }
-			setDateScale(new Date(date).getTime() / 1000)
-        }
-      }
-    }
+		var collectXPlan = [], // array for x-axis milestones
+				collectYPlan = []; // array for y-axis milestones
+
+		if(json[j].milestones != undefined) {
+			for(e = 0; e < json[j].milestones.length ; e++ ) {
+				var milestone = json[j].milestones[e];
+	      if(milestone.dimensions != undefined) {
+		      for(q = 0; q < milestone.dimensions.length ; q++ ) {
+		        if(milestone.dimensions[q].project_dimension == xID) {	// ADD X
+							// console.log("ADD X");
+		          var date = milestone.due_date
+		          var parsedDate = new Date(date).getTime() / 1000
+		          var milestoneValue = milestone.dimensions[q].dimension_milestone_object.value
+		          collectXPlan.push([parsedDate,milestoneValue])
+		        } else if( milestone.dimensions[q].project_dimension == yID ) {	// ADD Y
+							// console.log("ADD Y");
+		          var date = milestones.due_date
+		          var parsedDate = new Date(date).getTime() / 1000
+		          var milestoneValue = milestone.dimensions[q].dimension_milestone_object.value
+		          collectYPlan.push([parsedDate,milestoneValue])
+		        } else {
+							// console.log("xID: " + xID);
+							// console.log("yID: " + yID);
+							// console.log("other ID: " + milestone.dimensions[q].project_dimension);
+							// console.log("----------------------------------------------------------");
+						}
+						setDateScale(new Date(date).getTime() / 1000)
+		    	}
+      	}
+    	}
 		//pushing the milestone-arrays to inProgress, and push inProgress to projects-array.
-		inProgress.xAxisPlanned =(collectXPlan)
-		inProgress.yAxisPlanned =(collectYPlan)
+		inProgress.xAxisPlanned = (collectXPlan)
+		inProgress.yAxisPlanned = (collectYPlan)
 		projects.push(inProgress);
 		}
-
 	}
 
 	mmddyy = d3.timeFormat("%m/%d/%Y");
@@ -124,7 +133,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		$('#end-date-selector').val(mmddyy(endDate*1000));
 	}
 
-console.log(projects);
+// console.log(projects);
 
 /***********************/
 /* functions live here */
@@ -146,8 +155,8 @@ console.log(projects);
 			console.log("true")
 			return d.radius;
 		} else {
+			// console.log("false");
 			d.radius = 0
-			console.log("false")
 			return d.radius;
 		}
 	}
@@ -213,11 +222,11 @@ console.log(projects);
 	function interpolateData(date) {
 		return projects.map(function(d) {
 		  return {
-			name: d.name,
-			organization: d.organization,
-			xAxis: processValues(interpolateValues(d.xAxisActual, date),interpolateValues(d.xAxisPlanned, date)),
-			yAxis: processValues(interpolateValues(d.yAxisActual, date),interpolateValues(d.yAxisPlanned, date)),
-			radius: interpolateValues(d.radius, date)
+				name: d.name,
+				organization: d.organization,
+				xAxis: processValues(interpolateValues(d.xAxisActual, date),interpolateValues(d.xAxisPlanned, date)),
+				yAxis: processValues(interpolateValues(d.yAxisActual, date),interpolateValues(d.yAxisPlanned, date)),
+				radius: interpolateValues(d.radius, date)
 		  };
 		});
 	}
