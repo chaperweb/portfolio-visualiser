@@ -492,11 +492,8 @@ def addproject(request):
                 td_modelname = template_dimension.content_type.model_class().__name__
                 template_dimension_form_class = globals()[td_modelname+"Form"]
                 # TODO: Should we check more carefully what is drawn from globals(). Security issue?
-
-                if request.POST:
-                    template_dimension_form = template_dimension_form_class(request.POST)
-                
                 template_dimension_form = template_dimension_form_class(
+                    request.POST or None,
                     dimension_name = template_dimension.name,
                     project_form = add_project_form,
                     prefix = str(template_dimension.id)+'_form'
