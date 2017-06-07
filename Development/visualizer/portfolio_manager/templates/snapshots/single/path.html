@@ -24,11 +24,41 @@
   <!-- Info for the ajax -->
   <input id="dj-data" type="hidden"
       data-url="{% url 'json' %}"
-      data-project="{{ project }}"
-      data-x="{{ x }}"
-      data-y="{{ y }}">
+      data-project="{{ project.id }}"
+      data-x="{{ x.id }}"
+      data-y="{{ y.id }}">
+
+  <!-- Infopanels at the right side -->
+  <div id="snap-info-cont" class="col-lg-2 col-xs-12">
+    <div class="panel-group col-xs-10 col-xs-offset-1">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Project
+        </div>
+        <div class="panel-body">
+          {{ project }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          X
+        </div>
+        <div class="panel-body">
+          {{ x.dimension_object.name }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Y
+        </div>
+        <div class="panel-body">
+          {{ y.dimension_object.name }}
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Container for visualization -->
-  <div class="col-lg-offset-2 col-lg-8 col-xs-12" id="visualization">
+  <div class="col-lg-8 col-xs-12" id="visualization">
     <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
   </div>
 </div>

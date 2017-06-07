@@ -736,9 +736,9 @@ def snapshots(request, vis_type, snapshot_id):
                 response_data = {
                     'name': name,
                     'description': desc,
-                    'project': proj.id,
-                    'x': x.id,
-                    'y': y.id,
+                    'project': proj,
+                    'x': x,
+                    'y': y,
                 }
                 template = 'snapshots/single/path.html'
             elif vis_type == 'fourfield':

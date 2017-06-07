@@ -21,3 +21,11 @@ img#loading-icon {
   cursor: wait;
   transform: scale(2,2);
 }
+
+#snap-info-cont {
+  margin-top: 50px;
+}
+
+#snap-info-cont div.panel {
+  margin-bottom: 5vh;
+}
