@@ -23,17 +23,17 @@
 }
 
 div#loading {
-  width: 48px;
-  height: 48px;
+  width: 128px;
+  height: 128px;
   display: none;
-  background: url(/static/portfolio_manager/img/ajax-loader.gif) no-repeat;
+  background: url(/static/portfolio_manager/img/loading.gif) no-repeat;
   cursor: wait;
   margin: 0;
   position: absolute;
   top: 50%;
   left: 50%;
   margin-right: -50%;
-  transform: translate(-50%, -50%)
+  transform: translate(-50%, -50%);
 }
 
 h3.modal-title {
