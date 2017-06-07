@@ -722,8 +722,16 @@ def snapshots(request, vis_type, snapshot_id):
                 x = snap.dimension_object_x
                 y = snap.dimension_object_y
 
-                x = ProjectDimension.objects.get(project=proj, object_id=x.id)
-                y = ProjectDimension.objects.get(project=proj, object_id=y.id)
+                x = ProjectDimension.objects.get(
+                    project=proj,
+                    object_id=x.id,
+                    content_type=snap.content_type_x
+                )
+                y = ProjectDimension.objects.get(
+                    project=proj,
+                    object_id=y.id,
+                    content_type=snap.content_type_y
+                )
 
                 response_data = {
                     'name': name,
