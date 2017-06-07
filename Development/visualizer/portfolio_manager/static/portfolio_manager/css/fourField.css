@@ -87,8 +87,13 @@ ul {
 li {
   font-weight: normal;
 }
+
 img#loading-icon {
   padding-top: 15%;
   cursor: wait;
   transform: scale(2,2);
+}
+
+#snap-info-cont div.panel {
+  margin-bottom: 4vh;
 }

@@ -29,8 +29,62 @@ Fourfield Snapshot
       data-start="{{ start_date }}"
       data-end="{{ end_date }}"
       data-zoom="{{ zoom }}">
+
+  <!-- Infopanels at the right side -->
+  <div id="snap-info-cont" class="col-lg-2 col-xs-12">
+    <div class="panel-group col-xs-10 col-xs-offset-1">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          X
+        </div>
+        <div class="panel-body">
+          {{ x }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Y
+        </div>
+        <div class="panel-body">
+          {{ y }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Radius
+        </div>
+        <div class="panel-body">
+          {{ radius }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Start date
+        </div>
+        <div class="panel-body">
+          {{ start_date }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          End date
+        </div>
+        <div class="panel-body">
+          {{ end_date }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Zoom
+        </div>
+        <div class="panel-body">
+          {{ zoom }}
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Container for visualization -->
-  <div class="col-lg-offset-2 col-lg-8 col-xs-12" id="visualization">
+  <div class="col-lg-8 col-xs-12" id="visualization">
     <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
   </div>
 </div>
