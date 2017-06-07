@@ -16,3 +16,8 @@ li {
 #visualization {
   margin-top:50px;
 }
+img#loading-icon {
+  padding-top: 15%;
+  cursor: wait;
+  transform: scale(2,2);
+}

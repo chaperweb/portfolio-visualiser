@@ -8,7 +8,8 @@ $(function(){
           start = Date.parse($("#dj-data").data('start'))/1000,
           end = Date.parse($("#dj-data").data('end'))/1000,
           zoom = $("#dj-data").data('zoom');
-          console.log("HI");
+
+      $("#loading-icon").hide();
       fourField(data, x, y, r, start, end, zoom);
   });
 });

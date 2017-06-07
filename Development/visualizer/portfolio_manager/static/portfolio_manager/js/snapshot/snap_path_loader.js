@@ -1,24 +1,22 @@
 $(function(){
-
-  var project = $("#project").data('project'),
-      x_dimension = $("#x-dim").data('xdim'),
-      y_dimension = $("#y-dim").data('ydim');
+  var djdata = $("#dj-data").data(),
+      jsonurl = djdata['url'],
+      project = djdata['project'],
+      x = djdata['x'],
+      y = djdata['y'];
 
   $.ajax({
-    url: $("#json-url").data('url')
+    url: jsonurl
   }).done(function(data) {
     for (var i = 0, len = data.length; i < len; i++) {
       if (data[i].id == project) {
+        $("#loading-icon").hide();
         update_path_visualization(
-          get_dimension(data[i], x_dimension),
-          get_dimension(data[i], y_dimension)
+          get_dimension(data[i], x),
+          get_dimension(data[i], y)
         );
         break;
       }
     }
   });
-
-  // console.log(project);
-  // console.log(x_dimension);
-  // console.log(y_dimension);
 });

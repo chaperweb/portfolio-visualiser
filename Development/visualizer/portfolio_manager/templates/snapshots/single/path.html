@@ -17,15 +17,19 @@
 {% endblock %}
 
 {% block content %}
+{% load static %}
 <div class="text-center">
   <h2>{{ name }}</h2>
   <h5>{{ description }}</h5>
   <!-- Info for the ajax -->
-  <span id="json-url" data-url="{% url 'json' %}"></span>
-  <span id="project" data-project="{{ project }}"></span>
-  <span id="x-dim" data-xdim="{{ x }}"></span>
-  <span id="y-dim" data-ydim="{{ y }}"></span>
+  <input id="dj-data" type="hidden"
+      data-url="{% url 'json' %}"
+      data-project="{{ project }}"
+      data-x="{{ x }}"
+      data-y="{{ y }}">
   <!-- Container for visualization -->
-  <div class="col-lg-offset-2 col-lg-8 col-xs-12" id="visualization"></div>
+  <div class="col-lg-offset-2 col-lg-8 col-xs-12" id="visualization">
+    <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
+  </div>
 </div>
 {% endblock %}

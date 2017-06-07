@@ -28,9 +28,10 @@ Fourfield Snapshot
       data-r="{{ radius }}"
       data-start="{{ start_date }}"
       data-end="{{ end_date }}"
-      data-zoom="{{ zoom }}"
-></span>
+      data-zoom="{{ zoom }}">
   <!-- Container for visualization -->
-  <div class="col-lg-offset-2 col-lg-8 col-xs-12" id="visualization"></div>
+  <div class="col-lg-offset-2 col-lg-8 col-xs-12" id="visualization">
+    <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
+  </div>
 </div>
 {% endblock %}
