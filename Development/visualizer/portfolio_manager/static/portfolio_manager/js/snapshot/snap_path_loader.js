@@ -3,20 +3,17 @@ $(function(){
       jsonurl = djdata['url'],
       project = djdata['project'],
       x = djdata['x'],
-      y = djdata['y'];
+      y = djdata['y'],
+      data = djdata['data'];
 
-  $.ajax({
-    url: jsonurl
-  }).done(function(data) {
-    for (var i = 0, len = data.length; i < len; i++) {
-      if (data[i].id == project) {
-        $("#loading-icon").hide();
-        update_path_visualization(
-          get_dimension(data[i], x),
-          get_dimension(data[i], y)
-        );
-        break;
-      }
+  for (var i = 0, len = data.length; i < len; i++) {
+    if (data[i].id == project) {
+      $("#loading-icon").hide();
+      update_path_visualization(
+        get_dimension(data[i], x),
+        get_dimension(data[i], y)
+      );
+      break;
     }
-  });
+  }
 });

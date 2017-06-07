@@ -1,5 +1,6 @@
 import logging
 import json as json_module
+from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
 from itertools import groupby
 
@@ -721,6 +722,8 @@ def snapshots(request, vis_type, snapshot_id):
                 proj = snap.project
                 x = snap.dimension_object_x
                 y = snap.dimension_object_y
+                serializer = ProjectSerializer(Project.objects.all(), many=True)
+                data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
 
                 x = ProjectDimension.objects.get(
                     project=proj,
@@ -739,6 +742,7 @@ def snapshots(request, vis_type, snapshot_id):
                     'project': proj,
                     'x': x,
                     'y': y,
+                    'data': data
                 }
                 template = 'snapshots/single/path.html'
             elif vis_type == 'fourfield':
@@ -751,6 +755,9 @@ def snapshots(request, vis_type, snapshot_id):
                 start_date = snap.start_date
                 end_date = snap.end_date
                 zoom = snap.zoom
+                serializer = ProjectSerializer(Project.objects.all(), many=True)
+                data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
+
                 response_data = {
                     'name': name,
                     'description': desc,
@@ -759,7 +766,8 @@ def snapshots(request, vis_type, snapshot_id):
                     'radius': radius,
                     'start_date': start_date,
                     'end_date': end_date,
-                    'zoom': zoom
+                    'zoom': zoom,
+                    'data': data
                 }
                 template = 'snapshots/single/fourfield.html'
         except Exception as e:
