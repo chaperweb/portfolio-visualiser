@@ -1,0 +1,31 @@
+.bar {
+  fill: none;
+}
+
+.line{
+  fill: none;
+  stroke: black;
+  stroke-width: 5px;
+}
+ul {
+  font-weight: bold;
+}
+li {
+  font-weight: normal;
+}
+#visualization {
+  margin-top:50px;
+}
+img#loading-icon {
+  padding-top: 15%;
+  cursor: wait;
+  transform: scale(2,2);
+}
+
+#snap-info-cont {
+  margin-top: 50px;
+}
+
+#snap-info-cont div.panel {
+  margin-bottom: 5vh;
+}

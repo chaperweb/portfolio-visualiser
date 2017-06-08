@@ -1,0 +1,32 @@
+<div class="modal fade" id="save-fourfield-snap-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+        <h3 class="modal-title">Save Snapshot</h3>
+        <form class="create-snap-modal-form" method="POST" action="{% url 'create_snapshot' %}">
+          {% csrf_token %}
+          <!-- VISIBLE FIELDS -->
+          <div class="form-group">
+            <label class="col-lg-4" for="#fourfield-snap-name">Name</label>
+            <input id="fourfield-snap-name" class="col-lg-6" type="text" maxlength="20" name="name">
+          </div>
+          <div class="form-group">
+            <label class="col-lg-4" for="#fourfield-snap-desc">Description</label>
+            <input id="fourfield-snap-desc" class="col-lg-6" type="text" maxlength="140" size="140" name="description">
+          </div>
+          <input class="btn btn-success" type="submit" value="Save Snapshot">
+
+          <!-- HIDDEN FIELDS -->
+          <input type="hidden" name="type" value="fourfield">
+          <input type="hidden" name="x_dim" id="fourfield-snap-x">
+          <input type="hidden" name="y_dim" id="fourfield-snap-y">
+          <input type="hidden" name="r_dim" id="fourfield-snap-r">
+          <input type="hidden" name="start-date" id="fourfield-snap-start-date">
+          <input type="hidden" name="end-date" id="fourfield-snap-end-date">
+          <input type="hidden" name="zoom" id="fourfield-snap-zoom">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,6 +6,7 @@ $(function() {
     db_json = data;
     for (var i = 0, len = data.length; i < len; i++) {
       $('#project-selector').append('<option value="'+data[i].id+'">'+data[i].name+'</option>')
+      $('#project-selector').prop('disabled', false);
     }
   });
 
@@ -22,14 +23,14 @@ $(function() {
         project = db_json[i];
         for (var j = 0; j < project.dimensions.length; j++) {
           if('history' in project.dimensions[j].dimension_object) {
-
             x_selected = (project.dimensions[j].dimension_object.name == preserved_x_name) ? 'selected' : '';
             y_selected = (project.dimensions[j].dimension_object.name == preserved_y_name) ? 'selected' : '';
 
             $('#x-selector').append('<option '+x_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
-
+            $('#x-selector').prop('disabled', false);
             if (project.dimensions[j].dimension_type == 'DecimalDimension') {
               $('#y-selector').append('<option '+y_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
+              $('#y-selector').prop('disabled', false);
             }
           }
         }

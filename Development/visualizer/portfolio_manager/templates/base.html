@@ -22,6 +22,7 @@
   {# Base custom CSS #}
   <link rel="stylesheet" href="{% static "portfolio_manager/css/base.css" %}">
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+  <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
   {# CSS BLOCK #}
   {% block css %}
   {% endblock %}
@@ -61,6 +62,7 @@ $(document).ready(function() {
       <ul class="nav navbar-nav">
         <li class="col-xs-4 navbar-item"><a href="{% url 'homepage' %}">Home</a></li>
         <li class="col-xs-4 navbar-item"><a href="{% url 'projects' %}">Projects</a></li>
+        <li class="col-xs-4 navbar-item"><a href="{% url 'snapshots' %}">Snapshots</a></li>
       </ul>
     </div>
     <!-- SHOWS ON EVERYTHING BUT PHONE-SIZED -->

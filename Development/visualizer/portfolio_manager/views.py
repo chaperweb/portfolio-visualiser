@@ -1,5 +1,7 @@
 import logging
 import json as json_module
+from django.core.serializers.json import DjangoJSONEncoder
+import datetime as dt
 from itertools import groupby
 
 from django.contrib.contenttypes.models import ContentType
@@ -639,10 +641,186 @@ def add_project_to_project(request):
         ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
         dim = ProjectDimension.objects.get(content_type=ct, project_id=destID)
         dim.dimension_object.projects.add(TBAProject)
-
         response_data = {
             'result': True,
             'id': TBAProject.pk,
             'name': TBAProject.name
         }
         return JsonResponse(response_data)
+
+
+def create_pathsnapshot(name, description, project_id, x, y):
+    p_snap = PathSnapshot()
+    project = Project.objects.get(pk=project_id)
+    p_snap.name = name
+    p_snap.description = description
+    p_snap.snap_type = 'PA'
+    p_snap.project = project
+    p_snap.dimension_object_x = x
+    p_snap.dimension_object_y = y
+    p_snap.save()
+    return p_snap
+
+
+def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
+    ff_snap = FourFieldSnapshot()
+    ff_snap.name = name
+    ff_snap.description = description
+    ff_snap.snap_type = 'FF'
+    ff_snap.x_dimension = x
+    ff_snap.y_dimension = y
+    ff_snap.radius_dimension = r
+    ff_snap.start_date = start
+    ff_snap.end_date = end
+    ff_snap.zoom = zoom
+    ff_snap.save()
+
+    return ff_snap
+
+
+def snapshots(request, vis_type, snapshot_id):
+    response_data = {}
+    template = 'snapshots/error.html'
+
+    #   Show all snapshots
+    if not vis_type and not snapshot_id:
+        snaps = []
+        snap_types = Snapshot.get_subclasses()
+        for snap_type in snap_types:
+            snaps.extend(snap_type.objects.all())
+
+        sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at)
+        sorted_snaps.reverse()
+        response_data = {
+            'snaps': sorted_snaps
+        }
+        template = 'snapshots/multiple/all.html'
+
+    #   Show all snapshots of vis_type
+    elif vis_type and not snapshot_id:
+        if vis_type == 'path':
+            snaps = PathSnapshot.objects.all()
+            template = 'snapshots/multiple/path.html'
+        elif vis_type == 'fourfield':
+            snaps = FourFieldSnapshot.objects.all()
+            template = 'snapshots/multiple/fourfield.html'
+
+        response_data = {
+            'snaps': snaps
+        }
+
+    #   Show a single snapshot
+    elif vis_type and snapshot_id:
+        try:
+            if vis_type == 'path':
+                snap = PathSnapshot.objects.get(pk=snapshot_id)
+                name = snap.name
+                desc = snap.description
+                proj = snap.project
+                x = snap.dimension_object_x
+                y = snap.dimension_object_y
+                serializer = ProjectSerializer(Project.objects.all(), many=True)
+                data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
+
+                x = ProjectDimension.objects.get(
+                    project=proj,
+                    object_id=x.id,
+                    content_type=snap.content_type_x
+                )
+                y = ProjectDimension.objects.get(
+                    project=proj,
+                    object_id=y.id,
+                    content_type=snap.content_type_y
+                )
+
+                response_data = {
+                    'name': name,
+                    'description': desc,
+                    'project': proj,
+                    'x': x,
+                    'y': y,
+                    'data': data
+                }
+                template = 'snapshots/single/path.html'
+            elif vis_type == 'fourfield':
+                snap = FourFieldSnapshot.objects.get(pk=snapshot_id)
+                name = snap.name
+                desc = snap.description
+                x = snap.x_dimension
+                y = snap.y_dimension
+                radius = snap.radius_dimension
+                start_date = snap.start_date
+                end_date = snap.end_date
+                zoom = snap.zoom
+                serializer = ProjectSerializer(Project.objects.all(), many=True)
+                data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
+
+                response_data = {
+                    'name': name,
+                    'description': desc,
+                    'x': x,
+                    'y': y,
+                    'radius': radius,
+                    'start_date': start_date,
+                    'end_date': end_date,
+                    'zoom': zoom,
+                    'data': data
+                }
+                template = 'snapshots/single/fourfield.html'
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            pass
+
+    #   Render the appropriate template
+    return render(request, template, response_data)
+
+
+def create_snapshot(request):
+    if request.method == 'POST':
+        snapshot_type = request.POST['type']
+        if snapshot_type == 'path':
+            x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
+            y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
+
+            name = request.POST['name']
+            description = request.POST['description']
+            pid = request.POST['project_id']
+            x_dim = x_proj_template.dimension_object
+            y_dim = y_proj_template.dimension_object
+
+            p_snap = create_pathsnapshot(
+                        name=name,
+                        description=description,
+                        project_id=pid,
+                        x=x_dim,
+                        y=y_dim
+                    )
+            url = 'snapshots/path/{}'.format(p_snap.id)
+            return redirect(url, permanent=True)
+        elif snapshot_type == 'fourfield':
+            x = request.POST['x_dim']
+            y = request.POST['y_dim']
+            r = request.POST['r_dim']
+            start_ddmmyyyy = request.POST['start-date']
+            end_ddmmyyyy = request.POST['end-date']
+
+            name = request.POST['name']
+            description = request.POST['description']
+            start = dt.datetime.strptime(start_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
+            zoom = request.POST['zoom']
+
+            ff_snap = create_fourfieldsnapshot(
+                        name=name,
+                        description=description,
+                        x=x,
+                        y=y,
+                        r=r,
+                        start=start,
+                        end=end,
+                        zoom=zoom
+                    )
+            url = 'snapshots/fourfield/{}'.format(ff_snap.id)
+            return redirect(url, permanent=True)
+        else:
+            pass

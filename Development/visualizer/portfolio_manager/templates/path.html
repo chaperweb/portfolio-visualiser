@@ -10,24 +10,8 @@ Path
 {% block css %}
 {% load static %}
 <link rel="stylesheet" href="{% static "portfolio_manager/css/sidebar.css" %}">
-<style>
-.bar {
-  fill: none;
-}
-
-.line{
-  fill: none;
-  stroke: black;
-  stroke-width: 5px;
-}
-ul {
-  font-weight: bold;
-}
-li {
-  font-weight: normal;
-}
-
-</style>
+<link rel="stylesheet" href="{% static "portfolio_manager/css/admin_tools.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/path.css" %}">
 {% endblock %}
 
 
@@ -37,42 +21,45 @@ li {
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="{% static 'portfolio_manager/js/path.js' %}"></script>
 <script src="{% static 'portfolio_manager/js/path_loader.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/snapshot/path.js' %}"></script>
 {% endblock %}
 
 {% block visualization_parameters %}
-
- <li data-toggle="collapse" data-target="#visualization-parameters" class="navbar-toggle sidebar-item">Parameters</li>
-    <li>
-      <!-- Expandable list with all the visualizations -->
-      <div id="visualization-parameters" class="collapse in">
-        <ul class="nav">
-
-            <li class="sidebar-subitem">
-              <label for="sel1">Select project:</label>
-              <select class="form-control" id="project-selector">
-              <option>---</option>
-              </select>
-            </li>
-            <li class="sidebar-subitem">
-              <label for="sel1">Select x-axis dimension:</label>
-              <select class="form-control" id="x-selector">
-              <option>---</option>
-              </select>
-            </li>
-            <li class="sidebar-subitem">
-              <label for="sel1">Select y-axis dimension:</label>
-              <select class="form-control" id="y-selector">
-              <option>---</option>
-              </select>
-            </li>
-
-        </ul>
-      </div>
-    </li>
-
+<li data-toggle="collapse" data-target="#visualization-parameters" class="navbar-toggle sidebar-item">
+  Parameters
+</li>
+<li>
+  <!-- Expandable list with all the visualizations -->
+  <div id="visualization-parameters" class="collapse in">
+    <ul class="nav">
+      <li class="sidebar-subitem">
+        <label for="sel1">Select project:</label>
+        <select class="form-control" id="project-selector" disabled="true">
+        <option>---</option>
+        </select>
+      </li>
+      <li class="sidebar-subitem">
+        <label for="sel1">Select x-axis dimension:</label>
+        <select class="form-control" id="x-selector" disabled="true">
+        <option>---</option>
+        </select>
+      </li>
+      <li class="sidebar-subitem">
+        <label for="sel1">Select y-axis dimension:</label>
+        <select class="form-control" id="y-selector" disabled="true">
+        <option>---</option>
+        </select>
+      </li>
+    </ul>
+  </div>
+</li>
+<li id="save-path-snap-btn" data-toggle="modal" data-target="#save-path-snap-modal" class="navbar-toggle sidebar-item btn btn-success">
+  <span class="glyphicon glyphicon-plus"></span>
+  Save snapshot
+</li>
 {% endblock %}
 
 {% block visualization_content %}
-  <div class="col-lg-8 col-md-9 col-sm-10 col-xs-12" id="visualization"></div>
+  {% include "modals/save_path_snap_modal.html" %}
+  <div class="col-lg-8 col-md-8 col-md-offset-1 col-sm-10 col-xs-12" id="visualization"></div>
 {% endblock %}
-

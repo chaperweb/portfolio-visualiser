@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ name }} - Snapshot
+{% endblock %}
+
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/path.css" %}">
+{% endblock %}
+
+{% block javascript %}
+{% load static %}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/path.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/snapshot/snap_path_loader.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="text-center">
+  <h2>{{ name }}</h2>
+  <h5>{{ description }}</h5>
+  <!-- Info for the ajax -->
+  <input id="dj-data" type="hidden"
+      data-url="{% url 'json' %}"
+      data-project="{{ project.id }}"
+      data-x="{{ x.id }}"
+      data-y="{{ y.id }}"
+      data-data="{{ data }}">
+
+  <!-- Infopanels at the right side -->
+  <div id="snap-info-cont" class="col-lg-2 col-xs-12">
+    <div class="panel-group col-xs-10 col-xs-offset-1">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Project
+        </div>
+        <div class="panel-body">
+          {{ project }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          X
+        </div>
+        <div class="panel-body">
+          {{ x.dimension_object.name }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Y
+        </div>
+        <div class="panel-body">
+          {{ y.dimension_object.name }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Container for visualization -->
+  <div class="col-lg-8 col-xs-12" id="visualization">
+    <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
+  </div>
+</div>
+{% endblock %}
