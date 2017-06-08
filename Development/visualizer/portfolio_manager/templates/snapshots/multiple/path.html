@@ -14,12 +14,12 @@ Pathsnapshots
 {% endblock %}
 
 {% block content %}
-<div class="row text-center" style="margin: 5vh 5vw 0 5vw;">
-  <h1>Path-Snapshots</h1>
+<h1 class="text-center">Path Snapshots</h1>
+<div class="snaps-container">
   {% for snap in snaps %}
   <div class="snap-wrapper col-lg-2 col-md-2 col-sm-4 col-xs-6">
     <a href="{% url 'snapshots' %}/path/{{snap.id}}" class="hover-link">
-      <img class="img-responsive" src='{% static "portfolio_manager/img/path.jpg" %}' alt="{{ snap.name }}">
+      <img class="img-responsive" src='{% static "portfolio_manager/img/path.png" %}' alt="{{ snap.name }}">
       <div class="overlay">
         <h2>{{ snap.name }}</h2>
 				<p>{{ snap.description }}</p>

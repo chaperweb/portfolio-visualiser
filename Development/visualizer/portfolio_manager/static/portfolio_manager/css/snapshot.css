@@ -69,3 +69,28 @@
   filter: brightness(0.6);
   -webkit-filter: brightness(0.6);
 }
+
+/* Filter things */
+.hover-link,
+.hover-link:hover,
+.hover-link:visited,
+.hover-link:active {
+  text-decoration: none;
+}
+.filter-title {
+  position: relative;
+  top: -120px;
+  color: #ffffff;
+}
+.toggle.ios.btn {
+  position: relative;
+  top: -120px;
+  left: 30%;
+  min-width: 40%;
+}
+.toggle.ios, .toggle-on.ios, .toggle-off.ios {
+  border-radius: 20px;
+}
+.toggle.ios .toggle-handle {
+  border-radius: 20px;
+}
