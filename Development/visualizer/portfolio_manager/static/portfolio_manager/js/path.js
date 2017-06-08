@@ -82,7 +82,7 @@ function generate_path_svg(pathData) {
       width = Math.max(800, ($(window).width()-250)*0.8),
       margin = {
         right: 0,
-        left: 50,
+        left: 60,
         top: height*0.02,
         bottom: height*0.05
       };
