@@ -13,7 +13,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			margin = {right: fieldWidth * 0.05, left: fieldWidth * 0.05, top: fieldWidth * 0.05, bottom: sliderHeight},
 			axisLengthX = fieldWidth * 0.9,
 			axisLengthY = fieldWidth * 0.9,
-			sliderY = fieldWidth - sliderHeight,
+			sliderY = fieldWidth,
 			percentInPx = (axisLengthX / (2*sliderValues)) * 100,
 			// variables for default dates
 			startDefault = 0,
