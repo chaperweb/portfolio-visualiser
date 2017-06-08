@@ -10,8 +10,8 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			width = $(window).height()*0.85,
 			height = width,
 			margin = {right: width * 0.05, left: width * 0.05, top: height * 0.05, bottom: 50},
-			axisLengthX = width * 0.8,
-			axisLengthY = height * 0.8,
+			axisLengthX = width * 0.9,
+			axisLengthY = height * 0.9,
 			sliderY = height - margin.bottom,
 			percentInPx = (axisLengthX / (2*sliderValues)) * 100,
 			// Defaults
