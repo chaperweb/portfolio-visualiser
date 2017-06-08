@@ -35,7 +35,7 @@ function dependancies(json) {
   		}
 		}
 	}
-	
+
   // defining denominator for scaling overly large values to usable size
 	var denominator = 1;
 	if (d3.max(valueArray) > 1000000) {
@@ -139,8 +139,8 @@ function dependancies(json) {
 		});
 	}
 	// size of the display box and definition of colorscale (predefined ATM)
-	var width = 960,
-		height = 500,
+	var height = $(window).height()*0.85,
+		width = height,
 		color = d3.scale.category20();
 
  // Ball outline is 3 pixels wide
