@@ -582,7 +582,7 @@ def get_multiple(request, project_id, type, field_name):
         projects = []
         projectList = []
         # Loop through the dimensions
-        for dim in assProjsDs:
+        for dim in AProjsDs:
             # Get the dimension object
             dim_obj = dim.dimension_object
             if dim_obj.name == field_name:
