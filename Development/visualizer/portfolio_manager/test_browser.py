@@ -1,8 +1,9 @@
 # coding=utf-8
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import LiveServerTestCase
 from django.urls import reverse
+from django.utils.translation import get_language
 from selenium.webdriver.firefox.webdriver import WebDriver as Firefox 
+from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from portfolio_manager.models import *
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,6 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from decimal import *
+from django.utils.formats import localize_input, number_format
 
 USE_XVFB = False
 
@@ -28,7 +30,11 @@ class BrowserTestCase(StaticLiveServerTestCase):
             # Start xvfb for Firefox
             self.vdisplay = Display(visible=0, size=(1024, 768))
             self.vdisplay.start()
-        self.selenium = Firefox() #CustomFirefoxWebDriver()
+
+        profile = FirefoxProfile()
+        profile.set_preference("intl.accept_languages", get_language())
+        profile.set_preference("general.useragent.locale", get_language())
+        self.selenium = Firefox(firefox_profile=profile)
         self.selenium.maximize_window()
         StaticLiveServerTestCase.setUp(self)
 
@@ -142,19 +148,16 @@ class BrowserTestCase(StaticLiveServerTestCase):
         organization = Organization.objects.get(pk=organization_name)
 
         # Fill in the details of new project and hit submit
+        budget_field, end_date_field, project_manager_field, *foo = organization.templates.all()[0].dimensions.all()
 
-        project_size_budget = '135151.00'
-        template_dimension = organization.templates.all()[0].dimensions.all()[0]
-        self.find('id_'+str(template_dimension.id)+'_form-value').send_keys(project_size_budget)
-       
-        project_end_date = '1/8/2015'
-        template_dimension = organization.templates.all()[0].dimensions.all()[1]
-        self.find('id_'+str(template_dimension.id)+'_form-value').send_keys(project_end_date)
-        
+        project_size_budget = 135151.0
+        self.find('id_%s_form-value' % budget_field.id).send_keys(localize_input(project_size_budget))
+
+        project_end_date = datetime(2015, 8, 1)
+        self.find('id_%s_form-value' % end_date_field.id).send_keys(project_end_date.strftime("%d/%m/%Y"))
+
         project_project_manager = Person.objects.get(id=2)
-        template_dimension = organization.templates.all()[0].dimensions.all()[2]
-        Select(self.find('id_'+str(template_dimension.id)+'_form-value')).select_by_value(str(project_project_manager.id))
-        
+        Select(self.find('id_%s_form-value' % project_manager_field.id)).select_by_value(str(project_project_manager.id))
         self.find('add-project-form').submit()
 
         # Wait until user is redirected to "Show project" page and check that page contains
@@ -163,9 +166,11 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         self.assertEquals(project_name, self.find('project-name').text)
         self.assertEquals(organization_name, self.find('projectparent').text)
-        self.assertEquals('Aug. 1, 2015, midnight', self.find('EndDate').text)
+        end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
+        self.assertEquals(end_date, self.find('EndDate').text)
         self.assertEquals(str(project_project_manager), self.find('ProjectManager').text)
-        self.assertEquals(project_size_budget, self.find('SizeBudget').text)
+        budget = number_format(project_size_budget, decimal_pos=2)
+        self.assertEquals(budget, self.find('SizeBudget').text)
 
     def test_add_project_from_admin_tools(self):
         self.open(reverse('admin_tools'))
@@ -184,11 +189,12 @@ class BrowserTestCase(StaticLiveServerTestCase):
     def _test_add_project(self):
 
         project_name = "FooBar"
-        project_organization = Organization.objects.get(pk='org1')
+        organization = Organization.objects.get(pk='org1')
+
 
         # Fill in details of new project and click "Continue"
         self.find('id_name').send_keys(project_name)
-        Select(self.find('id_organization')).select_by_value(project_organization.pk)
+        Select(self.find('id_organization')).select_by_value(organization.pk)
         self.find('pre-add-project-form').submit()
 
         # Wait for "Add project" page to load
@@ -196,16 +202,16 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Check that project name and organization are propertly transmitted from pre add project form
         self.assertEquals(project_name, self.find('id_add_project_form-name').get_attribute('value'))
-        self.assertEquals(project_organization.pk, self.find('id_add_project_form-organization').get_attribute('value'))
+        self.assertEquals(organization.pk, self.find('id_add_project_form-organization').get_attribute('value'))
 
         # Fill in the detail of new project and submit
+
+        phase_field, project_size_field, *foo = organization.templates.all()[0].dimensions.all()
         project_phase = "Pre-study"
-        template_dimension = project_organization.templates.all()[0].dimensions.all()[0]
-        self.find('id_'+str(template_dimension.id)+'_form-value').send_keys(project_phase)
-       
-        project_size = '135151.00'
-        template_dimension = project_organization.templates.all()[0].dimensions.all()[1]
-        self.find('id_'+str(template_dimension.id)+'_form-value').send_keys(project_size)
+        project_size = 135151.0
+
+        self.find('id_'+str(phase_field.id)+'_form-value').send_keys(project_phase)
+        self.find('id_'+str(project_size_field.id)+'_form-value').send_keys(localize_input(project_size))
         self.find('add-project-form').submit()
 
         # Wait for "Show project" to load
@@ -213,19 +219,21 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Check that "Show project" page contains correct information
         self.assertEquals(project_name, self.find('project-name').text)
-        self.assertEquals(project_organization.pk, self.find('projectparent').text)
+        self.assertEquals(organization.pk, self.find('projectparent').text)
         self.assertEquals(project_phase, self.find('Phase').text)
-        self.assertEquals(project_size, self.find('Size').text)
+        budget = number_format(project_size, decimal_pos=2)
+        self.assertEquals(budget, self.find('Size').text)
 
         # Check that correct information is loaded to db
         project = Project.objects.get(name=project_name)
         self.assertIsInstance(project, Project)
-        self.assertEquals(project_organization, project.parent)
+        self.assertEquals(organization, project.parent)
         dimensions = project.dimensions.all()
         self.assertEquals(2, dimensions.count())
         self.assertIsInstance(dimensions[0].dimension_object, TextDimension)
         self.assertEquals(project_phase, dimensions[0].dimension_object.value)
         self.assertIsInstance(dimensions[1].dimension_object, DecimalDimension)
+
         self.assertEquals(Decimal(project_size), dimensions[1].dimension_object.value)
 
     def _test_modify_project_X_dimension(self, project_id, dimension_name, new_value_field_id, modal_id, form_id, new_value, cmp_value):
@@ -276,7 +284,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Check that dimension value is updated
         self.assertEquals(str(Person.objects.get(id=2)), self.find('ProjectManager').text)
-
 
     def test_modify_project_associated_persons_dimension_remove(self):
         
