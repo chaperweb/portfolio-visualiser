@@ -153,7 +153,15 @@ class AddProjectForm(ModelForm):
 
 class ProjectTemplateForm(ModelForm):
     # Can we filter these with some attribute?
-    base_types = ["textdimension", "datedimension", "associatedpersondimension", "associatedpersonsdimension", "associatedorganizationdimension", "associatedprojectsdimension", "decimaldimension"]
+    base_types = [
+        "textdimension",
+        "datedimension",
+        "associatedpersondimension",
+        "associatedpersonsdimension",
+        "associatedorganizationdimension",
+        "associatedprojectsdimension",
+        "decimaldimension"
+    ]
     cts = ContentType.objects.filter(model__in = base_types)
     field_type = forms.ModelChoiceField(queryset=cts, required=True)
 
