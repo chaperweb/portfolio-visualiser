@@ -78,7 +78,7 @@ function generate_path_data(x_dimension, y_dimension) {
 
 function generate_path_svg(pathData) {
   // Dimension of the svg box
-  var height = Math.max(500, $(window).height()*0.7),
+  var height = Math.max(600, $(window).height()*0.7),
       width = Math.max(700, ($(window).width()-250)*0.8),
       margin = {
         right: 0,
