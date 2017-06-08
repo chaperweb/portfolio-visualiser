@@ -6,15 +6,16 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 
 	var projects = [],
 			colorToBe = 'AssociatedOrganizationDimension',
-			// size of the display box
+			// size of the display box and other scaling related variables
+			sliderHeight = 50,
 			width = $(window).height()*0.85,
-			height = width,
-			margin = {right: width * 0.05, left: width * 0.05, top: height * 0.05, bottom: 50},
+			height = width + sliderHeight,
+			margin = {right: width * 0.05, left: width * 0.05, top: height * 0.05, bottom: sliderHeight},
 			axisLengthX = width * 0.9,
 			axisLengthY = height * 0.9,
-			sliderY = height - margin.bottom,
+			sliderY = height - sliderHeight,
 			percentInPx = (axisLengthX / (2*sliderValues)) * 100,
-			// Defaults
+			// variables for default dates
 			startDefault = 0,
 			endDefault = 0;
 
