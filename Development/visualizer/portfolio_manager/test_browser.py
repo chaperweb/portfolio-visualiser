@@ -2,7 +2,7 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils.translation import get_language
-from selenium.webdriver.firefox.webdriver import WebDriver as Firefox 
+from selenium.webdriver.firefox.webdriver import WebDriver as Firefox
 from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from portfolio_manager.models import *
@@ -12,24 +12,38 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from decimal import *
 from django.utils.formats import localize_input, number_format
+from pyvirtualdisplay import Display
+from pyvirtualdisplay.xvfb import XvfbDisplay
+from easyprocess import EasyProcessCheckInstalledError
 
-USE_XVFB = False
+USE_XVFB = True
 
-if USE_XVFB:
-    from pyvirtualdisplay import Display
+try:
+    XvfbDisplay.check_installed()
+except EasyProcessCheckInstalledError:
+    USE_XVFB = False
 
-WAIT = 7
 
+WAIT = 3
 
 class BrowserTestCase(StaticLiveServerTestCase):
-
+    """ These tests take longer to run than other tests because they pop up a browser window, a headless one in
+    linux/x-window supporting system, real firefox in others. Instead of launching a new firefox for each test, I have
+    modified this to use only one instance and just reload pages -- browser is set up in *setUpClass*, not in setUp.
+    When we have login cookies etc., those tests better run in 'clean' browser, but here reusing the browser
+    doesn't seem to cause problems.
+    """
+    vdisplay = None
+    selenium = None
     fixtures = ['organizations', 'project_templates', 'persons_browser_testing', 'projects_browser_testing']
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
+        StaticLiveServerTestCase.setUpClass()
         if USE_XVFB:
             # Start xvfb for Firefox
-            self.vdisplay = Display(visible=0, size=(1024, 768))
-            self.vdisplay.start()
+            cls.vdisplay = Display(visible=0, size=(1024, 768))
+            cls.vdisplay.start()
 
         profile = FirefoxProfile()
         # Browser itself attempts to validate form fields before they are sent to django.
@@ -41,26 +55,26 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # and reading decimals/floats.
         profile.set_preference("intl.accept_languages", get_language())
         profile.set_preference("general.useragent.locale", get_language())
-        self.selenium = Firefox(firefox_profile=profile)
-        self.selenium.maximize_window()
-        StaticLiveServerTestCase.setUp(self)
+        cls.selenium = Firefox(firefox_profile=profile)
+        cls.selenium.maximize_window()
 
-    def tearDown(self):
-        StaticLiveServerTestCase.tearDown(self)
-        self.selenium.quit()
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
         if USE_XVFB:
-            self.vdisplay.stop()
+            cls.vdisplay.stop()
+        StaticLiveServerTestCase.tearDownClass()
 
     # Helper methods for this test case:
 
     def open(self, url):
-        self.selenium.get("%s%s" % (self.live_server_url, url))
+        BrowserTestCase.selenium.get("%s%s" % (self.live_server_url, url))
 
     def find(self, element_id):
-        return self.selenium.find_element_by_id(element_id)
+        return BrowserTestCase.selenium.find_element_by_id(element_id)
 
     def find_css(self, css_selector):
-        elems = self.selenium.find_elements_by_css_selector(css_selector)
+        elems = BrowserTestCase.selenium.find_elements_by_css_selector(css_selector)
         found = len(elems)
         if found == 1:
             return elems[0]
@@ -73,7 +87,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
             return self.find_css(css_selector)
 
         try:
-            WebDriverWait(self.selenium, WAIT).until(found_it)
+            WebDriverWait(BrowserTestCase.selenium, WAIT).until(found_it)
             found = True
         except TimeoutException:
             found = False
@@ -81,7 +95,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def assert_that_element_appears(self, element_id):
         try:
-            WebDriverWait(self.selenium, WAIT).until(EC.visibility_of_element_located((By.ID, element_id)))
+            WebDriverWait(BrowserTestCase.selenium, WAIT).until(EC.visibility_of_element_located((By.ID, element_id)))
             found = True
         except TimeoutException:
             found = False
@@ -89,7 +103,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def assert_that_element_disappears(self, element_id):
         try:
-            WebDriverWait(self.selenium, WAIT).until(EC.invisibility_of_element_located((By.ID, element_id)))
+            WebDriverWait(BrowserTestCase.selenium, WAIT).until(EC.invisibility_of_element_located((By.ID, element_id)))
             gone = True
         except TimeoutException:
             gone = False
@@ -235,17 +249,16 @@ class BrowserTestCase(StaticLiveServerTestCase):
         project = Project.objects.get(name=project_name)
         self.assertIsInstance(project, Project)
         self.assertEquals(organization, project.parent)
-        dimensions = project.dimensions.all()
-        self.assertEquals(2, dimensions.count())
-        self.assertIsInstance(dimensions[0].dimension_object, TextDimension)
-        self.assertEquals(project_phase, dimensions[0].dimension_object.value)
-        self.assertIsInstance(dimensions[1].dimension_object, DecimalDimension)
+        shape_dim, budget_dim, *leftovers = project.dimensions.all()
+        self.assertFalse(leftovers)
+        self.assertIsInstance(shape_dim.dimension_object, TextDimension)
+        self.assertEquals(project_phase, shape_dim.dimension_object.value)
+        self.assertIsInstance(budget_dim.dimension_object, DecimalDimension)
+        self.assertEquals(Decimal(project_size), budget_dim.dimension_object.value)
 
-        self.assertEquals(Decimal(project_size), dimensions[1].dimension_object.value)
-
-    def _test_modify_project_X_dimension(self, project_id, dimension_name, new_value_field_id, modal_id, form_id, new_value, cmp_value):
-        
-        self.open(reverse('show_project', args=(project_id,)))
+    def _test_modify_project_dimension(self, dimension_name, new_value_field_id, modal_id, form_id,
+                                       new_value, cmp_value):
+        self.open(reverse('show_project', args=(1,)))
 
         # Click the "Modify" button of the dimension
         self.find_css('button[data-field="'+dimension_name+'"]').click()
@@ -266,13 +279,19 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(cmp_value, self.find(dimension_name).text)
 
     def test_modify_project_text_dimension(self):
-        self._test_modify_project_X_dimension(1, 'Phase', 'newTextValue', 'modify-text-modal', 'modify-text-form', 'Done', 'Done')
+        result = 'Done'
+        self._test_modify_project_dimension('Phase', 'newTextValue', 'modify-text-modal', 'modify-text-form',
+                                            'Done', result)
 
     def test_modify_project_decimal_dimension(self):
-        self._test_modify_project_X_dimension(1, 'SizeBudget', 'newDecValue', 'modify-dec-modal', 'modify-dec-form', '38', '38')
+        result = number_format(38.0, decimal_pos=1)
+        self._test_modify_project_dimension('SizeBudget', 'newDecValue', 'modify-dec-modal', 'modify-dec-form',
+                                            localize_input(38.0), result)
 
     def test_modify_project_date_dimension(self):
-        self._test_modify_project_X_dimension(1, 'EndDate', 'date', 'modify-date-modal', 'modify-date-form', "1/9/2019", "2019-09-01T00:00:00Z")
+        result = "2019-09-01T00:00:00Z"
+        self._test_modify_project_dimension('EndDate', 'date', 'modify-date-modal', 'modify-date-form',
+                                            "1/9/2019", result)
 
     def test_modify_project_associated_person_dimension(self):
 
@@ -404,7 +423,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.find_css('#add-project-to-project-form button.btn-success').click()
 
         # Wait for alert
-        WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(),'Timed out waiting for popup to appear.')
+        WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
 
         alert = self.selenium.switch_to_alert()
         self.assertTrue('Successfully' in alert.text)

@@ -576,21 +576,18 @@ def get_multiple(request, project_id, type, field_name):
     # If AssociatedProjectsDimension
     elif type == "assprojects":
         # ContentType
-        AProjsD = ct_objects.get_for_model(AssociatedProjectsDimension)
+        proj_dims = ct_objects.get_for_model(AssociatedProjectsDimension)
         # The dimensions of correct content_type and for the correct project_id
-        AProjsDs = ProjectDimension.objects.filter(content_type=AProjsD, project=project)
-        projects = []
-        projectList = []
+        proj_dims = ProjectDimension.objects.filter(content_type=proj_dims, project=project)
+        results = []
         # Loop through the dimensions
-        for dim in assProjsDs:
+        for dim in proj_dims:
             # Get the dimension object
-            dim_obj = dim.dimension_object
-            if dim_obj.name == field_name:
-                for proj in dim_obj.projects.all():
-                    projects.append(proj)
-        for p in projects:
-            projectList.append({'id': p.id, 'name': p.name})
-        return JsonResponse({'type': 'projects', 'items': projectList})
+            if dim.dimension_object.name == field_name:
+                for p in dim.dimension_object.projects.all():
+                    results.append({'id': p.id, 'name': p.name})
+        return JsonResponse({'type': 'projects', 'items': results})
+
 
 def remove_person_from_project(request):
     if request.is_ajax() and request.method == "PATCH":
