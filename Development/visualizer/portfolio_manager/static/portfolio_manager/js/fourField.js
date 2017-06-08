@@ -8,12 +8,12 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			colorToBe = 'AssociatedOrganizationDimension',
 			// size of the display box and other scaling related variables
 			sliderHeight = 50,
-			width = $(window).height()*0.85,
-			height = width + sliderHeight,
-			margin = {right: width * 0.05, left: width * 0.05, top: height * 0.05, bottom: sliderHeight},
-			axisLengthX = width * 0.9,
-			axisLengthY = height * 0.9,
-			sliderY = height - sliderHeight,
+			fieldWidth = $(window).height()*0.85,
+			svgHeight = fieldWidth + sliderHeight,
+			margin = {right: fieldWidth * 0.05, left: fieldWidth * 0.05, top: fieldWidth * 0.05, bottom: sliderHeight},
+			axisLengthX = fieldWidth * 0.9,
+			axisLengthY = fieldWidth * 0.9,
+			sliderY = fieldWidth - sliderHeight,
 			percentInPx = (axisLengthX / (2*sliderValues)) * 100,
 			// variables for default dates
 			startDefault = 0,
@@ -182,10 +182,10 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		x(d) < (margin.left + axisLengthX));
 	}
 	function validXCoordinates(d) {
-		if(!isNaN(d)) {return Math.min(Math.max(d,0),width) } else {return 0};
+		if(!isNaN(d)) {return Math.min(Math.max(d,0),fieldWidth) } else {return 0};
 	}
 	function validYCoordinates(d) {
-		if(!isNaN(d)) {return Math.min(Math.max(d,0),height) } else {return 0};
+		if(!isNaN(d)) {return Math.min(Math.max(d,0),fieldWidth) } else {return 0};
 	}
 
 	//function to determine color of the circle. Currently is set to color the circles by their "AssociatedOrganizationDimension"
@@ -260,8 +260,8 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 
 		//container for everything
 		var svg = d3.select("#visualization").append("svg")
-					.attr("width", width)
-					.attr("height", height);
+					.attr("width", fieldWidth)
+					.attr("height", svgHeight);
 
 		//Parser for a human readable date format dd. mm. yyyy
 		var parseDate = d3.timeFormat("%d. %m. %Y");
@@ -270,8 +270,8 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		var dateLabel =  svg.append("text")
 							.attr("class", "currentDate")
 							.attr("text-anchor", "end")
-							.attr("y", height - 100)
-							.attr("x", width )
+							.attr("y", svgHeight - 100)
+							.attr("x", fieldWidth )
 							.text(parseDate((new Date(startDate*1000))));
 
 		//slider start & stop values
@@ -282,15 +282,15 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 						 .attr("class", "sliderLabel")
 						 .attr("text-anchor", "start")
 						 .attr("x", 0)
-						 .attr("y", height)
+						 .attr("y", svgHeight)
 						 .text("Start date: " + labelStart);
 
 		//label for the end date next to the slider
 		var sELabel = svg.append("text")
 						.attr("class", "sliderLabel")
 						.attr("text-anchor", "end")
-						.attr("x", width)
-						.attr("y", height)
+						.attr("x", fieldWidth)
+						.attr("y", svgHeight)
 						.text("End date: " + labelEnd);
 		//label for project-name. visible when cursor is hovered over the circle representing the project
 		var namelabel =  svg.append("text")
@@ -377,12 +377,12 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	  // The y and x axis are moved in to place
 	  svg.append("g")
 		 .attr("class", "xAxis")
-		 .attr("transform", "translate("+margin.left+","+(height / 2)+")")
+		 .attr("transform", "translate("+margin.left+","+(fieldWidth / 2)+")")
 		 .call(d3.axisBottom(scaleX));
 
 	  svg.append("g")
 		 .attr("class", "yAxis")
-		 .attr("transform", "translate("+width / 2+","+margin.top+")")
+		 .attr("transform", "translate("+fieldWidth / 2+","+margin.top+")")
 		 .call(d3.axisLeft(scaleY));
 return svg;
 }
