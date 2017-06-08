@@ -56,7 +56,7 @@ class SerializersTestCase(TestCase):
 
     def test_project_serializer(self):
         data = [[u'id', u'__history_date', u'Name', u'SizeBudget'],
-                ['', '', 'TEXT', 'NUM']
+                ['', '', 'TEXT', 'NUM'],
                 [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4'],
                 [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
                 [u'm;29/6/2016', '2014-03-16T17:41:28+00:00', u'', u'9'],

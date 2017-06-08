@@ -10,21 +10,44 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from decimal import *
-from pyvirtualdisplay import Display
+
+USE_XVFB = False
+
+if USE_XVFB:
+    from pyvirtualdisplay import Display
 
 WAIT = 7
 
 
-class SeleniumTestCase(StaticLiveServerTestCase):
+class BrowserTestCase(StaticLiveServerTestCase):
+
+    fixtures = ['organizations', 'project_templates', 'persons_browser_testing', 'projects_browser_testing']
+
+    def setUp(self):
+        if USE_XVFB:
+            # Start xvfb for Firefox
+            self.vdisplay = Display(visible=0, size=(1024, 768))
+            self.vdisplay.start()
+        self.selenium = Firefox() #CustomFirefoxWebDriver()
+        self.selenium.maximize_window()
+        StaticLiveServerTestCase.setUp(self)
+
+    def tearDown(self):
+        StaticLiveServerTestCase.tearDown(self)
+        self.selenium.quit()
+        if USE_XVFB:
+            self.vdisplay.stop()
+
+    # Helper methods for this test case:
 
     def open(self, url):
         self.selenium.get("%s%s" % (self.live_server_url, url))
 
-
-class CustomFirefoxWebDriver(Firefox):
+    def find(self, element_id):
+        return self.selenium.find_element_by_id(element_id)
 
     def find_css(self, css_selector):
-        elems = self.find_elements_by_css_selector(css_selector)
+        elems = self.selenium.find_elements_by_css_selector(css_selector)
         found = len(elems)
         if found == 1:
             return elems[0]
@@ -32,34 +55,16 @@ class CustomFirefoxWebDriver(Firefox):
             raise NoSuchElementException(css_selector)
         return elems
 
-    def wait_for_css(self, css_selector, timeout=WAIT):
-        return WebDriverWait(self, timeout).until(lambda driver : driver.find_css(css_selector))
+    def assert_that_css_appears(self, css_selector):
+        def found_it(foo):
+            return self.find_css(css_selector)
 
-
-#class BrowserTestCase(StaticLiveServerTestCase):
-class BrowserTestCase(SeleniumTestCase):
-
-    fixtures = ['organizations', 'project_templates', 'persons_browser_testing', 'projects_browser_testing']
-
-    def setUp(self):
-        
-        # Start xvfb for Firefox
-        #self.vdisplay = Display(visible=0, size=(1024, 768))
-        #self.vdisplay.start()
-
-        self.selenium = CustomFirefoxWebDriver()
-        self.selenium.maximize_window()
-        super(BrowserTestCase, self).setUp()
-
-    def tearDown(self):
-        
-        super(BrowserTestCase, self).tearDown()
-
-        self.selenium.quit()
-        #self.vdisplay.stop()
-
-    def find(self, id_prop):
-        return self.selenium.find_element_by_id(id_prop)
+        try:
+            WebDriverWait(self.selenium, WAIT).until(found_it)
+            found = True
+        except TimeoutException:
+            found = False
+        self.assertTrue(found, "CSS selector '%s' failed to appear." % css_selector)
 
     def assert_that_element_appears(self, element_id):
         try:
@@ -77,6 +82,8 @@ class BrowserTestCase(SeleniumTestCase):
             gone = False
         self.assertTrue(gone, "Element with id '%s' is still there." % element_id)
 
+    # Actual tests
+
     def test_add_organization(self):
 
         self.open(reverse('admin_tools'))
@@ -88,7 +95,7 @@ class BrowserTestCase(SeleniumTestCase):
         self.find('org-form').submit()
 
         # Wait for notification that reports success
-        self.selenium.wait_for_css('#conf-modal-body > h3');
+        self.assert_that_css_appears('#conf-modal-body > h3')
 
         # Check the notification message
         self.assertTrue('Organization created: '+add_organization_name in self.selenium.page_source)
@@ -109,10 +116,8 @@ class BrowserTestCase(SeleniumTestCase):
         self.assertEquals(AssociatedPersonDimension, template_dimensions[2].content_type.model_class())
         self.assertEquals('ProjectManager', template_dimensions[2].name)
 
-
     def test_add_organization_add_project(self):
         """ Test adding new organization and new project under that organization"""
-
 
         self.open(reverse('admin_tools'))
 
@@ -121,7 +126,7 @@ class BrowserTestCase(SeleniumTestCase):
         self.find('org-form').submit()
 
         # Wait for modal to open
-        self.selenium.wait_for_css('#conf-modal-body > h3')
+        self.assert_that_css_appears('#conf-modal-body > h3')
  
         self.open(reverse('admin_tools')) # Reload organizations in "Add project" modal
 
@@ -155,7 +160,6 @@ class BrowserTestCase(SeleniumTestCase):
         # Wait until user is redirected to "Show project" page and check that page contains
         # correct information
         self.assert_that_element_appears('project-dimension-panels')
-
 
         self.assertEquals(project_name, self.find('project-name').text)
         self.assertEquals(organization_name, self.find('projectparent').text)
@@ -229,14 +233,14 @@ class BrowserTestCase(SeleniumTestCase):
         self.open(reverse('show_project', args=(project_id,)))
 
         # Click the "Modify" button of the dimension
-        self.selenium.find_css('button[data-field="'+dimension_name+'"]').click()
+        self.find_css('button[data-field="'+dimension_name+'"]').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears(new_value_field_id)
 
         # Update form value and submit
         self.find(new_value_field_id).send_keys(new_value)
-        self.selenium.find_css('#'+form_id+' button[type="submit"]').click()
+        self.find_css('#'+form_id+' button[type="submit"]').click()
 
         # Wait for modal to close
         self.assert_that_element_disappears(new_value_field_id)
@@ -258,14 +262,14 @@ class BrowserTestCase(SeleniumTestCase):
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" button of ProjectManager dimension
-        self.selenium.find_css('button[data-field="ProjectManager"]').click()
+        self.find_css('button[data-field="ProjectManager"]').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('person')
 
         # Select another person from dropdown and submit the form
         Select(self.find('person')).select_by_value('2')
-        self.selenium.find_css('#modify-per-form button[type="submit"]').click()
+        self.find_css('#modify-per-form button[type="submit"]').click()
 
         #Wait for modal to close
         self.assert_that_element_disappears('modify-per-modal')
@@ -279,25 +283,25 @@ class BrowserTestCase(SeleniumTestCase):
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Members dimension
-        self.selenium.find_css('button[data-field="Members"].multiple-modify-button').click()
+        self.find_css('button[data-field="Members"].multiple-modify-button').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('add-person-to-project-form')
 
         # Click to remove the only associated person
-        self.selenium.find_css('button.remove-multiple-persons[data-id="1"]').click()
+        self.find_css('button.remove-multiple-persons[data-id="1"]').click()
 
         # Wait for person to disappear from the modal
         self.assert_that_element_disappears('#multiple-person-1')
 
         # Close modal
-        self.selenium.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
+        self.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
 
         # Wait for modal to close
         self.assert_that_element_disappears('multiple-items-modal')
 
         # Click "Click to see to all"
-        self.selenium.find_css('#Members button').click()
+        self.find_css('#Members button').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('multiple-items-modal')
@@ -310,14 +314,14 @@ class BrowserTestCase(SeleniumTestCase):
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Members dimension
-        self.selenium.find_css('button[data-field="Members"].multiple-modify-button').click()
+        self.find_css('button[data-field="Members"].multiple-modify-button').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('add-person-to-project-form')
 
         # Select person to add and click '+'
         Select(self.find('add-person-to-project')).select_by_value('2')
-        self.selenium.find_css('#add-person-to-project-form button.btn-success').click()
+        self.find_css('#add-person-to-project-form button.btn-success').click()
 
         # Wait for alert
         WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
@@ -330,7 +334,7 @@ class BrowserTestCase(SeleniumTestCase):
         self.assert_that_element_disappears('multiple-items-modal')
 
         # Click "Click to see to all"
-        self.selenium.find_css('#Members button').click()
+        self.find_css('#Members button').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('multiple-items-modal')
@@ -343,25 +347,25 @@ class BrowserTestCase(SeleniumTestCase):
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Dependencies dimension
-        self.selenium.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
+        self.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('add-project-to-project-form')
 
         # Click to remove the only associated project
-        self.selenium.find_css('button.remove-multiple-projects[data-id="1"]').click()
+        self.find_css('button.remove-multiple-projects[data-id="1"]').click()
 
         # Wait for project to disappear from the modal
         self.assert_that_element_disappears('#multiple-project-1')
 
         # Close modal
-        self.selenium.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
+        self.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
 
         # Wait for modal to close
         self.assert_that_element_disappears('multiple-items-modal')
 
         # Click "Click to see to all"
-        self.selenium.find_css('#Dependencies button').click()
+        self.find_css('#Dependencies button').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('multiple-items-modal')
@@ -374,14 +378,14 @@ class BrowserTestCase(SeleniumTestCase):
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Dependencies dimension
-        self.selenium.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
+        self.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('add-project-to-project-form')
 
         # Select project to add and click '+'
         Select(self.find('add-project-to-project')).select_by_value('2')
-        self.selenium.find_css('#add-project-to-project-form button.btn-success').click()
+        self.find_css('#add-project-to-project-form button.btn-success').click()
 
         # Wait for alert
         WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(),'Timed out waiting for popup to appear.')
@@ -394,7 +398,7 @@ class BrowserTestCase(SeleniumTestCase):
         self.assert_that_element_disappears('multiple-items-modal')
 
         # Click "Click to see to all"
-        self.selenium.find_css('#Dependencies button').click()
+        self.find_css('#Dependencies button').click()
 
         # Wait for modal to open up
         self.assert_that_element_appears('multiple-items-modal')

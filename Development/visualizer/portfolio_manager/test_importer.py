@@ -185,8 +185,8 @@ class ImporterTestCase(TestCase):
                 ['', '', 'FOO'],
                 [u'2', '2013-03-16T17:41:28+00:00', 'foo']]
         result = from_data_array(data)
+        # current behaviour in code is that importing returns fail if there are unknown type names in the type row.
         self.assertFalse(result['result'])
-        self.assertEqual(0, Project.objects.get(id=2).dimensions.all().count())
 
     def test_importer_size_money_milestone(self):
         data = [[u'id', u'__history_date', u'Name', u'SizeBudget'],

@@ -156,8 +156,8 @@ def from_data_array(data):
                             project_dimension.dimension_object = dimension_object
                             project_dimension.save()
 
-                        dimension_objects[idx] = dimension_object
-                        project_dimension_objects[idx] = project_dimension
+                            dimension_objects[idx] = dimension_object
+                            project_dimension_objects[idx] = project_dimension
 
                 # Create default project template for every organization that some project belongs to.
                 if project.parent and project.parent.templates.all().count() == 0:
