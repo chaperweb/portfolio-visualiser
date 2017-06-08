@@ -140,7 +140,7 @@ function dependancies(json) {
 	}
 	// size of the display box and definition of colorscale (predefined ATM)
 	var height = Math.max(500,$(window).height()*0.85),
-		width = Math.max(700, $(window).width()*0.5),
+		width = Math.max(700, $(window).width()*0.75),
 		color = d3.scale.category20();
 
  // Ball outline is 3 pixels wide
@@ -329,7 +329,7 @@ function dependancies(json) {
 
     var svgLegend = d3.select("body")
                       .append("svg")
-                      .attr("width", 300)
+                      .attr("width", legendWidth)
                       // Scaling the svg based on number of projects
                       .attr("height", (legendHeight)*(nameArray.length)+legendSpacing)
                       .append("g")
