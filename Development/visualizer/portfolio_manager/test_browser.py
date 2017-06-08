@@ -32,6 +32,13 @@ class BrowserTestCase(StaticLiveServerTestCase):
             self.vdisplay.start()
 
         profile = FirefoxProfile()
+        # Browser itself attempts to validate form fields before they are sent to django.
+        # Fields where input type="Number" accept "100.0" when locale is "en" and "100,0" when locale is "fi", and when
+        # they reject the value, django sees an empty value instead.
+        # To prevent this causing more problems, force browser used by tests to use same locale as django, typically
+        # "en".
+        # We may want to occassionally test with other locales, so localize_input, number_format etc. when entering
+        # and reading decimals/floats.
         profile.set_preference("intl.accept_languages", get_language())
         profile.set_preference("general.useragent.locale", get_language())
         self.selenium = Firefox(firefox_profile=profile)
@@ -245,6 +252,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Wait for modal to open up
         self.assert_that_element_appears(new_value_field_id)
+        self.assert_that_element_appears(modal_id)
 
         # Update form value and submit
         self.find(new_value_field_id).send_keys(new_value)
@@ -252,6 +260,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Wait for modal to close
         self.assert_that_element_disappears(new_value_field_id)
+        self.assert_that_element_disappears(modal_id)
 
         # Check that dimension value was updated
         self.assertEquals(cmp_value, self.find(dimension_name).text)
