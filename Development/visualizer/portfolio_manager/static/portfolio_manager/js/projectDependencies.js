@@ -140,7 +140,7 @@ function dependancies(json) {
 	}
 	// size of the display box and definition of colorscale (predefined ATM)
 	var height = Math.max(500,$(window).height()*0.85),
-		width = Math.max(700, $(window).width()*0.75),
+		width = Math.max(700, $(window).width()*0.60),
 		color = d3.scale.category20();
 
  // Ball outline is 3 pixels wide
@@ -319,12 +319,12 @@ function dependancies(json) {
 		return x;
 	}
 
-	/* The legend nesx to the graph is given its own svg container in
+	/* The legend next to the graph is given its own svg container in
    * which we have the project color, name and budget respectively.
    */
     var legendSpacing = 4;
     var legendRectSize = 25;
-    var legendWidth = Math.max(300,width*0.5)
+    var legendWidth = Math.max(300,width*0.25)
     var legendHeight = legendRectSize + legendSpacing;
 
     var svgLegend = d3.select("body")
