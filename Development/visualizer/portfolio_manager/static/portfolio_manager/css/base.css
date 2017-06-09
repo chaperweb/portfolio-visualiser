@@ -3,7 +3,7 @@ html, body {
 }
 
 .navbar {
-  background-color: rgb(116,116,116);
+  background-color: #757477;
   color: white;
   border: 0;
   border-radius: 0;
@@ -20,7 +20,7 @@ html, body {
   color: white;
 }
 .navbar .container-fluid .navbar-nav > .active > a {
-  color: rgb(37,230,32);
+  color: #f39911;
   background-color: inherit;
 }
 .navbar-right {
