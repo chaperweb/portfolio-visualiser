@@ -26,3 +26,8 @@ html, body {
 .navbar-right {
   padding-right: 15px;
 }
+
+.btn-success {
+  background-color: #f39911;
+  border-color: #DF8A0C;
+}
