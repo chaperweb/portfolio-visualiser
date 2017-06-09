@@ -28,11 +28,13 @@ html, body {
 }
 
 .btn-orange, .btn-orange:focus, .btn-orange.focus {
+  color: #FFFFFF;
   background-color: #f39911;
   border-color: #D2820C;
 }
 
 .btn-orange.hover, .btn-orange:hover, .btn-orange:active, .btn-orange.active {
+  color: #FFFFFF;
   background-color: #D2820C;
   border-color: #D2820C;
 }
