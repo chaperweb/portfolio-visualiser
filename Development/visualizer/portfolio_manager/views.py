@@ -409,8 +409,11 @@ def get_sheets(request):
     return redirect('homepage')
 
 def json(request):
-    serializer = ProjectSerializer(Project.objects.all(), many=True)
-    return JsonResponse(serializer.data, safe=False)
+    try:
+        serializer = ProjectSerializer(Project.objects.all(), many=True)
+        return JsonResponse(serializer.data, safe=False)
+    except Exception as e:
+        print("Error in JSON serialization: {}".format(e))
 
 # site to see all projects, grouped by organization
 def projects(request):
