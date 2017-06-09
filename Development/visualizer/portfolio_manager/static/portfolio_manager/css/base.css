@@ -32,7 +32,7 @@ html, body {
   border-color: #D2820C;
 }
 
-.btn-success.hover, .btn-success:hover {
+.btn-success.hover, .btn-success:hover, .btn-success:active, .btn-success.active {
   background-color: #D2820C;
   border-color: #D2820C;
 }
