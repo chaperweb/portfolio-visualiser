@@ -402,7 +402,7 @@ $(function()
           }
           var addLabel = '<label for="add-person-to-project" class="pull-left">Add person</label>';
           var addSelect = '<select id="add-person-to-project" name="perID"></select>';
-          var addBtn = '<button class="btn btn-success btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
+          var addBtn = '<button class="btn btn-orange btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
           var addlist = '<li class="list-group-item"><form action="/add_person_to_project" method="POST" id="add-person-to-project-form">' + addLabel + addSelect + addBtn + '</form></li>';
           $(addlist).appendTo("#multiple-well-ul");
           $.ajax({
@@ -436,7 +436,7 @@ $(function()
           }
           var addLabel = '<label for="add-project-to-project" class="pull-left">Add project</label>';
           var addSelect = '<select id="add-project-to-project" name="projID"></select>';
-          var addBtn = '<button class="btn btn-success btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
+          var addBtn = '<button class="btn btn-orange btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
           var addlist = '<li class="list-group-item"><form action="/add_project_to_project" method="POST" id="add-project-to-project-form">' + addLabel + addSelect + addBtn + '</form></li>';
           $(addlist).appendTo("#multiple-well-ul");
           $.ajax({
