@@ -34,7 +34,7 @@ class ImporterTestCase(TestCase):
         result = from_data_array(data)
         self.assertTrue(result['result'], 'Failed to validate field types in imported data')
         self.assertEqual(5, Project.objects.get(id=2).dimensions.all()[1].dimension_object.history.all().count())
-        
+
     def test_import_name(self):
         data = [[u'id', u'__history_date', u'Name'],
                 ['', '', 'TEXT'],

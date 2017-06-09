@@ -228,7 +228,6 @@ class AssociatedPersonsDimension(Dimension):
                 person.first_name = person_first_name
                 person.save()
             self.persons.add(person)
-        self._history_date = history_date
 
     def __str__(self):
         return str(', '.join([' '.join([ n for n in [p.first_name, p.last_name] if n]) for p in self.persons.all()]))
