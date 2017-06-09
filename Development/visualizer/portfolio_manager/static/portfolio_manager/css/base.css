@@ -31,3 +31,8 @@ html, body {
   background-color: #f39911;
   border-color: #DF8A0C;
 }
+
+.btn-success.focus, .btn-success:focus {
+  background-color: #DF8A0C;
+  border-color: #DF8A0C;
+}
