@@ -195,24 +195,22 @@ def add_field(request):
 def show_project(request, project_id):
     ###     VERSION WITH TEMPLATES      ###
     project = Project.objects.get(pk=project_id)
-    org = project.parent
-    template = ProjectTemplate.objects.get(organization=org)
-    dimensions = ProjectTemplateDimension.objects.filter(template=template)
+    project_dims = ProjectDimension.objects.filter(project_id=project.id)
+    template = ProjectTemplate.objects.get(organization=project.parent)
+    template_dims = ProjectTemplateDimension.objects.filter(template=template)
     testdims = {}
-    for k, g in groupby(dimensions, lambda x: x.content_type):
+    for k, g in groupby(template_dims, lambda x: x.content_type):
         for dim in list(g):
-            dim_type = ContentType.objects.get(id=k.id)
-            testdims.setdefault(dim_type, {}).update({dim.name: None})
+            ct = ContentType.objects.get(id=k.id)
+            testdims.setdefault(ct, {}).update({dim.name: None})
 
     for key, value in testdims.items():
-        dims = ProjectDimension.objects.filter(project_id=project.id)
-        dims_of_key = dims.filter(content_type=key)
+        dims_of_key = project_dims.filter(content_type=key)
         for d in dims_of_key:
             if d.dimension_object.name in value:
                 testdims[key][d.dimension_object.name] = d.dimension_object
 
     ###     WORKING VERSION BELOW       ###
-    theProject = get_object_or_404(Project, pk=project_id)
     # ContentTypes
     dd = ContentType.objects.get_for_model(DecimalDimension)
     td = ContentType.objects.get_for_model(TextDimension)
@@ -223,10 +221,10 @@ def show_project(request, project_id):
     assProjsD = ContentType.objects.get_for_model(AssociatedProjectsDimension)
 
     # Default fields
-    budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
+    budget = ProjectDimension.objects.filter(content_type=dd, project_id=project.id).first()
 
     # All dimensions
-    dims = ProjectDimension.objects.filter(project_id=theProject.id)
+    dims = ProjectDimension.objects.filter(project_id=project.id)
     # Added text fields
     texts = dims.filter(content_type=td)
     # Added decimal fields, removing budget from the query set
@@ -242,8 +240,15 @@ def show_project(request, project_id):
     # Associated projects dimensions
     assProjsDs = dims.filter(content_type=assProjsD)
 
+    # for organization history
+    history_all = project.history.all().order_by('-history_date')[:5]
+
+    orgs = {h.history_date: h.parent for h in history_all}
+    # for h in history_all:
+    #     orgs[h.history_date] = h.parent
+
     context = {}
-    context['project'] = theProject
+    context['project'] = project
     context['budget'] = budget
     context['text'] = texts
     context['decfield'] = decfields
@@ -253,15 +258,8 @@ def show_project(request, project_id):
     context['assOrg'] = assOrgDs
     context['assProjs'] = assProjsDs
     context['projects'] = Project.objects.all()
-    context['testdims'] = testdims
-
-    # for organization history
-    history_all = theProject.history.all().order_by('-history_date')[:5]
-
-    orgs = {}
-    for h in history_all:
-        orgs[h.history_date] = h.parent
     context['orghistory'] = sorted(orgs.items(), reverse=True)
+    context['testdims'] = testdims
 
     return render(request, 'project.html', context)
 
