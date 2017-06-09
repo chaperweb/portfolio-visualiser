@@ -194,18 +194,26 @@ def add_field(request):
 
 def show_project(request, project_id):
     ###     VERSION WITH TEMPLATES      ###
-    # project = Project.objects.get(pk=project_id)
-    # org = project.parent
-    # template = ProjectTemplate.objects.get(organization=org)
-    # dimensions = ProjectTemplateDimension.objects.filter(template=template)
-    # testdims = {}
-    # for k, g in groupby(dimensions, lambda x: x.content_type):
-    #     for dim in list(g):
-    #         dim_type = str(k.model_class().__name__).replace('Dimension', '')
-    #         testdims.setdefault(dim_type, []).append(dim.name.replace('Size', ''))
-    #         # dims[k.model_class().__name__].append(dim.name)
-    # print(testdims)
+    project = Project.objects.get(pk=project_id)
+    org = project.parent
+    template = ProjectTemplate.objects.get(organization=org)
+    dimensions = ProjectTemplateDimension.objects.filter(template=template)
+    testdims = {}
+    for k, g in groupby(dimensions, lambda x: x.content_type):
+        for dim in list(g):
+            dim_type = ContentType.objects.get(id=k.id)
+            testdims.setdefault(dim_type, {}).update({dim.name: None})
 
+    for key, value in testdims.items():
+        print("Key: {}; Value: {}".format(key, value))
+        dims = ProjectDimension.objects.filter(project_id=project.id)
+        dims_of_key = dims.filter(content_type=key)
+        for d in dims_of_key:
+            if d.dimension_object.name in value:
+                testdims[key][d.dimension_object.name] = d.dimension_object
+                print("{} found!".format(d.dimension_object.name))
+            else:
+                print("Couldn't find {}".format(d.dimension_object.name))
 
 
     ###     WORKING VERSION BELOW       ###
@@ -250,7 +258,7 @@ def show_project(request, project_id):
     context['assOrg'] = assOrgDs
     context['assProjs'] = assProjsDs
     context['projects'] = Project.objects.all()
-    # context['testdims'] = testdims
+    context['testdims'] = testdims
 
     # for organization history
     history_all = theProject.history.all().order_by('-history_date')[:5]

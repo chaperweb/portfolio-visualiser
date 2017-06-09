@@ -56,8 +56,8 @@ Projects | {{project.name}}
   {% if testdims %}
     {% for key, value in testdims.items %}
       <strong>{{ key }}: </strong>
-      {% for dim in value %}
-        <p>{{ dim }}</p>
+      {% for dim_name, dim_obj in value.items %}
+        <p>{{ dim_name }}: {{ dim_obj.value }}</p>
       {% endfor %}
     {% endfor %}
   {% endif %}
