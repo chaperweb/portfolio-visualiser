@@ -95,4 +95,6 @@ ENV/
 
 # PyCharm project
 .idea/
+
+# Don't know what made this
 myLog.*

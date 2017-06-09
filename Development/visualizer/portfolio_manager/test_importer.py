@@ -35,7 +35,6 @@ class ImporterTestCase(TestCase):
         self.assertTrue(result['result'], 'Failed to validate field types in imported data')
         self.assertEqual(5, Project.objects.get(id=2).dimensions.all()[1].dimension_object.history.all().count())
         
-
     def test_import_name(self):
         data = [[u'id', u'__history_date', u'Name'],
                 ['', '', 'TEXT'],
@@ -77,16 +76,17 @@ class ImporterTestCase(TestCase):
         result = from_data_array(data)
         self.assertTrue(result['result'], 'Failed to validate field types in imported data')
         self.assertEqual(1, Project.objects.all().count())
-        self.assertEqual(4, Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all().count())
-        self.assertEqual(parse('2013-07-16T17:41:28+00:00'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
-        self.assertEqual(parse('2013-05-16T17:41:28+00:00'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
-        self.assertEqual(datetime(2012, 8, 1, tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[2].value)
-        self.assertEqual(datetime(2015, 8, 1, tzinfo=pytz.utc), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[3].value)
+        history = Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()
+        self.assertEqual(4, history.count())
+        self.assertEqual(parse('2013-07-16T17:41:28+00:00'), history[0].value)
+        self.assertEqual(parse('2013-05-16T17:41:28+00:00'), history[1].value)
+        self.assertEqual(datetime(2012, 8, 1, tzinfo=pytz.utc), history[2].value)
+        self.assertEqual(datetime(2015, 8, 1, tzinfo=pytz.utc), history[3].value)
         
 
     def test_import_projectmanager(self):
         data = [[u'id', u'__history_date', u'ProjectManager'],
-                ['', '', 'APERS'],
+                ['', '', 'APER'],
                 [u'1', '2013-03-16T17:41:28+00:00', 'Pekka '],
                 [u'1', '2013-03-18T17:41:28+00:00', 'Matti'],
                 [u'1', '2013-03-19T17:41:28+00:00', 'Pekka'],
@@ -94,11 +94,12 @@ class ImporterTestCase(TestCase):
         result = from_data_array(data)
         self.assertTrue(result['result'], 'Failed to validate field types in imported data')
         self.assertEqual(1, Project.objects.all().count())
-        self.assertEqual(3, Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all().count())
+        history = Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()
+        self.assertEqual(3, history.count())
         self.assertEqual(2, Person.objects.all().count())
-        self.assertEqual(Person.objects.get(first_name='Pekka'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[0].value)
-        self.assertEqual(Person.objects.get(first_name='Matti'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[1].value)
-        self.assertEqual(Person.objects.get(first_name='Pekka'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.history.all()[2].value)
+        self.assertEqual(Person.objects.get(first_name='Pekka'), history[0].value)
+        self.assertEqual(Person.objects.get(first_name='Matti'), history[1].value)
+        self.assertEqual(Person.objects.get(first_name='Pekka'), history[2].value)
 
     def test_import_members(self):
         data = [[u'id', u'__history_date', u'Members'],

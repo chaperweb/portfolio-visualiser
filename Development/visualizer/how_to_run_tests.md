@@ -4,9 +4,9 @@
 
 This will happen automatically each day and you don't want to be the cause for these to fail. 
 
-If you are codento developer, you'll get access to Jenkins for continuous build, testing and integration. 
+If you are a Codento developer, you'll get access to Jenkins for continuous build, testing and integration. 
 There the dashboard shows the status of the latest build, which is 'success' even when the tests fail -- status is 
-about success of the build, you have to click it to see how the tests are doing.
+about the success of the build, you have to click it to see how the tests are doing.
 
 The script to run tests uses the nice docker build system put in place by Joonas Harjumäki. 
 
