@@ -27,12 +27,12 @@ html, body {
   padding-right: 15px;
 }
 
-.btn-success, .btn-success:focus, .btn-success.focus {
+.btn-orange, .btn-orange:focus, .btn-orange.focus {
   background-color: #f39911;
   border-color: #D2820C;
 }
 
-.btn-success.hover, .btn-success:hover, .btn-success:active, .btn-success.active {
+.btn-orange.hover, .btn-orange:hover, .btn-orange:active, .btn-orange.active {
   background-color: #D2820C;
   border-color: #D2820C;
 }

@@ -323,7 +323,7 @@ class BrowserTestCase(SeleniumTestCase):
         
         # Select person to add and click '+'
         Select(self.selenium.find_element_by_id('add-person-to-project')).select_by_value('2')
-        self.selenium.find_css('#add-person-to-project-form button.btn-success').click()
+        self.selenium.find_css('#add-person-to-project-form button.btn-orange').click()
 
         # Wait for alert
         WebDriverWait(self.selenium, 3).until(EC.alert_is_present(),'Timed out waiting for popup to appear.')
@@ -401,7 +401,7 @@ class BrowserTestCase(SeleniumTestCase):
         
         # Select project to add and click '+'
         Select(self.selenium.find_element_by_id('add-project-to-project')).select_by_value('2')
-        self.selenium.find_css('#add-project-to-project-form button.btn-success').click()
+        self.selenium.find_css('#add-project-to-project-form button.btn-orange').click()
 
         # Wait for alert
         WebDriverWait(self.selenium, 3).until(EC.alert_is_present(),'Timed out waiting for popup to appear.')
