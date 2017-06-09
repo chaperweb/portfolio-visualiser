@@ -29,10 +29,10 @@ html, body {
 
 .btn-success, .btn-success:focus, .btn-success.focus {
   background-color: #f39911;
-  border-color: #DF8A0C;
+  border-color: #D2820C;
 }
 
 .btn-success.hover, .btn-success:hover {
-  background-color: #DF8A0C;
-  border-color: #DF8A0C;
+  background-color: #D2820C;
+  border-color: #D2820C;
 }
