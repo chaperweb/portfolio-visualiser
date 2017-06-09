@@ -224,25 +224,31 @@ class AssociatedPersonDimension (Dimension):
 
 
 class AssociatedPersonsDimension(Dimension):
-    persons = models.ManyToManyField(Person)
+    value = models.ManyToManyField(Person)
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
         self.save()
-        self.persons.set([])
+        self.value.set([])
         for part in value.split(','):
-            person_first_name = part.strip()
+            person_first_name = part.strip().split(' ')[0]
+            try:
+                person_last_name = part.strip().split(' ')[1]
+            except:
+                person_last_name = ''
             person = None
             try:
-                person = Person.objects.get(first_name=person_first_name)
+                person = Person.objects.get(first_name=person_first_name, last_name=person_last_name)
             except Person.DoesNotExist:
                 person = Person()
                 person.first_name = person_first_name
+                person.last_name = person_last_name
                 person.save()
-            self.persons.add(person)
+            self.value.add(person)
 
     def __str__(self):
-        return str(', '.join([' '.join([ n for n in [p.first_name, p.last_name] if n]) for p in self.persons.all()]))
+        print (str(', '.join(["{} {}".format(p.first_name, p.last_name) for p in self.value.all()])))
+        return str(', '.join(["{} {}".format(p.first_name, p.last_name) for p in self.value.all()]))
 
     def string(self):
         return self.__str__()

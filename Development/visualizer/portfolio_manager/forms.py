@@ -105,11 +105,11 @@ class AssociatedPersonsDimensionForm(DimensionForm):
 
     class Meta:
         model = AssociatedPersonsDimension
-        fields = ('persons',)
+        fields = ('value',)
 
     def __init__(self, *args, **kwargs):
         super(AssociatedPersonsDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
-        self.fields['persons'].label = self.dimension_name
+        self.fields['value'].label = self.dimension_name
 
 class AssociatedProjectsDimensionForm(DimensionForm):
 

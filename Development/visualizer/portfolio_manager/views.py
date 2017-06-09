@@ -205,16 +205,11 @@ def show_project(request, project_id):
             testdims.setdefault(dim_type, {}).update({dim.name: None})
 
     for key, value in testdims.items():
-        print("Key: {}; Value: {}".format(key, value))
         dims = ProjectDimension.objects.filter(project_id=project.id)
         dims_of_key = dims.filter(content_type=key)
         for d in dims_of_key:
             if d.dimension_object.name in value:
                 testdims[key][d.dimension_object.name] = d.dimension_object
-                print("{} found!".format(d.dimension_object.name))
-            else:
-                print("Couldn't find {}".format(d.dimension_object.name))
-
 
     ###     WORKING VERSION BELOW       ###
     theProject = get_object_or_404(Project, pk=project_id)
@@ -573,7 +568,7 @@ def get_multiple(request, project_id, type, field_name):
             # Get the dimension object
             dim_obj = dim.dimension_object
             if dim_obj.name == field_name:
-                for pers in dim_obj.persons.all():
+                for pers in dim_obj.value.all():
                     persons.append(pers)
         for p in persons:
             person_data = {
