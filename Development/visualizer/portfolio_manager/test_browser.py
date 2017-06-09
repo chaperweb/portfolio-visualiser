@@ -85,7 +85,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
     def assert_that_css_appears(self, css_selector):
         def found_it(foo):
             return self.find_css(css_selector)
-
         try:
             WebDriverWait(BrowserTestCase.selenium, WAIT).until(found_it)
             found = True
@@ -184,7 +183,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # Wait until user is redirected to "Show project" page and check that page contains
         # correct information
         self.assert_that_element_appears('project-dimension-panels')
-
         self.assertEquals(project_name, self.find('project-name').text)
         self.assertEquals(organization_name, self.find('projectparent').text)
         end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
@@ -198,7 +196,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self._test_add_project()
 
     def test_add_project_from_homepage(self):
-
         self.open(reverse('homepage'))
         self.find('add-project-btn').click()
 
@@ -208,10 +205,8 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self._test_add_project()
 
     def _test_add_project(self):
-
         project_name = "FooBar"
         organization = Organization.objects.get(pk='org1')
-
 
         # Fill in details of new project and click "Continue"
         self.find('id_name').send_keys(project_name)
