@@ -50,6 +50,8 @@ class GoogleSheet (models.Model):
     name = models.CharField(max_length=50)
     url = models.URLField(blank=False)
 
+    def __str__(self):
+        return str(self.name)
 
 class Project (models.Model):
     name = models.CharField(max_length=50)
@@ -93,7 +95,7 @@ class Person (models.Model):
     last_name = models.CharField(max_length=64)
 
     def __str__(self):
-        return str(self.first_name + " " + self.last_name)
+        return str("{} {}".format(self.first_name, self.last_name))
 
 
 class ProjectTemplate(models.Model):
@@ -159,11 +161,17 @@ class TextDimension (Dimension):
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
 
+    def __str__(self):
+        return self.value
+
 
 class DecimalDimension (Dimension):
     value = models.DecimalField(max_digits = 20, decimal_places = 2)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
+
+    def __str__(self):
+        return str(self.value)
 
 
 class DateDimension (Dimension):
@@ -186,6 +194,10 @@ class DateDimension (Dimension):
         self._history_date = history_date
 
 
+    def __str__(self):
+        return str(self.value)
+
+
 class AssociatedOrganizationDimension (Dimension):
     value = models.ForeignKey(Organization, null=True)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
@@ -205,6 +217,9 @@ class AssociatedOrganizationDimension (Dimension):
         self._history_date = history_date
 
 
+    def __str__(self):
+        return str(self.value)
+
 class AssociatedPersonDimension (Dimension):
     value = models.ForeignKey(Person, null=True)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
@@ -221,6 +236,10 @@ class AssociatedPersonDimension (Dimension):
             person.save()
         self.value = person
         self._history_date = history_date
+
+
+    def __str__(self):
+        return str(self.value)
 
 
 class AssociatedPersonsDimension(Dimension):
@@ -247,8 +266,7 @@ class AssociatedPersonsDimension(Dimension):
             self.value.add(person)
 
     def __str__(self):
-        print (str(', '.join(["{} {}".format(p.first_name, p.last_name) for p in self.value.all()])))
-        return str(', '.join(["{} {}".format(p.first_name, p.last_name) for p in self.value.all()]))
+        return str(', '.join([str(p) for p in self.value.all()]))
 
     def string(self):
         return self.__str__()
@@ -272,8 +290,8 @@ class AssociatedProjectsDimension(Dimension):
                 project.save()
             self.projects.add(project)
 
-    def string(self):
-        return ', '.join([p.name for p in self.projects.all()])
+    def __str__(self):
+        return ', '.join([str(p) for p in self.projects.all()])
 
 
 ####        SNAPSHOTS       ####
