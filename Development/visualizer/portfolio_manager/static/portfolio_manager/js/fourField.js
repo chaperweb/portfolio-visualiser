@@ -8,7 +8,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			colorToBe = 'AssociatedOrganizationDimension',
 			// size of the display box and other scaling related variables
 			sliderHeight = 50,
-			fieldWidth = $(window).height()*0.85,
+			fieldWidth = Math.max(500, $(window).height()*0.85),
 			svgHeight = fieldWidth + sliderHeight,
 			margin = {right: fieldWidth * 0.05, left: fieldWidth * 0.05, top: fieldWidth * 0.05, bottom: sliderHeight},
 			axisLengthX = fieldWidth * 0.9,

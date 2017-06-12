@@ -3,7 +3,7 @@ html, body {
 }
 
 .navbar {
-  background-color: rgb(116,116,116);
+  background-color: #757477;
   color: white;
   border: 0;
   border-radius: 0;
@@ -20,9 +20,21 @@ html, body {
   color: white;
 }
 .navbar .container-fluid .navbar-nav > .active > a {
-  color: rgb(37,230,32);
+  color: #f39911;
   background-color: inherit;
 }
 .navbar-right {
   padding-right: 15px;
+}
+
+.btn-orange, .btn-orange:focus, .btn-orange.focus {
+  color: #FFFFFF;
+  background-color: #f39911;
+  border-color: #D2820C;
+}
+
+.btn-orange.hover, .btn-orange:hover, .btn-orange:active, .btn-orange.active {
+  color: #FFFFFF;
+  background-color: #D2820C;
+  border-color: #D2820C;
 }
