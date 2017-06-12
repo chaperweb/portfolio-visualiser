@@ -11,6 +11,17 @@ from simple_history import register
 from dateutil.parser import parse
 from django.db.models.signals import pre_delete
 
+# Class for getting subclasses of a abstract base class
+class GetSubclassesMixin(object):
+    @classmethod
+    def get_subclasses(cls):
+        content_types = ContentType.objects.filter(app_label=cls._meta.app_label)
+        models = [ct.model_class() for ct in content_types]
+        return [model for model in models
+                if (model is not None and
+                    issubclass(model, cls) and
+                    model is not cls)]
+
 
 ####        BASES       ####
 
@@ -154,6 +165,7 @@ class DecimalDimension (Dimension):
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
 
+
 class DateDimension (Dimension):
     value = models.DateTimeField()
     history = HistoricalRecords(bases=[BaseDimensionHistory])
@@ -256,3 +268,48 @@ class AssociatedProjectsDimension(Dimension):
 
     def string(self):
         return ', '.join([p.name for p in self.projects.all()])
+
+
+####        SNAPSHOTS       ####
+
+class Snapshot(GetSubclassesMixin, models.Model):
+    SNAPSHOT_TYPES = (
+        ('PA', 'Path'),
+        ('FF', 'Fourfield'),
+    )
+
+    name = models.CharField(max_length=20)
+    description = models.CharField(max_length=140)
+    snap_type = models.CharField(
+        max_length=2,
+        choices=SNAPSHOT_TYPES
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['created_at']
+
+
+class PathSnapshot(Snapshot):
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="pathsnapshots"
+    )
+    content_type_x = models.ForeignKey(ContentType, related_name="ct_x")
+    object_id_x = models.PositiveIntegerField()
+    dimension_object_x = GenericForeignKey('content_type_x', 'object_id_x')
+
+    content_type_y = models.ForeignKey(ContentType, related_name="ct_y")
+    object_id_y = models.PositiveIntegerField()
+    dimension_object_y = GenericForeignKey('content_type_y', 'object_id_y')
+
+
+class FourFieldSnapshot(Snapshot):
+    x_dimension = models.CharField(max_length=64)
+    y_dimension = models.CharField(max_length=64)
+    radius_dimension = models.CharField(max_length=64)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    zoom = models.PositiveIntegerField()

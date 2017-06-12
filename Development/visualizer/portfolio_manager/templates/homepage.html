@@ -25,7 +25,7 @@ Portfolio Visualizer
           {% csrf_token %}
           {{ pre_add_project_form.as_p }}
           <center style="margin-top: 15px;">
-            <button type="submit" class="btn btn-success">Continue</button>
+            <button type="submit" class="btn btn-orange">Continue</button>
             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
           </center>
         </form>
@@ -38,7 +38,7 @@ Portfolio Visualizer
   <a href="{% url 'path' %}">
     <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12">
       <div class="hoverPath">
-          <img class="img-responsive" src="/static/portfolio_manager/img/paatti.jpg" alt="">
+          <img class="img-responsive" src="/static/portfolio_manager/img/path.png" alt="">
           <div class="overlay">
             <h2>Path</h2>
     				<p>See the data in a diagram</p>
@@ -49,7 +49,7 @@ Portfolio Visualizer
   <a href="{% url 'fourfield' %}">
     <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12">
       <div class="hoverPath">
-        <img class="img-responsive" src="/static/portfolio_manager/img/neli.jpg" alt="">
+        <img class="img-responsive" src="/static/portfolio_manager/img/fourfield.jpg" alt="">
         <div class="overlay">
           <h2>4-Field</h2>
           <p>See the data in a 4-field</p>
@@ -74,7 +74,7 @@ Portfolio Visualizer
 <div id="projects">
   <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
     <div class="row">
-      <button class="btn btn-success btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal" id="add-project-btn">
+      <button class="btn btn-orange btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal" id="add-project-btn">
         <span class="glyphicon glyphicon-plus"></span>
         &nbsp;Add Project
       </button>

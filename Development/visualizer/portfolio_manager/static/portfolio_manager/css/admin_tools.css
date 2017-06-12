@@ -23,15 +23,30 @@
 }
 
 div#loading {
-    width: 48px;
-    height: 48px;
-    display: none;
-    background: url(/static/portfolio_manager/img/ajax-loader.gif) no-repeat;
-    cursor: wait;
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%)
-    }
+  width: 128px;
+  height: 128px;
+  display: none;
+  background: url(/static/portfolio_manager/img/loading.gif) no-repeat;
+  cursor: wait;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+h3.modal-title {
+  padding-bottom: 5%;
+}
+
+.create-snap-modal-form .form-group {
+  padding-bottom: 5%;
+  font-size: 120%;
+}
+
+.create-snap-modal-form .form-group input[type="text"],
+.create-snap-modal-form .form-group input[type="text"]:focus {
+  outline: none;
+  border-radius: 8px;
+}

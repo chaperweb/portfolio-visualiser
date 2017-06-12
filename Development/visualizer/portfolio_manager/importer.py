@@ -72,8 +72,12 @@ class ImportHelper:
         for column, abbr in enumerate(self.dim_types):
             if abbr not in self.data_types:
                 return False, column + 3
-
         return True, -1
+
+
+    def remove_fourfield_snaps(self):
+        FourFieldSnapshot.objects.all().delete()
+        return
 
 
 def from_data_array(data):
@@ -96,6 +100,11 @@ def from_data_array(data):
             'rows_skipped': 0
         }
         return result
+
+    try:
+        helper.remove_fourfield_snaps()
+    except Exception as e:
+        print("Failed to remove fourfield snaps!")
 
     #   Go through each row
     for counter, update in enumerate(data[2:]):

@@ -35,7 +35,7 @@ function dependancies(json) {
   		}
 		}
 	}
-	
+
   // defining denominator for scaling overly large values to usable size
 	var denominator = 1;
 	if (d3.max(valueArray) > 1000000) {
@@ -139,8 +139,8 @@ function dependancies(json) {
 		});
 	}
 	// size of the display box and definition of colorscale (predefined ATM)
-	var width = 960,
-		height = 500,
+	var height = Math.max(500,$(window).height()*0.85),
+		width = Math.max(700, $(window).width()*0.60),
 		color = d3.scale.category20();
 
  // Ball outline is 3 pixels wide
@@ -319,16 +319,17 @@ function dependancies(json) {
 		return x;
 	}
 
-	/* The legend below the graph is given its own svg container in
+	/* The legend next to the graph is given its own svg container in
    * which we have the project color, name and budget respectively.
    */
     var legendSpacing = 4;
     var legendRectSize = 25;
+    var legendWidth = Math.max(300,width*0.25)
     var legendHeight = legendRectSize + legendSpacing;
 
     var svgLegend = d3.select("body")
                       .append("svg")
-                      .attr("width", 300)
+                      .attr("width", legendWidth)
                       // Scaling the svg based on number of projects
                       .attr("height", (legendHeight)*(nameArray.length)+legendSpacing)
                       .append("g")
@@ -354,6 +355,5 @@ function dependancies(json) {
           .data(nodeValueArray)
           .attr("x", legendRectSize + legendSpacing)
           .attr("y", legendRectSize - legendSpacing)
-          .style("font", "16px sans-serif")
           .text(function(d){return ""+d+"€"});
 }

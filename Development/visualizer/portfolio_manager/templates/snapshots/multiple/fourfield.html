@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+Fourfieldsnapshots
+{% endblock %}
+
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/snapshot.css" %}">
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Fourfield Snapshots</h1>
+<div class="snaps-container">
+  {% for snap in snaps %}
+  <div class="snap-wrapper col-lg-2 col-md-2 col-sm-4 col-xs-6">
+    <a href="{% url 'snapshots' %}/fourfield/{{snap.id}}" class="hover-link">
+      <img class="img-responsive" src='{% static "portfolio_manager/img/fourfield.jpg" %}' alt="{{ snap.name }}">
+      <div class="overlay">
+        <h2>{{ snap.name }}</h2>
+				<p>{{ snap.description }}</p>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

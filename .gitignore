@@ -96,5 +96,8 @@ ENV/
 # PyCharm project
 .idea/
 
-# Don't know what made this
+# Error log locally
 myLog.*
+
+# Local Database
+.sqlite3

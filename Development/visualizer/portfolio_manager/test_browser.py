@@ -353,6 +353,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         Select(self.find('add-person-to-project')).select_by_value('2')
         self.find_css('#add-person-to-project-form button.btn-success').click()
 
+
         # Wait for alert
         WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
 
@@ -416,6 +417,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # Select project to add and click '+'
         Select(self.find('add-project-to-project')).select_by_value('2')
         self.find_css('#add-project-to-project-form button.btn-success').click()
+
 
         # Wait for alert
         WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
