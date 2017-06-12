@@ -7,71 +7,8 @@ from django.db import connection
 from oauth2client.service_account import ServiceAccountCredentials
 from portfolio_manager.models import *
 
+
 class ImportHelper:
-    def dimension_by_column(self, idx):
-        abbr = self.dim_types[idx]
-        return self.data_types[abbr]()
-
-
-    def milestone_by_column(self, idx):
-        abbr = self.dim_types[idx]
-        return self.milestone_types[abbr]()
-
-
-    def dim_name_by_column(self, idx):
-        return self.dim_names[idx].strip()
-
-
-    def create_milestone(self, idx, value, milestone, project_dimension):
-        dim_name = self.dim_name_by_column(idx)
-        dim_mile_object = self.milestone_by_column(idx)
-        dim_mile_object.from_sheet(value)
-        dim_mile_object.save()
-
-        dim_mile = DimensionMilestone()
-        dim_mile.milestone = milestone
-        dim_mile.dimension_milestone_object = dim_mile_object
-        dim_mile.project_dimension = project_dimension
-        dim_mile.save()
-
-
-    def remove_and_create_project(self, pid):
-        # If there exists a project with the same id, remove it
-        try:
-            project = Project.objects.get(id=pid)
-            project.delete()
-        except Project.DoesNotExist:
-            pass
-
-        project = Project()
-        project.id = pid
-        project.save()
-        return project
-
-
-    def parse_date_tz(self, data):
-        history_date = parse(data, dayfirst=True) # Timestamp of the update is in second column
-        # Set default timezone if timestamp doesn't include it
-        if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
-            history_date = history_date.replace(tzinfo=pytz.utc)
-        return history_date
-
-
-    def type_row_is_valid(self):
-        for counter, abbr in enumerate(self.dim_types):
-            if abbr not in self.data_types.keys():
-                self.type_row_valid = False
-                return (False, counter+3)
-
-        return (True, -1)
-
-
-    def remove_fourfield_snaps(self):
-        FourFieldSnapshot.objects.all().delete()
-        return
-
-
-
     def __init__(self, dim_names, dim_types):
         self.dim_names = dim_names
         self.dim_types = dim_types
@@ -87,6 +24,60 @@ class ImportHelper:
         self.milestone_types = {
             'NUM': DecimalMilestone
         }
+
+    def dimension_by_column(self, idx):
+        abbr = self.dim_types[idx]
+        return self.data_types[abbr]()
+
+    def milestone_by_column(self, idx):
+        abbr = self.dim_types[idx]
+        return self.milestone_types[abbr]()
+
+    def dim_name_by_column(self, idx):
+        return self.dim_names[idx].strip()
+
+    def create_milestone(self, idx, value, milestone, project_dimension):
+        dim_name = self.dim_name_by_column(idx)
+        dim_mile_object = self.milestone_by_column(idx)
+        dim_mile_object.from_sheet(value)
+        dim_mile_object.save()
+
+        dim_mile = DimensionMilestone()
+        dim_mile.milestone = milestone
+        dim_mile.dimension_milestone_object = dim_mile_object
+        dim_mile.project_dimension = project_dimension
+        dim_mile.save()
+
+    def remove_and_create_project(self, pid):
+        # If there exists a project with the same id, remove it
+        try:
+            project = Project.objects.get(id=pid)
+            project.delete()
+        except Project.DoesNotExist:
+            pass
+
+        project = Project()
+        project.id = pid
+        project.save()
+        return project
+
+    def parse_date_tz(self, data):
+        history_date = parse(data, dayfirst=True) # Timestamp of the update is in second column
+        # Set default timezone if timestamp doesn't include it
+        if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
+            history_date = history_date.replace(tzinfo=pytz.utc)
+        return history_date
+
+    def type_row_is_valid(self):
+        for column, abbr in enumerate(self.dim_types):
+            if abbr not in self.data_types:
+                return False, column + 3
+        return True, -1
+
+
+    def remove_fourfield_snaps(self):
+        FourFieldSnapshot.objects.all().delete()
+        return
 
 
 def from_data_array(data):

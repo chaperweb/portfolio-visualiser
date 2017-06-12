@@ -90,4 +90,14 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# Mac cruft
+*.DS_Store
+
+# PyCharm project
+.idea/
+
+# Error log locally
+myLog.*
+
+# Local Database
 .sqlite3

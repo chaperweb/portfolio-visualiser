@@ -24,7 +24,7 @@ pytz==2016.10
 PyVirtualDisplay==0.2.1
 requests==2.12.5
 rsa==3.4.2
-selenium==3.3.0
+selenium==3.4.1
 six==1.10.0
 unittest-xml-reporting==2.1.0
 uritemplate==3.0.0

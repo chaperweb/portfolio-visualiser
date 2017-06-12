@@ -1,4 +1,6 @@
 from django import forms
+from django.utils import timezone
+from datetime import date, datetime
 from portfolio_manager.models import *
 import numbers
 from django.forms import ModelForm
@@ -67,9 +69,22 @@ class DecimalDimensionForm(DimensionForm):
         super(DecimalDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
 
+
 class DateDimensionForm(DimensionForm):
 
-    value = forms.DateField(input_formats=["%d/%m/%Y"])
+    class AwareDateField(forms.DateField):
+        """ Get rid of naive datetime -warnings. Incoming times are aware of their currently active timezone.
+        """
+        def to_python(self, value):
+            value = forms.DateField.to_python(self, value)
+            if value is None:
+                return None
+            elif isinstance(value, date):
+                return timezone.make_aware(datetime.fromordinal(value.toordinal()))
+            else:
+                return timezone.make_aware(value)
+
+    value = AwareDateField(input_formats=["%d/%m/%Y"])
 
     class Meta:
         model = DateDimension
