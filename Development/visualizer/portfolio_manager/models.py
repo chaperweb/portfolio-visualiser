@@ -273,12 +273,12 @@ class AssociatedPersonsDimension(Dimension):
 
 
 class AssociatedProjectsDimension(Dimension):
-    projects = models.ManyToManyField(Project)
+    value = models.ManyToManyField(Project)
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
         self.save()
-        self.projects.set([])
+        self.value.set([])
         for part in value.split(','):
             project_id = part.strip()
             project = None
@@ -288,10 +288,10 @@ class AssociatedProjectsDimension(Dimension):
                 project = Project()
                 project.id = project_id
                 project.save()
-            self.projects.add(project)
+            self.value.add(project)
 
     def __str__(self):
-        return ', '.join([str(p) for p in self.projects.all()])
+        return ', '.join([str(p) for p in self.value.all()])
 
 
 ####        SNAPSHOTS       ####
