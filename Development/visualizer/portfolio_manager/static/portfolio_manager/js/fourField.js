@@ -29,7 +29,9 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 				   			 .range([0,axisLengthY])
 				   	 		 .domain([sliderValues,-1 * sliderValues]);
 
-	var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+  //colorscale for the visualization
+	var colorScale = d3.scaleOrdinal()
+										.range("#f39911","#9f004d", "#fdca00","#61b020","#00abd1","#00708d","#757477");
 
 	for (j = 0; j < json.length; j++) {
 		var size = json[j].dimensions.length;
