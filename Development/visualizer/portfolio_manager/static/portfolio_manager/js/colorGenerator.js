@@ -61,7 +61,12 @@ function generateColours(integer, colour) {
 
   var tempCol = mycol
 
-  if (mycol.r + mycol.g + mycol.b == 255) {
+  if (integer === 1) {
+    allCol.push(colour);
+    return allCol;
+  }
+
+  if (mycol.r + mycol.g + mycol.b < 383) {
     for (i = 1; i <= integer; i++) {
         if (tempCol.b < bmax) {
           tempCol = d3.rgb(mycol.r, mycol.g, Math.min(255, Math.max(mycol.b + ((i % up) * step), 0)))
