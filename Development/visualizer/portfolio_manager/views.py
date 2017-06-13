@@ -193,10 +193,11 @@ def add_field(request):
         return render(request, 'database.html', render_data)
 
 def show_project(request, project_id):
-    project = Project.objects.get(pk=project_id)
-    project_dims = ProjectDimension.objects.filter(project_id=project.id)
-    template = ProjectTemplate.objects.get(organization=project.parent)
-    template_dims = ProjectTemplateDimension.objects.filter(template=template)
+    all_projects = Project.objects.all()
+    project = all_projects.get(pk=project_id)
+    project_dims = project.dimensions.all()
+    template_dims = ProjectTemplate.objects.get(organization=project.parent).dimensions.all()
+
     dimensions = {}
     for k, g in groupby(template_dims, lambda x: x.content_type):
         for dim in list(g):
@@ -211,7 +212,7 @@ def show_project(request, project_id):
 
     context = {}
     context['project'] = project
-    context['projects'] = Project.objects.all()
+    context['projects'] = all_projects
     context['dimensions'] = dimensions
 
     return render(request, 'project.html', context)

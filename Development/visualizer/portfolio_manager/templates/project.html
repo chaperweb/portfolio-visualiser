@@ -71,14 +71,27 @@ Projects | {{project.name}}
             </div>
             <!--  Value of dimension  -->
             <div id="{{dim_name}}" class="col-lg-3 col-lg-offset-3">
-              {{ dim_obj | stringformat:"s" }}
+              {% if dim_type|get_type|is_type:"multiple" %}
+                <div class="dropdown">
+                  <button class="btn btn-default btn-s" type="button" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-list"></span>
+                    Expand
+                  </button>
+                  <ul class="dropdown-menu admin-box" role="menu" aria-labelledby="menu1">
+                    {% for name in dim_obj.value.all %}
+                      <li class="text-center">{{name}}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% else %}
+                {{ dim_obj | stringformat:"s" }}
+              {% endif %}
             </div>
             <!--  Modify button  -->
             <div class="col-md-1 pull-right">
               <button class="btn btn-xs btn-default modify-button"
                   data-type="{{ dim_type | get_type }}"
                   data-field="{{ dim_obj.id }}"
-                  data-value="{{ dim_obj | stringformat:"s" }}"
                   data-multiple="{{ dim_type | get_type | is_type:"multiple" }}"
                   data-projectid="{{project.id}}"
                   data-toggle="modal"
