@@ -3,7 +3,7 @@
 var colors = ["#f39911","#9f004d", "#fdca00","#61b020","#00708d","#757477"];
 
 function enoughColors(amount, colourlist) {
-  var colorsNow = colourlist.length();
+  var colorsNow = colourlist.length;
   //if amount of colors and organizations match already give back the original colors
   if (amount === colorsNow) {
     return colourlist;

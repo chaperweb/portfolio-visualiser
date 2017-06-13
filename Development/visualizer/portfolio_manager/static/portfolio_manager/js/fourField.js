@@ -113,7 +113,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 
 	var uniqueOrganizations = organizations.filter( onlyUnique );
 
-	var fourFieldColors = enoughColors(uniqueOrganizations.length(), colors);
+	var fourFieldColors = enoughColors(uniqueOrganizations.length, colors);
 
 	//creating colorscale for the visualization
 	var colorScale = d3.scaleOrdinal()
