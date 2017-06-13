@@ -33,3 +33,15 @@ def is_type(dim_type, input_type):
         return dim_type in multiple_types
     else:
         return False
+
+
+@register.filter
+def get_valuetype(dim_type):
+    if is_type(dim_type, 'value'):
+        return 'value'
+    elif is_type(dim_type, 'dropdown'):
+        return 'dropdown'
+    elif is_type(dim_type, 'multiple'):
+        return 'multiple'
+    else:
+        return 'None'

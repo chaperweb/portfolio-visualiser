@@ -92,7 +92,7 @@ Projects | {{project.name}}
               <button class="btn btn-xs btn-default modify-button"
                   data-type="{{ dim_type | get_type }}"
                   data-field="{{ dim_obj.id }}"
-                  data-multiple="{{ dim_type | get_type | is_type:"multiple" }}"
+                  data-valuetype="{{ dim_type | get_type | get_valuetype }}"
                   data-projectid="{{project.id}}"
                   data-toggle="modal"
                   data-target="#modify-{{ dim_type | get_type }}-modal">

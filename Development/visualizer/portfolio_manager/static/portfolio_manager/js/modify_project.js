@@ -67,7 +67,8 @@ function add_multiple_row(name, id, type, field, projectID) {
       button_class = 'class="btn btn-danger btn-xs pull-right"',
       remove_span = '<span class="glyphicon glyphicon-remove"></span>',
       button = '<button type="submit" ' + button_class + '>' + remove_span + '</button>',
-      row = '<li' + list_id + 'class="list-group-item multiple-row">' + form + name + button + '</form></li>';
+      row_class = ' class="list-group-item multiple-row"'
+      row = '<li' + list_id + row_class + '>' + form + name + button + '</form></li>';
   $(row).appendTo("#" + type + "-well-ul");
 }
 
@@ -81,8 +82,9 @@ $(function()
     //  Add info about which field we are handling
     $("#hidden-"+$(this).data('type')+"-info").val($(this).data('field'));
 
+    var valuetype = $(this).data('valuetype');
     // If the field is a multiple-field
-    if ($(this).data('multiple') == 'True') {
+    if (valuetype == 'multiple') {
       // Buttons data variables
       var field = $(this).data('field');
       var projectID = $(this).data('projectid');
