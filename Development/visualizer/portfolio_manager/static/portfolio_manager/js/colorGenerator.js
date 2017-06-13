@@ -32,7 +32,7 @@ function enoughColors(amount, colourlist) {
       }
       while (j < colorsNow) {
         moreColors.push(generateColours(extraNeeded - 1, colourlist[j]));
-        i++;
+        j++;
       }
     }
     console.log(moreColors)
