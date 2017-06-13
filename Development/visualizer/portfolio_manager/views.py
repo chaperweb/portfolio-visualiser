@@ -193,7 +193,6 @@ def add_field(request):
         return render(request, 'database.html', render_data)
 
 def show_project(request, project_id):
-    ###     VERSION WITH TEMPLATES      ###
     project = Project.objects.get(pk=project_id)
     project_dims = ProjectDimension.objects.filter(project_id=project.id)
     template = ProjectTemplate.objects.get(organization=project.parent)
