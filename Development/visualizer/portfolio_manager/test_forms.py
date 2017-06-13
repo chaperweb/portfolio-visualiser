@@ -36,7 +36,7 @@ class FormsTestCase(TestCase):
         project_form.save()
 
         dimension_name = 'Dependencies'
-        projects_form = AssociatedProjectsDimensionForm({'projects': [Project.objects.get(id=1).id]},
+        projects_form = AssociatedProjectsDimensionForm({'value': [Project.objects.get(id=1).id]},
                                                         dimension_name=dimension_name, project_form=project_form)
         self.assertTrue(projects_form.is_valid())
         projects_form.save()
@@ -44,8 +44,8 @@ class FormsTestCase(TestCase):
         self.assertEquals(1, project_form.instance.dimensions.all().count())
         self.assertEquals(dimension_name, project_form.instance.dimensions.all()[0].dimension_object.name)
         self.assertEquals(Project.objects.get(id=1),
-                          project_form.instance.dimensions.all()[0].dimension_object.projects.all()[0])
-        self.assertEquals(1, project_form.instance.dimensions.all()[0].dimension_object.projects.all().count())
+                          project_form.instance.dimensions.all()[0].dimension_object.value.all()[0])
+        self.assertEquals(1, project_form.instance.dimensions.all()[0].dimension_object.value.all().count())
 
     def test_associated_persons_dimension_form(self):
         project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
@@ -53,7 +53,7 @@ class FormsTestCase(TestCase):
 
         dimension_name = 'Members'
         persons_form = AssociatedPersonsDimensionForm(
-            {'persons': [Person.objects.get(id=1).id, Person.objects.get(id=2).id]}, dimension_name=dimension_name,
+            {'value': [Person.objects.get(id=1).id, Person.objects.get(id=2).id]}, dimension_name=dimension_name,
             project_form=project_form)
         self.assertTrue(persons_form.is_valid())
         persons_form.save()
@@ -61,10 +61,10 @@ class FormsTestCase(TestCase):
         self.assertEquals(1, project_form.instance.dimensions.all().count())
         self.assertEquals(dimension_name, project_form.instance.dimensions.all()[0].dimension_object.name)
         self.assertEquals(Person.objects.get(id=1),
-                          project_form.instance.dimensions.all()[0].dimension_object.persons.all()[0])
+                          project_form.instance.dimensions.all()[0].dimension_object.value.all()[0])
         self.assertEquals(Person.objects.get(id=2),
-                          project_form.instance.dimensions.all()[0].dimension_object.persons.all()[1])
-        self.assertEquals(2, project_form.instance.dimensions.all()[0].dimension_object.persons.all().count())
+                          project_form.instance.dimensions.all()[0].dimension_object.value.all()[1])
+        self.assertEquals(2, project_form.instance.dimensions.all()[0].dimension_object.value.all().count())
 
     def test_associated_organization_dimension_form(self):
         project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});

@@ -82,7 +82,7 @@ class ImporterTestCase(TestCase):
         self.assertEqual(parse('2013-05-16T17:41:28+00:00'), history[1].value)
         self.assertEqual(datetime(2012, 8, 1, tzinfo=pytz.utc), history[2].value)
         self.assertEqual(datetime(2015, 8, 1, tzinfo=pytz.utc), history[3].value)
-        
+
 
     def test_import_projectmanager(self):
         data = [[u'id', u'__history_date', u'ProjectManager'],
@@ -112,8 +112,8 @@ class ImporterTestCase(TestCase):
         self.assertTrue(result['result'], 'Failed to validate field types in imported data')
         self.assertEqual(1, Project.objects.all().count())
         self.assertEqual(3, Person.objects.all().count())
-        self.assertEqual(Person.objects.get(first_name='Taneli'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.persons.all()[1])
-        self.assertEqual(Person.objects.get(first_name='Pekka'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.persons.all()[0])
+        self.assertEqual(Person.objects.get(first_name='Taneli'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.value.all()[1])
+        self.assertEqual(Person.objects.get(first_name='Pekka'), Project.objects.get(id=1).dimensions.all()[0].dimension_object.value.all()[0])
 
     def test_import_projectdependencies(self):
         data = [[u'id', u'__history_date', u'Name', u'ProjectDependencies'],
@@ -126,11 +126,11 @@ class ImporterTestCase(TestCase):
         self.assertTrue(result['result'], 'Failed to validate field types in imported data')
         self.assertEqual(3, Project.objects.all().count())
         self.assertEquals(1, Project.objects.get(id=1).dimensions.all().count())
-        self.assertEquals(1, Project.objects.get(id=2).dimensions.all()[1].dimension_object.projects.all().count())
-        self.assertEquals(Project.objects.get(pk=1), Project.objects.get(id=2).dimensions.all()[1].dimension_object.projects.all()[0])
-        self.assertEquals(2, Project.objects.get(id=3).dimensions.all()[1].dimension_object.projects.all().count())
-        self.assertEquals(Project.objects.get(pk=1), Project.objects.get(id=3).dimensions.all()[1].dimension_object.projects.all()[0])
-        self.assertEquals(Project.objects.get(pk=2), Project.objects.get(id=3).dimensions.all()[1].dimension_object.projects.all()[1])
+        self.assertEquals(1, Project.objects.get(id=2).dimensions.all()[1].dimension_object.value.all().count())
+        self.assertEquals(Project.objects.get(pk=1), Project.objects.get(id=2).dimensions.all()[1].dimension_object.value.all()[0])
+        self.assertEquals(2, Project.objects.get(id=3).dimensions.all()[1].dimension_object.value.all().count())
+        self.assertEquals(Project.objects.get(pk=1), Project.objects.get(id=3).dimensions.all()[1].dimension_object.value.all()[0])
+        self.assertEquals(Project.objects.get(pk=2), Project.objects.get(id=3).dimensions.all()[1].dimension_object.value.all()[1])
 
     def test_overwrite_project(self):
         project = Project()
@@ -232,7 +232,7 @@ class ImporterTestCase(TestCase):
         self.assertTrue(result['result'], 'Failed to validate field types in imported data')
         self.assertEqual(1, Organization.objects.get(name='Org1').templates.all().count())
         self.assertEqual(1, Organization.objects.get(name='Org2').templates.all().count())
-    
+
         org1_template = Organization.objects.get(name='Org1').templates.all()[0]
         self.assertEqual('default', org1_template.name)
         self.assertEqual(3, org1_template.dimensions.all().count())
@@ -251,4 +251,3 @@ class ImporterTestCase(TestCase):
         self.assertEqual(ContentType.objects.get(model='textdimension'), org2_template.dimensions.all()[1].content_type)
         self.assertEqual('SizeBudget', org2_template.dimensions.all()[2].name)
         self.assertEqual(ContentType.objects.get(model='decimaldimension'), org2_template.dimensions.all()[2].content_type)
-
