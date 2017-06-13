@@ -219,7 +219,6 @@ def show_project(request, project_id):
 
 # Site for editing a project
 def project_edit(request, project_id, field_type):
-    print(request.method)
     type_to_dimension = {
         'text': TextDimension,
         'decimal': DecimalDimension,
@@ -443,6 +442,7 @@ def get_proj(request):
 #   As this function is only to be called with ajax an else statement has
 #   purposefully been left out to trigger the errorfunction in the ajax call
 
+@require_GET
 def get_multiple(request, field_type, field_id):
     type_to_dimension = {
         'associatedpersons': AssociatedPersonsDimension,
@@ -451,100 +451,6 @@ def get_multiple(request, field_type, field_id):
     value = type_to_dimension[field_type].objects.get(pk=field_id).value.all()
     data = [{'id': p.pk, 'name': str(p)} for p in value]
     return JsonResponse({'type': field_type, 'data': data})
-    # project = Project.objects.get(pk=project_id)
-    # ct_objects = ContentType.objects
-    #
-    # # If AssociatedPersonsDimension
-    # if type == "asspersons":
-    #     APersonsD =  ct_objects.get_for_model(AssociatedPersonsDimension)
-    #     # The dimensions of correct content_type and for the correct project_id
-    #     APersonsDs = ProjectDimension.objects.filter(content_type=APersonsD, project=project)
-    #     persons = []
-    #     personsList = []
-    #     # Loop through the dimensions
-    #     for dim in APersonsDs:
-    #         # Get the dimension object
-    #         dim_obj = dim.dimension_object
-    #         if dim_obj.name == field_name:
-    #             for pers in dim_obj.value.all():
-    #                 persons.append(pers)
-    #     for p in persons:
-    #         person_data = {
-    #             'id': p.pk,
-    #             'name': str(p)
-    #         }
-    #         personsList.append(person_data)
-    #     return JsonResponse({'type': 'persons', 'items': personsList})
-
-    # If AssociatedProjectsDimension
-    # elif type == "assprojects":
-        # ContentType
-        # proj_dims = ct_objects.get_for_model(AssociatedProjectsDimension)
-        # # The dimensions of correct content_type and for the correct project_id
-        # proj_dims = ProjectDimension.objects.filter(content_type=proj_dims, project=project)
-        # results = []
-        # # Loop through the dimensions
-        # for dim in proj_dims:
-        #     # Get the dimension object
-        #     if dim.dimension_object.name == field_name:
-        #         for p in dim.dimension_object.projects.all():
-        #             results.append({'id': p.id, 'name': p.name})
-        # return JsonResponse({'type': 'projects', 'items': results})
-
-
-def remove_person_from_project(request):
-    if request.is_ajax() and request.method == "PATCH":
-        qdict = QueryDict(request.body)
-        pid = qdict.get('id')
-        person = Person.objects.get(pk=pid)
-        ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
-        proj_id = qdict.get('project_id')
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=proj_id)
-        dim.dimension_object.persons.remove(person)
-        return JsonResponse({"result": True, "id": pid})
-
-def remove_project_from_project(request):
-    if request.is_ajax() and request.method == "PATCH":
-        qdict = QueryDict(request.body)
-        pid = qdict.get('id')
-        project = Project.objects.get(pk=pid)
-        ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
-        proj_id = qdict.get('project_id')
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=proj_id)
-        dim.dimension_object.projects.remove(project)
-        return JsonResponse({"result": True, "id": pid})
-
-def add_person_to_project(request):
-    if request.is_ajax() and request.method == "POST":
-        projectID = request.POST.get('projectID')
-        personID = request.POST.get('personID')
-        project = Project.objects.get(pk=projectID)
-        person = Person.objects.get(pk=personID)
-        ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=projectID)
-        dim.dimension_object.persons.add(person)
-        response_data = {
-            'result': True,
-            'id': person.pk,
-            'name': str(person)
-        }
-        return JsonResponse(response_data)
-
-def add_project_to_project(request):
-    if request.is_ajax() and request.method == "POST":
-        toBeAddedID = request.POST.get('toBeAddedID')
-        destID = request.POST.get('destID')
-        TBAProject = Project.objects.get(pk=toBeAddedID)
-        destProject = Project.objects.get(pk=destID)
-        ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=destID)
-        dim.dimension_object.projects.add(TBAProject)
-        response_data = {
-            'result': True,
-            'id': TBAProject.pk,
-            'name': TBAProject.name
-        }
-        return JsonResponse(response_data)
 
 
 def create_pathsnapshot(name, description, project_id, x, y):

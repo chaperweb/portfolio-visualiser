@@ -14,10 +14,6 @@ ajax_patterns = [
     url(r'^get_pers$', views.get_pers, name='get_pers'),
     url(r'^get_proj$', views.get_proj, name='get_proj'),
     url(r'^get_multiple/(?P<field_type>[A-Za-z]+)/(?P<field_id>[0-9]+)$', views.get_multiple, name='get_multiple'),
-    url(r'^remove_person_from_project$', views.remove_person_from_project, name='remove_person_from_project'),
-    url(r'^remove_project_from_project$', views.remove_project_from_project, name='remove_project_from_project'),
-    url(r'^add_person_to_project$', views.add_person_to_project, name='add_person_to_project'),
-    url(r'^add_project_to_project$', views.add_project_to_project, name='add_project_to_project'),
 ]
 
 urlpatterns = [
