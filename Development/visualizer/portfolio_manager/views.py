@@ -219,6 +219,7 @@ def show_project(request, project_id):
 
 # Site for editing a project
 def project_edit(request, project_id, field_type):
+    print(request.method)
     type_to_dimension = {
         'text': TextDimension,
         'decimal': DecimalDimension,
@@ -228,16 +229,37 @@ def project_edit(request, project_id, field_type):
         'associatedpersons': AssociatedPersonsDimension,
         'associatedprojects': AssociatedProjectsDimension
     }
-    dimension = type_to_dimension[field_type].objects.get(pk=request.POST.get('field'))
+    if request.method == "POST":
+        data = request.POST
+        dimension = type_to_dimension[field_type].objects.get(pk=data.get('field'))
+        value = data.get('value')
+        if field_type == "associatedorganization":
+            dimension.value = Organization.objects.get(name=value)
+        elif field_type == "associatedperson":
+            dimension.value = Person.objects.get(pk=value)
+        elif field_type == "associatedpersons":
+            person = Person.objects.get(pk=value)
+            dimension.value.add(person)
+        elif field_type == "associatedprojects":
+            project = Project.objects.get(pk=value)
+            dimension.value.add(project)
+        else:
+            dimension.value = value
+        dimension.save()
 
-    if field_type == "associatedorganization":
-        dimension.value = Organization.objects.get(name=request.POST.get('value'))
-    elif field_type == "associatedperson":
-        dimension.value = Person.objects.get(pk=request.POST.get('value'))
-    else:
-        dimension.value = request.POST.get('value')
-
-    dimension.save()
+    #   Should actually handle PATCH but Django changes forms' patch requests
+    #   to GET requests
+    elif request.method == "GET":
+        data = request.GET
+        dimension = type_to_dimension[field_type].objects.get(pk=data.get('field'))
+        value = data.get('value')
+        if field_type == "associatedpersons":
+            person = Person.objects.get(pk=value)
+            dimension.value.remove(person)
+        elif field_type == "associatedprojects":
+            project = Project.objects.get(pk=value)
+            dimension.value.remove(project)
+        dimension.save()
     return redirect('show_project', project_id=project_id, permanent=True)
 
 
@@ -427,8 +449,8 @@ def get_multiple(request, field_type, field_id):
         'associatedprojects': AssociatedProjectsDimension
     }
     value = type_to_dimension[field_type].objects.get(pk=field_id).value.all()
-    person_data = [{'id': p.pk, 'name': str(p)} for p in value]
-    return JsonResponse({'type': field_type, 'data': person_data})
+    data = [{'id': p.pk, 'name': str(p)} for p in value]
+    return JsonResponse({'type': field_type, 'data': data})
     # project = Project.objects.get(pk=project_id)
     # ct_objects = ContentType.objects
     #

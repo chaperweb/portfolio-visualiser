@@ -41,11 +41,34 @@ function populate_persons(json) {
   for(i=0;i<json.length;i++) {
     var fullname = json[i].first_name + " " + json[i].last_name
     var option = "<option value= " + json[i].id + ">" + fullname + "</option>";
+
     $(option).appendTo($("#associatedperson-value"));
+    $(option).appendTo($("#associatedpersons-value"));
+  }
+}
+function populate_projects(json) {
+  for(i=0;i<json.length;i++)
+  {
+    var option = "<option value= " + json[i].id + ">" + json[i].name + "</option>";
+    $(option).appendTo($("#associatedprojects-value"));
   }
 }
 function ajax_error() {
   alert("Ajax didn't receive a response!");
+}
+
+function add_multiple_row(name, id, type, field, projectID) {
+  var list_id = ' id="multiple-' + type + '-' + id + '"',
+      csrf = '<input type="hidden" name="csrfmiddlewaretoken" value="' + csrftoken + '"/>',
+      field = '<input type="hidden" name="field" value="' + field + '"/>',
+      value = '<input type="hidden" name="value" value="' + id + '"/>',
+      url = '"/projects/' + projectID + '/edit/' + type + '"',
+      form = '<form method="PATCH" action=' + url + '>' + csrf + field + value,
+      button_class = 'class="btn btn-danger btn-xs pull-right"',
+      remove_span = '<span class="glyphicon glyphicon-remove"></span>',
+      button = '<button type="submit" ' + button_class + '>' + remove_span + '</button>',
+      row = '<li' + list_id + 'class="list-group-item multiple-row">' + form + name + button + '</form></li>';
+  $(row).appendTo("#" + type + "-well-ul");
 }
 
 
@@ -53,17 +76,17 @@ $(function()
 {
   //  Add field type to modal when opened
   $(".modify-button").click(function(e) {
-    // e.stopPropagation();
+    e.stopPropagation();  // Stop panelbody from opening
+
+    //  Add info about which field we are handling
     $("#hidden-"+$(this).data('type')+"-info").val($(this).data('field'));
 
-    if ($(this).data('multiple')) {
+    // If the field is a multiple-field
+    if ($(this).data('multiple') == 'True') {
       // Buttons data variables
       var field = $(this).data('field');
       var projectID = $(this).data('projectid');
       var type = $(this).data('type');
-
-      // Add title
-      $("#multiple-title").html(field);
 
       // Send ajax request to get the items and then populate the list
       $.ajax({
@@ -71,159 +94,21 @@ $(function()
         url: "/get_multiple/" + type + "/" + field,
         success: function(json) {
           // Remove old content from the modal
-          $("#multiple-well-ul > li").remove();
+          $("li.multiple-row").remove();
 
-          // If concerning multiple persons
-          if( json.type == "persons" )
-          {
-            for(i=0; i<json.items.length; i++)
-            {
-              // ID to be able to remove the row if person removed
-              var id = ' id="multiple-person-' + json.items[i].id + '"';
-              // Data items for the backend to br able to identify the person
-              var data = ' data-name="' + json.items[i].name + '"' + ' data-id="' + json.items[i].id + '"';
-              var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple-persons"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
-              // Create the list item and add the row to the modal
-              var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
-              $(row).appendTo("#multiple-well-ul");
-            }
-            var addLabel = '<label for="add-person-to-project" class="pull-left">Add person</label>';
-            var addSelect = '<select id="add-person-to-project" name="perID"></select>';
-            var addBtn = '<button class="btn btn-orange btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
-            var addlist = '<li class="list-group-item"><form action="/add_person_to_project" method="POST" id="add-person-to-project-form">' + addLabel + addSelect + addBtn + '</form></li>';
-            $(addlist).appendTo("#multiple-well-ul");
-            $.ajax({
-              method: "GET",
-              url: "/get_pers",
-              data: {},
-              success: function(json) {
-                for(i=0;i<json.length;i++)
-                {
-                  var fullname = json[i].first_name + " " + json[i].last_name
-                  var option = "<option value= " + json[i].id + ">" + fullname + "</option>";
-                  $(option).appendTo($("#add-person-to-project"));
-                }
-              },
-              error: function() {
-                alert("Failed to load all persons");
-              }
-            });
+          // Add a row for each item in data
+          for(i=0; i<json.data.length; i++) {
+            var name = json.data[i].name,
+                itemId = json.data[i].id;
+            add_multiple_row(name, itemId, json.type, field, projectID);
           }
-          // If concerning multiple projects
-          else if( json.type == "projects" )
-          {
-            for(i=0; i<json.items.length; i++)
-            {
-              // Look above for explanations
-              var id = ' id="multiple-project-' + json.items[i].id + '"';
-              var data = ' data-name="' + json.items[i].name + '"' + ' data-id="' + json.items[i].id + '"';
-              var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple-projects"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
-              var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
-              $(row).appendTo("#multiple-well-ul");
-            }
-            var addLabel = '<label for="add-project-to-project" class="pull-left">Add project</label>';
-            var addSelect = '<select id="add-project-to-project" name="projID"></select>';
-            var addBtn = '<button class="btn btn-orange btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
-            var addlist = '<li class="list-group-item"><form action="/add_project_to_project" method="POST" id="add-project-to-project-form">' + addLabel + addSelect + addBtn + '</form></li>';
-            $(addlist).appendTo("#multiple-well-ul");
-            $.ajax({
-              method: "GET",
-              url: "/get_proj",
-              data: {},
-              success: function(json) {
-                for(i=0;i<json.length;i++)
-                {
-                  var option = "<option value= " + json[i].id + ">" + json[i].name + "</option>";
-                  $(option).appendTo($("#add-project-to-project"));
-                }
-              },
-              error: function() {
-                alert("Failed to load all projects");
-              }
-            });
-          }
-
-          // If the add person form is submitted
-          $("#add-person-to-project-form").on("submit", function(e)
-          {
-            e.preventDefault();
-            $.ajax({
-              method: "POST",
-              url: $('#add-person-to-project-form').attr('action'),
-              data: { 'projectID': projectID, 'personID': $("#add-person-to-project").val() },
-              success: function(json) {
-                // TODO: Don't alert, just add it to the list
-                alert("Successfully added " + json.name + " to " + field);
-                $("#multiple-items-modal").modal('hide');
-              },
-              error: function() {
-                alert("Failed to add person to " + field);
-              }
-            });
-          });
-
-          // If the add project form is submitted
-          $("#add-project-to-project-form").on("submit", function(e)
-          {
-            e.preventDefault();
-            $.ajax({
-              method: "POST",
-              url: $('#add-project-to-project-form').attr('action'),
-              data: { 'destID': projectID, 'toBeAddedID': $("#add-project-to-project").val() },
-              success: function(json) {
-                // TODO: Don't alert, just add it to the list
-                alert("Successfully added " + json.name + " to " + field);
-                $("#multiple-items-modal").modal('hide');
-              },
-              error: function() {
-                alert("Failed to add project to " + field);
-              }
-            });
-          });
-
-          // If a remove button for a person is clicked
-          // Sends an ajax request to remove the person from the project
-          $(".remove-multiple-persons").click(function(e)
-          {
-            $.ajax({
-              method: "PATCH",
-              url: "/remove_person_from_project",
-              data: { 'id': $(this).data('id'), 'project_id': projectID },
-              success: function(json) {
-                // Remove the row that contained the removed person
-                $("#multiple-person-" + json.id).remove()
-              },
-              error: function() {
-                alert("Failed to remove person from project");
-              }
-            });
-          });
-
-          // Sends ajax request to remove the associated project
-          $(".remove-multiple-projects").click(function(e)
-          {
-            $.ajax({
-              method: "PATCH",
-              url: "/remove_project_from_project",
-              data: { 'id': $(this).data('id'), 'project_id': projectID },
-              success: function(json) {
-                // Remove the row that contained the removed person
-                $("#multiple-project-" + json.id).remove()
-              },
-              error: function() {
-                alert("Failed to remove project from project");
-              }
-            });
-          });
         },
-        error: function() {
-          alert("Failed to load")
-        }
+        error: function() { ajax_error(); }
       });
-      console.log("MULTIPLE MODIFY CLICKED!");
     }
 
-    // OPEN MODAL
+    // Open the modal
+    $($(this).data('target')).modal('toggle');
   });
 
   //  To populate organizationlists
@@ -242,44 +127,11 @@ $(function()
     error: function() { ajax_error(); }
   });
 
-  // To populate the list in multiple-items-modal
-  $(".multiple-button").click(function(e){
-    // Buttons data variables
-    var field = $(this).data('field');
-    var projectID = $(this).data('projectid');
-    var type = $(this).data('type');
-
-    // Add title
-    $("#multiple-title").html(field);
-
-    // Send ajax request to get the items and then populate the list
-    $.ajax({
-      method: "GET",
-      url: "/get_multiple/" + projectID + "/" + type + "/" + field,
-      data: {},
-      success: function(json) {
-        $("#multiple-well-ul > li").remove();
-        if( json.type == "persons" )
-        {
-          for(i=0; i<json.items.length; i++)
-          {
-            var row = '<li class="list-group-item">' + json.items[i].name + '</li>';
-            $(row).appendTo("#multiple-well-ul");
-          }
-        }
-        else if( json.type == "projects" )
-        {
-          for(i=0; i<json.items.length; i++)
-          {
-            var row = '<li class="list-group-item">' + json.items[i].name + '</li>';
-            $(row).appendTo("#multiple-well-ul");
-          }
-        }
-      },
-      error: function() {
-        alert("Failed to load")
-      }
-    });
+  //  To populate projectlists
+  $.ajax({
+    method: "GET",
+    url: "/get_proj",
+    success: function(json) { populate_projects(json); },
+    error: function() { ajax_error(); }
   });
-
 });

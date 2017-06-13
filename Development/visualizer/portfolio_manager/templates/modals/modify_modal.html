@@ -6,42 +6,63 @@
           <span aria-hidden="true">&times;</span>
         </button>
         <h3>Change {{type|capfirst}} Value</h3>
+        {% load project_tags %}
+        <!--
+          If the form should be for a field that only
+          has a single value, e.g. text, date or decimal
+        -->
+        {% if type|is_type:"value" %}
+          <form id="modify-{{type}}-form" method="POST"
+            action="{% url 'project_edit' project_id=project.pk field_type=type %}">
+            {% csrf_token %}
+            <input id="hidden-{{type}}-info" type="hidden" name="field"/>
+            <label for="{{type}}-value">New value: </label>
+            <input type="{{type}}" name="value" id="{{type}}-value"/>
+            <center style="margin-top: 15px;">
+              <button type="submit" class="btn btn-orange">Save change</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </center>
+          </form>
+        <!--
+          If the form is for a field with foreign keys as value,
+          e.g. associatedperson or associatedorganization
+        -->
+        {% elif type|is_type:"dropdown" %}
         <form id="modify-{{type}}-form" method="POST"
           action="{% url 'project_edit' project_id=project.pk field_type=type %}">
           {% csrf_token %}
           <input id="hidden-{{type}}-info" type="hidden" name="field"/>
           <label for="{{type}}-value">New value: </label>
-          {% load project_tags %}
-          <!--
-            If the form should be for a field that only
-            has a single value, e.g. text, date or decimal
-          -->
-          {% if type|is_type:"value" %}
-          <input type="{{type}}" name="value" id="{{type}}-value"/>
-          <!--
-            If the form is for a field with foreign keys as value,
-            e.g. associatedperson or associatedorganization
-          -->
-          {% elif type|is_type:"dropdown" %}
           <select id="{{type}}-value" name="value">
             <!-- This list is populated by js -->
           </select>
-          <!--
-            For fields that have manytomany as value, e.g.
-            AssociatedPersons
-          -->
-          {% elif type|is_type:"multiple" %}
-          <h3><strong id="multiple-title"></strong></h3>
-          <div class="well">
-            <ul id="multiple-well-ul" class="list-group">
-            </ul>
-          </div>
-          {% endif %}
           <center style="margin-top: 15px;">
             <button type="submit" class="btn btn-orange">Save change</button>
             <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
           </center>
         </form>
+        <!--
+          For fields that have manytomany as value, e.g.
+          AssociatedPersons
+        -->
+        {% elif type|is_type:"multiple" %}
+        <div class="well">
+          <ul id="{{type}}-well-ul" class="list-group">
+            <li class="list-group-item">
+              <form id="modify-{{type}}-form" method="POST"
+                action="{% url 'project_edit' project_id=project.pk field_type=type %}">
+                {% csrf_token %}
+                <input id="hidden-{{type}}-info" type="hidden" name="field"/>
+                <label for="{{type}}-value" class="pull-left">Add</label>
+                <select id="{{type}}-value" name="value"></select>
+                <button type="submit" class="btn btn-orange btn-xs pull-right">
+                  <span class="glyphicon glyphicon-plus"></span>
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>
