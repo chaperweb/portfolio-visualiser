@@ -25,7 +25,7 @@ function enoughColors(amount, colourlist) {
         moreColors.push(generateColours(extraNeeded, color));
       }
     } else {
-      i = 0
+      j = 0
       for (; j < modulo; j++) {
         var extraNeeded = Math.ceil(amount / colorsNow);
         moreColors.push(generateColours(extraNeeded, colourlist[j]));
