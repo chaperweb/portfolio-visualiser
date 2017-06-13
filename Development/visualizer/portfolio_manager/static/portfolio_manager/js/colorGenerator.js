@@ -35,16 +35,25 @@ function enoughColors(amount, colourlist) {
         j++;
       }
     }
-    console.log(moreColors)
     return moreColors;
   }
 };
 
 //function for generating more colors
+// The generated colours are based on given colour
 function generateColours(integer, colour) {
 
+  // Array for the return value and rgb version of the input color
   var allCol = []
   var mycol = d3.rgb(colour)
+
+  // If there is just one color needed, return the original
+  if (integer === 1) {
+    allCol.push(mycol);
+    return allCol;
+  }
+
+  // defining the 'distance' between generated colors centrifying the base color
   var step = Math.round(256 / integer)
   var up = (Math.round(integer / 2))
 
@@ -52,6 +61,7 @@ function generateColours(integer, colour) {
     up++
   }
 
+  //max and min for the color rgb values
   var rmax = Math.min(255, mycol.r + (up - 1) * step)
   var gmax = Math.min(255, mycol.g + (up - 1) * step)
   var bmax = Math.min(255, mycol.b + (up - 1) * step)
@@ -59,13 +69,17 @@ function generateColours(integer, colour) {
   var gmin = Math.max(0, mycol.g - (up - 1) * step)
   var bmin = Math.max(0, mycol.b - (up - 1) * step)
 
+  // temporal variable for the color generating puroposes
   var tempCol = mycol
 
-  if (integer === 1) {
-    allCol.push(colour);
-    return allCol;
-  }
-
+  /* Algorithm for generating extra colors based on given seed color.
+   *
+   * If sum of the r,g and b values is less than 383 it will try to maximize the
+   * given values one by one.
+   * If the sum of the given values is more than 383 it will reduce the given values
+   *
+   * This could be more intelligent, but works mostly ok at the moment.
+   */
   if (mycol.r + mycol.g + mycol.b < 383) {
     for (i = 1; i <= integer; i++) {
         if (tempCol.b < bmax) {
@@ -101,5 +115,6 @@ function generateColours(integer, colour) {
       allCol.push(tempCol.toString())
     }
   }
+  //return array of colors based on the given color
   return allCol;
 };
