@@ -1,26 +1,24 @@
 $(function(){
   $.ajax({
     url: "json"
-  }).done(function(data) {
+  }).success(function(data) {
     dependancies(data)
   });
 });
 
 function dependancies(json) {
+	var nodes = {},
+    	links = [],
+      jsonlen = json.length,
+    	valueArray = [];
 
-	var nodes = {};
-
-	var links = []
-	var jsonlen = json.length
-	console.log(json)
-	var valueArray = [];
+  console.log(json);
 
   /* Going through json input and collecting budget values from objects
    * that have values in ProjectDependencies. To be used in defining need
    * for denominaor != 1
   */
 	for (j = 0; j < jsonlen; j++) {
-
 		if (json[j].dimensions == undefined) {
 			throw error("project dimensions missing");
 		}
@@ -29,8 +27,8 @@ function dependancies(json) {
 		for (i = 0; i < size; i++) {
   		if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
   			valueArray.push(gimmeBudget(json[j].id))
-  			if (json[j].dimensions[i].dimension_object.projects != undefined) {
-  				valueArray.push(gimmeBudget(json[j].dimensions[i].dimension_object.projects[0]))
+  			if (json[j].dimensions[i].dimension_object.value != undefined) {
+  				valueArray.push(gimmeBudget(json[j].dimensions[i].dimension_object.value[0]))
   			}
   		}
 		}
@@ -52,15 +50,15 @@ function dependancies(json) {
 		var size = json[j].dimensions.length
 		for (i = 0; i < size; i++) {
 			if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
-				for(p = 0; p < json[j].dimensions[i].dimension_object.projects.length;p++) {
+				for(p = 0; p < json[j].dimensions[i].dimension_object.value.length;p++) {
 
 					var budgetS = gimmeBudget(json[j].id) / denominator
 					var budgetT = 0;
 					var nameS = "";
-					var nameT = gimmeName(json[j].dimensions[i].dimension_object.projects[p])
+					var nameT = gimmeName(json[j].dimensions[i].dimension_object.value[p])
 
-					if (json[j].dimensions[i].dimension_object.projects != undefined) {
-						budgetT = gimmeBudget(json[j].dimensions[i].dimension_object.projects[p]) / denominator
+					if (json[j].dimensions[i].dimension_object.value != undefined) {
+						budgetT = gimmeBudget(json[j].dimensions[i].dimension_object.value[p]) / denominator
 					}
 
 					if (json[j].dimensions[0].dimension_object.history != undefined) {
@@ -114,7 +112,7 @@ function dependancies(json) {
 		for (z = 0; z < jsonlen; z++) {
 			if (json[z].id == id) {
 				for(m = 0; m < json[z].dimensions.length ; m++ ){
-					if (json[z].dimensions[m].dimension_object.name === "SizeBudget") {
+					if (json[z].dimensions[m].dimension_object.name === "Budget") {
 						var budget = json[z].dimensions[m].dimension_object.history[0].value
 						if (budget != undefined) {
 							return budget;

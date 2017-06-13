@@ -128,11 +128,11 @@ class AssociatedOrganizationSerializer(serializers.ModelSerializer):
 
 class AssociatedProjectsSerializer(serializers.ModelSerializer):
 
-  projects = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+  value = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
   class Meta:
     model = AssociatedProjectsDimension
-    fields = ('id', 'name', 'projects', '__str__')
+    fields = ('id', 'name', 'value', '__str__')
 
 class ProjectDimensionSerializer(serializers.ModelSerializer):
 
