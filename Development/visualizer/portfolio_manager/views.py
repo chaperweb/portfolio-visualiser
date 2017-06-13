@@ -217,7 +217,7 @@ def show_project(request, project_id):
 
     return render(request, 'project.html', context)
 
-# Site for editing a project
+# Function that edits a project by either updating, adding or removing values
 def project_edit(request, project_id, field_type):
     type_to_dimension = {
         'text': TextDimension,
@@ -429,19 +429,8 @@ def get_proj(request):
     serializer = ProjectNameIdSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
-#   Function that gets the multiple entries in a dimension that has multiple
-#   items.
-#   Input:
-#       A request
-#       The id of the project you want to search for
-#       The type of dimension, e.g. assperson( AssociatedPersonsDimension )
-#       The name of the field, e.g. Members
-#   Output:
-#       A JSON string that has the names of the searched for items
-
-#   As this function is only to be called with ajax an else statement has
-#   purposefully been left out to trigger the errorfunction in the ajax call
-
+#   Function that gets the value of a dimension that has multiple
+#   items. Takes in the field type and the id of the dimension
 @require_GET
 def get_multiple(request, field_type, field_id):
     type_to_dimension = {
