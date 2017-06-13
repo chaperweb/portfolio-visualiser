@@ -22,16 +22,16 @@ function enoughColors(amount, colourlist) {
     if ( modulo === 0) {
       var extraNeeded = amount / colorsNow;
       for (color in colourlist) {
-        moreColors.push(generateColours(extraNeeded, color););
+        moreColors.push(generateColours(extraNeeded, color));
       }
     } else {
       i = 0
       for (; i < modulo; i++) {
         var extraNeeded = Math.ceil(amount / colorsNow);
-        moreColors.push(generateColours(extraNeeded, colourlist[i]););
+        moreColors.push(generateColours(extraNeeded, colourlist[i]));
       }
       while (i < colorsNow) {
-        moreColors.push(generateColours(extraNeeded - 1, colourlist[i]););
+        moreColors.push(generateColours(extraNeeded - 1, colourlist[i]));
         i++;
       }
     }
