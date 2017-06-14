@@ -74,7 +74,7 @@
     "pk": 1,
     "fields": {
       "name": "Dependencies",
-      "projects": [1]
+      "value": [1]
     }
   },
   {
@@ -106,7 +106,7 @@
     "pk": 1,
     "fields": {
       "name": "Members",
-      "persons": [1]
+      "value": [1]
     }
   }
 
