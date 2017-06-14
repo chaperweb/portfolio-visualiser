@@ -41,7 +41,7 @@ $(function() {
 
     $('#x-selector').html('<option>---</option>');
     $('#y-selector').html('<option>---</option>');
-    
+
     for (var i = 0, len = db_json.length; i < len; i++) {
       if(db_json[i].id == project_id) {
         project = db_json[i];
@@ -61,10 +61,10 @@ $(function() {
         break;
       }
     }
-    dimension_selector_change();
+    change_if_all_selected();
   });
 
-  $('#x-selector').on('change', dimension_selector_change);
-  $('#y-selector').on('change', dimension_selector_change);
+  $('#x-selector').on('change', change_if_all_selected);
+  $('#y-selector').on('change', change_if_all_selected);
 
 });
