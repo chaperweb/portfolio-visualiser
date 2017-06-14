@@ -33,7 +33,7 @@ $(function() {
     }
   });
 
-  $('#project-selector').on('change', function(){
+  $('#project-selector').on('change', function() {
     project_id = $(this).find("option:selected").val();
 
     preserved_x_name = $('#x-selector').find("option:selected").text();
@@ -41,6 +41,7 @@ $(function() {
 
     $('#x-selector').html('<option>---</option>');
     $('#y-selector').html('<option>---</option>');
+    
     for (var i = 0, len = db_json.length; i < len; i++) {
       if(db_json[i].id == project_id) {
         project = db_json[i];
