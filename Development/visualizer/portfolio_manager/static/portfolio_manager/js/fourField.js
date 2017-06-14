@@ -29,7 +29,8 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 				   			 .range([0,axisLengthY])
 				   	 		 .domain([sliderValues,-1 * sliderValues]);
 
-	var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+	//list for the organizations
+	var organizations = [];
 
 	for (j = 0; j < json.length; j++) {
 		var size = json[j].dimensions.length;
@@ -76,6 +77,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 				}
 			} else if (dimension.dimension_type === colorToBe ) {
 				inProgress.organization = dimension.dimension_object.history[0].value.name
+				organizations.push(dimension.dimension_object.history[0].value.name)
 			};
 
 		}
@@ -109,6 +111,15 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		}
 	}
 
+	var uniqueOrganizations = organizations.filter( onlyUnique );
+
+	var fourFieldColors = enoughColors(uniqueOrganizations.length, colors);
+
+	//creating colorscale for the visualization
+	var colorScale = d3.scaleOrdinal()
+										.domain(uniqueOrganizations)
+										.range(fourFieldColors);
+
 	mmddyy = d3.timeFormat("%m/%d/%Y");
 
 	if (isNaN(startDate)) {
@@ -139,13 +150,16 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	 */
 	function radius(d) {
 		if (validLocation(d)) {
-			console.log("true")
 			return d.radius;
 		} else {
 			// console.log("false");
 			d.radius = 0
 			return d.radius;
 		}
+	}
+	//This function is for the filter to rule out not unique values from array
+	function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
 	}
 	/*
 	 * Helps to set timescale-slider by min&max values of
@@ -189,7 +203,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	}
 
 	//function to determine color of the circle. Currently is set to color the circles by their "AssociatedOrganizationDimension"
-	function color(d) { return d.organization; }
+	function color(d) { return colorScale(d.organization); }
 	function key(d) { return d.name; }
 
 	// Positions the dots based on data.
