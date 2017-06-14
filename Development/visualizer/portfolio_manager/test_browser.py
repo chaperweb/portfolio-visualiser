@@ -125,7 +125,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Check the notification message
         self.assertTrue('Organization created: '+add_organization_name in self.selenium.page_source)
-        
+
         # Check that organization was property added to db
         organization = Organization.objects.get(pk=add_organization_name)
         self.assertIsInstance(organization, Organization)
@@ -153,7 +153,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Wait for modal to open
         self.assert_that_css_appears('#conf-modal-body > h3')
- 
+
         self.open(reverse('admin_tools')) # Reload organizations in "Add project" modal
 
         # Fill in "Add project" form on Admin tools page and submit it
@@ -309,7 +309,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(str(Person.objects.get(id=2)), self.find('ProjectManager').text)
 
     def test_modify_project_associated_persons_dimension_remove(self):
-        
+
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Members dimension
@@ -340,7 +340,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(0, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
 
     def test_modify_project_associated_persons_dimension_add(self):
-        
+
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Members dimension
@@ -351,7 +351,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Select person to add and click '+'
         Select(self.find('add-person-to-project')).select_by_value('2')
-        self.find_css('#add-person-to-project-form button.btn-success').click()
+        self.find_css('#add-person-to-project-form button.btn-orange').click()
 
 
         # Wait for alert
@@ -360,7 +360,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         alert = self.selenium.switch_to_alert()
         self.assertTrue('Successfully' in alert.text)
         alert.accept()
-     
+
         # Wait for modal to close
         self.assert_that_element_disappears('multiple-items-modal')
 
@@ -405,7 +405,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(0, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
 
     def test_modify_project_associated_projects_dimension_add(self):
-        
+
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Dependencies dimension
@@ -416,7 +416,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Select project to add and click '+'
         Select(self.find('add-project-to-project')).select_by_value('2')
-        self.find_css('#add-project-to-project-form button.btn-success').click()
+        self.find_css('#add-project-to-project-form button.btn-orange').click()
 
 
         # Wait for alert
@@ -425,7 +425,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         alert = self.selenium.switch_to_alert()
         self.assertTrue('Successfully' in alert.text)
         alert.accept()
-     
+
         # Wait for modal to close
         self.assert_that_element_disappears('multiple-items-modal')
 
@@ -437,4 +437,3 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Modal should not list any members
         self.assertEquals(2, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
-
