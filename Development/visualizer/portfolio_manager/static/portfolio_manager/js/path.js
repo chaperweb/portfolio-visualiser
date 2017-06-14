@@ -21,6 +21,7 @@ function generate_path_data(x_dimension, y_dimension) {
   });
 
   data = x_data.concat(y_data);
+
   for (var i = 0; i < data.length; i++) {
     data[i].idx = i;
   }
@@ -76,7 +77,36 @@ function generate_path_data(x_dimension, y_dimension) {
 
 }
 
+function get_selected_project() {
+  project_id = $('#project-selector').find("option:selected").val();
+  for (var i = 0; i < db_json.length; i++) {
+    if(db_json[i].id == project_id) {
+      return db_json[i];
+    }
+  }
+  return null;
+}
+
+function get_dimension(project, id) {
+  if (project) {
+    for (var j = 0; j < project.dimensions.length; j++) {
+        if(project.dimensions[j].id == id) {
+          return project.dimensions[j];
+        }
+    }
+  }
+  return null;
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = {
+    generate_path_data: generate_path_data
+  };
+}
+
+// Generate the svg container for the visualization
 function generate_path_svg(pathData) {
+  console.log(pathData);
   // Dimension of the svg box
   // Left margin is hardcoded to ensure enough room for y-axis values
   var height =  Math.max(600, $(window).height() * 0.7),
@@ -153,33 +183,4 @@ function generate_path_svg(pathData) {
      .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
      .attr("id", "y-axis")
      .call(d3.axisLeft(y));
-}
-
-function get_selected_project() {
-  project_id = $('#project-selector').find("option:selected").val();
-  for (var i = 0; i < db_json.length; i++) {
-    if(db_json[i].id == project_id) {
-      return db_json[i];
-    }
-  }
-  return null;
-}
-
-function get_dimension(project, id) {
-  if (project) {
-    for (var j = 0; j < project.dimensions.length; j++) {
-        if(project.dimensions[j].id == id) {
-          return project.dimensions[j];
-        }
-    }
-  }
-  return null;
-}
-
-
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = {
-    generate_path_data: generate_path_data
-  };
 }
