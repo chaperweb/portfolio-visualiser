@@ -111,7 +111,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
     # Actual tests
 
     def test_add_organization(self):
-
         self.open(reverse('admin_tools'))
 
         add_organization_name = 'Örganizaatio'
@@ -124,26 +123,42 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assert_that_css_appears('#conf-modal-body > h3')
 
         # Check the notification message
-        self.assertTrue('Organization created: '+add_organization_name in self.selenium.page_source)
+        msg = 'Organization created: {}'.format(add_organization_name)
+        self.assertTrue(msg in self.selenium.page_source)
 
         # Check that organization was property added to db
         organization = Organization.objects.get(pk=add_organization_name)
-        self.assertIsInstance(organization, Organization)
         templates = organization.templates.all()
-        self.assertEquals(1, templates.count())
         template = templates[0]
-        self.assertEquals('default', template.name)
-        self.assertEquals(3, template.dimensions.all().count())
         template_dimensions = template.dimensions.all()
-        self.assertEquals(DecimalDimension, template_dimensions[0].content_type.model_class())
+
+        self.assertIsInstance(organization, Organization)
+        self.assertEquals(1, templates.count())
+        self.assertEquals('default', template.name)
+        self.assertEquals(3, template_dimensions.count())
+        self.assertEquals(
+            DecimalDimension,
+            template_dimensions[0].content_type.model_class()
+        )
         self.assertEquals('SizeBudget', template_dimensions[0].name)
-        self.assertEquals(DateDimension, template_dimensions[1].content_type.model_class())
+        self.assertEquals(
+            DateDimension,
+            template_dimensions[1].content_type.model_class()
+        )
         self.assertEquals('EndDate', template_dimensions[1].name)
-        self.assertEquals(AssociatedPersonDimension, template_dimensions[2].content_type.model_class())
+        self.assertEquals(
+            AssociatedPersonDimension,
+            template_dimensions[2].content_type.model_class()
+        )
         self.assertEquals('ProjectManager', template_dimensions[2].name)
 
     def test_add_organization_add_project(self):
         """ Test adding new organization and new project under that organization"""
+
+        #   Add person that will act as project manager later
+        project_project_manager = Person(first_name="Project", last_name="Project_Manager")
+        project_project_manager.save()
+        self.assertIsInstance(project_project_manager, Person)
 
         self.open(reverse('admin_tools'))
 
@@ -169,26 +184,26 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Fill in the details of new project and hit submit
         budget_field, end_date_field, project_manager_field, *foo = organization.templates.all()[0].dimensions.all()
-
-        project_size_budget = 135151.0
-        self.find('id_%s_form-value' % budget_field.id).send_keys(localize_input(project_size_budget))
-
+        project_budget = 135151.0
         project_end_date = datetime(2015, 8, 1)
-        self.find('id_%s_form-value' % end_date_field.id).send_keys(project_end_date.strftime("%d/%m/%Y"))
 
-        project_project_manager = Person.objects.get(id=2)
-        Select(self.find('id_%s_form-value' % project_manager_field.id)).select_by_value(str(project_project_manager.id))
+
+        self.find('id_{}_form-value'.format(budget_field.id)).send_keys(localize_input(project_budget))
+        self.find('id_{}_form-value'.format(end_date_field.id)).send_keys(project_end_date.strftime("%d/%m/%Y"))
+        project_manager_input = self.find('id_{}_form-value'.format(project_manager_field.id))
+        Select(project_manager_input).select_by_value(str(project_project_manager.id))
         self.find('add-project-form').submit()
 
         # Wait until user is redirected to "Show project" page and check that page contains
         # correct information
         self.assert_that_element_appears('project-dimension-panels')
         self.assertEquals(project_name, self.find('project-name').text)
-        self.assertEquals(organization_name, self.find('projectparent').text)
-        end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
-        self.assertEquals(end_date, self.find('EndDate').text)
+        # TODO: Add search for panel with owningorganization
+        # self.assertEquals(organization_name, self.find('projectparent').text)
+        # end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
+        self.assertEquals(project_end_date, self.find('EndDate').text)
         self.assertEquals(str(project_project_manager), self.find('ProjectManager').text)
-        budget = number_format(project_size_budget, decimal_pos=2)
+        budget = number_format(project_budget, decimal_pos=2)
         self.assertEquals(budget, self.find('SizeBudget').text)
 
     def test_add_project_from_admin_tools(self):
@@ -206,7 +221,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def _test_add_project(self):
         project_name = "FooBar"
-        organization = Organization.objects.get(pk='org1')
+        organization = Organization.objects.get(pk='Great Organization')
 
         # Fill in details of new project and click "Continue"
         self.find('id_name').send_keys(project_name)
@@ -222,12 +237,15 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Fill in the detail of new project and submit
 
-        phase_field, project_size_field, *foo = organization.templates.all()[0].dimensions.all()
-        project_phase = "Pre-study"
-        project_size = 135151.0
+        budget_field, end_date_field, project_manager_field, *foo = organization.templates.all()[0].dimensions.all()
+        project_budget = 135151.0
+        project_end_date = datetime(2011, 1, 1)
+        project_manager = Person.objects.get(first_name="Project", last_name="Project_Manager")
 
-        self.find('id_'+str(phase_field.id)+'_form-value').send_keys(project_phase)
-        self.find('id_'+str(project_size_field.id)+'_form-value').send_keys(localize_input(project_size))
+        self.find('id_{}_form-value'.format(budget_field.id)).send_keys(localize_input(project_budget))
+        self.find('id_{}_form-value').format(end_date_field.id).send_keys(project_end_date.strftime("%d/%m/%Y"))
+        project_manager_input = self.find('id_{}_form-value'.format(project_manager_field.id))
+        Select(project_manager_input).select_by_value(str(project_manager.id))
         self.find('add-project-form').submit()
 
         # Wait for "Show project" to load
@@ -235,21 +253,27 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Check that "Show project" page contains correct information
         self.assertEquals(project_name, self.find('project-name').text)
-        self.assertEquals(organization.pk, self.find('projectparent').text)
-        self.assertEquals(project_phase, self.find('Phase').text)
-        budget = number_format(project_size, decimal_pos=2)
-        self.assertEquals(budget, self.find('Size').text)
+        # TODO: Add search for panel with owningorganization
+        # self.assertEquals(organization_name, self.find('projectparent').text)
+        # end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
+        self.assertEquals(project_end_date, self.find('EndDate').text)
+        self.assertEquals(str(project_manager), self.find('ProjectManager').text)
+        budget = number_format(project_budget, decimal_pos=2)
+        self.assertEquals(budget, self.find('SizeBudget').text)
 
         # Check that correct information is loaded to db
         project = Project.objects.get(name=project_name)
         self.assertIsInstance(project, Project)
         self.assertEquals(organization, project.parent)
-        shape_dim, budget_dim, *leftovers = project.dimensions.all()
+        budget_dim, end_date_dim, project_manager_dim, *leftovers = project.dimensions.all()
         self.assertFalse(leftovers)
-        self.assertIsInstance(shape_dim.dimension_object, TextDimension)
-        self.assertEquals(project_phase, shape_dim.dimension_object.value)
         self.assertIsInstance(budget_dim.dimension_object, DecimalDimension)
-        self.assertEquals(Decimal(project_size), budget_dim.dimension_object.value)
+        self.assertIsInstance(end_date_dim.dimension_object, DateDimension)
+        self.assertIsInstance(project_manager_dim.dimension_object, AssociatedPersonDimension)
+
+        self.assertEquals(Decimal(project_budget), budget_dim.dimension_object.value)
+        self.assertEquals(project_end_date, end_date_dim.dimension_object.value)
+        self.assertEquals(project_manager, project_manager_dim.dimension_object.value)
 
     def _test_modify_project_dimension(self, dimension_name, new_value_field_id, modal_id, form_id,
                                        new_value, cmp_value):
