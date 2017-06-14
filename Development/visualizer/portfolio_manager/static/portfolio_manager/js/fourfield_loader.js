@@ -26,29 +26,36 @@ $(function() {
     url: "json"
   }).done(function(data) {
     db_json = data;
-    dimension_names = {};
 
+    // Collect decimal dimensions across projects in order of appearance
+    var dimension_names = [];
     for (var i = 0, ilen = db_json.length; i < ilen; i++) {
-      for(var j = 0, jlen = db_json[i].dimensions.length; j < jlen; j++) {
-        dimension = db_json[i].dimensions[j];
-        if(dimension.dimension_type == 'DecimalDimension'){
-          dimension_names[dimension.dimension_object.name] = dimension.dimension_object.name;
+      var project = db_json[i];
+      for (var j = 0, jlen = project.dimensions.length; j < jlen; j++) {
+        var dimension = project.dimensions[j];
+        if (dimension.dimension_type == 'DecimalDimension') {
+          var name = dimension.dimension_object.name;
+          if ($.inArray(name, dimension_names) == -1)
+            dimension_names.push(name);
         }
-       }
+      }
     }
 
-    $('#x-selector').html('<option>---</option>');
-    $('#y-selector').html('<option>---</option>');
-    $('#r-selector').html('<option>---</option>');
-
-    for(var key in dimension_names) {
-      $('#x-selector').append('<option value="'+key+'">'+dimension_names[key]+'</option>');
-      $('#y-selector').append('<option value="'+key+'">'+dimension_names[key]+'</option>');
-      $('#r-selector').append('<option value="'+key+'">'+dimension_names[key]+'</option>');
+    // Populate selectors, set first dimensions selected
+    var axes = ['#x-selector', '#y-selector', '#r-selector'];
+    for (var i = 0, ilen = axes.length; i < ilen; i++) {
+      var selector = $(axes[i]);
+      selector.html('<option>---</option>');
+      for (var j = 0, jlen = dimension_names.length; j < jlen; j++) {
+        var name = dimension_names[j];
+        selector.append('<option value="'+name+'">'+name+'</option>');
+        if (i == j)
+          selector.val(name);
+      }
+      selector.prop('disabled', false);
     }
-    $("#x-selector").prop('disabled', false);
-    $("#y-selector").prop('disabled', false);
-    $("#r-selector").prop('disabled', false);
+    change_if_all_selected();
+
     $("#start-date-selector").prop('disabled', false);
     $("#end-date-selector").prop('disabled', false);
     $("#slider-value-selector").prop('disabled', false);
