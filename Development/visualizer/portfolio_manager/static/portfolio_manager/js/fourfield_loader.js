@@ -1,4 +1,5 @@
 $(function() {
+  
   function change_if_all_selected() {
     var xIsChosen = $('#x-selector').val() != '---',
         yIsChosen = $('#y-selector').val() != '---',

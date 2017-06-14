@@ -58,7 +58,7 @@ function generate_path_data(x_dimension, y_dimension) {
 
   // Remove duplicates
   data = data.filter(function(val, index, array) {
-    if(index < array.length - 1 && val.history_date == array[index+1].history_date) {
+    if (index < array.length - 1 && val.history_date == array[index+1].history_date) {
       return false;
     }
     return true;
@@ -78,17 +78,18 @@ function generate_path_data(x_dimension, y_dimension) {
 
 function generate_path_svg(pathData) {
   // Dimension of the svg box
-  var height = Math.max(600, $(window).height()*0.7),
-      width = Math.max(800, ($(window).width()-250)*0.8),
+  // Left margin is hardcoded to ensure enough room for y-axis values
+  var height =  Math.max(600, $(window).height() * 0.7),
+      width =   Math.max(800, ($(window).width() - 250) * 0.8),
       margin = {
         right: 0,
         left: 60,
-        top: height*0.02,
-        bottom: height*0.05
+        top: height * 0.02,
+        bottom: height * 0.05
       };
 
   // Length of the axis
-  var axisLengthX = width*0.9,
+  var axisLengthX = width * 0.9,
       axisLengthY = height * 0.9;
 
   //  Parameters for axis transformations
@@ -175,17 +176,7 @@ function get_dimension(project, id) {
   return null;
 }
 
-function dimension_selector_change() {
-  x_dimension_id = $('#x-selector').find("option:selected").val();
-  y_dimension_id = $('#y-selector').find("option:selected").val();
 
-  selected_project = get_selected_project();
-
-  update_path_visualization(
-    get_dimension(selected_project, x_dimension_id),
-    get_dimension(selected_project, y_dimension_id)
-  );
-}
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = {
