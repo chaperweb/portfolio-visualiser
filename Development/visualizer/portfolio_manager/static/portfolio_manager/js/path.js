@@ -51,17 +51,18 @@ function generate_path_data(x_dimension, y_dimension) {
      If both are defined leaves that date untouched.
   */
   var finalData = [];
+  console.log(finalData)
   for (var i = 0; i < data.length; i++) {
     var current = data[i];
-    if (i !== data.length - 1) {
-      var next = data[i + 1];
-      if (current.history_date === next.history_date) {
-        if (next.y === undefined) {
+
+    if (current.x !== undefined && current.y !== undefined) {
+      finalData.push(current)
+    } else if (i !== data.length - 1 && current.history_date === data[ i + 1 ].history_date) {
+        if (data[ i + 1 ].y === undefined) {
           data[ i + 1 ].y = current.y
-        } else if (next.x === undefined) {
+        } else if (data[ i + 1 ].x === undefined) {
           data[ i + 1 ].x = current.x
         }
-        return;
       }
     } else if (current.x === undefined) {
       if (i > 0) {
@@ -69,16 +70,17 @@ function generate_path_data(x_dimension, y_dimension) {
       } else {
         current.x = '';
       }
+      finalData.push(current)
     } else if (current.y === undefined) {
       if (i > 0) {
         current.y = data[i-1].y;
       } else {
         current.y = 0;
       }
+      finalData.push(current)
     }
     console.log(finalData)
-    finalData.push(current);
-  }
+  };
 
   // If there is just one value it will be duplicated
   if (finalData.length == 1) {
