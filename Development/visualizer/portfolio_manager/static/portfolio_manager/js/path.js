@@ -24,6 +24,9 @@ function generate_path_data(x_dimension, y_dimension) {
     return pathVal;
   });
 
+  // Empty the pathVal x value so the last one will not contaminate the data
+  pathVal.x = undefined;
+
   y_data = y_dimension.dimension_object.history.map(function(val) {
     pathVal.history_date = val.history_date;
     pathVal.y = val.value;
@@ -38,7 +41,24 @@ function generate_path_data(x_dimension, y_dimension) {
     return Date.parse(a.history_date) - Date.parse(b.history_date);
   });
 
-  /* pairs x and y values and creates data with no undefined values.
+  // Combine the data objects with same date
+  data = data.map( function(val) {
+    if (data.indexOf(val) === 0 || data.lastIndexOf(val) === data.length - 1) {
+      return val;
+    } else if (val.history_date === data[data.indexOf(val) + 1].history_date) {
+      var nextVal = data[data.indexOf(val) + 1];
+      if (val.x === undefined) {
+        val.x = nextVal.x
+      } else if (val.y === undefined) {
+        val.y = nextVal.y
+      }
+      return val;
+    } else if (val.history_date !== data[data.indexOf(val) - 1].history_date) {
+      return val;
+    }
+  });
+
+  /* Creates data with no undefined values.
 
      If there is no new value for x or y it takes previous value,
      in case of change takes the new value.
