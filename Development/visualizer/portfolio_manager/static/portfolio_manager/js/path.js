@@ -11,6 +11,12 @@ function update_path_visualization(project_x_dimension, project_y_dimension) {
 function generate_path_data(x_dimension, y_dimension) {
   console.log("x-dim: " + x_dimension.dimension_object.history);
   console.log("y-dim: " + y_dimension.dimension_object.history);
+  // Temporal variable to store one single pathData object
+  var pathVal = {
+    "history_date": "",
+    "x": undefined,
+    "y": undefined
+  };
 
   x_data = x_dimension.dimension_object.history.map(function(val) {
     pathVal.history_date = val.history_date;
@@ -35,7 +41,6 @@ function generate_path_data(x_dimension, y_dimension) {
   /* pairs x and y values and creates data with two dimensions.
      If there is no new value for x or y it takes previous value,
      in case of change takes the new value.
-
   */
   for (var i = 0; i < data.length; i++) {
     if('y' in data[i]) {
