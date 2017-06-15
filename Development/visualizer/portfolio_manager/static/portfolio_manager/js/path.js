@@ -38,11 +38,7 @@ function generate_path_data(x_dimension, y_dimension) {
       else {
         data[i].x = '';
       }
-    }
-  }
-
-  for (var i = 0; i < data.length; i++) {
-    if(! ('y' in data[i])) {
+    } else {
       if(i > 0) {
         data[i].y = data[i-1].y;
       }
