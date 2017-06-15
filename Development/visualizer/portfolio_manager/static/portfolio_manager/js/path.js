@@ -41,57 +41,50 @@ function generate_path_data(x_dimension, y_dimension) {
     return Date.parse(a.history_date) - Date.parse(b.history_date);
   });
 
-  // Combine the data objects with same date
-  data = data.map( function(val) {
-    var currentIndex = data.indexOf(val)
-    console.log(currentIndex)
-    if (currentIndex === 0 || data.lastIndexOf(val) === data.length - 1) {
-      return val;
-    } else if (val.history_date === data[currentIndex + 1].history_date) {
-      var nextVal = data[currentIndex + 1];
-      if (val.x === undefined) {
-        val.x = nextVal.x
-      } else if (val.y === undefined) {
-        val.y = nextVal.y
-      }
-      console.log("val: "+ val)
-      return val;
-    } else if (val.history_date !== data[currentIndex - 1].history_date) {
-      return val;
-    }
-  });
-
   /* Creates data with no undefined values.
 
      If there is no new value for x or y it takes previous value,
      in case of change takes the new value.
 
+     If two history_dates are the same, combines values to one element
+
      If both are defined leaves that date untouched.
   */
+  var finalData = [];
   for (var i = 0; i < data.length; i++) {
-    if (data[i].x === undefined) {
+    var current = data[i];
+    if (i !== data.length - 1) {
+      var next = data[i + 1];
+      if (current.history_date === next.history_date) {
+        if (next.y === undefined) {
+          data[ i + 1 ].y = current.y
+        } else if (next.x === undefined) {
+          data[ i + 1 ].x = current.x
+        }
+        return;
+      }
+    } else if (current.x === undefined) {
       if (i > 0) {
-        data[i].x = data[i-1].x;
+        current.x = data[i-1].x;
+      } else {
+        current.x = '';
       }
-      else {
-        data[i].x = '';
-      }
-    } else if (data[i].y === undefined) {
+    } else if (current.y === undefined) {
       if (i > 0) {
-        data[i].y = data[i-1].y;
-      }
-      else {
-        data[i].y = 0;
+        current.y = data[i-1].y;
+      } else {
+        current.y = 0;
       }
     }
+    finalData.push(current);
   }
 
   // If there is just one value it will be duplicated
-  if (data.length == 1) {
+  if (finalData.length == 1) {
     data[1] = data[0];
   }
 
-  return data;
+  return finalData;
 }
 
 function get_selected_project() {
