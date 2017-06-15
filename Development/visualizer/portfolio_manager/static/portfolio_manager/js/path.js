@@ -43,17 +43,20 @@ function generate_path_data(x_dimension, y_dimension) {
 
   // Combine the data objects with same date
   data = data.map( function(val) {
-    if (data.indexOf(val) === 0 || data.lastIndexOf(val) === data.length - 1) {
+    var currentIndex = data.indexOf(val)
+    console.log(currentIndex)
+    if (currentIndex === 0 || data.lastIndexOf(val) === data.length - 1) {
       return val;
-    } else if (val.history_date === data[data.indexOf(val) + 1].history_date) {
-      var nextVal = data[data.indexOf(val) + 1];
+    } else if (val.history_date === data[currentIndex + 1].history_date) {
+      var nextVal = data[currentIndex + 1];
       if (val.x === undefined) {
         val.x = nextVal.x
       } else if (val.y === undefined) {
         val.y = nextVal.y
       }
+      console.log("val: "+ val)
       return val;
-    } else if (val.history_date !== data[data.indexOf(val) - 1].history_date) {
+    } else if (val.history_date !== data[currentIndex - 1].history_date) {
       return val;
     }
   });
