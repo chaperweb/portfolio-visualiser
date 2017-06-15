@@ -9,8 +9,7 @@ function update_path_visualization(project_x_dimension, project_y_dimension) {
 }
 
 function generate_path_data(x_dimension, y_dimension) {
-  console.log("x-dim: " + x_dimension.dimension_object.history);
-  console.log("y-dim: " + y_dimension.dimension_object.history);
+  
   // Temporal variable to store one single pathData object
   var pathVal = {
     "history_date": "",
@@ -31,7 +30,6 @@ function generate_path_data(x_dimension, y_dimension) {
   });
 
   data = x_data.concat(y_data);
-  console.log("concat: " + data)
 
   // Stable sort by date, parsing the time to millisecods to ensure the correct result
   data = data.sort(function (a, b) {
