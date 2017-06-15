@@ -139,7 +139,6 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	 */
 	function radius(d) {
 		if (validLocation(d)) {
-			console.log("true")
 			return d.radius;
 		} else {
 			// console.log("false");

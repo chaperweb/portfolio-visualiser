@@ -22,17 +22,9 @@ function generate_path_data(x_dimension, y_dimension) {
 
   data = x_data.concat(y_data);
 
-  for (var i = 0; i < data.length; i++) {
-    data[i].idx = i;
-  }
-
-  // Stable sort
+  // Stable sort by date, parsing the time to millisecods to ensure the correct result
   data = data.sort(function (a, b) {
-    diff = Date.parse(a.history_date) - Date.parse(b.history_date);
-    if (diff != 0) {
-      return diff;
-    }
-    return a.idx - b.idx;
+    return Date.parse(a.history_date) - Date.parse(b.history_date);
   });
 
   for (var i = 0; i < data.length; i++) {
@@ -57,24 +49,12 @@ function generate_path_data(x_dimension, y_dimension) {
     }
   }
 
-  // Remove duplicates
-  data = data.filter(function(val, index, array) {
-    if (index < array.length - 1 && val.history_date == array[index+1].history_date) {
-      return false;
-    }
-    return true;
-  });
-
+  // If there is just one value it will be duplicated
   if (data.length == 1) {
     data[1] = data[0];
   }
 
-  return data.map(function(val) {
-    parts = val.history_date.split('T');
-    val.date = parts[0]
-    return val;
-  });
-
+  return data;
 }
 
 function get_selected_project() {
@@ -121,6 +101,9 @@ function generate_path_svg(pathData) {
   // Length of the axis
   var axisLengthX = width * 0.9,
       axisLengthY = height * 0.9;
+
+  // human readable timeformat from history_date
+  ddmmyy = d3.timeFormat("%d-%m-%Y");
 
   //  Parameters for axis transformations
   var pathTransformX = margin.left,
@@ -176,7 +159,7 @@ function generate_path_svg(pathData) {
      .call(d3.axisBottom(z).ticks(pathData.length-1))
      .selectAll("text")
      .data(pathData)
-     .text(function(d){return d.date});
+     .text(function(d) { return ddmmyy(d.history_date) });
 
   // Y-axis
   svg.append("g")
