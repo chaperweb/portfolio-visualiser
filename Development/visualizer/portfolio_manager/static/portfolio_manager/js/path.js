@@ -76,12 +76,13 @@ function generate_path_data(x_dimension, y_dimension) {
         current.y = 0;
       }
     }
+    console.log[finalData]
     finalData.push(current);
   }
 
   // If there is just one value it will be duplicated
   if (finalData.length == 1) {
-    data[1] = data[0];
+    finalData[1] = finalData[0];
   }
 
   return finalData;
