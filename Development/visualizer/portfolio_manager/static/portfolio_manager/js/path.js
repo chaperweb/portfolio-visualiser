@@ -9,7 +9,7 @@ function update_path_visualization(project_x_dimension, project_y_dimension) {
 }
 
 function generate_path_data(x_dimension, y_dimension) {
-  
+
   // Temporal variable to store one single pathData object
   var pathVal = {
     "history_date": "",
@@ -17,6 +17,7 @@ function generate_path_data(x_dimension, y_dimension) {
     "y": undefined
   };
 
+  // Collect useful values from selected data
   x_data = x_dimension.dimension_object.history.map(function(val) {
     pathVal.history_date = val.history_date;
     pathVal.x = val.string;
@@ -29,6 +30,7 @@ function generate_path_data(x_dimension, y_dimension) {
     return pathVal;
   });
 
+  // Combine data into one array
   data = x_data.concat(y_data);
 
   // Stable sort by date, parsing the time to millisecods to ensure the correct result
@@ -36,20 +38,23 @@ function generate_path_data(x_dimension, y_dimension) {
     return Date.parse(a.history_date) - Date.parse(b.history_date);
   });
 
-  /* pairs x and y values and creates data with two dimensions.
+  /* pairs x and y values and creates data with no undefined values.
+
      If there is no new value for x or y it takes previous value,
      in case of change takes the new value.
+
+     If both are defined leaves that date untouched.
   */
   for (var i = 0; i < data.length; i++) {
-    if('y' in data[i]) {
-      if(i > 0) {
+    if (data[i].x === undefined) {
+      if (i > 0) {
         data[i].x = data[i-1].x;
       }
       else {
         data[i].x = '';
       }
-    } else {
-      if(i > 0) {
+    } else if (data[i].y === undefined) {
+      if (i > 0) {
         data[i].y = data[i-1].y;
       }
       else {
