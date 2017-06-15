@@ -13,13 +13,15 @@ function generate_path_data(x_dimension, y_dimension) {
   console.log("y-dim: " + y_dimension.dimension_object.history);
 
   x_data = x_dimension.dimension_object.history.map(function(val) {
-    val.x = val.string;
-    return val;
+    pathVal.history_date = val.history_date;
+    pathVal.x = val.string;
+    return pathVal;
   });
 
   y_data = y_dimension.dimension_object.history.map(function(val) {
-    val.y = val.value;
-    return val;
+    pathVal.history_date = val.history_date;
+    pathVal.y = val.value;
+    return pathVal;
   });
 
   data = x_data.concat(y_data);
@@ -30,6 +32,11 @@ function generate_path_data(x_dimension, y_dimension) {
     return Date.parse(a.history_date) - Date.parse(b.history_date);
   });
 
+  /* pairs x and y values and creates data with two dimensions.
+     If there is no new value for x or y it takes previous value,
+     in case of change takes the new value.
+
+  */
   for (var i = 0; i < data.length; i++) {
     if('y' in data[i]) {
       if(i > 0) {
