@@ -9,6 +9,8 @@ function update_path_visualization(project_x_dimension, project_y_dimension) {
 }
 
 function generate_path_data(x_dimension, y_dimension) {
+  console.log("x-dim: " + x_dimension.dimension_object.history);
+  console.log("y-dim: " + y_dimension.dimension_object.history);
 
   x_data = x_dimension.dimension_object.history.map(function(val) {
     val.x = val.string;
@@ -21,6 +23,7 @@ function generate_path_data(x_dimension, y_dimension) {
   });
 
   data = x_data.concat(y_data);
+  console.log("concat: " + data)
 
   // Stable sort by date, parsing the time to millisecods to ensure the correct result
   data = data.sort(function (a, b) {
@@ -159,7 +162,7 @@ function generate_path_svg(pathData) {
      .call(d3.axisBottom(z).ticks(pathData.length-1))
      .selectAll("text")
      .data(pathData)
-     .text(function(d) { return ddmmyy(d.history_date) });
+     .text(function(d) { return ddmmyy(Date.parse(d.history_date)) });
 
   // Y-axis
   svg.append("g")
