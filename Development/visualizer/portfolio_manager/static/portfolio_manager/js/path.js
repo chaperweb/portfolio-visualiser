@@ -46,7 +46,9 @@ function generate_path_data(x_dimension, y_dimension) {
      If there is no new value for x or y it takes previous value,
      in case of change takes the new value.
 
-     If two history_dates are the same, combines values to one element
+     If two history_dates are the same, combines values to one element.
+     The current and next values are combined to next element, and current element
+     is ignored in finalData
 
      If both are defined leaves that date untouched.
   */
