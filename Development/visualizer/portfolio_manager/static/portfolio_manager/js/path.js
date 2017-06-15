@@ -76,7 +76,7 @@ function generate_path_data(x_dimension, y_dimension) {
         current.y = 0;
       }
     }
-    console.log[finalData]
+    console.log(finalData)
     finalData.push(current);
   }
 
