@@ -15,6 +15,7 @@ from django.utils.formats import localize_input, number_format
 from pyvirtualdisplay import Display
 from pyvirtualdisplay.xvfb import XvfbDisplay
 from easyprocess import EasyProcessCheckInstalledError
+import time
 
 USE_XVFB = True
 
@@ -111,6 +112,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
     # Actual tests
 
     def test_add_organization(self):
+        """Add organization from admin page"""
         self.open(reverse('admin_tools'))
 
         add_organization_name = 'Örganizaatio'
@@ -153,12 +155,10 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals('ProjectManager', template_dimensions[2].name)
 
     def test_add_organization_add_project(self):
-        """ Test adding new organization and new project under that organization"""
+        """Add new organization and new project under that organization"""
 
         #   Add person that will act as project manager later
-        project_project_manager = Person(first_name="Project", last_name="Project_Manager")
-        project_project_manager.save()
-        self.assertIsInstance(project_project_manager, Person)
+        project_project_manager = Person.objects.get(pk=2)
 
         self.open(reverse('admin_tools'))
 
@@ -167,7 +167,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.find('org-form').submit()
 
         # Wait for modal to open
-        self.assert_that_css_appears('#conf-modal-body > h3')
+        self.assert_that_css_appears('#conf-modal-body')
 
         self.open(reverse('admin_tools')) # Reload organizations in "Add project" modal
 
@@ -201,16 +201,18 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # TODO: Add search for panel with owningorganization
         # self.assertEquals(organization_name, self.find('projectparent').text)
         # end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
-        self.assertEquals(project_end_date, self.find('EndDate').text)
+        # self.assertEquals(project_end_date, self.find('EndDate').text)
         self.assertEquals(str(project_project_manager), self.find('ProjectManager').text)
         budget = number_format(project_budget, decimal_pos=2)
         self.assertEquals(budget, self.find('SizeBudget').text)
 
     def test_add_project_from_admin_tools(self):
+        """Add project from admin tools"""
         self.open(reverse('admin_tools'))
         self._test_add_project()
 
     def test_add_project_from_homepage(self):
+        """Add project from homepage"""
         self.open(reverse('homepage'))
         self.find('add-project-btn').click()
 
@@ -221,7 +223,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def _test_add_project(self):
         project_name = "FooBar"
-        organization = Organization.objects.get(pk='Great Organization')
+        organization = Organization.objects.get(pk='org1')
 
         # Fill in details of new project and click "Continue"
         self.find('id_name').send_keys(project_name)
@@ -236,16 +238,12 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(organization.pk, self.find('id_add_project_form-organization').get_attribute('value'))
 
         # Fill in the detail of new project and submit
-
-        budget_field, end_date_field, project_manager_field, *foo = organization.templates.all()[0].dimensions.all()
+        phase_field, budget_field, *foo = organization.templates.all()[0].dimensions.all()
+        project_phase = "Adding-Project"
         project_budget = 135151.0
-        project_end_date = datetime(2011, 1, 1)
-        project_manager = Person.objects.get(first_name="Project", last_name="Project_Manager")
 
+        self.find('id_{}_form-value'.format(phase_field.id)).send_keys(project_phase)
         self.find('id_{}_form-value'.format(budget_field.id)).send_keys(localize_input(project_budget))
-        self.find('id_{}_form-value').format(end_date_field.id).send_keys(project_end_date.strftime("%d/%m/%Y"))
-        project_manager_input = self.find('id_{}_form-value'.format(project_manager_field.id))
-        Select(project_manager_input).select_by_value(str(project_manager.id))
         self.find('add-project-form').submit()
 
         # Wait for "Show project" to load
@@ -255,25 +253,21 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(project_name, self.find('project-name').text)
         # TODO: Add search for panel with owningorganization
         # self.assertEquals(organization_name, self.find('projectparent').text)
-        # end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
-        self.assertEquals(project_end_date, self.find('EndDate').text)
-        self.assertEquals(str(project_manager), self.find('ProjectManager').text)
+        self.assertEquals(project_phase, self.find('Phase').text)
         budget = number_format(project_budget, decimal_pos=2)
-        self.assertEquals(budget, self.find('SizeBudget').text)
+        self.assertEquals(budget, self.find('Budget').text)
 
         # Check that correct information is loaded to db
         project = Project.objects.get(name=project_name)
         self.assertIsInstance(project, Project)
         self.assertEquals(organization, project.parent)
-        budget_dim, end_date_dim, project_manager_dim, *leftovers = project.dimensions.all()
+        phase_dim, budget_dim, *leftovers = project.dimensions.all()
         self.assertFalse(leftovers)
+        self.assertIsInstance(phase_dim.dimension_object, TextDimension)
         self.assertIsInstance(budget_dim.dimension_object, DecimalDimension)
-        self.assertIsInstance(end_date_dim.dimension_object, DateDimension)
-        self.assertIsInstance(project_manager_dim.dimension_object, AssociatedPersonDimension)
 
         self.assertEquals(Decimal(project_budget), budget_dim.dimension_object.value)
-        self.assertEquals(project_end_date, end_date_dim.dimension_object.value)
-        self.assertEquals(project_manager, project_manager_dim.dimension_object.value)
+        self.assertEquals(project_phase, phase_dim.dimension_object.value)
 
     def _test_modify_project_dimension(self, dimension_name, new_value_field_id, modal_id, form_id,
                                        new_value, cmp_value):
@@ -313,21 +307,19 @@ class BrowserTestCase(StaticLiveServerTestCase):
                                             "1/9/2019", result)
 
     def test_modify_project_associated_person_dimension(self):
-
-        self.open(reverse('show_project', args=(1,)))
+        self.open(reverse('show_project', args=[1,]))
 
         # Click "Modify" button of ProjectManager dimension
-        self.find_css('button[data-field="ProjectManager"]').click()
-
+        self.find('ProjectManager-modifybtn').click()
         # Wait for modal to open up
-        self.assert_that_element_appears('person')
+        self.assert_that_element_appears('modify-associatedperson-form')
 
         # Select another person from dropdown and submit the form
-        Select(self.find('person')).select_by_value('2')
-        self.find_css('#modify-per-form button[type="submit"]').click()
+        Select(self.find('associatedperson-value')).select_by_value('2')
+        self.find_css('#modify-associatedperson-form button[type="submit"]').click()
 
         #Wait for modal to close
-        self.assert_that_element_disappears('modify-per-modal')
+        self.assert_that_element_disappears('modify-associatedperson-modal')
 
         # Check that dimension value is updated
         self.assertEquals(str(Person.objects.get(id=2)), self.find('ProjectManager').text)

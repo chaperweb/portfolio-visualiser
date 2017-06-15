@@ -89,7 +89,7 @@ Projects | {{project.name}}
             </div>
             <!--  Modify button  -->
             <div class="col-md-1 pull-right">
-              <button class="btn btn-xs btn-default modify-button"
+              <button id="{{dim_name}}-modifybtn" class="btn btn-xs btn-default modify-button"
                   data-type="{{ dim_type | get_type }}"
                   data-field="{{ dim_obj.id }}"
                   data-valuetype="{{ dim_type | get_type | get_valuetype }}"
