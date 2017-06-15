@@ -60,11 +60,10 @@ function generate_path_data(x_dimension, y_dimension) {
     if (current.x !== undefined && current.y !== undefined) {
       finalData.push(current)
     } else if (i !== data.length - 1 && current.history_date === data[ i + 1 ].history_date) {
-        if (data[ i + 1 ].y === undefined) {
-          data[ i + 1 ].y = current.y
-        } else if (data[ i + 1 ].x === undefined) {
-          data[ i + 1 ].x = current.x
-        }
+      if (data[ i + 1 ].y === undefined) {
+        data[ i + 1 ].y = current.y
+      } else if (data[ i + 1 ].x === undefined) {
+        data[ i + 1 ].x = current.x
       }
     } else if (current.x === undefined) {
       if (i > 0) {
