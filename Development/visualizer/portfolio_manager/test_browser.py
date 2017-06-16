@@ -59,7 +59,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # and reading decimals/floats.
         profile.set_preference("intl.accept_languages", get_language())
         profile.set_preference("general.useragent.locale", get_language())
-        self.selenium = Firefox(firefox_profile=profile)
+        self.selenium = Firefox(firefox_profile=profile, executable_path='node_modules/geckodriver/geckodriver')
         self.selenium.maximize_window()
 
     @classmethod

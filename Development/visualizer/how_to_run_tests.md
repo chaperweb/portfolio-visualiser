@@ -87,6 +87,17 @@ Remember that Kitematic can be used to manage images and containers if they star
  
 If you can run the tests OK in your local machine without Docker, it is the easiest way for developing and debugging tests, especially because you can easily single out tests without running them all.
 
+You will need to install some node packages to be able to use selenium, required for testing javascript behaviour in live site:
+
+    npm install --only=dev
+
+To test that selenium is properly available go to python command line (in virtualenv) and try:
+ 
+    from selenium.webdriver.firefox.webdriver import WebDriver
+    WebDriver(executable_path='node_modules/geckodriver/geckodriver')
+
+It should pop up a firefox window. 
+
 Command to run all of the tests, assuming that virtualenv is on:
   
     python manage.py test portfolio_manager --settings visualizer.test_settings
@@ -111,6 +122,7 @@ If Jenkins tests fail, anyone can take their shot at fixing them, don't let them
 ## FAQ and problems
 
 If there are problems and/or solutions in setting up your testing getting the tests running, please add them here. 
+
 
 
 
