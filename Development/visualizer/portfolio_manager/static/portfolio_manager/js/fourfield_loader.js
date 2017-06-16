@@ -60,5 +60,5 @@ $(function() {
   $('#end-date-selector').on('change', change_if_all_selected);
   $('#slider-value-selector').on('change', change_if_all_selected);
 
-  $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'mm/dd/yy'});
+  $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd/mm/yy'});
 });

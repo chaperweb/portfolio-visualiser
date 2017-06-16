@@ -120,15 +120,15 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 										.domain(uniqueOrganizations)
 										.range(fourFieldColors);
 
-	mmddyy = d3.timeFormat("%m/%d/%Y");
+	ddmmyy = d3.timeFormat("%d/%m/%Y");
 
 	if (isNaN(startDate)) {
 		startDate = startDefault;
-		$('#start-date-selector').val(mmddyy(startDate*1000));
+		$('#start-date-selector').val(ddmmyy(startDate*1000));
 	}
 	if(isNaN(endDate)) {
 		endDate = endDefault;
-		$('#end-date-selector').val(mmddyy(endDate*1000));
+		$('#end-date-selector').val(ddmmyy(endDate*1000));
 	}
 
 // console.log(projects);
