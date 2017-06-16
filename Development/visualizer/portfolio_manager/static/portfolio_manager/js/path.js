@@ -10,24 +10,28 @@ function update_path_visualization(project_x_dimension, project_y_dimension) {
 
 function generate_path_data(x_dimension, y_dimension) {
 
-  // Temporal variable to store one single pathData object
-  var pathVal = {
-    "history_date": "",
-    "x": undefined,
-    "y": undefined
-  };
-
   // Collect useful values from selected data
   x_data = x_dimension.dimension_object.history.map(function(val) {
+    // Temporal variable to store one single pathData object
+    var pathVal = {
+      "history_date": "",
+      "x": undefined,
+      "y": undefined
+    };
+
     pathVal.history_date = val.history_date;
     pathVal.x = val.string;
     return pathVal;
   });
 
-  // Empty the pathVal x value so the last one will not contaminate the data
-  pathVal.x = undefined;
-
   y_data = y_dimension.dimension_object.history.map(function(val) {
+    // Temporal variable to store one single pathData object
+    var pathVal = {
+      "history_date": "",
+      "x": undefined,
+      "y": undefined
+    };
+
     pathVal.history_date = val.history_date;
     pathVal.y = val.value;
     return pathVal;
@@ -55,7 +59,7 @@ function generate_path_data(x_dimension, y_dimension) {
   var finalData = [];
   console.log(data)
   for (var i = 0; i < data.length; i++) {
-    console.log[data[i]]
+    console.log(data[i]);
     var current = data[i];
     if (current.x !== undefined && current.y !== undefined) {
       finalData.push(current)
