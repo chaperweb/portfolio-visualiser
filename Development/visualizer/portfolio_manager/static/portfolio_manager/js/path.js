@@ -1,5 +1,6 @@
 var db_json;
 
+// Updates the visualization in case of change in the dropdown
 function update_path_visualization(project_x_dimension, project_y_dimension) {
 
   $('#visualization').html('');
@@ -8,6 +9,7 @@ function update_path_visualization(project_x_dimension, project_y_dimension) {
                                        jQuery.extend(true, {}, project_y_dimension)));
 }
 
+// Generates the data for the visualization
 function generate_path_data(x_dimension, y_dimension) {
 
   // Collect useful values from selected data
@@ -54,12 +56,11 @@ function generate_path_data(x_dimension, y_dimension) {
      The current and next values are combined to next element, and current element
      is ignored in finalData
 
-     If both are defined leaves that date untouched.
+     If both are defined leaves that date untouched, occurs when the current element
+     is combined one from the last loop.
   */
   var finalData = [];
-  console.log(data)
   for (var i = 0; i < data.length; i++) {
-    console.log(data[i]);
     var current = data[i];
     if (current.x !== undefined && current.y !== undefined) {
       finalData.push(current)
@@ -84,7 +85,6 @@ function generate_path_data(x_dimension, y_dimension) {
       }
       finalData.push(current)
     }
-    console.log(finalData)
   };
 
   // If there is just one value it will be duplicated
@@ -124,7 +124,6 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 
 // Generate the svg container for the visualization
 function generate_path_svg(pathData) {
-  console.log(pathData);
   // Dimension of the svg box
   // Left margin is hardcoded to ensure enough room for y-axis values
   var height =  Math.max(600, $(window).height() * 0.7),
