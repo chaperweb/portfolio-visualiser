@@ -53,10 +53,10 @@ function generate_path_data(x_dimension, y_dimension) {
      If both are defined leaves that date untouched.
   */
   var finalData = [];
-  console.log(finalData)
+  console.log(data)
   for (var i = 0; i < data.length; i++) {
+    console.log[data[i]]
     var current = data[i];
-
     if (current.x !== undefined && current.y !== undefined) {
       finalData.push(current)
     } else if (i !== data.length - 1 && current.history_date === data[ i + 1 ].history_date) {
