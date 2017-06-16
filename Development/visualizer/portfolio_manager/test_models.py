@@ -113,7 +113,7 @@ class CascadeDeleteTestCase(TestCase):
 
     def test_delete_organization(self):
 
-        data = [[u'id', u'__history_date', u'Name', u'SizeBudget', u'OwningOrganization'],
+        data = [[u'id', u'__history_date', u'Name', u'Budget', u'OwningOrganization'],
                 ['', '', 'TEXT', 'NUM', 'AORG'],
                 [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4', 'org1'],
                 [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],

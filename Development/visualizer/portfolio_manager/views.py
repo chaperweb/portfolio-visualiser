@@ -87,7 +87,7 @@ def create_org(request):
         # Budget
         project_template_data_budget = {
             'template': template,
-            'name': 'SizeBudget',
+            'name': 'Budget',
             'content_type': ct_objects.get_for_model(DecimalDimension),
         }
         pt_dim = ProjectTemplateDimension(**project_template_data_budget)
@@ -242,6 +242,8 @@ def project_edit(request, project_id, field_type):
         elif field_type == "associatedprojects":
             project = Project.objects.get(pk=value)
             dimension.value.add(project)
+        elif field_type == "date":
+            dimension.update_date(value)
         else:
             dimension.value = value
         dimension.save()
