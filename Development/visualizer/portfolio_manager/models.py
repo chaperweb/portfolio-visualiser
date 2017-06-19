@@ -30,7 +30,10 @@ class BaseDimensionHistory(models.Model):
         abstract = True
 
     def string(self):
-        return str(self.value)
+        try:
+            return self.value.strftime("%d/%m/%Y %H:%M")
+        except:
+            return str(self.value)
 
 
 class BaseHistoricalMilestone(models.Model):
@@ -195,7 +198,7 @@ class DateDimension (Dimension):
 
 
     def __str__(self):
-        return str(self.value)
+        return self.value.strftime("%d/%m/%Y %H:%M")
 
 
 class AssociatedOrganizationDimension (Dimension):
