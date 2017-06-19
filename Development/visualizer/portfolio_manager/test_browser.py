@@ -210,7 +210,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(project_name, self.find('project-name').text)
         # TODO: Add search for panel with owningorganization
         # self.assertEquals(organization_name, self.find('projectparent').text)
-        end_date = project_end_date.isoformat(sep=' ', timespec='seconds')
+        end_date = project_end_date.strftime("%d/%m/%Y %H:%M")
         self.assertEquals(end_date, self.find('EndDate').text)
         self.assertEquals(str(project_project_manager), self.find('ProjectManager').text)
         budget = number_format(project_budget, decimal_pos=2)
@@ -316,7 +316,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def test_modify_project_date_dimension(self):
         """Modifying End date from show_project"""
-        result = "2019-09-01 00:00:00+00:00"
+        result = "01/09/2019 00:00"
         self._test_modify_project_dimension('EndDate', 'date', "1/9/2019", result)
 
     def test_modify_project_associated_person_dimension(self):
