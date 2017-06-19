@@ -34,7 +34,14 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 
 	for (j = 0; j < json.length; j++) {
 		var size = json[j].dimensions.length;
-		//inProgress is object which will contain the data from 1 project.
+		/*inProgress is object which will contain the data from 1 project.
+			name, organization,
+			x-axis values from input data, x-axis values from milestones
+			radius values
+			y-axis values from input data, y-axis values from milestones
+			first date of this project, last date of this project
+			dates are defaulted to infinity so the math.min/max can operate them as numbers
+		*/
 		var inProgress = {
 			"name": json[j].name,
 			"organization": "",
@@ -136,7 +143,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		$('#end-date-selector').val(ddmmyy(endDate*1000));
 	}
 
-console.log(projects);
+//console.log(projects);
 
 /***********************/
 /* functions live here */
