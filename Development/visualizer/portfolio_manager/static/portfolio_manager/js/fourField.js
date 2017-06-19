@@ -386,7 +386,8 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 
 	// Slider handle
 	var handle = timeAxis.insert("circle", ".track-overlay")
-						  .attr("class", "handle");
+						  .attr("class", "handle")
+							.attr("r", 20);
 
 	  // The y and x axis are moved in to place
 	  svg.append("g")

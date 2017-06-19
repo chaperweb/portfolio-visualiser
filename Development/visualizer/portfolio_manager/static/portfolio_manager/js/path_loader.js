@@ -1,5 +1,28 @@
 $(function() {
 
+  function change_if_all_selected() {
+    var xIsChosen = $('#x-selector').val() != '---',
+        yIsChosen = $('#y-selector').val() != '---',
+        projectIsChosen = $('#r-selector').val() != '---';
+
+    if (xIsChosen && yIsChosen && projectIsChosen) {
+      dimension_selector_change();
+    }
+    return;
+  }
+
+  function dimension_selector_change() {
+    x_dimension_id = $('#x-selector').find("option:selected").val();
+    y_dimension_id = $('#y-selector').find("option:selected").val();
+
+    selected_project = get_selected_project();
+
+    update_path_visualization(
+      get_dimension(selected_project, x_dimension_id),
+      get_dimension(selected_project, y_dimension_id)
+    );
+  }
+
   $.ajax({
     url: "json"
   }).done(function(data) {
@@ -10,7 +33,7 @@ $(function() {
     }
   });
 
-  $('#project-selector').on('change', function(){
+  $('#project-selector').on('change', function() {
     project_id = $(this).find("option:selected").val();
 
     preserved_x_name = $('#x-selector').find("option:selected").text();
@@ -18,6 +41,7 @@ $(function() {
 
     $('#x-selector').html('<option>---</option>');
     $('#y-selector').html('<option>---</option>');
+
     for (var i = 0, len = db_json.length; i < len; i++) {
       if(db_json[i].id == project_id) {
         project = db_json[i];
@@ -37,10 +61,10 @@ $(function() {
         break;
       }
     }
-    dimension_selector_change();
+    change_if_all_selected();
   });
 
-  $('#x-selector').on('change', dimension_selector_change);
-  $('#y-selector').on('change', dimension_selector_change);
+  $('#x-selector').on('change', change_if_all_selected);
+  $('#y-selector').on('change', change_if_all_selected);
 
 });
