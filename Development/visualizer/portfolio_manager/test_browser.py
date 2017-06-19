@@ -1,7 +1,9 @@
 # coding=utf-8
+import time
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils.translation import get_language
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.webdriver import WebDriver as Firefox
 from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -24,7 +26,7 @@ except EasyProcessCheckInstalledError:
     USE_XVFB = False
 
 
-WAIT = 10
+WAIT = 5
 
 class BrowserTestCase(StaticLiveServerTestCase):
     """ These tests take longer to run than other tests because they pop up a browser window, a headless one in
@@ -45,6 +47,8 @@ class BrowserTestCase(StaticLiveServerTestCase):
             cls.vdisplay = Display(visible=0, size=(1024, 768))
             cls.vdisplay.start()
 
+    def setUp(self):
+        StaticLiveServerTestCase.setUp(self)
         profile = FirefoxProfile()
         # Browser itself attempts to validate form fields before they are sent to django.
         # Fields where input type="Number" accept "100.0" when locale is "en" and "100,0" when locale is "fi", and when
@@ -55,26 +59,29 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # and reading decimals/floats.
         profile.set_preference("intl.accept_languages", get_language())
         profile.set_preference("general.useragent.locale", get_language())
-        cls.selenium = Firefox(firefox_profile=profile, executable_path='node_modules/geckodriver/geckodriver')
-        cls.selenium.maximize_window()
+        self.selenium = Firefox(firefox_profile=profile, executable_path='node_modules/geckodriver/geckodriver')
+        self.selenium.maximize_window()
 
     @classmethod
     def tearDownClass(cls):
-        cls.selenium.quit()
         if USE_XVFB:
             cls.vdisplay.stop()
         StaticLiveServerTestCase.tearDownClass()
 
+    def tearDown(self):
+        self.selenium.quit()
+        StaticLiveServerTestCase.tearDown(self)
+
     # Helper methods for this test case:
 
     def open(self, url):
-        BrowserTestCase.selenium.get("%s%s" % (self.live_server_url, url))
+        self.selenium.get("%s%s" % (self.live_server_url, url))
 
     def find(self, element_id):
-        return BrowserTestCase.selenium.find_element_by_id(element_id)
+        return self.selenium.find_element_by_id(element_id)
 
     def find_css(self, css_selector):
-        elems = BrowserTestCase.selenium.find_elements_by_css_selector(css_selector)
+        elems = self.selenium.find_elements_by_css_selector(css_selector)
         found = len(elems)
         if found == 1:
             return elems[0]
@@ -86,7 +93,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         def found_it(foo):
             return self.find_css(css_selector)
         try:
-            WebDriverWait(BrowserTestCase.selenium, WAIT).until(found_it)
+            WebDriverWait(self.selenium, WAIT).until(found_it)
             found = True
         except TimeoutException:
             found = False
@@ -94,7 +101,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def assert_that_element_appears(self, element_id):
         try:
-            WebDriverWait(BrowserTestCase.selenium, WAIT).until(EC.visibility_of_element_located((By.ID, element_id)))
+            WebDriverWait(self.selenium, WAIT).until(EC.visibility_of_element_located((By.ID, element_id)))
             found = True
         except TimeoutException:
             found = False
@@ -102,7 +109,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def assert_that_element_disappears(self, element_id):
         try:
-            WebDriverWait(BrowserTestCase.selenium, WAIT).until(EC.invisibility_of_element_located((By.ID, element_id)))
+            WebDriverWait(self.selenium, WAIT).until(EC.invisibility_of_element_located((By.ID, element_id)))
             gone = True
         except TimeoutException:
             gone = False
@@ -162,15 +169,16 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.open(reverse('admin_tools'))
 
         organization_name = 'Great organization'
-        self.find('orgName').send_keys(organization_name)
+        elem = self.find('orgName')
+        elem.send_keys(organization_name)
         self.find('org-form').submit()
 
         # Wait for modal to open
         self.assert_that_css_appears('#conf-modal-body')
 
         self.open(reverse('admin_tools')) # Reload organizations in "Add project" modal
-
         # Fill in "Add project" form on Admin tools page and submit it
+        time.sleep(1)
         project_name = "Great project"
         self.find('id_name').send_keys(project_name)
         Select(self.find('id_organization')).select_by_value(organization_name)
@@ -178,6 +186,8 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Wait for add project page to open up
         self.assert_that_element_appears('id_add_project_form-name')
+        # Wait for javascript to populate fields
+        time.sleep(1)
 
         organization = Organization.objects.get(pk=organization_name)
 
@@ -279,7 +289,11 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assert_that_element_appears('modify-{}-modal'.format(field_type))
 
         # Update form value and submit
-        self.find('{}-value'.format(field_type)).send_keys(new_value)
+
+        elem = self.find('{}-value'.format(field_type))
+        time.sleep(1)
+        elem.send_keys(new_value)
+        elem.send_keys(Keys.RETURN)
         self.find_css('#modify-{}-form button[type="submit"]'.format(field_type)).click()
 
         # Wait for modal to close
@@ -289,6 +303,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # Refresh the page
         self.open(reverse('show_project', args=(1,)))
         # Check that dimension value was updated
+        #if cmp_value != self.find(dimension_name).text:
         self.assertEquals(cmp_value, self.find(dimension_name).text)
 
     def test_modify_project_text_dimension(self):
