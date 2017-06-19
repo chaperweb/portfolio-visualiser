@@ -2,7 +2,6 @@
 import time, datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
-from django.utils.timezone import get_current_timezone, get_default_timezone, utc
 from django.utils.translation import get_language
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.webdriver import WebDriver as Firefox

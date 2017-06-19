@@ -3,12 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.timezone import get_current_timezone, is_naive, make_aware
 from simple_history.models import HistoricalRecords
-from datetime import datetime
-import pytz
-from simple_history import register
 from dateutil.parser import parse
 from django.db.models.signals import pre_delete
 

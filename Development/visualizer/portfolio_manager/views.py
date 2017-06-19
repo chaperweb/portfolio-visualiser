@@ -4,12 +4,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
 from itertools import groupby
 
-from django.contrib.contenttypes.models import ContentType
 import django.forms
-from django.http import JsonResponse, \
-                        HttpResponse, \
-                        QueryDict
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 
 from portfolio_manager.models import *
