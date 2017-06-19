@@ -121,11 +121,11 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.find('org-form').submit()
 
         # Wait for notification that reports success
-        self.assert_that_css_appears('#conf-modal-body > h3')
+        self.assert_that_css_appears('#conf-modal-body')
 
         # Check the notification message
         msg = 'Organization created: {}'.format(add_organization_name)
-        self.assertTrue(msg in self.selenium.page_source)
+        self.assertEqual(self.find_css("#conf-modal-body h4").text, msg)
 
         # Check that organization was property added to db
         organization = Organization.objects.get(pk=add_organization_name)
@@ -327,133 +327,125 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Check that dimension value is updated
         self.assertEquals(str(Person.objects.get(id=2)), self.find('ProjectManager').text)
-    #
-    # def test_modify_project_associated_persons_dimension_remove(self):
-    #
-    #     self.open(reverse('show_project', args=(1,)))
-    #
-    #     # Click "Modify" of Members dimension
-    #     self.find_css('button[data-field="Members"].multiple-modify-button').click()
-    #
-    #     # Wait for modal to open up
-    #     self.assert_that_element_appears('add-person-to-project-form')
-    #
-    #     # Click to remove the only associated person
-    #     self.find_css('button.remove-multiple-persons[data-id="1"]').click()
-    #
-    #     # Wait for person to disappear from the modal
-    #     self.assert_that_element_disappears('#multiple-person-1')
-    #
-    #     # Close modal
-    #     self.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
-    #
-    #     # Wait for modal to close
-    #     self.assert_that_element_disappears('multiple-items-modal')
-    #
-    #     # Click "Click to see to all"
-    #     self.find_css('#Members button').click()
-    #
-    #     # Wait for modal to open up
-    #     self.assert_that_element_appears('multiple-items-modal')
-    #
-    #     # Modal should not list any members
-    #     self.assertEquals(0, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
-    #
-    # def test_modify_project_associated_persons_dimension_add(self):
-    #
-    #     self.open(reverse('show_project', args=(1,)))
-    #
-    #     # Click "Modify" of Members dimension
-    #     self.find_css('button[data-field="Members"].multiple-modify-button').click()
-    #
-    #     # Wait for modal to open up
-    #     self.assert_that_element_appears('add-person-to-project-form')
-    #
-    #     # Select person to add and click '+'
-    #     Select(self.find('add-person-to-project')).select_by_value('2')
-    #     self.find_css('#add-person-to-project-form button.btn-orange').click()
-    #
-    #
-    #     # Wait for alert
-    #     WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
-    #
-    #     alert = self.selenium.switch_to_alert()
-    #     self.assertTrue('Successfully' in alert.text)
-    #     alert.accept()
-    #
-    #     # Wait for modal to close
-    #     self.assert_that_element_disappears('multiple-items-modal')
-    #
-    #     # Click "Click to see to all"
-    #     self.find_css('#Members button').click()
-    #
-    #     # Wait for modal to open up
-    #     self.assert_that_element_appears('multiple-items-modal')
-    #
-    #     # Modal should not list any members
-    #     self.assertEquals(2, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
-    #
-    # def test_modify_project_associated_projects_dimension_remove(self):
-    #
-    #     self.open(reverse('show_project', args=(1,)))
-    #
-    #     # Click "Modify" of Dependencies dimension
-    #     self.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
-    #
-    #     # Wait for modal to open up
-    #     self.assert_that_element_appears('add-project-to-project-form')
-    #
-    #     # Click to remove the only associated project
-    #     self.find_css('button.remove-multiple-projects[data-id="1"]').click()
-    #
-    #     # Wait for project to disappear from the modal
-    #     self.assert_that_element_disappears('#multiple-project-1')
-    #
-    #     # Close modal
-    #     self.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
-    #
-    #     # Wait for modal to close
-    #     self.assert_that_element_disappears('multiple-items-modal')
-    #
-    #     # Click "Click to see to all"
-    #     self.find_css('#Dependencies button').click()
-    #
-    #     # Wait for modal to open up
-    #     self.assert_that_element_appears('multiple-items-modal')
-    #
-    #     # Modal should not list any members
-    #     self.assertEquals(0, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
-    #
-    # def test_modify_project_associated_projects_dimension_add(self):
-    #
-    #     self.open(reverse('show_project', args=(1,)))
-    #
-    #     # Click "Modify" of Dependencies dimension
-    #     self.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
-    #
-    #     # Wait for modal to open up
-    #     self.assert_that_element_appears('add-project-to-project-form')
-    #
-    #     # Select project to add and click '+'
-    #     Select(self.find('add-project-to-project')).select_by_value('2')
-    #     self.find_css('#add-project-to-project-form button.btn-orange').click()
-    #
-    #
-    #     # Wait for alert
-    #     WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
-    #
-    #     alert = self.selenium.switch_to_alert()
-    #     self.assertTrue('Successfully' in alert.text)
-    #     alert.accept()
-    #
-    #     # Wait for modal to close
-    #     self.assert_that_element_disappears('multiple-items-modal')
-    #
-    #     # Click "Click to see to all"
-    #     self.find_css('#Dependencies button').click()
-    #
-    #     # Wait for modal to open up
-    #     self.assert_that_element_appears('multiple-items-modal')
-    #
-    #     # Modal should not list any members
-    #     self.assertEquals(2, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
+
+    def test_modify_project_associated_persons_dimension_remove(self):
+
+        self.open(reverse('show_project', args=(1,)))
+
+        # Click "Modify" of Members dimension
+        self.find('Members-modifybtn').click()
+
+        # Wait for modal to open up
+        self.assert_that_element_appears('associatedpersons-value')
+        self.assert_that_element_appears('modify-associatedpersons-modal')
+
+        # Click to remove the only associated person
+        self.find_css('#multiple-associatedpersons-1 button[type="submit"]').click()
+
+        # Refresh page
+        self.open(reverse('show_project', args=(1,)))
+
+        p = Person.objects.get(pk=1)
+        persons = AssociatedPersonsDimension.objects.get(pk=1).value
+        self.assertFalse(p in persons)
+
+
+    def test_modify_project_associated_persons_dimension_add(self):
+
+        self.open(reverse('show_project', args=(1,)))
+
+        # Click "Modify" of Members dimension
+        self.find('Members-modifybtn').click()
+
+        # Wait for modal to open up
+        self.assert_that_element_appears('associatedpersons-value')
+        self.assert_that_element_appears('modify-associatedpersons-modal')
+
+        # Select person to add and click '+'
+        Select(self.find('associatedpersons-value')).select_by_value('2')
+        self.find_css('#add-person-to-project-form button[]').click()
+
+
+        # Wait for alert
+        WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
+
+        alert = self.selenium.switch_to_alert()
+        self.assertTrue('Successfully' in alert.text)
+        alert.accept()
+
+        # Wait for modal to close
+        self.assert_that_element_disappears('multiple-items-modal')
+
+        # Click "Click to see to all"
+        self.find_css('#Members button').click()
+
+        # Wait for modal to open up
+        self.assert_that_element_appears('multiple-items-modal')
+
+        # Modal should not list any members
+        self.assertEquals(2, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
+
+    def test_modify_project_associated_projects_dimension_remove(self):
+
+        self.open(reverse('show_project', args=(1,)))
+
+        # Click "Modify" of Dependencies dimension
+        self.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
+
+        # Wait for modal to open up
+        self.assert_that_element_appears('add-project-to-project-form')
+
+        # Click to remove the only associated project
+        self.find_css('button.remove-multiple-projects[data-id="1"]').click()
+
+        # Wait for project to disappear from the modal
+        self.assert_that_element_disappears('#multiple-project-1')
+
+        # Close modal
+        self.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
+
+        # Wait for modal to close
+        self.assert_that_element_disappears('multiple-items-modal')
+
+        # Click "Click to see to all"
+        self.find_css('#Dependencies button').click()
+
+        # Wait for modal to open up
+        self.assert_that_element_appears('multiple-items-modal')
+
+        # Modal should not list any members
+        self.assertEquals(0, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
+
+    def test_modify_project_associated_projects_dimension_add(self):
+
+        self.open(reverse('show_project', args=(1,)))
+
+        # Click "Modify" of Dependencies dimension
+        self.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
+
+        # Wait for modal to open up
+        self.assert_that_element_appears('add-project-to-project-form')
+
+        # Select project to add and click '+'
+        Select(self.find('add-project-to-project')).select_by_value('2')
+        self.find_css('#add-project-to-project-form button.btn-orange').click()
+
+    
+        # Wait for alert
+        WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
+
+        alert = self.selenium.switch_to_alert()
+        self.assertTrue('Successfully' in alert.text)
+        alert.accept()
+
+        # Wait for modal to close
+        self.assert_that_element_disappears('multiple-items-modal')
+
+        # Click "Click to see to all"
+        self.find_css('#Dependencies button').click()
+
+        # Wait for modal to open up
+        self.assert_that_element_appears('multiple-items-modal')
+
+        # Modal should not list any members
+        self.assertEquals(2, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
