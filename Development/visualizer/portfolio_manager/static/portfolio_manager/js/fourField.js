@@ -62,9 +62,8 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 					var planned = historyList[h].value;
 					// parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
 					var parsedDate = new Date(date).getTime() / 1000
-					console.log(parseDate, inProgress.firstDate, inProgress.lastDate)
-					inProgress.firstDate = Math.min(parseDate, inProgress.firstDate)
-					inProgress.lastDate = Math.max(parseDate, inProgress.lastDate)
+					inProgress.firstDate = Math.min(parsedDate, inProgress.firstDate)
+					inProgress.lastDate = Math.max(parsedDate, inProgress.lastDate)
 					setDateScale(parsedDate)
 					collectVal.push([parsedDate, planned])
 				};
@@ -104,9 +103,9 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		          		milestoneValue = milestone.dimensions[q].dimension_milestone_object.value;
 		          collectYPlan.push([parsedDate,milestoneValue])
 		        }
-						inProgress.firstDate = Math.min(parseDate, inProgress.firstDate)
-						inProgress.lastDate = Math.max(parseDate, inProgress.lastDate)
-						setDateScale(parseDate)
+						inProgress.firstDate = Math.min(parsedDate, inProgress.firstDate)
+						inProgress.lastDate = Math.max(parsedDate, inProgress.lastDate)
+						setDateScale(parsedDate)
 		    	}
       	}
     	}
