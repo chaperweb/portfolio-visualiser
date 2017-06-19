@@ -40,11 +40,11 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			"organization": "",
 			"xAxisActual": [],
 			"xAxisPlanned": [],
-			"xAxis": 0,
 			"radius": [],
 			"yAxisActual": [],
 			"yAxisPlanned": [],
-			"yAxis": 0
+			"firstDate": Infinity,
+			"lastDate": -Infinity
 		};
 		var xID = 0,
 				yID = 0;
@@ -60,7 +60,10 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 				for (h = 0; h < historyLen; h++) {
 					var date = historyList[h].history_date;
 					var planned = historyList[h].value;
-					var parsedDate = new Date(date).getTime() / 1000 // parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
+					// parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
+					var parsedDate = new Date(date).getTime() / 1000
+					inProgress.firstDate = Math.min(parseDate, firstDate)
+					inProgress.lastDate = Math.max(parseDate, lastDate)
 					setDateScale(parsedDate)
 					collectVal.push([parsedDate, planned])
 				};
@@ -100,7 +103,9 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		          		milestoneValue = milestone.dimensions[q].dimension_milestone_object.value;
 		          collectYPlan.push([parsedDate,milestoneValue])
 		        }
-						setDateScale(new Date(date).getTime() / 1000)
+						inProgress.firstDate = Math.min(parseDate, firstDate)
+						inProgress.lastDate = Math.max(parseDate, lastDate)
+						setDateScale(parseDate)
 		    	}
       	}
     	}
@@ -222,6 +227,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	// interpolate data of the given day
 	function interpolateData(date) {
 		return projects.map(function(d) {
+			if (date <= d.)
 		  return {
 				name: d.name,
 				organization: d.organization,
@@ -237,18 +243,19 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	}
 
 	/*
-    this function interpolates the values of the given array "values", and returns the value that is in the date "date".
+    this function interpolates the values of the given array "values",
+		and returns the value that is in the date "date".
     is used in interpolateData-function.
 	*/
 	function interpolateValues(values, date) {
-		if(values == undefined || date == undefined) {
+		if (values == undefined || date == undefined) {
 			//array containing the data is undefined, most likely the data never existed.
 			//The value will be eventyally set to 0.
 			return 0;
 		}
 		var i = bisect.left(values, date, 0, values.length - 1),
 			a = values[i];
-		if(a == undefined) {
+		if (a == undefined) {
 			return 0;
 		} else if(a.length == 0) {
 			return 0;
