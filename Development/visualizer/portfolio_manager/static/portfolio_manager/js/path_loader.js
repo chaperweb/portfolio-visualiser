@@ -47,13 +47,10 @@ $(function() {
         project = db_json[i];
         for (var j = 0; j < project.dimensions.length; j++) {
           if('history' in project.dimensions[j].dimension_object) {
-            x_selected = (project.dimensions[j].dimension_object.name == preserved_x_name) ? 'selected' : '';
-            y_selected = (project.dimensions[j].dimension_object.name == preserved_y_name) ? 'selected' : '';
-
-            $('#x-selector').append('<option '+x_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
+            $('#x-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
             $('#x-selector').prop('disabled', false);
             if (project.dimensions[j].dimension_type == 'DecimalDimension') {
-              $('#y-selector').append('<option '+y_selected+' value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
+              $('#y-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
               $('#y-selector').prop('disabled', false);
             }
           }
@@ -61,6 +58,26 @@ $(function() {
         break;
       }
     }
+
+    var y_id = null;
+    $('#y-selector').children().each(function(i, option) {
+      if (option.value != '---'
+          && (option.text == preserved_y_name || y_id == null))
+        y_id = option.value;
+    });
+    if (y_id != null)
+      $('#y-selector').val(y_id);
+
+    var x_id = null;
+    $('#x-selector').children().each(function(i, option) {
+      if (option.value != '---'
+          && (option.text == preserved_x_name
+              || (x_id == null && option.value != y_id)))
+        x_id = option.value;
+    });
+    if (x_id != null)
+      $('#x-selector').val(x_id);
+
     change_if_all_selected();
   });
 
