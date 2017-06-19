@@ -211,7 +211,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	function color(d) { return colorScale(d.organization); }
 	function key(d) { return d.name; }
 
-	// Positions the dots based on data.
+	// Positions the dots based on data, the only scaling happens here as the ball max r is limited to 100
 	function position(dot) {
 		dot.attr("cx", function(d) { return validXCoordinates(x(d)) ; })
 		   .attr("cy", function(d) { return validYCoordinates(y(d)); })
@@ -227,14 +227,23 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	// interpolate data of the given day
 	function interpolateData(date) {
 		return projects.map(function(d) {
-			if (date <= d.)
-		  return {
-				name: d.name,
-				organization: d.organization,
-				xAxis: processValues(interpolateValues(d.xAxisActual, date),interpolateValues(d.xAxisPlanned, date)),
-				yAxis: processValues(interpolateValues(d.yAxisActual, date),interpolateValues(d.yAxisPlanned, date)),
-				radius: interpolateValues(d.radius, date)
-		  };
+			if (date < d.firstDate || date > d.lastDate) {
+				return {
+					name: d.name,
+					organization: d.organization,
+					xAxis: -Infinity,
+					yAxis: Infinity,
+					radius: 0
+				}				
+			} else {
+				return {
+					name: d.name,
+					organization: d.organization,
+					xAxis: processValues(interpolateValues(d.xAxisActual, date),interpolateValues(d.xAxisPlanned, date)),
+					yAxis: processValues(interpolateValues(d.yAxisActual, date),interpolateValues(d.yAxisPlanned, date)),
+					radius: interpolateValues(d.radius, date)
+			  };
+			}
 		});
 	}
 	// this function returns the required % in decimal form to position the circle correctly.
