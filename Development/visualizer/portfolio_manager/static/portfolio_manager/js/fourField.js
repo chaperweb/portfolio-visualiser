@@ -136,7 +136,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		$('#end-date-selector').val(ddmmyy(endDate*1000));
 	}
 
-// console.log(projects);
+console.log(projects);
 
 /***********************/
 /* functions live here */
@@ -227,23 +227,13 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	// interpolate data of the given day
 	function interpolateData(date) {
 		return projects.map(function(d) {
-			if (date < d.firstDate || date > d.lastDate) {
-				return {
-					name: d.name,
-					organization: d.organization,
-					xAxis: -Infinity,
-					yAxis: Infinity,
-					radius: 0
-				}
-			} else {
-				return {
-					name: d.name,
-					organization: d.organization,
-					xAxis: processValues(interpolateValues(d.xAxisActual, date),interpolateValues(d.xAxisPlanned, date)),
-					yAxis: processValues(interpolateValues(d.yAxisActual, date),interpolateValues(d.yAxisPlanned, date)),
-					radius: interpolateValues(d.radius, date)
-			  };
-			}
+			return {
+				name: d.name,
+				organization: d.organization,
+				xAxis: processValues(interpolateValues(d, d.xAxisActual, date),interpolateValues(d, d.xAxisPlanned, date)),
+				yAxis: processValues(interpolateValues(d, d.yAxisActual, date),interpolateValues(d, d.yAxisPlanned, date)),
+				radius: interpolateValues(d, d.radius, date)
+		  };
 		});
 	}
 	// this function returns the required % in decimal form to position the circle correctly.
@@ -256,8 +246,8 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		and returns the value that is in the date "date".
     is used in interpolateData-function.
 	*/
-	function interpolateValues(values, date) {
-		if (values == undefined || date == undefined) {
+	function interpolateValues(dot, values, date) {
+		if (values == undefined || date == undefined || date < dot.firstDate || date > dot.lastDate) {
 			//array containing the data is undefined, most likely the data never existed.
 			//The value will be eventyally set to 0.
 			return 0;
