@@ -36,8 +36,8 @@ class DimensionsTestCase(TestCase):
 
         project2 = Project.objects.get(pk=2)
 
-        self.assertEquals(project1, d.projects.all()[0])
-        self.assertEquals(project2, d.projects.all()[1])
+        self.assertEquals(project1, d.value.all()[0])
+        self.assertEquals(project2, d.value.all()[1])
 
     def test_associated_persons_dimension(self):
 
@@ -49,10 +49,10 @@ class DimensionsTestCase(TestCase):
         d.save()
 
         person3 = Person.objects.get(first_name='person3')
-        
-        self.assertEquals(person1, d.persons.all()[0])
-        self.assertEquals(person2, d.persons.all()[1])
-        self.assertEquals(person3, d.persons.all()[2])
+
+        self.assertEquals(person1, d.value.all()[0])
+        self.assertEquals(person2, d.value.all()[1])
+        self.assertEquals(person3, d.value.all()[2])
 
 
     def test_associated_person_dimension_person_exists(self):
@@ -63,7 +63,7 @@ class DimensionsTestCase(TestCase):
         d = AssociatedPersonDimension()
         d.from_sheet('person1', now)
         d.save()
-        
+
         self.assertEquals(person1, d.value)
         self.assertEquals(person1, d.history.all()[0].value)
         self.assertEqual(now, d.history.all()[0].history_date)
@@ -77,7 +77,7 @@ class DimensionsTestCase(TestCase):
         d.save()
 
         person3 = Person.objects.get(first_name='person3')
-        
+
         self.assertEquals(person3, d.value)
         self.assertEquals(person3, d.history.all()[0].value)
         self.assertEqual(now, d.history.all()[0].history_date)
@@ -98,7 +98,7 @@ class DimensionsTestCase(TestCase):
     def test_associated_organization_dimension_org_not_exists(self):
 
         now = timezone.now()
-        
+
         d = AssociatedOrganizationDimension()
         d.from_sheet('org2', now)
         d.save()
@@ -113,7 +113,7 @@ class CascadeDeleteTestCase(TestCase):
 
     def test_delete_organization(self):
 
-        data = [[u'id', u'__history_date', u'Name', u'SizeBudget', u'OwningOrganization'],
+        data = [[u'id', u'__history_date', u'Name', u'Budget', u'OwningOrganization'],
                 ['', '', 'TEXT', 'NUM', 'AORG'],
                 [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4', 'org1'],
                 [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
@@ -129,13 +129,3 @@ class CascadeDeleteTestCase(TestCase):
         self.assertFalse(DimensionMilestone.objects.all())
         self.assertFalse(DecimalMilestone.objects.all())
         # self.assertFalse(NameDimension.objects.all())
-
-
-    
-    
-
-
-   
-
-   
-    

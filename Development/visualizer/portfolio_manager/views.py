@@ -4,12 +4,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
 from itertools import groupby
 
-from django.contrib.contenttypes.models import ContentType
 import django.forms
-from django.http import JsonResponse, \
-                        HttpResponse, \
-                        QueryDict
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 
 from portfolio_manager.models import *
@@ -87,7 +84,7 @@ def create_org(request):
         # Budget
         project_template_data_budget = {
             'template': template,
-            'name': 'SizeBudget',
+            'name': 'Budget',
             'content_type': ct_objects.get_for_model(DecimalDimension),
         }
         pt_dim = ProjectTemplateDimension(**project_template_data_budget)
@@ -193,184 +190,76 @@ def add_field(request):
         return render(request, 'database.html', render_data)
 
 def show_project(request, project_id):
-    ###     VERSION WITH TEMPLATES      ###
-    # project = Project.objects.get(pk=project_id)
-    # org = project.parent
-    # template = ProjectTemplate.objects.get(organization=org)
-    # dimensions = ProjectTemplateDimension.objects.filter(template=template)
-    # testdims = {}
-    # for k, g in groupby(dimensions, lambda x: x.content_type):
-    #     for dim in list(g):
-    #         dim_type = str(k.model_class().__name__).replace('Dimension', '')
-    #         testdims.setdefault(dim_type, []).append(dim.name.replace('Size', ''))
-    #         # dims[k.model_class().__name__].append(dim.name)
-    # print(testdims)
+    all_projects = Project.objects.all()
+    project = all_projects.get(pk=project_id)
+    project_dims = project.dimensions.all()
+    template_dims = ProjectTemplate.objects.get(organization=project.parent).dimensions.all()
 
+    dimensions = {}
+    for k, g in groupby(template_dims, lambda x: x.content_type):
+        for dim in list(g):
+            ct = ContentType.objects.get(id=k.id)
+            dimensions.setdefault(ct, {}).update({dim.name: None})
 
-
-    ###     WORKING VERSION BELOW       ###
-    theProject = get_object_or_404(Project, pk=project_id)
-    # ContentTypes
-    dd = ContentType.objects.get_for_model(DecimalDimension)
-    td = ContentType.objects.get_for_model(TextDimension)
-    dated = ContentType.objects.get_for_model(DateDimension)
-    assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
-    assPersonsD = ContentType.objects.get_for_model(AssociatedPersonsDimension)
-    assOrgD = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
-    assProjsD = ContentType.objects.get_for_model(AssociatedProjectsDimension)
-
-    # Default fields
-    budget = ProjectDimension.objects.filter(content_type=dd, project_id=theProject.id).first()
-
-    # All dimensions
-    dims = ProjectDimension.objects.filter(project_id=theProject.id)
-    # Added text fields
-    texts = dims.filter(content_type=td)
-    # Added decimal fields, removing budget from the query set
-    decfields = dims.filter(content_type=dd).exclude(pk=budget.pk)
-    # Date dimensions
-    dateds = dims.filter(content_type=dated)
-    # Associated person dimensions
-    assPersonDs = dims.filter(content_type=assPersonD)
-    # Associated persons dimensions
-    assPersonsDs = dims.filter(content_type=assPersonsD)
-    # Associated persons dimensions
-    assOrgDs = dims.filter(content_type=assOrgD)
-    # Associated projects dimensions
-    assProjsDs = dims.filter(content_type=assProjsD)
+    for key, value in dimensions.items():
+        dims_of_key = project_dims.filter(content_type=key)
+        for d in dims_of_key:
+            if d.dimension_object.name in value:
+                dimensions[key][d.dimension_object.name] = d.dimension_object
 
     context = {}
-    context['project'] = theProject
-    context['budget'] = budget
-    context['text'] = texts
-    context['decfield'] = decfields
-    context['dates'] = dateds
-    context['assPerson'] = assPersonDs
-    context['assPersons'] = assPersonsDs
-    context['assOrg'] = assOrgDs
-    context['assProjs'] = assProjsDs
-    context['projects'] = Project.objects.all()
-    # context['testdims'] = testdims
-
-    # for organization history
-    history_all = theProject.history.all().order_by('-history_date')[:5]
-
-    orgs = {}
-    for h in history_all:
-        orgs[h.history_date] = h.parent
-    context['orghistory'] = sorted(orgs.items(), reverse=True)
+    context['project'] = project
+    context['projects'] = all_projects
+    context['dimensions'] = dimensions
 
     return render(request, 'project.html', context)
 
-# Site for editing a project
-def project_edit(request, project_id, field_name):
-    proj = Project.objects.get(pk=project_id)
-    # If you want to modify the owning organization
-    if field_name == "Organization":
-        try:
-            org = Organization.objects.get(name=request.POST.get('name'))
-        except Organization.DoesNotExist:
-            org = Organization(name=request.POST.get('name'))
-            org.save()
-        proj.parent = org
-        proj.save()
-        return JsonResponse({"name": request.POST.get('name')})
+# Function that edits a project by either updating, adding or removing values
+def project_edit(request, project_id, field_type):
+    type_to_dimension = {
+        'text': TextDimension,
+        'decimal': DecimalDimension,
+        'date': DateDimension,
+        'associatedperson': AssociatedPersonDimension,
+        'associatedorganization': AssociatedOrganizationDimension,
+        'associatedpersons': AssociatedPersonsDimension,
+        'associatedprojects': AssociatedProjectsDimension
+    }
+    if request.method == "POST":
+        data = request.POST
+        dimension = type_to_dimension[field_type].objects.get(pk=data.get('field'))
+        value = data.get('value')
+        if field_type == "associatedorganization":
+            dimension.value = Organization.objects.get(name=value)
+        elif field_type == "associatedperson":
+            dimension.value = Person.objects.get(pk=value)
+        elif field_type == "associatedpersons":
+            person = Person.objects.get(pk=value)
+            dimension.value.add(person)
+        elif field_type == "associatedprojects":
+            project = Project.objects.get(pk=value)
+            dimension.value.add(project)
+        elif field_type == "date":
+            dimension.update_date(value)
+        else:
+            dimension.value = value
+        dimension.save()
 
-    # If you want to modify a associated organization
-    if field_name == "assorg":
-        try:
-            org = Organization.objects.get(name=request.POST.get('org'))
-            ct = ContentType.objects.get_for_model(AssociatedOrganizationDimension)
-            td = ProjectDimension.objects.filter(content_type=ct, project=project_id)
-            tds = []
-            # Manual filtering
-            for t in td:
-                if t.dimension_object.name == request.POST.get('field'):
-                    tds = t.dimension_object
-                    break;
-            # Saves modified associated organization
-            tds.value = org
-            tds.save()
-            return JsonResponse({"field": tds.name, "value": tds.value.name}, safe=True)
+    #   Should actually handle PATCH but Django changes forms' patch requests
+    #   to GET requests
+    elif request.method == "GET":
+        data = request.GET
+        dimension = type_to_dimension[field_type].objects.get(pk=data.get('field'))
+        value = data.get('value')
+        if field_type == "associatedpersons":
+            person = Person.objects.get(pk=value)
+            dimension.value.remove(person)
+        elif field_type == "associatedprojects":
+            project = Project.objects.get(pk=value)
+            dimension.value.remove(project)
+        dimension.save()
+    return redirect('show_project', project_id=project_id, permanent=True)
 
-        except Organization.DoesNotExist:
-            print("Couldn't find the organization")
-
-    # If you want to modify a text field
-    elif field_name == "text":
-        # ContentType
-        ct = ContentType.objects.get_for_model(TextDimension)
-        # The dimensions of correct content_type and correct project_id
-        td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
-        tds = []
-        # Manual filtering
-        for t in td:
-            if t.dimension_object.name == request.POST.get('field'):
-                tds = t.dimension_object
-                break;
-        # Saves the modified Text field
-        tds.value = request.POST.get('textValue')
-        tds.save()
-        return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
-
-    # If you want to modify a decimal field
-    elif field_name == "decimal":
-        # ContentType
-        ct = ContentType.objects.get_for_model(DecimalDimension)
-        # The dimensions of correct content_type and correct project_id
-        td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
-        tds = []
-        # Manual filtering
-        for t in td:
-            if t.dimension_object.name == request.POST.get('field'):
-                tds = t.dimension_object
-                break;
-        # Saves the modified decimal field
-        tds.value = request.POST.get('decValue')
-        tds.save()
-        return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
-
-    # If you want to modify a single person field
-    elif field_name == "person":
-        try:
-            # Existing persons
-            p = Person.objects.get(pk=request.POST.get('perID'))
-            # ContentType
-            ct = ContentType.objects.get_for_model(AssociatedPersonDimension)
-            # The dimensions of correct content_type and correct project_id
-            td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
-            tds = []
-            # Manual filtering
-            for t in td:
-                if t.dimension_object.name == request.POST.get('field'):
-                    tds = t.dimension_object
-                    break;
-            # Saves the modified single person field
-            tds.value = p
-            tds.save()
-            return JsonResponse({"value": p.first_name + " " + p.last_name, "field": tds.name})
-        except Person.DoesNotExist:
-            print("Couldn't find the person")
-
-    # If you want to modify a date field
-    elif field_name == "date":
-        # ContentType
-        ct = ContentType.objects.get_for_model(DateDimension)
-        # The dimensions of correct content_type and correct project_id
-        td = ProjectDimension.objects.filter(content_type= ct, project_id=project_id)
-        tds = []
-        # Manual filtering
-        for t in td:
-            if t.dimension_object.name == request.POST.get('field'):
-                tds = t.dimension_object
-                break;
-        # Updates and saves the date field
-        tds.update_date(request.POST.get('date'))
-        tds.save()
-        return JsonResponse({"field": tds.name, "value": tds.value}, safe=True)
-
-    else:
-        return JsonResponse({"name": field_name, 'error': "No field matched"}, safe=True)
 
 #   Import google sheet
 def importer(request):
@@ -406,8 +295,11 @@ def get_sheets(request):
     return redirect('homepage')
 
 def json(request):
-    serializer = ProjectSerializer(Project.objects.all(), many=True)
-    return JsonResponse(serializer.data, safe=False)
+    try:
+        serializer = ProjectSerializer(Project.objects.all(), many=True)
+        return JsonResponse(serializer.data, safe=False)
+    except Exception as e:
+        print("Error in JSON serialization: {}".format(e))
 
 # site to see all projects, grouped by organization
 def projects(request):
@@ -504,7 +396,6 @@ def addproject(request):
                     value_field = template_dimension_form.fields['value']
                     value_field.widget = django.forms.HiddenInput()
                     value_field.initial = request.GET.get('name')
-                print(template_dimension_form.fields)
                 forms.append(template_dimension_form)
     except Organization.DoesNotExist:
         pass
@@ -536,114 +427,17 @@ def get_proj(request):
     serializer = ProjectNameIdSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
-#   Function that gets the multiple entries in a dimension that has multiple
-#   items.
-#   Input:
-#       A request
-#       The id of the project you want to search for
-#       The type of dimension, e.g. assperson( AssociatedPersonsDimension )
-#       The name of the field, e.g. Members
-#   Output:
-#       A JSON string that has the names of the searched for items
-
-#   As this function is only to be called with ajax an else statement has
-#   purposefully been left out to trigger the errorfunction in the ajax call
-
-def get_multiple(request, project_id, type, field_name):
-    project = Project.objects.get(pk=project_id)
-    ct_objects = ContentType.objects
-
-    # If AssociatedPersonsDimension
-    if type == "asspersons":
-        APersonsD =  ct_objects.get_for_model(AssociatedPersonsDimension)
-        # The dimensions of correct content_type and for the correct project_id
-        APersonsDs = ProjectDimension.objects.filter(content_type=APersonsD, project=project)
-        persons = []
-        personsList = []
-        # Loop through the dimensions
-        for dim in APersonsDs:
-            # Get the dimension object
-            dim_obj = dim.dimension_object
-            if dim_obj.name == field_name:
-                for pers in dim_obj.persons.all():
-                    persons.append(pers)
-        for p in persons:
-            person_data = {
-                'id': p.pk,
-                'name': str(p)
-            }
-            personsList.append(person_data)
-        return JsonResponse({'type': 'persons', 'items': personsList})
-
-    # If AssociatedProjectsDimension
-    elif type == "assprojects":
-        # ContentType
-        proj_dims = ct_objects.get_for_model(AssociatedProjectsDimension)
-        # The dimensions of correct content_type and for the correct project_id
-        proj_dims = ProjectDimension.objects.filter(content_type=proj_dims, project=project)
-        results = []
-        # Loop through the dimensions
-        for dim in proj_dims:
-            # Get the dimension object
-            if dim.dimension_object.name == field_name:
-                for p in dim.dimension_object.projects.all():
-                    results.append({'id': p.id, 'name': p.name})
-        return JsonResponse({'type': 'projects', 'items': results})
-
-
-def remove_person_from_project(request):
-    if request.is_ajax() and request.method == "PATCH":
-        qdict = QueryDict(request.body)
-        pid = qdict.get('id')
-        person = Person.objects.get(pk=pid)
-        ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
-        proj_id = qdict.get('project_id')
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=proj_id)
-        dim.dimension_object.persons.remove(person)
-        return JsonResponse({"result": True, "id": pid})
-
-def remove_project_from_project(request):
-    if request.is_ajax() and request.method == "PATCH":
-        qdict = QueryDict(request.body)
-        pid = qdict.get('id')
-        project = Project.objects.get(pk=pid)
-        ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
-        proj_id = qdict.get('project_id')
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=proj_id)
-        dim.dimension_object.projects.remove(project)
-        return JsonResponse({"result": True, "id": pid})
-
-def add_person_to_project(request):
-    if request.is_ajax() and request.method == "POST":
-        projectID = request.POST.get('projectID')
-        personID = request.POST.get('personID')
-        project = Project.objects.get(pk=projectID)
-        person = Person.objects.get(pk=personID)
-        ct = ContentType.objects.get_for_model(AssociatedPersonsDimension)
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=projectID)
-        dim.dimension_object.persons.add(person)
-        response_data = {
-            'result': True,
-            'id': person.pk,
-            'name': str(person)
-        }
-        return JsonResponse(response_data)
-
-def add_project_to_project(request):
-    if request.is_ajax() and request.method == "POST":
-        toBeAddedID = request.POST.get('toBeAddedID')
-        destID = request.POST.get('destID')
-        TBAProject = Project.objects.get(pk=toBeAddedID)
-        destProject = Project.objects.get(pk=destID)
-        ct = ContentType.objects.get_for_model(AssociatedProjectsDimension)
-        dim = ProjectDimension.objects.get(content_type=ct, project_id=destID)
-        dim.dimension_object.projects.add(TBAProject)
-        response_data = {
-            'result': True,
-            'id': TBAProject.pk,
-            'name': TBAProject.name
-        }
-        return JsonResponse(response_data)
+#   Function that gets the value of a dimension that has multiple
+#   items. Takes in the field type and the id of the dimension
+@require_GET
+def get_multiple(request, field_type, field_id):
+    type_to_dimension = {
+        'associatedpersons': AssociatedPersonsDimension,
+        'associatedprojects': AssociatedProjectsDimension
+    }
+    value = type_to_dimension[field_type].objects.get(pk=field_id).value.all()
+    data = [{'id': p.pk, 'name': str(p)} for p in value]
+    return JsonResponse({'type': field_type, 'data': data})
 
 
 def create_pathsnapshot(name, description, project_id, x, y):

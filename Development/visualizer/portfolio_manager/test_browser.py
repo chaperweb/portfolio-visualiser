@@ -1,7 +1,9 @@
 # coding=utf-8
+import time, datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils.translation import get_language
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.webdriver import WebDriver as Firefox
 from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -24,7 +26,7 @@ except EasyProcessCheckInstalledError:
     USE_XVFB = False
 
 
-WAIT = 3
+WAIT = 5
 
 class BrowserTestCase(StaticLiveServerTestCase):
     """ These tests take longer to run than other tests because they pop up a browser window, a headless one in
@@ -45,6 +47,8 @@ class BrowserTestCase(StaticLiveServerTestCase):
             cls.vdisplay = Display(visible=0, size=(1024, 768))
             cls.vdisplay.start()
 
+    def setUp(self):
+        StaticLiveServerTestCase.setUp(self)
         profile = FirefoxProfile()
         # Browser itself attempts to validate form fields before they are sent to django.
         # Fields where input type="Number" accept "100.0" when locale is "en" and "100,0" when locale is "fi", and when
@@ -55,26 +59,29 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # and reading decimals/floats.
         profile.set_preference("intl.accept_languages", get_language())
         profile.set_preference("general.useragent.locale", get_language())
-        cls.selenium = Firefox(firefox_profile=profile, executable_path='node_modules/geckodriver/geckodriver')
-        cls.selenium.maximize_window()
+        self.selenium = Firefox(firefox_profile=profile, executable_path='node_modules/geckodriver/geckodriver')
+        self.selenium.maximize_window()
 
     @classmethod
     def tearDownClass(cls):
-        cls.selenium.quit()
         if USE_XVFB:
             cls.vdisplay.stop()
         StaticLiveServerTestCase.tearDownClass()
 
+    def tearDown(self):
+        self.selenium.quit()
+        StaticLiveServerTestCase.tearDown(self)
+
     # Helper methods for this test case:
 
     def open(self, url):
-        BrowserTestCase.selenium.get("%s%s" % (self.live_server_url, url))
+        self.selenium.get("%s%s" % (self.live_server_url, url))
 
     def find(self, element_id):
-        return BrowserTestCase.selenium.find_element_by_id(element_id)
+        return self.selenium.find_element_by_id(element_id)
 
     def find_css(self, css_selector):
-        elems = BrowserTestCase.selenium.find_elements_by_css_selector(css_selector)
+        elems = self.selenium.find_elements_by_css_selector(css_selector)
         found = len(elems)
         if found == 1:
             return elems[0]
@@ -86,7 +93,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         def found_it(foo):
             return self.find_css(css_selector)
         try:
-            WebDriverWait(BrowserTestCase.selenium, WAIT).until(found_it)
+            WebDriverWait(self.selenium, WAIT).until(found_it)
             found = True
         except TimeoutException:
             found = False
@@ -94,7 +101,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def assert_that_element_appears(self, element_id):
         try:
-            WebDriverWait(BrowserTestCase.selenium, WAIT).until(EC.visibility_of_element_located((By.ID, element_id)))
+            WebDriverWait(self.selenium, WAIT).until(EC.visibility_of_element_located((By.ID, element_id)))
             found = True
         except TimeoutException:
             found = False
@@ -102,7 +109,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def assert_that_element_disappears(self, element_id):
         try:
-            WebDriverWait(BrowserTestCase.selenium, WAIT).until(EC.invisibility_of_element_located((By.ID, element_id)))
+            WebDriverWait(self.selenium, WAIT).until(EC.invisibility_of_element_located((By.ID, element_id)))
             gone = True
         except TimeoutException:
             gone = False
@@ -111,7 +118,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
     # Actual tests
 
     def test_add_organization(self):
-
+        """Add organization from admin page"""
         self.open(reverse('admin_tools'))
 
         add_organization_name = 'Örganizaatio'
@@ -121,42 +128,58 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.find('org-form').submit()
 
         # Wait for notification that reports success
-        self.assert_that_css_appears('#conf-modal-body > h3')
+        self.assert_that_css_appears('#conf-modal-body h4')
 
         # Check the notification message
-        self.assertTrue('Organization created: '+add_organization_name in self.selenium.page_source)
+        msg = 'Organization created: {}'.format(add_organization_name)
+        self.assertEqual(self.find_css("#conf-modal-body h4").text, msg)
 
         # Check that organization was property added to db
         organization = Organization.objects.get(pk=add_organization_name)
-        self.assertIsInstance(organization, Organization)
         templates = organization.templates.all()
-        self.assertEquals(1, templates.count())
         template = templates[0]
-        self.assertEquals('default', template.name)
-        self.assertEquals(3, template.dimensions.all().count())
         template_dimensions = template.dimensions.all()
-        self.assertEquals(DecimalDimension, template_dimensions[0].content_type.model_class())
-        self.assertEquals('SizeBudget', template_dimensions[0].name)
-        self.assertEquals(DateDimension, template_dimensions[1].content_type.model_class())
+
+        self.assertIsInstance(organization, Organization)
+        self.assertEquals(1, templates.count())
+        self.assertEquals('default', template.name)
+        self.assertEquals(3, template_dimensions.count())
+        self.assertEquals(
+            DecimalDimension,
+            template_dimensions[0].content_type.model_class()
+        )
+        self.assertEquals('Budget', template_dimensions[0].name)
+        self.assertEquals(
+            DateDimension,
+            template_dimensions[1].content_type.model_class()
+        )
         self.assertEquals('EndDate', template_dimensions[1].name)
-        self.assertEquals(AssociatedPersonDimension, template_dimensions[2].content_type.model_class())
+        self.assertEquals(
+            AssociatedPersonDimension,
+            template_dimensions[2].content_type.model_class()
+        )
         self.assertEquals('ProjectManager', template_dimensions[2].name)
 
     def test_add_organization_add_project(self):
-        """ Test adding new organization and new project under that organization"""
+        """Add new organization and new project under that organization"""
+        #   Add person that will act as project manager later
+        project_project_manager = Person.objects.get(pk=2)
 
         self.open(reverse('admin_tools'))
 
         organization_name = 'Great organization'
-        self.find('orgName').send_keys(organization_name)
+        org_input = self.find('orgName')
+        org_input.send_keys(organization_name)
         self.find('org-form').submit()
 
         # Wait for modal to open
-        self.assert_that_css_appears('#conf-modal-body > h3')
+        self.assert_that_css_appears('#conf-modal-body')
 
-        self.open(reverse('admin_tools')) # Reload organizations in "Add project" modal
+        # Reload organizations in "Add project" modal
+        self.open(reverse('admin_tools'))
 
         # Fill in "Add project" form on Admin tools page and submit it
+        time.sleep(1)
         project_name = "Great project"
         self.find('id_name').send_keys(project_name)
         Select(self.find('id_organization')).select_by_value(organization_name)
@@ -164,38 +187,42 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Wait for add project page to open up
         self.assert_that_element_appears('id_add_project_form-name')
+        # Wait for javascript to populate fields
+        time.sleep(1)
 
         organization = Organization.objects.get(pk=organization_name)
 
         # Fill in the details of new project and hit submit
         budget_field, end_date_field, project_manager_field, *foo = organization.templates.all()[0].dimensions.all()
+        project_budget = 135151.0
+        project_end_date = datetime(2015, 8, 1, tzinfo=get_current_timezone())
+        date_in = project_end_date.strftime("%d/%m/%Y")
 
-        project_size_budget = 135151.0
-        self.find('id_%s_form-value' % budget_field.id).send_keys(localize_input(project_size_budget))
-
-        project_end_date = datetime(2015, 8, 1)
-        self.find('id_%s_form-value' % end_date_field.id).send_keys(project_end_date.strftime("%d/%m/%Y"))
-
-        project_project_manager = Person.objects.get(id=2)
-        Select(self.find('id_%s_form-value' % project_manager_field.id)).select_by_value(str(project_project_manager.id))
+        self.find('id_{}_form-value'.format(budget_field.id)).send_keys(localize_input(project_budget))
+        self.find('id_{}_form-value'.format(end_date_field.id)).send_keys(date_in)
+        project_manager_input = self.find('id_{}_form-value'.format(project_manager_field.id))
+        Select(project_manager_input).select_by_value(str(project_project_manager.id))
         self.find('add-project-form').submit()
 
         # Wait until user is redirected to "Show project" page and check that page contains
         # correct information
         self.assert_that_element_appears('project-dimension-panels')
         self.assertEquals(project_name, self.find('project-name').text)
-        self.assertEquals(organization_name, self.find('projectparent').text)
-        end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
+        # TODO: Add search for panel with owningorganization
+        # self.assertEquals(organization_name, self.find('projectparent').text)
+        end_date = project_end_date.strftime("%d/%m/%Y %H:%M")
         self.assertEquals(end_date, self.find('EndDate').text)
         self.assertEquals(str(project_project_manager), self.find('ProjectManager').text)
-        budget = number_format(project_size_budget, decimal_pos=2)
-        self.assertEquals(budget, self.find('SizeBudget').text)
+        budget = number_format(project_budget, decimal_pos=2)
+        self.assertEquals(budget, self.find('Budget').text)
 
     def test_add_project_from_admin_tools(self):
+        """Add project from admin tools"""
         self.open(reverse('admin_tools'))
         self._test_add_project()
 
     def test_add_project_from_homepage(self):
+        """Add project from homepage"""
         self.open(reverse('homepage'))
         self.find('add-project-btn').click()
 
@@ -221,13 +248,12 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(organization.pk, self.find('id_add_project_form-organization').get_attribute('value'))
 
         # Fill in the detail of new project and submit
+        phase_field, budget_field, *foo = organization.templates.all()[0].dimensions.all()
+        project_phase = "Adding-Project"
+        project_budget = 135151.0
 
-        phase_field, project_size_field, *foo = organization.templates.all()[0].dimensions.all()
-        project_phase = "Pre-study"
-        project_size = 135151.0
-
-        self.find('id_'+str(phase_field.id)+'_form-value').send_keys(project_phase)
-        self.find('id_'+str(project_size_field.id)+'_form-value').send_keys(localize_input(project_size))
+        self.find('id_{}_form-value'.format(phase_field.id)).send_keys(project_phase)
+        self.find('id_{}_form-value'.format(budget_field.id)).send_keys(localize_input(project_budget))
         self.find('add-project-form').submit()
 
         # Wait for "Show project" to load
@@ -235,205 +261,201 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Check that "Show project" page contains correct information
         self.assertEquals(project_name, self.find('project-name').text)
-        self.assertEquals(organization.pk, self.find('projectparent').text)
+        # TODO: Add search for panel with owningorganization
+        # self.assertEquals(organization_name, self.find('projectparent').text)
         self.assertEquals(project_phase, self.find('Phase').text)
-        budget = number_format(project_size, decimal_pos=2)
-        self.assertEquals(budget, self.find('Size').text)
+        budget = number_format(project_budget, decimal_pos=2)
+        self.assertEquals(budget, self.find('Budget').text)
 
         # Check that correct information is loaded to db
         project = Project.objects.get(name=project_name)
         self.assertIsInstance(project, Project)
         self.assertEquals(organization, project.parent)
-        shape_dim, budget_dim, *leftovers = project.dimensions.all()
+        phase_dim, budget_dim, *leftovers = project.dimensions.all()
         self.assertFalse(leftovers)
-        self.assertIsInstance(shape_dim.dimension_object, TextDimension)
-        self.assertEquals(project_phase, shape_dim.dimension_object.value)
+        self.assertIsInstance(phase_dim.dimension_object, TextDimension)
         self.assertIsInstance(budget_dim.dimension_object, DecimalDimension)
-        self.assertEquals(Decimal(project_size), budget_dim.dimension_object.value)
 
-    def _test_modify_project_dimension(self, dimension_name, new_value_field_id, modal_id, form_id,
-                                       new_value, cmp_value):
+        self.assertEquals(Decimal(project_budget), budget_dim.dimension_object.value)
+        self.assertEquals(project_phase, phase_dim.dimension_object.value)
+
+    def _test_modify_project_dimension(self, dimension_name, field_type, new_value, cmp_value):
         self.open(reverse('show_project', args=(1,)))
 
         # Click the "Modify" button of the dimension
-        self.find_css('button[data-field="'+dimension_name+'"]').click()
+        self.find('{}-modifybtn'.format(dimension_name)).click()
 
         # Wait for modal to open up
-        self.assert_that_element_appears(new_value_field_id)
-        self.assert_that_element_appears(modal_id)
+        self.assert_that_element_appears('{}-value'.format(field_type))
+        self.assert_that_element_appears('modify-{}-modal'.format(field_type))
 
         # Update form value and submit
-        self.find(new_value_field_id).send_keys(new_value)
-        self.find_css('#'+form_id+' button[type="submit"]').click()
+        elem = self.find('{}-value'.format(field_type))
+        time.sleep(1)
+        elem.send_keys(new_value)
+        elem.send_keys(Keys.RETURN)
+        self.find_css('#modify-{}-form button[type="submit"]'.format(field_type)).click()
 
         # Wait for modal to close
-        self.assert_that_element_disappears(new_value_field_id)
-        self.assert_that_element_disappears(modal_id)
+        self.assert_that_element_disappears('{}-value'.format(field_type))
+        self.assert_that_element_disappears('modify-{}-modal'.format(field_type))
 
+        # Refresh the page
+        self.open(reverse('show_project', args=(1,)))
         # Check that dimension value was updated
         self.assertEquals(cmp_value, self.find(dimension_name).text)
 
     def test_modify_project_text_dimension(self):
-        result = 'Done'
-        self._test_modify_project_dimension('Phase', 'newTextValue', 'modify-text-modal', 'modify-text-form',
-                                            'Done', result)
+        """Modifying Phase field from show_project"""
+        self._test_modify_project_dimension('Phase', 'text', 'Done', 'Done')
 
     def test_modify_project_decimal_dimension(self):
-        result = number_format(38.0, decimal_pos=1)
-        self._test_modify_project_dimension('SizeBudget', 'newDecValue', 'modify-dec-modal', 'modify-dec-form',
-                                            localize_input(38.0), result)
+        """Modifying Budget field from show_project"""
+        result = number_format(38.00, decimal_pos=2)
+        self._test_modify_project_dimension('Budget', 'decimal', localize_input(38.00), result)
 
     def test_modify_project_date_dimension(self):
-        result = "2019-09-01T00:00:00Z"
-        self._test_modify_project_dimension('EndDate', 'date', 'modify-date-modal', 'modify-date-form',
-                                            "1/9/2019", result)
+        """Modifying End date from show_project"""
+        project_end_date = datetime(2015, 9, 1, tzinfo=get_current_timezone())
+        date_in = project_end_date.strftime("%d/%m/%Y")
+        result = project_end_date.strftime("%d/%m/%Y %H:%M")
+        self._test_modify_project_dimension('EndDate', 'date', date_in, result)
 
     def test_modify_project_associated_person_dimension(self):
-
+        """Change ProjectManager"""
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" button of ProjectManager dimension
-        self.find_css('button[data-field="ProjectManager"]').click()
+        self.find('ProjectManager-modifybtn').click()
 
         # Wait for modal to open up
-        self.assert_that_element_appears('person')
+        self.assert_that_element_appears('associatedperson-value')
+        self.assert_that_element_appears('modify-associatedperson-modal')
 
         # Select another person from dropdown and submit the form
-        Select(self.find('person')).select_by_value('2')
-        self.find_css('#modify-per-form button[type="submit"]').click()
+        Select(self.find('associatedperson-value')).select_by_value('2')
+        self.find_css('#modify-associatedperson-form button[type="submit"]').click()
 
         #Wait for modal to close
-        self.assert_that_element_disappears('modify-per-modal')
+        self.assert_that_element_disappears('modify-associatedperson-modal')
+
+        # Refresh the page
+        self.open(reverse('show_project', args=(1,)))
 
         # Check that dimension value is updated
         self.assertEquals(str(Person.objects.get(id=2)), self.find('ProjectManager').text)
 
     def test_modify_project_associated_persons_dimension_remove(self):
-
+        """Remove a Member"""
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Members dimension
-        self.find_css('button[data-field="Members"].multiple-modify-button').click()
+        self.find('Members-modifybtn').click()
 
         # Wait for modal to open up
-        self.assert_that_element_appears('add-person-to-project-form')
+        self.assert_that_element_appears('modify-associatedpersons-modal')
+        self.assert_that_element_appears('associatedpersons-value')
 
         # Click to remove the only associated person
-        self.find_css('button.remove-multiple-persons[data-id="1"]').click()
+        self.find_css('#multiple-associatedpersons-1 button[type="submit"]').click()
 
-        # Wait for person to disappear from the modal
-        self.assert_that_element_disappears('#multiple-person-1')
+        # Refresh page
+        self.open(reverse('show_project', args=(1,)))
 
-        # Close modal
-        self.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
-
-        # Wait for modal to close
-        self.assert_that_element_disappears('multiple-items-modal')
-
-        # Click "Click to see to all"
-        self.find_css('#Members button').click()
-
-        # Wait for modal to open up
-        self.assert_that_element_appears('multiple-items-modal')
-
-        # Modal should not list any members
-        self.assertEquals(0, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
+        p = Person.objects.get(pk=1)
+        persons = AssociatedPersonsDimension.objects.get(pk=1).value.all()
+        self.assertFalse(p in persons)
 
     def test_modify_project_associated_persons_dimension_add(self):
-
+        """Add a Member"""
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Members dimension
-        self.find_css('button[data-field="Members"].multiple-modify-button').click()
+        self.find('Members-modifybtn').click()
 
         # Wait for modal to open up
-        self.assert_that_element_appears('add-person-to-project-form')
+        self.assert_that_element_appears('associatedpersons-value')
+        self.assert_that_element_appears('modify-associatedpersons-modal')
 
         # Select person to add and click '+'
-        Select(self.find('add-person-to-project')).select_by_value('2')
-        self.find_css('#add-person-to-project-form button.btn-orange').click()
+        Select(self.find('associatedpersons-value')).select_by_value('2')
+        self.find_css('#modify-associatedpersons-form button[type="submit"]').click()
 
+        # Reload page
+        self.open(reverse('show_project', args=(1,)))
 
-        # Wait for alert
-        WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
-
-        alert = self.selenium.switch_to_alert()
-        self.assertTrue('Successfully' in alert.text)
-        alert.accept()
-
-        # Wait for modal to close
-        self.assert_that_element_disappears('multiple-items-modal')
-
-        # Click "Click to see to all"
-        self.find_css('#Members button').click()
+        # Click "Modify" of Members dimension
+        self.find('Members-modifybtn').click()
 
         # Wait for modal to open up
-        self.assert_that_element_appears('multiple-items-modal')
+        self.assert_that_element_appears('associatedpersons-value')
+        self.assert_that_element_appears('modify-associatedpersons-modal')
 
-        # Modal should not list any members
-        self.assertEquals(2, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
+        # Modal should list new member (2 members + addform)
+        self.assertEquals(3, len(self.selenium.find_elements_by_css_selector('#associatedpersons-well-ul li')))
 
     def test_modify_project_associated_projects_dimension_remove(self):
-
+        """Remove a ProjectDependency"""
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Dependencies dimension
-        self.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
+        self.find('Dependencies-modifybtn').click()
 
         # Wait for modal to open up
-        self.assert_that_element_appears('add-project-to-project-form')
+        self.assert_that_element_appears('modify-associatedprojects-modal')
+        self.assert_that_element_appears('associatedprojects-value')
 
         # Click to remove the only associated project
-        self.find_css('button.remove-multiple-projects[data-id="1"]').click()
+        self.find_css('#multiple-associatedprojects-1 button[type="submit"]').click()
 
-        # Wait for project to disappear from the modal
-        self.assert_that_element_disappears('#multiple-project-1')
 
-        # Close modal
-        self.find_css('#multiple-items-modal button.close[data-dismiss="modal"]').click()
 
-        # Wait for modal to close
-        self.assert_that_element_disappears('multiple-items-modal')
+        # Refresh page
+        self.open(reverse('show_project', args=(1,)))
 
-        # Click "Click to see to all"
-        self.find_css('#Dependencies button').click()
+        # Click "Modify" of Dependencies dimension
+        self.find('Dependencies-modifybtn').click()
 
         # Wait for modal to open up
-        self.assert_that_element_appears('multiple-items-modal')
+        self.assert_that_element_appears('modify-associatedprojects-modal')
+        self.assert_that_element_appears('associatedprojects-value')
 
-        # Modal should not list any members
-        self.assertEquals(0, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
+        # Check that it was removed in the database
+        p = Project.objects.get(pk=1)
+        projects = AssociatedProjectsDimension.objects.get(pk=1).value.all()
+        self.assertFalse(p in projects)
+
+        # Modal should not list any members only add the addform
+        self.assertEquals(1, len(self.selenium.find_elements_by_css_selector('#associatedprojects-well-ul li')))
 
     def test_modify_project_associated_projects_dimension_add(self):
+        """Add ProjectDependency"""
+        self.open(reverse('show_project', args=(1,)))
+
+        # Click "Modify" of Dependencies dimension
+        self.find('Dependencies-modifybtn').click()
+
+        # Wait for modal to open up
+        self.assert_that_element_appears('associatedprojects-value')
+        self.assert_that_element_appears('modify-associatedprojects-modal')
+
+        # Select project to add and click '+'
+        Select(self.find('associatedprojects-value')).select_by_value('2')
+        self.find_css('#modify-associatedprojects-form button[type="submit"]').click()
 
         self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Dependencies dimension
-        self.find_css('button[data-field="Dependencies"].multiple-modify-button').click()
+        self.find('Dependencies-modifybtn').click()
 
         # Wait for modal to open up
-        self.assert_that_element_appears('add-project-to-project-form')
+        self.assert_that_element_appears('associatedprojects-value')
+        self.assert_that_element_appears('modify-associatedprojects-modal')
 
-        # Select project to add and click '+'
-        Select(self.find('add-project-to-project')).select_by_value('2')
-        self.find_css('#add-project-to-project-form button.btn-orange').click()
+        # Check that it was added to the database
+        p = Project.objects.get(pk=2)
+        projects = AssociatedProjectsDimension.objects.get(pk=1).value.all()
+        self.assertTrue(p in projects)
 
-
-        # Wait for alert
-        WebDriverWait(self.selenium, WAIT).until(EC.alert_is_present(), 'Timed out waiting for popup to appear.')
-
-        alert = self.selenium.switch_to_alert()
-        self.assertTrue('Successfully' in alert.text)
-        alert.accept()
-
-        # Wait for modal to close
-        self.assert_that_element_disappears('multiple-items-modal')
-
-        # Click "Click to see to all"
-        self.find_css('#Dependencies button').click()
-
-        # Wait for modal to open up
-        self.assert_that_element_appears('multiple-items-modal')
-
-        # Modal should not list any members
-        self.assertEquals(2, len(self.selenium.find_elements_by_css_selector('#multiple-well-ul li')))
+        # Modal should've added dependency(2 projects + addform)
+        self.assertEquals(3, len(self.selenium.find_elements_by_css_selector('#associatedprojects-well-ul li')))

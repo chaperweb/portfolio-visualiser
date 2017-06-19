@@ -98,11 +98,11 @@ class AssociatedPersonSerializer(serializers.ModelSerializer):
 
 class AssociatedPersonsSerializer(serializers.ModelSerializer):
 
-  persons = PersonSerializer(many=True, read_only=True)
+  value = PersonSerializer(many=True, read_only=True)
 
   class Meta:
     model = AssociatedPersonsDimension
-    fields = ('id', 'name', 'persons', 'string')
+    fields = ('id', 'name', 'value', 'string')
 
 class OrganizationSerializer(serializers.ModelSerializer):
 
@@ -128,11 +128,11 @@ class AssociatedOrganizationSerializer(serializers.ModelSerializer):
 
 class AssociatedProjectsSerializer(serializers.ModelSerializer):
 
-  projects = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+  value = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
   class Meta:
     model = AssociatedProjectsDimension
-    fields = ('id', 'name', 'projects', 'string')
+    fields = ('id', 'name', 'value', '__str__')
 
 class ProjectDimensionSerializer(serializers.ModelSerializer):
 

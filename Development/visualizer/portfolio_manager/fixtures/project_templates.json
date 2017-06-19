@@ -21,14 +21,8 @@
     "pk": 2,
     "fields": {
       "template": 1,
-      "name": "Size",
+      "name": "Budget",
       "content_type": ["portfolio_manager", "decimaldimension"]
     }
   }
 ]
-
-
-      
-   
-  
-

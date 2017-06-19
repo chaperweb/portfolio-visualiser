@@ -15,556 +15,125 @@ function getCookie(name)
   }
   return cookieValue;
 }
-
-//  #######################################
-//  ### PREVENTING AUTOMATIC EXPANSIONS ###
-//  #######################################
-$(function()
+// Cookies and csrf
+var csrftoken = getCookie("csrftoken");
+function csrfSafeMethod(method)
 {
-  $(".modify-button").click(function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var modalId = $(this).data('target');
-    $(modalId).modal('toggle');
-  });
-})
-
-//  ############################
-//  ### SUBMITTING FUNCTIONS ###
-//  ############################
-$(function()
-{
-  //  To submit modify-org-form
-  $("#modify-org-form").on("submit", function(event)
-  {
-    event.preventDefault();
-
-    var csrftoken = getCookie("csrftoken");
-
-    function csrfSafeMethod(method)
-    {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  // these HTTP methods do not require CSRF protection
+  return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+  beforeSend: function(xhr, settings) {
+    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+      xhr.setRequestHeader("X-CSRFToken", csrftoken);
     }
-
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });
-    $.ajax({
-      method: "POST",
-      url: $('#modify-org-form').attr('action'),
-      data: { 'name': $("#newOrg").val() },
-      success: function(json) {
-        $("#projectparent").text(json.name);
-        $("#modify-org-modal").modal('hide');
-      },
-      error: function() {
-        alert("Failed to modify organization");
-      }
-    });
-  });
-
-  //  To submit modify-assorg-form
-  $("#modify-assorg-form").on("submit", function(event)
-  {
-    event.preventDefault();
-
-    var csrftoken = getCookie("csrftoken");
-
-    function csrfSafeMethod(method)
-    {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });
-
-    $.ajax({
-      method: "POST",
-      url: $('#modify-assorg-form').attr('action'),
-      data: { 'org': $("#org").val(), 'field': $("#hidden-assorg-info").val() },
-      success: function(json) {
-        var textToChange = "#" + json.field
-        $(textToChange).text(json.value);
-        $("#modify-assorg-modal").modal('hide');
-      },
-      error: function() {
-        alert("Failed to modify organization");
-      }
-    });
-  });
-
-  //  To submit modify-per-form
-  $("#modify-per-form").on("submit", function(event)
-  {
-    event.preventDefault();
-
-    var csrftoken = getCookie("csrftoken");
-
-    function csrfSafeMethod(method)
-    {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });
-    $.ajax({
-      method: "POST",
-      url: $('#modify-per-form').attr('action'),
-      data: { 'perID': $("#person").val(), 'field': $("#hidden-per-info").val() },
-      success: function(json) {
-        var textToChange = "#" + json.field
-        $(textToChange).text(json.value);
-        $("#modify-per-modal").modal('hide');
-      },
-      error: function() {
-        alert("Failed to modify organization");
-      }
-    });
-  });
-
-  // To submit modify-dec-form
-  $("#modify-dec-form").on("submit", function(event)
-  {
-    event.preventDefault();
-
-    var csrftoken = getCookie("csrftoken");
-
-    function csrfSafeMethod(method)
-    {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });
-    $.ajax({
-      method: "POST",
-      url: $('#modify-dec-form').attr('action'),
-      data: { 'decValue': $("#newDecValue").val(),
-              'field': $("#hidden-dec-info").val()
-            },
-      success: function(json) {
-        var textToChange = "#" + json.field
-        $(textToChange).text(json.value);
-        $("#modify-dec-modal").modal('hide');
-      },
-      error: function() {
-        $("#modify-dec-modal").modal('hide');
-        alert("Failed to modify decimal field");
-      }
-    });
-  });
-
-  // To submit modify-text-form
-  $("#modify-text-form").on("submit", function(event)
-  {
-    event.preventDefault();
-
-    var csrftoken = getCookie("csrftoken");
-
-    function csrfSafeMethod(method)
-    {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });
-    $.ajax({
-      method: "POST",
-      url: $('#modify-text-form').attr('action'),
-      data: { 'textValue': $("#newTextValue").val(),
-              'field': $("#hidden-text-info").val()
-            },
-      success: function(json) {
-        var textToChange = "#" + json.field
-        $(textToChange).text(json.value);
-        $("#modify-text-modal").modal('hide');
-      },
-      error: function() {
-        $("#modify-text-modal").modal('hide');
-        alert("Failed to modify text field");
-      }
-    });
-  });
-
-  // To submit modify-date-form
-  $("#modify-date-form").on("submit", function(event)
-  {
-    event.preventDefault();
-
-    var csrftoken = getCookie("csrftoken");
-
-    function csrfSafeMethod(method)
-    {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });
-
-    $.ajax({
-      method: "POST",
-      url: $('#modify-date-form').attr('action'),
-      data: { 'date': $("#date").val(),
-              'field': $("#hidden-date-info").val()
-            },
-      success: function(json) {
-        var textToChange = "#" + json.field
-        $(textToChange).text(json.value);
-        $("#modify-date-modal").modal('hide');
-      },
-      error: function() {
-        $("#modify-date-modal").modal('hide');
-        alert("Failed to modify date field");
-      }
-    });
-  });
+  }
 });
 
-//  ############################
-//  ### POPULATION FUNCTIONS ###
-//  ############################
+
+function populate_organizations(json) {
+  for(i=0;i<json.length;i++) {
+    var orgs_html = "<option value='"+json[i].name+"'>"+json[i].name+"</option>";
+    $(orgs_html).appendTo($("#associatedorganization-value"));
+  }
+}
+function populate_persons(json) {
+  for(i=0;i<json.length;i++) {
+    var fullname = json[i].first_name + " " + json[i].last_name
+    var option = "<option value='" + json[i].id + "'>" + fullname + "</option>";
+
+    $(option).appendTo($("#associatedperson-value"));
+    $(option).appendTo($("#associatedpersons-value"));
+  }
+}
+function populate_projects(json) {
+  for(i=0;i<json.length;i++)
+  {
+    var option = "<option value='" + json[i].id + "'>" + json[i].name + "</option>";
+    $(option).appendTo($("#associatedprojects-value"));
+  }
+}
+function ajax_error() {
+  alert("Ajax didn't receive a response!");
+}
+
+function add_multiple_row(name, id, type, field, projectID) {
+  var list_id = ' id="multiple-' + type + '-' + id + '"',
+      csrf = '<input type="hidden" name="csrfmiddlewaretoken" value="' + csrftoken + '"/>',
+      field = '<input type="hidden" name="field" value="' + field + '"/>',
+      value = '<input type="hidden" name="value" value="' + id + '"/>',
+      url = '"/projects/' + projectID + '/edit/' + type + '"',
+      form = '<form method="PATCH" action=' + url + '>' + csrf + field + value,
+      button_class = 'class="btn btn-danger btn-xs pull-right"',
+      remove_span = '<span class="glyphicon glyphicon-remove"></span>',
+      button = '<button type="submit" ' + button_class + '>' + remove_span + '</button>',
+      row_class = ' class="list-group-item multiple-row"'
+      row = '<li' + list_id + row_class + '>' + form + name + button + '</form></li>';
+  $(row).appendTo("#" + type + "-well-ul");
+}
+
+
 $(function()
 {
-  // Cookies and csrf
-  var csrftoken = getCookie("csrftoken");
-  function csrfSafeMethod(method)
-  {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-      }
+  //  Add field type to modal when opened
+  $(".modify-button").click(function(e) {
+    e.stopPropagation();  // Stop panelbody from opening
+
+    //  Add info about which field we are handling
+    $("#hidden-"+$(this).data('type')+"-info").val($(this).data('field'));
+
+    var valuetype = $(this).data('valuetype');
+    // If the field is a multiple-field
+    if (valuetype == 'multiple') {
+      // Buttons data variables
+      var field = $(this).data('field');
+      var projectID = $(this).data('projectid');
+      var type = $(this).data('type');
+
+      // Send ajax request to get the items and then populate the list
+      $.ajax({
+        method: "GET",
+        url: "/get_multiple/" + type + "/" + field,
+        success: function(json) {
+          // Remove old content from the modal
+          $("li.multiple-row").remove();
+
+          // Add a row for each item in data
+          for(i=0; i<json.data.length; i++) {
+            var name = json.data[i].name,
+                itemId = json.data[i].id;
+            add_multiple_row(name, itemId, json.type, field, projectID);
+          }
+        },
+        error: function() { ajax_error(); }
+      });
     }
+
+    // Open the modal
+    $($(this).data('target')).modal('toggle');
   });
 
-  //  To populate organizationlist in modify_org_modal
+  //  To populate organizationlists
   $.ajax({
     method: "GET",
     url: "/get_orgs",
-    data: {},
-    success: function(json) {
-      for(i=0;i<json.length;i++)
-      {
-        var option = "<option value= " + json[i].name + ">";
-        $(option).appendTo($("#organizations"));
-      }
-    },
-    error: function() {
-      alert("Failed to load all organizations");
-    }
+    success: function(json) { populate_organizations(json); },
+    error: function() { ajax_error(); }
   });
 
-  //  To populate organizationlist in modify_assorg_modal
-  $.ajax({
-    method: "GET",
-    url: "/get_orgs",
-    data: {},
-    success: function(json) {
-      for(i=0;i<json.length;i++)
-      {
-        var option = "<option value= " + json[i].name + ">" + json[i].name + "</option>";
-        $(option).appendTo($("#org"));
-      }
-    },
-    error: function() {
-      alert("Failed to load all organizations");
-    }
-  });
-
-  //  To populate personslist in modify_per_modal
+  //  To populate personslists
   $.ajax({
     method: "GET",
     url: "/get_pers",
-    data: {},
-    success: function(json) {
-      for(i=0;i<json.length;i++)
-      {
-        var fullname = json[i].first_name + " " + json[i].last_name
-        var option = "<option value= " + json[i].id + ">" + fullname + "</option>";
-        $(option).appendTo($("#person"));
-      }
-    },
-    error: function() {
-      alert("Failed to load all persons");
-    }
+    success: function(json) { populate_persons(json); },
+    error: function() { ajax_error(); }
   });
 
-  // To populate the list in multiple-items-modal
-  $(".multiple-button").click(function(e){
-    // Buttons data variables
-    var field = $(this).data('field');
-    var projectID = $(this).data('projectid');
-    var type = $(this).data('type');
-
-    // Add title
-    $("#multiple-title").html(field);
-
-    // Send ajax request to get the items and then populate the list
-    $.ajax({
-      method: "GET",
-      url: "/get_multiple/" + projectID + "/" + type + "/" + field,
-      data: {},
-      success: function(json) {
-        $("#multiple-well-ul > li").remove();
-        if( json.type == "persons" )
-        {
-          for(i=0; i<json.items.length; i++)
-          {
-            var row = '<li class="list-group-item">' + json.items[i].name + '</li>';
-            $(row).appendTo("#multiple-well-ul");
-          }
-        }
-        else if( json.type == "projects" )
-        {
-          for(i=0; i<json.items.length; i++)
-          {
-            var row = '<li class="list-group-item">' + json.items[i].name + '</li>';
-            $(row).appendTo("#multiple-well-ul");
-          }
-        }
-      },
-      error: function() {
-        alert("Failed to load")
-      }
-    });
-  });
-
-  // To populate the list in multiple-items-modal when modify button is clicked
-  $(".multiple-modify-button").click(function(e){
-    // Buttons data variables
-    var field = $(this).data('field');
-    var projectID = $(this).data('projectid');
-    var type = $(this).data('type');
-
-    // Add title
-    $("#multiple-title").html(field);
-
-    // Send ajax request to get the items and then populate the list
-    $.ajax({
-      method: "GET",
-      url: "/get_multiple/" + projectID + "/" + type + "/" + field,
-      data: {},
-      success: function(json) {
-        // Remove old content from the modal
-        $("#multiple-well-ul > li").remove();
-
-        // If concerning multiple persons
-        if( json.type == "persons" )
-        {
-          for(i=0; i<json.items.length; i++)
-          {
-            // ID to be able to remove the row if person removed
-            var id = ' id="multiple-person-' + json.items[i].id + '"';
-            // Data items for the backend to br able to identify the person
-            var data = ' data-name="' + json.items[i].name + '"' + ' data-id="' + json.items[i].id + '"';
-            var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple-persons"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
-            // Create the list item and add the row to the modal
-            var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
-            $(row).appendTo("#multiple-well-ul");
-          }
-          var addLabel = '<label for="add-person-to-project" class="pull-left">Add person</label>';
-          var addSelect = '<select id="add-person-to-project" name="perID"></select>';
-          var addBtn = '<button class="btn btn-orange btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
-          var addlist = '<li class="list-group-item"><form action="/add_person_to_project" method="POST" id="add-person-to-project-form">' + addLabel + addSelect + addBtn + '</form></li>';
-          $(addlist).appendTo("#multiple-well-ul");
-          $.ajax({
-            method: "GET",
-            url: "/get_pers",
-            data: {},
-            success: function(json) {
-              for(i=0;i<json.length;i++)
-              {
-                var fullname = json[i].first_name + " " + json[i].last_name
-                var option = "<option value= " + json[i].id + ">" + fullname + "</option>";
-                $(option).appendTo($("#add-person-to-project"));
-              }
-            },
-            error: function() {
-              alert("Failed to load all persons");
-            }
-          });
-        }
-        // If concerning multiple projects
-        else if( json.type == "projects" )
-        {
-          for(i=0; i<json.items.length; i++)
-          {
-            // Look above for explanations
-            var id = ' id="multiple-project-' + json.items[i].id + '"';
-            var data = ' data-name="' + json.items[i].name + '"' + ' data-id="' + json.items[i].id + '"';
-            var button = '<button class="btn btn-danger btn-xs pull-right remove-multiple-projects"' + data + '><span class="glyphicon glyphicon-remove"></span></button>'
-            var row = '<li' + id + 'class="list-group-item">' + json.items[i].name + button + '</li>';
-            $(row).appendTo("#multiple-well-ul");
-          }
-          var addLabel = '<label for="add-project-to-project" class="pull-left">Add project</label>';
-          var addSelect = '<select id="add-project-to-project" name="projID"></select>';
-          var addBtn = '<button class="btn btn-orange btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></button>';
-          var addlist = '<li class="list-group-item"><form action="/add_project_to_project" method="POST" id="add-project-to-project-form">' + addLabel + addSelect + addBtn + '</form></li>';
-          $(addlist).appendTo("#multiple-well-ul");
-          $.ajax({
-            method: "GET",
-            url: "/get_proj",
-            data: {},
-            success: function(json) {
-              for(i=0;i<json.length;i++)
-              {
-                var option = "<option value= " + json[i].id + ">" + json[i].name + "</option>";
-                $(option).appendTo($("#add-project-to-project"));
-              }
-            },
-            error: function() {
-              alert("Failed to load all projects");
-            }
-          });
-        }
-
-        // If the add person form is submitted
-        $("#add-person-to-project-form").on("submit", function(e)
-        {
-          e.preventDefault();
-          $.ajax({
-            method: "POST",
-            url: $('#add-person-to-project-form').attr('action'),
-            data: { 'projectID': projectID, 'personID': $("#add-person-to-project").val() },
-            success: function(json) {
-              // TODO: Don't alert, just add it to the list
-              alert("Successfully added " + json.name + " to " + field);
-              $("#multiple-items-modal").modal('hide');
-            },
-            error: function() {
-              alert("Failed to add person to " + field);
-            }
-          });
-        });
-
-        // If the add project form is submitted
-        $("#add-project-to-project-form").on("submit", function(e)
-        {
-          e.preventDefault();
-          $.ajax({
-            method: "POST",
-            url: $('#add-project-to-project-form').attr('action'),
-            data: { 'destID': projectID, 'toBeAddedID': $("#add-project-to-project").val() },
-            success: function(json) {
-              // TODO: Don't alert, just add it to the list
-              alert("Successfully added " + json.name + " to " + field);
-              $("#multiple-items-modal").modal('hide');
-            },
-            error: function() {
-              alert("Failed to add project to " + field);
-            }
-          });
-        });
-
-        // If a remove button for a person is clicked
-        // Sends an ajax request to remove the person from the project
-        $(".remove-multiple-persons").click(function(e)
-        {
-          $.ajax({
-            method: "PATCH",
-            url: "/remove_person_from_project",
-            data: { 'id': $(this).data('id'), 'project_id': projectID },
-            success: function(json) {
-              // Remove the row that contained the removed person
-              $("#multiple-person-" + json.id).remove()
-            },
-            error: function() {
-              alert("Failed to remove person from project");
-            }
-          });
-        });
-
-        // Sends ajax request to remove the associated project
-        $(".remove-multiple-projects").click(function(e)
-        {
-          $.ajax({
-            method: "PATCH",
-            url: "/remove_project_from_project",
-            data: { 'id': $(this).data('id'), 'project_id': projectID },
-            success: function(json) {
-              // Remove the row that contained the removed person
-              $("#multiple-project-" + json.id).remove()
-            },
-            error: function() {
-              alert("Failed to remove project from project");
-            }
-          });
-        });
-      },
-      error: function() {
-        alert("Failed to load")
-      }
-    });
-  });
-});
-
-//  #############################
-//  ### HIDDEN INFO FUNCTIONS ###
-//  #############################
-// These are to add the hidden field input of all modals that need it
-$(function()
-{
-  //  Adding text field info
-  $(".open-modify-text").click(function(event){
-    var field_name = $(this).data('field');
-    $("#hidden-text-info").val(field_name);
-  });
-  //  Adding decimal field info
-  $(".open-modify-dec").click(function(event){
-    var field_name = $(this).data('field');
-    $("#hidden-dec-info").val(field_name);
-  });
-  //  Adding person field info
-  $(".open-modify-per").click(function(event){
-    var field_name = $(this).data('field');
-    $("#hidden-per-info").val(field_name);
-  });
-  //  Adding date field info
-  $(".open-modify-date").click(function(event){
-    var field_name = $(this).data('field');
-    $("#hidden-date-info").val(field_name);
-  });
-  //  Adding assorg field info
-  $(".open-modify-assorg").click(function(event){
-    var field_name = $(this).data('field');
-    $("#hidden-assorg-info").val(field_name);
+  //  To populate projectlists
+  $.ajax({
+    method: "GET",
+    url: "/get_proj",
+    success: function(json) { populate_projects(json); },
+    error: function() { ajax_error(); }
   });
 });

@@ -14,7 +14,7 @@ from portfolio_manager import views
 
 class SerializersTestCase(TestCase):
     def test_milestones_serializer(self):
-        data = [[u'id', u'__history_date', u'Name', u'SizeBudget'],
+        data = [[u'id', u'__history_date', u'Name', u'Budget'],
                 ['', '', 'TEXT', 'NUM'],
                 [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4'],
                 [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
@@ -55,7 +55,7 @@ class SerializersTestCase(TestCase):
         self.assertEquals(expected_serialization, [milestones1_serializer.data, milestones2_serializer.data])
 
     def test_project_serializer(self):
-        data = [[u'id', u'__history_date', u'Name', u'SizeBudget'],
+        data = [[u'id', u'__history_date', u'Name', u'Budget'],
                 ['', '', 'TEXT', 'NUM'],
                 [u'1', '2012-03-16T17:41:28+00:00', 'foo', u'4'],
                 [u'm;28/6/2015', '2013-03-16T17:41:28+00:00', u'', u'5'],
@@ -98,7 +98,7 @@ class SerializersTestCase(TestCase):
                                     'string': '4.00'
                                 }
                             ],
-                            'name': 'SizeBudget'
+                            'name': 'Budget'
                         },
                         'dimension_type': 'DecimalDimension'
                     }
@@ -158,7 +158,7 @@ class SerializersTestCase(TestCase):
                                     'string': '4.00'
                                 }
                             ],
-                            'name': 'SizeBudget'
+                            'name': 'Budget'
                         },
                         'dimension_type': 'DecimalDimension'
                     }

@@ -3,11 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.timezone import get_current_timezone, is_naive, make_aware
 from simple_history.models import HistoricalRecords
-from datetime import datetime
-import pytz
-from simple_history import register
 from dateutil.parser import parse
 from django.db.models.signals import pre_delete
 
@@ -30,7 +27,10 @@ class BaseDimensionHistory(models.Model):
         abstract = True
 
     def string(self):
-        return str(self.value)
+        try:
+            return self.value.strftime("%d/%m/%Y %H:%M")
+        except:
+            return str(self.value)
 
 
 class BaseHistoricalMilestone(models.Model):
@@ -50,6 +50,8 @@ class GoogleSheet (models.Model):
     name = models.CharField(max_length=50)
     url = models.URLField(blank=False)
 
+    def __str__(self):
+        return str(self.name)
 
 class Project (models.Model):
     name = models.CharField(max_length=50)
@@ -93,7 +95,7 @@ class Person (models.Model):
     last_name = models.CharField(max_length=64)
 
     def __str__(self):
-        return str(self.first_name + " " + self.last_name)
+        return str("{} {}".format(self.first_name, self.last_name))
 
 
 class ProjectTemplate(models.Model):
@@ -159,11 +161,17 @@ class TextDimension (Dimension):
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
 
+    def __str__(self):
+        return self.value
+
 
 class DecimalDimension (Dimension):
     value = models.DecimalField(max_digits = 20, decimal_places = 2)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
+
+    def __str__(self):
+        return str(self.value)
 
 
 class DateDimension (Dimension):
@@ -173,17 +181,20 @@ class DateDimension (Dimension):
 
     def update_date(self, value):
         d = parse(value, dayfirst=True)
-        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
-            d = d.replace(tzinfo=pytz.utc)
+        if is_naive(d):
+            d = make_aware(d)
         self.value = d
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
         d = parse(value, dayfirst=True)
-        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
-            d = d.replace(tzinfo=pytz.utc)
+        if is_naive(d):
+            d = make_aware(d)
         self.value = d
         self._history_date = history_date
+
+    def __str__(self):
+        return self.value.astimezone(get_current_timezone()).strftime("%d/%m/%Y %H:%M")
 
 
 class AssociatedOrganizationDimension (Dimension):
@@ -205,6 +216,9 @@ class AssociatedOrganizationDimension (Dimension):
         self._history_date = history_date
 
 
+    def __str__(self):
+        return str(self.value)
+
 class AssociatedPersonDimension (Dimension):
     value = models.ForeignKey(Person, null=True)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
@@ -223,38 +237,47 @@ class AssociatedPersonDimension (Dimension):
         self._history_date = history_date
 
 
+    def __str__(self):
+        return str(self.value)
+
+
 class AssociatedPersonsDimension(Dimension):
-    persons = models.ManyToManyField(Person)
+    value = models.ManyToManyField(Person)
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
         self.save()
-        self.persons.set([])
+        self.value.set([])
         for part in value.split(','):
-            person_first_name = part.strip()
+            person_first_name = part.strip().split(' ')[0]
+            try:
+                person_last_name = part.strip().split(' ')[1]
+            except:
+                person_last_name = ''
             person = None
             try:
-                person = Person.objects.get(first_name=person_first_name)
+                person = Person.objects.get(first_name=person_first_name, last_name=person_last_name)
             except Person.DoesNotExist:
                 person = Person()
                 person.first_name = person_first_name
+                person.last_name = person_last_name
                 person.save()
-            self.persons.add(person)
+            self.value.add(person)
 
     def __str__(self):
-        return str(', '.join([' '.join([ n for n in [p.first_name, p.last_name] if n]) for p in self.persons.all()]))
+        return str(', '.join([str(p) for p in self.value.all()]))
 
     def string(self):
         return self.__str__()
 
 
 class AssociatedProjectsDimension(Dimension):
-    projects = models.ManyToManyField(Project)
+    value = models.ManyToManyField(Project)
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
         self.save()
-        self.projects.set([])
+        self.value.set([])
         for part in value.split(','):
             project_id = part.strip()
             project = None
@@ -264,10 +287,10 @@ class AssociatedProjectsDimension(Dimension):
                 project = Project()
                 project.id = project_id
                 project.save()
-            self.projects.add(project)
+            self.value.add(project)
 
-    def string(self):
-        return ', '.join([p.name for p in self.projects.all()])
+    def __str__(self):
+        return ', '.join([str(p) for p in self.value.all()])
 
 
 ####        SNAPSHOTS       ####
