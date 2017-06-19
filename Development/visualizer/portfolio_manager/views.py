@@ -399,7 +399,6 @@ def addproject(request):
                     value_field = template_dimension_form.fields['value']
                     value_field.widget = django.forms.HiddenInput()
                     value_field.initial = request.GET.get('name')
-                print(template_dimension_form.fields)
                 forms.append(template_dimension_form)
     except Organization.DoesNotExist:
         pass

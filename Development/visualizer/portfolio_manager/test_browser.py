@@ -1,5 +1,5 @@
 # coding=utf-8
-import time
+import time, datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils.translation import get_language
@@ -162,21 +162,22 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def test_add_organization_add_project(self):
         """Add new organization and new project under that organization"""
-
         #   Add person that will act as project manager later
         project_project_manager = Person.objects.get(pk=2)
 
         self.open(reverse('admin_tools'))
 
         organization_name = 'Great organization'
-        elem = self.find('orgName')
-        elem.send_keys(organization_name)
+        org_input = self.find('orgName')
+        org_input.send_keys(organization_name)
         self.find('org-form').submit()
 
         # Wait for modal to open
         self.assert_that_css_appears('#conf-modal-body')
 
-        self.open(reverse('admin_tools')) # Reload organizations in "Add project" modal
+        # Reload organizations in "Add project" modal
+        self.open(reverse('admin_tools'))
+
         # Fill in "Add project" form on Admin tools page and submit it
         time.sleep(1)
         project_name = "Great project"
@@ -209,8 +210,8 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(project_name, self.find('project-name').text)
         # TODO: Add search for panel with owningorganization
         # self.assertEquals(organization_name, self.find('projectparent').text)
-        # end_date = '{d:%B} {d.day}, {d.year}'.format(d=project_end_date)
-        # self.assertEquals(project_end_date, self.find('EndDate').text)
+        end_date = project_end_date.isoformat(sep=' ', timespec='seconds')
+        self.assertEquals(end_date, self.find('EndDate').text)
         self.assertEquals(str(project_project_manager), self.find('ProjectManager').text)
         budget = number_format(project_budget, decimal_pos=2)
         self.assertEquals(budget, self.find('Budget').text)
@@ -289,7 +290,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assert_that_element_appears('modify-{}-modal'.format(field_type))
 
         # Update form value and submit
-
         elem = self.find('{}-value'.format(field_type))
         time.sleep(1)
         elem.send_keys(new_value)
@@ -303,7 +303,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # Refresh the page
         self.open(reverse('show_project', args=(1,)))
         # Check that dimension value was updated
-        #if cmp_value != self.find(dimension_name).text:
         self.assertEquals(cmp_value, self.find(dimension_name).text)
 
     def test_modify_project_text_dimension(self):
