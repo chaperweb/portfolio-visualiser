@@ -2,6 +2,7 @@
 import time, datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
+from django.utils.timezone import get_current_timezone, get_default_timezone, utc
 from django.utils.translation import get_language
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.webdriver import WebDriver as Firefox
@@ -195,11 +196,11 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # Fill in the details of new project and hit submit
         budget_field, end_date_field, project_manager_field, *foo = organization.templates.all()[0].dimensions.all()
         project_budget = 135151.0
-        project_end_date = datetime(2015, 8, 1)
-
+        project_end_date = datetime(2015, 8, 1, tzinfo=get_current_timezone())
+        date_in = project_end_date.strftime("%d/%m/%Y")
 
         self.find('id_{}_form-value'.format(budget_field.id)).send_keys(localize_input(project_budget))
-        self.find('id_{}_form-value'.format(end_date_field.id)).send_keys(project_end_date.strftime("%d/%m/%Y"))
+        self.find('id_{}_form-value'.format(end_date_field.id)).send_keys(date_in)
         project_manager_input = self.find('id_{}_form-value'.format(project_manager_field.id))
         Select(project_manager_input).select_by_value(str(project_project_manager.id))
         self.find('add-project-form').submit()
@@ -210,7 +211,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals(project_name, self.find('project-name').text)
         # TODO: Add search for panel with owningorganization
         # self.assertEquals(organization_name, self.find('projectparent').text)
-        end_date = project_end_date.isoformat(sep=' ', timespec='seconds')
+        end_date = project_end_date.strftime("%d/%m/%Y %H:%M")
         self.assertEquals(end_date, self.find('EndDate').text)
         self.assertEquals(str(project_project_manager), self.find('ProjectManager').text)
         budget = number_format(project_budget, decimal_pos=2)
@@ -316,8 +317,10 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def test_modify_project_date_dimension(self):
         """Modifying End date from show_project"""
-        result = "2019-09-01 00:00:00+00:00"
-        self._test_modify_project_dimension('EndDate', 'date', "1/9/2019", result)
+        project_end_date = datetime(2015, 9, 1, tzinfo=get_current_timezone())
+        date_in = project_end_date.strftime("%d/%m/%Y")
+        result = project_end_date.strftime("%d/%m/%Y %H:%M")
+        self._test_modify_project_dimension('EndDate', 'date', date_in, result)
 
     def test_modify_project_associated_person_dimension(self):
         """Change ProjectManager"""

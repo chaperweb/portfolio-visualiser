@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.timezone import get_current_timezone, is_naive, make_aware
 from simple_history.models import HistoricalRecords
 from datetime import datetime
 import pytz
@@ -184,21 +185,20 @@ class DateDimension (Dimension):
 
     def update_date(self, value):
         d = parse(value, dayfirst=True)
-        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
-            d = d.replace(tzinfo=pytz.utc)
+        if is_naive(d):
+            d = make_aware(d)
         self.value = d
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
         d = parse(value, dayfirst=True)
-        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
-            d = d.replace(tzinfo=pytz.utc)
+        if is_naive(d):
+            d = make_aware(d)
         self.value = d
         self._history_date = history_date
 
-
     def __str__(self):
-        return self.value.strftime("%d/%m/%Y %H:%M")
+        return self.value.astimezone(get_current_timezone()).strftime("%d/%m/%Y %H:%M")
 
 
 class AssociatedOrganizationDimension (Dimension):
