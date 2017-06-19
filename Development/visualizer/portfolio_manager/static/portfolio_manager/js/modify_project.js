@@ -33,14 +33,14 @@ $.ajaxSetup({
 
 function populate_organizations(json) {
   for(i=0;i<json.length;i++) {
-    var orgs_html = "<option value="+json[i].name+">"+json[i].name+"</option>";
+    var orgs_html = "<option value='"+json[i].name+"'>"+json[i].name+"</option>";
     $(orgs_html).appendTo($("#associatedorganization-value"));
   }
 }
 function populate_persons(json) {
   for(i=0;i<json.length;i++) {
     var fullname = json[i].first_name + " " + json[i].last_name
-    var option = "<option value= " + json[i].id + ">" + fullname + "</option>";
+    var option = "<option value='" + json[i].id + "'>" + fullname + "</option>";
 
     $(option).appendTo($("#associatedperson-value"));
     $(option).appendTo($("#associatedpersons-value"));
@@ -49,7 +49,7 @@ function populate_persons(json) {
 function populate_projects(json) {
   for(i=0;i<json.length;i++)
   {
-    var option = "<option value= " + json[i].id + ">" + json[i].name + "</option>";
+    var option = "<option value='" + json[i].id + "'>" + json[i].name + "</option>";
     $(option).appendTo($("#associatedprojects-value"));
   }
 }
