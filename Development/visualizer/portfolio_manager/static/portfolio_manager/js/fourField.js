@@ -34,17 +34,24 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 
 	for (j = 0; j < json.length; j++) {
 		var size = json[j].dimensions.length;
-		//inProgress is object which will contain the data from 1 project.
+		/*inProgress is object which will contain the data from 1 project.
+			name, organization,
+			x-axis values from input data, x-axis values from milestones
+			radius values
+			y-axis values from input data, y-axis values from milestones
+			first date of this project, last date of this project
+			dates are defaulted to infinity so the math.min/max can operate them as numbers
+		*/
 		var inProgress = {
 			"name": json[j].name,
 			"organization": "",
 			"xAxisActual": [],
 			"xAxisPlanned": [],
-			"xAxis": 0,
 			"radius": [],
 			"yAxisActual": [],
 			"yAxisPlanned": [],
-			"yAxis": 0
+			"firstDate": Infinity,
+			"lastDate": -Infinity
 		};
 		var xID = 0,
 				yID = 0;
@@ -60,7 +67,10 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 				for (h = 0; h < historyLen; h++) {
 					var date = historyList[h].history_date;
 					var planned = historyList[h].value;
-					var parsedDate = new Date(date).getTime() / 1000 // parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
+					// parsing date to timestamp. It is divided by 1000 since JS timestamp is in milliseconds.
+					var parsedDate = new Date(date).getTime() / 1000
+					inProgress.firstDate = Math.min(parsedDate, inProgress.firstDate)
+					inProgress.lastDate = Math.max(parsedDate, inProgress.lastDate)
 					setDateScale(parsedDate)
 					collectVal.push([parsedDate, planned])
 				};
@@ -100,7 +110,9 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		          		milestoneValue = milestone.dimensions[q].dimension_milestone_object.value;
 		          collectYPlan.push([parsedDate,milestoneValue])
 		        }
-						setDateScale(new Date(date).getTime() / 1000)
+						inProgress.firstDate = Math.min(parsedDate, inProgress.firstDate)
+						inProgress.lastDate = Math.max(parsedDate, inProgress.lastDate)
+						setDateScale(parsedDate)
 		    	}
       	}
     	}
@@ -131,7 +143,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		$('#end-date-selector').val(ddmmyy(endDate*1000));
 	}
 
-// console.log(projects);
+//console.log(projects);
 
 /***********************/
 /* functions live here */
@@ -206,7 +218,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	function color(d) { return colorScale(d.organization); }
 	function key(d) { return d.name; }
 
-	// Positions the dots based on data.
+	// Positions the dots based on data, the only scaling happens here as the ball max r is limited to 100
 	function position(dot) {
 		dot.attr("cx", function(d) { return validXCoordinates(x(d)) ; })
 		   .attr("cy", function(d) { return validYCoordinates(y(d)); })
@@ -222,12 +234,12 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	// interpolate data of the given day
 	function interpolateData(date) {
 		return projects.map(function(d) {
-		  return {
+			return {
 				name: d.name,
 				organization: d.organization,
-				xAxis: processValues(interpolateValues(d.xAxisActual, date),interpolateValues(d.xAxisPlanned, date)),
-				yAxis: processValues(interpolateValues(d.yAxisActual, date),interpolateValues(d.yAxisPlanned, date)),
-				radius: interpolateValues(d.radius, date)
+				xAxis: processValues(interpolateValues(d, d.xAxisActual, date),interpolateValues(d, d.xAxisPlanned, date)),
+				yAxis: processValues(interpolateValues(d, d.yAxisActual, date),interpolateValues(d, d.yAxisPlanned, date)),
+				radius: interpolateValues(d, d.radius, date)
 		  };
 		});
 	}
@@ -237,18 +249,19 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	}
 
 	/*
-    this function interpolates the values of the given array "values", and returns the value that is in the date "date".
+    this function interpolates the values of the given array "values",
+		and returns the value that is in the date "date".
     is used in interpolateData-function.
 	*/
-	function interpolateValues(values, date) {
-		if(values == undefined || date == undefined) {
+	function interpolateValues(dot, values, date) {
+		if (values == undefined || date == undefined || date < dot.firstDate || date > dot.lastDate) {
 			//array containing the data is undefined, most likely the data never existed.
 			//The value will be eventyally set to 0.
 			return 0;
 		}
 		var i = bisect.left(values, date, 0, values.length - 1),
 			a = values[i];
-		if(a == undefined) {
+		if (a == undefined) {
 			return 0;
 		} else if(a.length == 0) {
 			return 0;
