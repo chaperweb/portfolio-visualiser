@@ -381,9 +381,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
         Select(self.find('associatedpersons-value')).select_by_value('2')
         self.find_css('#modify-associatedpersons-form button[type="submit"]').click()
 
-        # Reload page
-        self.open(reverse('show_project', args=(1,)))
-
         # Click "Modify" of Members dimension
         self.find('Members-modifybtn').click()
 
@@ -407,11 +404,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Click to remove the only associated project
         self.find_css('#multiple-associatedprojects-1 button[type="submit"]').click()
-
-
-
-        # Refresh page
-        self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Dependencies dimension
         self.find('Dependencies-modifybtn').click()
@@ -442,8 +434,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # Select project to add and click '+'
         Select(self.find('associatedprojects-value')).select_by_value('2')
         self.find_css('#modify-associatedprojects-form button[type="submit"]').click()
-
-        self.open(reverse('show_project', args=(1,)))
 
         # Click "Modify" of Dependencies dimension
         self.find('Dependencies-modifybtn').click()
