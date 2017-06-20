@@ -195,7 +195,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         # Fill in the details of new project and hit submit
         budget_field, end_date_field, project_manager_field, *foo = organization.templates.all()[0].dimensions.all()
         project_budget = 135151.0
-        project_end_date = datetime(2015, 8, 1, tzinfo=get_current_timezone())
+        project_end_date = datetime.datetime(2015, 8, 1, tzinfo=get_current_timezone())
         date_in = project_end_date.strftime("%d/%m/%Y")
 
         self.find('id_{}_form-value'.format(budget_field.id)).send_keys(localize_input(project_budget))
@@ -316,7 +316,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def test_modify_project_date_dimension(self):
         """Modifying End date from show_project"""
-        project_end_date = datetime(2015, 9, 1, tzinfo=get_current_timezone())
+        project_end_date = datetime.datetime(2015, 9, 1, tzinfo=get_current_timezone())
         date_in = project_end_date.strftime("%d/%m/%Y")
         result = project_end_date.strftime("%d/%m/%Y %H:%M")
         self._test_modify_project_dimension('EndDate', 'date', date_in, result)
