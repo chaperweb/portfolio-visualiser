@@ -1,11 +1,15 @@
 import gspread
-import sys
 import os
 from dateutil.parser import parse
 from django.core.management.color import no_style
 from django.db import connection
 from oauth2client.service_account import ServiceAccountCredentials
-from portfolio_manager.models import *
+import pytz
+
+from portfolio_manager.models import TextDimension, DecimalDimension, DateDimension, AssociatedOrganizationDimension, \
+    AssociatedProjectsDimension, AssociatedPersonDimension, AssociatedPersonsDimension, DecimalMilestone, \
+    DimensionMilestone, Project, FourFieldSnapshot, Milestone, ProjectDimension, ProjectTemplate, \
+    ProjectTemplateDimension, GoogleSheet
 
 
 class ImportHelper:

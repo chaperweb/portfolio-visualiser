@@ -1,15 +1,7 @@
 from django.test import TestCase
-from portfolio_manager.models import *
-from datetime import datetime, timedelta
-from django.utils import timezone
-from decimal import *
-from portfolio_manager.serializers import *
-from rest_framework.renderers import JSONRenderer
-from django.test import Client
-from django.core.urlresolvers import reverse
-import json
+from portfolio_manager.models import Project
+from portfolio_manager.serializers import MilestoneHistorySerializer, ProjectSerializer
 from portfolio_manager.importer import from_data_array
-from portfolio_manager import views
 
 
 class SerializersTestCase(TestCase):

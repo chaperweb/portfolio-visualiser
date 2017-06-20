@@ -1,12 +1,13 @@
 from django.test import TestCase
-from portfolio_manager.models import *
-from datetime import datetime, timedelta
-from django.utils import timezone
-from decimal import *
-from portfolio_manager.serializers import ProjectSerializer
-from rest_framework.renderers import JSONRenderer
+from django.utils.timezone import make_aware
+
+from portfolio_manager.models import Project, Person, DecimalDimension, ProjectDimension, TextDimension, ContentType, \
+    Organization
+from datetime import datetime
+import pytz
 from portfolio_manager.importer import from_data_array
 from dateutil.parser import parse
+
 
 class ImporterTestCase(TestCase):
 
@@ -88,8 +89,8 @@ class ImporterTestCase(TestCase):
 
         self.assertResultTrue(result['result'])
         self.assertEqual(2, history.count())
-        self.assertEqual(datetime(2017,6,5,tzinfo=pytz.utc), history[0].value)
-        self.assertEqual(datetime(2015,4,3,tzinfo=pytz.utc), history[1].value)
+        self.assertEqual(make_aware(datetime(2017, 6, 5)), history[0].value)
+        self.assertEqual(make_aware(datetime(2015, 4, 3)), history[1].value)
 
     def test_import_startdate(self):
         data = [
@@ -109,7 +110,7 @@ class ImporterTestCase(TestCase):
         self.assertEqual(4, history.count())
         self.assertEqual(parse('2013-07-16T17:41:28+00:00'), history[0].value)
         self.assertEqual(parse('2013-05-16T17:41:28+00:00'), history[1].value)
-        self.assertEqual(datetime(2012, 8, 1, tzinfo=pytz.utc), history[2].value)
+        self.assertEqual(make_aware(datetime(2012, 8, 1)), history[2].value)
         self.assertEqual(datetime(2015, 8, 1, tzinfo=pytz.utc), history[3].value)
 
     def test_import_projectmanager(self):

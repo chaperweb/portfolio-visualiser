@@ -1,11 +1,13 @@
 from django.test import TestCase
-from portfolio_manager.models import *
-from datetime import datetime, timedelta
+from django.utils.timezone import make_aware
+
+from portfolio_manager.models import DateDimension, AssociatedProjectsDimension, AssociatedPersonsDimension, \
+    Project, Person, AssociatedPersonDimension, Organization, AssociatedOrganizationDimension, ProjectDimension, \
+    Milestone, DimensionMilestone, DecimalMilestone
+from datetime import datetime
 from django.utils import timezone
-from decimal import *
-from portfolio_manager.serializers import ProjectSerializer
-from rest_framework.renderers import JSONRenderer
 from portfolio_manager.importer import from_data_array
+
 
 class DimensionsTestCase(TestCase):
 
@@ -23,7 +25,7 @@ class DimensionsTestCase(TestCase):
         d.save()
 
         self.assertEquals(1, d.history.all().count())
-        self.assertEqual(datetime(2015,6,5,tzinfo=pytz.utc), d.history.all()[0].value)
+        self.assertEqual(make_aware(datetime(2015, 6, 5)), d.history.all()[0].value)
         self.assertEqual(now, d.history.all()[0].history_date)
 
     def test_associated_projects_dimension(self):
