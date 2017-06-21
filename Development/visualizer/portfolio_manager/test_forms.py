@@ -1,10 +1,11 @@
-import os
 
 from django.test import TestCase
 from django.utils.timezone import get_current_timezone, utc
-
-from portfolio_manager.models import *
-from portfolio_manager.forms import *
+from datetime import datetime
+from portfolio_manager.models import Project, Person, Organization
+from portfolio_manager.forms import AddProjectForm, TextDimensionForm, AssociatedProjectsDimensionForm, \
+    AssociatedPersonsDimensionForm, AssociatedOrganizationDimensionForm, AssociatedPersonDimensionForm, \
+    DateDimensionForm, DecimalDimensionForm
 
 
 class FormsTestCase(TestCase):
