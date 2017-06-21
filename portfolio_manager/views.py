@@ -85,7 +85,7 @@ def create_org(request):
         project_template_data_budget = {
             'template': template,
             'name': 'Budget',
-            'content_type': ct_objects.get_for_model(DecimalDimension),
+            'content_type': ct_objects.get_for_model(NumberDimension),
         }
         pt_dim = ProjectTemplateDimension(**project_template_data_budget)
         pt_dim.save()
@@ -218,7 +218,7 @@ def show_project(request, project_id):
 def project_edit(request, project_id, field_type):
     type_to_dimension = {
         'text': TextDimension,
-        'decimal': DecimalDimension,
+        'number': NumberDimension,
         'date': DateDimension,
         'associatedperson': AssociatedPersonDimension,
         'associatedorganization': AssociatedOrganizationDimension,
@@ -303,12 +303,12 @@ def json(request):
 
 # site to see all projects, grouped by organization
 def projects(request):
-    dd = ContentType.objects.get_for_model(DecimalDimension)
-    decimal_dimensions = ProjectDimension.objects.filter(content_type=dd)
+    dd = ContentType.objects.get_for_model(NumberDimension)
+    number_dimensions = ProjectDimension.objects.filter(content_type=dd)
     budgets = []
-    for dec_dim in decimal_dimensions:
-        if dec_dim.dimension_object.name == "Budget":
-            budgets.append(dec_dim)
+    for num_dim in number_dimensions:
+        if num_dim.dimension_object.name == "Budget":
+            budgets.append(num_dim)
     projects_all = Project.objects.all()
     organizations_all = Organization.objects.all()
 

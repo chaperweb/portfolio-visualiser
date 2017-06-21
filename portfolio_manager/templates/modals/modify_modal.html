@@ -9,7 +9,7 @@
         {% load project_tags %}
         <!--
           If the form should be for a field that only
-          has a single value, e.g. text, date or decimal
+          has a single value, e.g. text, date or number
         -->
         {% if type|is_type:"value" %}
           <form id="modify-{{type}}-form" method="POST"

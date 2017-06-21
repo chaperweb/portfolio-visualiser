@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.webdriver import WebDriver as Firefox
 from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from portfolio_manager.models import Project, Organization, DecimalDimension, DateDimension, AssociatedPersonDimension,\
+from portfolio_manager.models import Project, Organization, NumberDimension, DateDimension, AssociatedPersonDimension,\
     AssociatedPersonsDimension, Person, TextDimension, AssociatedProjectsDimension
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -148,7 +148,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.assertEquals('default', template.name)
         self.assertEquals(3, template_dimensions.count())
         self.assertEquals(
-            DecimalDimension,
+            NumberDimension,
             template_dimensions[0].content_type.model_class()
         )
         self.assertEquals('Budget', template_dimensions[0].name)
@@ -277,7 +277,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         phase_dim, budget_dim, *leftovers = project.dimensions.all()
         self.assertFalse(leftovers)
         self.assertIsInstance(phase_dim.dimension_object, TextDimension)
-        self.assertIsInstance(budget_dim.dimension_object, DecimalDimension)
+        self.assertIsInstance(budget_dim.dimension_object, NumberDimension)
 
         self.assertEquals(Decimal(project_budget), budget_dim.dimension_object.value)
         self.assertEquals(project_phase, phase_dim.dimension_object.value)
@@ -312,10 +312,10 @@ class BrowserTestCase(StaticLiveServerTestCase):
         """Modifying Phase field from show_project"""
         self._test_modify_project_dimension('Phase', 'text', 'Done', 'Done')
 
-    def test_modify_project_decimal_dimension(self):
+    def test_modify_project_number_dimension(self):
         """Modifying Budget field from show_project"""
         result = number_format(38.00, decimal_pos=2)
-        self._test_modify_project_dimension('Budget', 'decimal', localize_input(38.00), result)
+        self._test_modify_project_dimension('Budget', 'number', localize_input(38.00), result)
 
     def test_modify_project_date_dimension(self):
         """Modifying End date from show_project"""

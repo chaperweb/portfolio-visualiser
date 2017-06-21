@@ -92,7 +92,7 @@ class SerializersTestCase(TestCase):
                             ],
                             'name': 'Budget'
                         },
-                        'dimension_type': 'DecimalDimension'
+                        'dimension_type': 'NumberDimension'
                     }
                 ],
                 'milestones': [
@@ -152,7 +152,7 @@ class SerializersTestCase(TestCase):
                             ],
                             'name': 'Budget'
                         },
-                        'dimension_type': 'DecimalDimension'
+                        'dimension_type': 'NumberDimension'
                     }
                 ],
                 'milestones': [

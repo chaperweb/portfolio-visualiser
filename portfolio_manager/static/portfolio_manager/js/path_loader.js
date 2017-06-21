@@ -49,7 +49,7 @@ $(function() {
           if('history' in project.dimensions[j].dimension_object) {
             $('#x-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
             $('#x-selector').prop('disabled', false);
-            if (project.dimensions[j].dimension_type == 'DecimalDimension') {
+            if (project.dimensions[j].dimension_type == 'NumberDimension') {
               $('#y-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
               $('#y-selector').prop('disabled', false);
             }

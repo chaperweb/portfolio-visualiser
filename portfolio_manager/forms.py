@@ -59,14 +59,14 @@ class TextDimensionForm(DimensionForm):
         super(TextDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
 
-class DecimalDimensionForm(DimensionForm):
+class NumberDimensionForm(DimensionForm):
 
     class Meta:
-        model = DecimalDimension
+        model = NumberDimension
         fields = ('value',)
 
     def __init__(self, *args, **kwargs):
-        super(DecimalDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        super(NumberDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
         self.fields['value'].label = self.dimension_name
 
 
@@ -175,7 +175,7 @@ class ProjectTemplateForm(ModelForm):
         "associatedpersonsdimension",
         "associatedorganizationdimension",
         "associatedprojectsdimension",
-        "decimaldimension"
+        "numberdimension"
     ]
     cts = ContentType.objects.filter(model__in = base_types)
     field_type = forms.ModelChoiceField(queryset=cts, required=True)

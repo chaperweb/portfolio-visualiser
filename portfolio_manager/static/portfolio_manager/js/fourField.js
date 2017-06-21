@@ -58,7 +58,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 
 		for (i = 0; i < size; i++) {
 			var dimension = json[j].dimensions[i];
-	    if (dimension.dimension_type == 'DecimalDimension' ) {
+	    if (dimension.dimension_type == 'NumberDimension' ) {
 				// collectVal is array which will contain a value and a corresponding
 				// date. The type of the values is determined later (budget, manHours etc.).
 				var collectVal = [];

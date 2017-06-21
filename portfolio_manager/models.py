@@ -133,7 +133,7 @@ class Milestone(models.Model):
     __history_date = None
 
 
-class DecimalMilestone(models.Model):
+class NumberMilestone(models.Model):
     value = models.DecimalField(max_digits = 20, decimal_places=2)
 
     # Updates model's value with a value drawn from a Google Sheet
@@ -165,7 +165,7 @@ class TextDimension (Dimension):
         return self.value
 
 
-class DecimalDimension (Dimension):
+class NumberDimension (Dimension):
     value = models.DecimalField(max_digits = 20, decimal_places = 2)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None

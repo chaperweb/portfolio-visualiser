@@ -3,7 +3,7 @@ from django.utils.timezone import make_aware
 
 from portfolio_manager.models import DateDimension, AssociatedProjectsDimension, AssociatedPersonsDimension, \
     Project, Person, AssociatedPersonDimension, Organization, AssociatedOrganizationDimension, ProjectDimension, \
-    Milestone, DimensionMilestone, DecimalMilestone
+    Milestone, DimensionMilestone, NumberMilestone
 from datetime import datetime
 from django.utils import timezone
 from portfolio_manager.importer import from_data_array
@@ -129,5 +129,5 @@ class CascadeDeleteTestCase(TestCase):
         self.assertFalse(ProjectDimension.objects.all())
         self.assertFalse(Milestone.objects.all())
         self.assertFalse(DimensionMilestone.objects.all())
-        self.assertFalse(DecimalMilestone.objects.all())
+        self.assertFalse(NumberMilestone.objects.all())
         # self.assertFalse(NameDimension.objects.all())

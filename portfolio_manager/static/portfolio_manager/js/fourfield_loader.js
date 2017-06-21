@@ -1,5 +1,5 @@
 $(function() {
-  
+
   function change_if_all_selected() {
     var xIsChosen = $('#x-selector').val() != '---',
         yIsChosen = $('#y-selector').val() != '---',
@@ -27,13 +27,13 @@ $(function() {
   }).done(function(data) {
     db_json = data;
 
-    // Collect decimal dimensions across projects in order of appearance
+    // Collect number dimensions across projects in order of appearance
     var dimension_names = [];
     for (var i = 0, ilen = db_json.length; i < ilen; i++) {
       var project = db_json[i];
       for (var j = 0, jlen = project.dimensions.length; j < jlen; j++) {
         var dimension = project.dimensions[j];
-        if (dimension.dimension_type == 'DecimalDimension') {
+        if (dimension.dimension_type == 'NumberDimension') {
           var name = dimension.dimension_object.name;
           if ($.inArray(name, dimension_names) == -1)
             dimension_names.push(name);
