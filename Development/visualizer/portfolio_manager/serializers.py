@@ -1,5 +1,14 @@
 from rest_framework import serializers
-from portfolio_manager.models import *
+import pytz
+
+from portfolio_manager.models import DecimalDimension, TextDimension, DateDimension, AssociatedPersonDimension, \
+    AssociatedOrganizationDimension, AssociatedPersonsDimension, AssociatedProjectsDimension, Project, \
+    DimensionMilestone, DecimalMilestone, ProjectDimension, Organization, Person
+
+# following classes are created automagically by simple_history/models.py. They cannot be found from source code.
+# noinspection PyUnresolvedReferences
+from portfolio_manager.models import HistoricalDateDimension, HistoricalDecimalDimension, HistoricalTextDimension, \
+    HistoricalAssociatedOrganizationDimension, HistoricalAssociatedPersonDimension, HistoricalMilestone
 
 
 class DimensionObjectRelatedField(serializers.RelatedField):

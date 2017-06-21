@@ -1,18 +1,21 @@
 # coding=utf-8
+
 import time, datetime
+from decimal import Decimal
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
+from django.utils.timezone import get_current_timezone
 from django.utils.translation import get_language
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.webdriver import WebDriver as Firefox
 from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from portfolio_manager.models import *
+from portfolio_manager.models import Project, Organization, DecimalDimension, DateDimension, AssociatedPersonDimension,\
+    AssociatedPersonsDimension, Person, TextDimension, AssociatedProjectsDimension
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
-from decimal import *
 from django.utils.formats import localize_input, number_format
 from pyvirtualdisplay import Display
 from pyvirtualdisplay.xvfb import XvfbDisplay
