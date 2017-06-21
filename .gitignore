@@ -100,4 +100,10 @@ ENV/
 myLog.*
 
 # Local Database
-.sqlite3
+*.sqlite3
+
+
+*.pyc
+node_modules/
+xmlrunner/
+junit/

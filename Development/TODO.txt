@@ -1,3 +1,0 @@
-﻿
-- Jenkins-prosessi, joka mergaa branchin masteriin, kun pull request on hyväksytty
-- Jenkins prosessi, joka buildaa uuden version development-palvelimelle mergen jälkeen.
