@@ -92,31 +92,35 @@ class BrowserTestCase(StaticLiveServerTestCase):
             raise NoSuchElementException(css_selector)
         return elems
 
-    def assert_that_css_appears(self, css_selector):
-        def found_it(foo):
-            return self.find_css(css_selector)
+    def assert_wait(self, until, timeout_msg):
+        good = False
         try:
-            WebDriverWait(self.selenium, WAIT).until(found_it)
-            found = True
+            WebDriverWait(self.selenium, WAIT).until(until)
+            good = True
         except TimeoutException:
-            found = False
-        self.assertTrue(found, "CSS selector '%s' failed to appear." % css_selector)
+            pass
+        self.assertTrue(good, timeout_msg)
+
+    def assert_that_css_appears(self, css_selector):
+        self.assert_wait(
+            lambda _: self.find_css(css_selector),
+            "CSS selector '%s' failed to appear." % css_selector)
 
     def assert_that_element_appears(self, element_id):
-        try:
-            WebDriverWait(self.selenium, WAIT).until(EC.visibility_of_element_located((By.ID, element_id)))
-            found = True
-        except TimeoutException:
-            found = False
-        self.assertTrue(found, "Element with id '%s' failed to appear." % element_id)
+        self.assert_wait(
+            EC.visibility_of_element_located((By.ID, element_id)),
+            "Element with id '%s' failed to appear." % element_id)
 
     def assert_that_element_disappears(self, element_id):
-        try:
-            WebDriverWait(self.selenium, WAIT).until(EC.invisibility_of_element_located((By.ID, element_id)))
-            gone = True
-        except TimeoutException:
-            gone = False
-        self.assertTrue(gone, "Element with id '%s' is still there." % element_id)
+        self.assert_wait(
+            EC.invisibility_of_element_located((By.ID, element_id)),
+            "Element with id '%s' is still there." % element_id)
+
+    def assert_that_text_appears(self, css_selector, text):
+        self.assert_wait(
+            EC.text_to_be_present_in_element(
+                (By.CSS_SELECTOR, css_selector), text),
+            "Text '%s' failed to appear in '%s'." % (text, css_selector))
 
     # Actual tests
 
@@ -130,12 +134,9 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.find('orgName').send_keys(add_organization_name)
         self.find('org-form').submit()
 
-        # Wait for notification that reports success
-        self.assert_that_css_appears('#conf-modal-body h4')
-
-        # Check the notification message
+        # Wait for notification message that reports success
         msg = 'Organization created: {}'.format(add_organization_name)
-        self.assertEqual(self.find_css("#conf-modal-body h4").text, msg)
+        self.assert_that_text_appears("#conf-modal-body h4", msg)
 
         # Check that organization was property added to db
         organization = Organization.objects.get(pk=add_organization_name)
