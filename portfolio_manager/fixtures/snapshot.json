@@ -1,0 +1,34 @@
+[
+  {
+    "model": "portfolio_manager.DecimalDimension",
+    "pk": 1,
+    "fields": {
+      "name": "Budget",
+      "value": 1000
+    }
+  },
+  {
+    "model": "portfolio_manager.DecimalDimension",
+    "pk": 2,
+    "fields": {
+      "name": "ManDays",
+      "value": 2
+    }
+  },
+  {
+    "model": "portfolio_manager.DecimalDimension",
+    "pk": 3,
+    "fields": {
+      "name": "Effect",
+      "value": 10
+    }
+  },
+  {
+    "model": "portfolio_manager.TextDimension",
+    "pk": 1,
+    "fields": {
+      "name": "PathX",
+      "value": "X"
+    }
+  }
+]
