@@ -5,7 +5,7 @@ from datetime import datetime
 from portfolio_manager.models import Project, Person, Organization
 from portfolio_manager.forms import AddProjectForm, TextDimensionForm, AssociatedProjectsDimensionForm, \
     AssociatedPersonsDimensionForm, AssociatedOrganizationDimensionForm, AssociatedPersonDimensionForm, \
-    DateDimensionForm, DecimalDimensionForm
+    DateDimensionForm, NumberDimensionForm
 
 
 class FormsTestCase(TestCase):
@@ -116,14 +116,14 @@ class FormsTestCase(TestCase):
         self.assertEquals(internal_date, stored_time.value)
         self.assertEquals(1, stored_time.history.all().count())
 
-    def test_decimal_dimension_form(self):
+    def test_number_dimension_form(self):
         project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
         project_form.save()
 
         dimension_name = 'Size'
-        decimal_form = DecimalDimensionForm({'value': 1}, dimension_name=dimension_name, project_form=project_form)
-        self.assertTrue(decimal_form.is_valid())
-        decimal_form.save()
+        number_form = NumberDimensionForm({'value': 1}, dimension_name=dimension_name, project_form=project_form)
+        self.assertTrue(number_form.is_valid())
+        number_form.save()
 
         self.assertEquals(1, project_form.instance.dimensions.all().count())
         self.assertEquals(dimension_name, project_form.instance.dimensions.all()[0].dimension_object.name)

@@ -21,7 +21,7 @@ def get_type(ct):
 
 @register.filter
 def is_type(dim_type, input_type):
-    value_types = ['text', 'decimal', 'date']
+    value_types = ['text', 'number', 'date']
     dropdown_types = ['associatedperson', 'associatedorganization']
     multiple_types = ['associatedpersons', 'associatedprojects']
 

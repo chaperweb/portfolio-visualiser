@@ -1,21 +1,21 @@
 from rest_framework import serializers
 import pytz
 
-from portfolio_manager.models import DecimalDimension, TextDimension, DateDimension, AssociatedPersonDimension, \
+from portfolio_manager.models import NumberDimension, TextDimension, DateDimension, AssociatedPersonDimension, \
     AssociatedOrganizationDimension, AssociatedPersonsDimension, AssociatedProjectsDimension, Project, \
-    DimensionMilestone, DecimalMilestone, ProjectDimension, Organization, Person
+    DimensionMilestone, NumberMilestone, ProjectDimension, Organization, Person
 
 # following classes are created automagically by simple_history/models.py. They cannot be found from source code.
 # noinspection PyUnresolvedReferences
-from portfolio_manager.models import HistoricalDateDimension, HistoricalDecimalDimension, HistoricalTextDimension, \
+from portfolio_manager.models import HistoricalDateDimension, HistoricalNumberDimension, HistoricalTextDimension, \
     HistoricalAssociatedOrganizationDimension, HistoricalAssociatedPersonDimension, HistoricalMilestone
 
 
 class DimensionObjectRelatedField(serializers.RelatedField):
 
     def to_representation(self, value):
-        if isinstance(value, DecimalDimension):
-            serializer = DecimalDimensionSerializer(value)
+        if isinstance(value, NumberDimension):
+            serializer = NumberDimensionSerializer(value)
         elif isinstance(value, TextDimension):
             serializer = TextDimensionSerializer(value)
         elif isinstance(value, DateDimension):
@@ -33,20 +33,20 @@ class DimensionObjectRelatedField(serializers.RelatedField):
 
         return serializer.data
 
-class DecimalDimensionHistorySerializer(serializers.ModelSerializer):
+class NumberDimensionHistorySerializer(serializers.ModelSerializer):
 
   value = serializers.DecimalField(max_digits=20, decimal_places=2, coerce_to_string=False)
 
   class Meta:
-    model = HistoricalDecimalDimension
+    model = HistoricalNumberDimension
     fields = ('id', 'value', 'history_date', 'string')
 
-class DecimalDimensionSerializer(serializers.ModelSerializer):
+class NumberDimensionSerializer(serializers.ModelSerializer):
 
-  history = DecimalDimensionHistorySerializer(many=True)
+  history = NumberDimensionHistorySerializer(many=True)
 
   class Meta:
-    model = DecimalDimension
+    model = NumberDimension
     fields = ('name', 'history')
 
 
@@ -151,17 +151,17 @@ class ProjectDimensionSerializer(serializers.ModelSerializer):
         model = ProjectDimension
         fields = ('id', 'dimension_object', 'dimension_type')
 
-class DecimalMilestoneSerializer(serializers.ModelSerializer):
+class NumberMilestoneSerializer(serializers.ModelSerializer):
 
   class Meta:
-    model = DecimalMilestone
+    model = NumberMilestone
     fields = ('value',)
 
 class DimensionMilestoneObjectRelatedField(serializers.RelatedField):
 
     def to_representation(self, value):
-        if isinstance(value, DecimalMilestone):
-            serializer = DecimalMilestoneSerializer(value)
+        if isinstance(value, NumberMilestone):
+            serializer = NumberMilestoneSerializer(value)
         else:
             raise Exception('Unexpected type of dimesion milestone object: '+value.__class__.__name__)
 

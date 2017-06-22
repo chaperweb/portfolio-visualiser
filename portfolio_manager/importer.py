@@ -6,8 +6,8 @@ from django.db import connection
 from oauth2client.service_account import ServiceAccountCredentials
 import pytz
 
-from portfolio_manager.models import TextDimension, DecimalDimension, DateDimension, AssociatedOrganizationDimension, \
-    AssociatedProjectsDimension, AssociatedPersonDimension, AssociatedPersonsDimension, DecimalMilestone, \
+from portfolio_manager.models import TextDimension, NumberDimension, DateDimension, AssociatedOrganizationDimension, \
+    AssociatedProjectsDimension, AssociatedPersonDimension, AssociatedPersonsDimension, NumberMilestone, \
     DimensionMilestone, Project, FourFieldSnapshot, Milestone, ProjectDimension, ProjectTemplate, \
     ProjectTemplateDimension, GoogleSheet
 
@@ -18,7 +18,7 @@ class ImportHelper:
         self.dim_types = dim_types
         self.data_types = {
             'TEXT': TextDimension,
-            'NUM': DecimalDimension,
+            'NUM': NumberDimension,
             'DATE': DateDimension,
             'AORG': AssociatedOrganizationDimension,
             'APROJ': AssociatedProjectsDimension,
@@ -26,7 +26,7 @@ class ImportHelper:
             'APERS': AssociatedPersonsDimension
         }
         self.milestone_types = {
-            'NUM': DecimalMilestone
+            'NUM': NumberMilestone
         }
 
     def dimension_by_column(self, idx):

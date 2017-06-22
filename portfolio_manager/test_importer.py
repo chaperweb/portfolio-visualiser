@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils.timezone import make_aware
 
-from portfolio_manager.models import Project, Person, DecimalDimension, ProjectDimension, TextDimension, ContentType, \
+from portfolio_manager.models import Project, Person, NumberDimension, ProjectDimension, TextDimension, ContentType, \
     Organization
 from datetime import datetime
 import pytz
@@ -183,7 +183,7 @@ class ImporterTestCase(TestCase):
         project.id = 1
         project.save()
 
-        d1 = DecimalDimension()
+        d1 = NumberDimension()
         d1.name = 'Budget'
         d1.value = 5
         d1.save()
@@ -204,7 +204,7 @@ class ImporterTestCase(TestCase):
         self.assertResultTrue(result['result'])
         self.assertEqual(1, dimensions.count())
         self.assertTrue(isinstance(dimensions[0].dimension_object, TextDimension))
-        self.assertEqual(0, DecimalDimension.objects.all().count())
+        self.assertEqual(0, NumberDimension.objects.all().count())
         self.assertEqual(1, ProjectDimension.objects.all().count())
 
     def test_keep_unaffected_projects(self):
@@ -212,7 +212,7 @@ class ImporterTestCase(TestCase):
         project.id = 1
         project.save()
 
-        d1 = DecimalDimension()
+        d1 = NumberDimension()
         d1.name = 'Budget'
         d1.value = 5
         d1.save()
@@ -233,7 +233,7 @@ class ImporterTestCase(TestCase):
         self.assertResultTrue(result['result'])
         self.assertEqual(2, Project.objects.all().count())
         self.assertEqual(1, dimensions.count())
-        self.assertTrue(isinstance(dimensions[0].dimension_object, DecimalDimension))
+        self.assertTrue(isinstance(dimensions[0].dimension_object, NumberDimension))
 
     def test_importer_unknown_column(self):
         data = [
@@ -332,7 +332,7 @@ class ImporterTestCase(TestCase):
         )
         self.assertEqual('Budget', org1_dimensions[2].name)
         self.assertEqual(
-            ContentType.objects.get(model='decimaldimension'),
+            ContentType.objects.get(model='numberdimension'),
             org1_dimensions[2].content_type
         )
 
@@ -349,6 +349,6 @@ class ImporterTestCase(TestCase):
         )
         self.assertEqual('Budget', org2_dimensions[2].name)
         self.assertEqual(
-            ContentType.objects.get(model='decimaldimension'),
+            ContentType.objects.get(model='numberdimension'),
             org2_dimensions[2].content_type
         )
