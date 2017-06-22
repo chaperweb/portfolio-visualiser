@@ -6,9 +6,19 @@ Portfolio visualizer aims at creating a tool for collaborative, open and agile p
 
 Portfolio visualizer's source code is made available under the [GNU General Public License]
 
-Portfolio visualizer is build using [Django framework]
+Portfolio visualizer is being developed using [Django framework]
 
 # Building
+For easy start we recommend installing `python3` and `python3-pip` and after that continuing with instructions given below.
+
+Ensure that you have necessary libraries installed by running requirements.txt from the project root folder.
+```
+$ pip install -r requirements.txt
+```
+After this step is successfully taken, you can run your local server version by typing:
+```
+$ python3 manage.py runserver
+```
 
 # Background
 Portfolio visualizer originates from [Aalto University] Computer Science student project.
