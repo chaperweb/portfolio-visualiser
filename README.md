@@ -9,7 +9,7 @@ Portfolio visualizer's source code is made available under the [GNU General Publ
 Portfolio visualizer is being developed using [Django framework]
 
 # Building
-For easy start we recommend installing `python3` and `python3-pip` and after that continuing with instructions given below.
+For easy start we recommend installing `python3` and `python3-pip` and after that continue with instructions given below.
 
 Ensure that you have necessary libraries installed by running requirements.txt from the project root folder.
 ```
@@ -128,7 +128,7 @@ To test that selenium is properly available go to python command line (in virtua
     from selenium.webdriver.firefox.webdriver import WebDriver
     WebDriver(executable_path='node_modules/geckodriver/geckodriver')
 
-It should pop up a firefox window. 
+It should pop up a firefox window.
 
 Command to run all of the tests, assuming that virtualenv is on:
 
@@ -158,7 +158,7 @@ If there are problems and/or solutions in setting up your testing getting the te
 # Background
 Portfolio visualizer originates from [Aalto University] Computer Science student project.
 
-The original project team constructed of 9 members: Scrum master Nico Liljestrand and 8 developers, Miili Halkka, Joonas Harjumäki, Niklas Heijari, Kaarlo Kekkonen, Iiro Koivulehto, Castor Köhler, Marcos Ryhänen Rodellas and Lauri Voipio. [Codentos'] representative, as Product Owner, was Matti Kinnunen.
+The original project team: Scrum master Nico Liljestrand and 8 developers, Miili Halkka, Joonas Harjumäki, Niklas Heijari, Kaarlo Kekkonen, Iiro Koivulehto, Castor Köhler, Marcos Ryhänen Rodellas and Lauri Voipio. [Codentos'] representative, as Product Owner, was Matti Kinnunen.
 
 Due some heavy reorganizing in git the oldest history records are available only by using --follow command.
 
