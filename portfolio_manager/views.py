@@ -597,8 +597,8 @@ def create_snapshot(request):
 
             name = request.POST['name']
             description = request.POST['description']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
+            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
             zoom = request.POST['zoom']
 
             ff_snap = create_fourfieldsnapshot(
