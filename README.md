@@ -15,10 +15,20 @@ Ensure that you have necessary libraries installed by running requirements.txt f
 ```
 $ pip install -r requirements.txt
 ```
-After this step is successfully taken, you can run your local server version by typing:
+Setup the django models:
+```
+$ python3 manage.py makemigrations
+$ python3 manage.py migrate
+```
+After these steps are successfully taken, you can run your local server version by typing:
 ```
 $ python3 manage.py runserver
 ```
+Then you can access the software from address `localhost:8000`, and for the admin access `localhost:8080`.
+
+# Data input
+
+TBA
 
 # Background
 Portfolio visualizer originates from [Aalto University] Computer Science student project.
