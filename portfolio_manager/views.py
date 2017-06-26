@@ -469,7 +469,7 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
     return ff_snap
 
 
-def snapshots(request, vis_type, snapshot_id):
+def snapshots(request, vis_type=None, snapshot_id=None):
     response_data = {}
     template = 'snapshots/error.html'
 
@@ -597,8 +597,8 @@ def create_snapshot(request):
 
             name = request.POST['name']
             description = request.POST['description']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%m/%d/%Y").strftime("%Y-%m-%d")
+            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
             zoom = request.POST['zoom']
 
             ff_snap = create_fourfieldsnapshot(

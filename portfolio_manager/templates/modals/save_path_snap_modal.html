@@ -6,7 +6,7 @@
           <span aria-hidden="true">x</span>
         </button>
         <h3 class="modal-title">Save Snapshot</h3>
-        <form class="create-snap-modal-form" method="POST" action="{% url 'create_snapshot' %}">
+        <form id="save-path-snap-form" class="create-snap-modal-form" method="POST" action="{% url 'create_snapshot' %}">
           {% csrf_token %}
           <!-- VISIBLE FIELDS -->
           <div class="form-group">

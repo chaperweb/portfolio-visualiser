@@ -475,7 +475,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.open(reverse('path'))
 
         self.assert_wait_that_element_clickable('project-selector')
-        Select(self.find('project-selector')).select_by_value(1)
+        Select(self.find('project-selector')).select_by_value("1")
 
         self.find('save-path-snap-btn').click()
 
@@ -483,10 +483,22 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.find('path-snap-name').send_keys("PathSnapTest")
         self.find('path-snap-desc').send_keys("PathSnapTestDescription")
 
-        self.find_elements_by_css_selector('#create-snap-modal-form button[type="submit"]').click()
+        self.find_css('#save-path-snap-form input[type="submit"]').click()
 
-        self.assertEquals(self.current_url, reverse('snapshots', args('path', 1)))
+        self.assert_that_element_appears('snap-info-cont')
 
 
     def test_add_fourfield_snapshot(self):
-        self.assertTrue(True)
+        self.open(reverse('fourfield'))
+
+        self.assert_wait_that_element_clickable('x-selector')
+
+        self.find('save-fourfield-snap-btn').click()
+
+        self.assert_that_element_appears('save-fourfield-snap-modal')
+        self.find('fourfield-snap-name').send_keys("FourFieldSnapTest")
+        self.find('fourfield-snap-desc').send_keys("FourFieldSnapTestDescription")
+
+        self.find_css('#save-fourfield-snap-form input[type="submit"]').click()
+
+        self.assert_that_element_appears('snap-info-cont')
