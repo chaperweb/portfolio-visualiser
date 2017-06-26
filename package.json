@@ -14,5 +14,5 @@
     "test": "tape portfolio_manager/static/portfolio_manager/js/test_path.js"
   },
   "author": "",
-  "license": "MIT"
+  "license": "GPLv3"
 }
