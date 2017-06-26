@@ -21,9 +21,9 @@
 from django.test import TestCase
 from django.utils.timezone import make_aware
 
-from portfolio_manager.models import DateDimension, AssociatedProjectsDimension, AssociatedPersonsDimension, \
+from portfolio_manager.models import TextDimension, NumberDimension, DateDimension, AssociatedProjectsDimension, AssociatedPersonsDimension, \
     Project, Person, AssociatedPersonDimension, Organization, AssociatedOrganizationDimension, ProjectDimension, \
-    Milestone, DimensionMilestone, NumberMilestone
+    Milestone, DimensionMilestone, NumberMilestone, PathSnapshot, FourFieldSnapshot
 from datetime import datetime
 from django.utils import timezone
 from portfolio_manager.importer import from_data_array
@@ -34,7 +34,7 @@ class DimensionsTestCase(TestCase):
     def setUp(self):
         pass
 
-    fixtures = ['projects', 'persons', 'organizations']
+    fixtures = ['projects', 'persons', 'organizations', 'snapshot']
 
     def test_date_dimension(self):
 
@@ -130,6 +130,47 @@ class DimensionsTestCase(TestCase):
         self.assertEquals(org1, d.value)
         self.assertEquals(org1, d.history.all()[0].value)
         self.assertEqual(now, d.history.all()[0].history_date)
+
+
+    def test_path_snapshot(self):
+        project = Project.objects.get(pk=1)
+        x = TextDimension.objects.get(pk=1)
+        y = NumberDimension.objects.get(pk=1)
+
+        snap = PathSnapshot()
+        snap.name = 'TestSnap'
+        snap.description = 'TestSnap Description'
+        snap.snap_type = 'PA'
+        snap.project = project
+        snap.dimension_object_x = x
+        snap.dimension_object_y = y
+        snap.save()
+
+        self.assertEquals(snap.project, project)
+        self.assertEquals(snap.dimension_object_x, x)
+        self.assertEquals(snap.dimension_object_y, y)
+
+
+    def test_fourfield_snap(self):
+        x = NumberDimension.objects.get(pk=1)
+        y = NumberDimension.objects.get(pk=2)
+        r = NumberDimension.objects.get(pk=3)
+
+        snap = FourFieldSnapshot()
+        snap.name = "FF Snap"
+        snap.description = "FF Snap Description"
+        snap.snap_type = "FF"
+        snap.x_dimension = x.name
+        snap.y_dimension = y.name
+        snap.radius_dimension = r.name
+        snap.start_date = make_aware(datetime(2015, 6, 5))
+        snap.end_date = make_aware(datetime(2015, 6, 6))
+        snap.zoom = 100
+        snap.save()
+
+        self.assertEquals(snap.x_dimension, x.name)
+        self.assertEquals(snap.y_dimension, y.name)
+        self.assertEquals(snap.radius_dimension, r.name)
 
 class CascadeDeleteTestCase(TestCase):
 

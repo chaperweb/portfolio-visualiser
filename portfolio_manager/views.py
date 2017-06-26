@@ -489,7 +489,7 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
     return ff_snap
 
 
-def snapshots(request, vis_type, snapshot_id):
+def snapshots(request, vis_type=None, snapshot_id=None):
     response_data = {}
     template = 'snapshots/error.html'
 

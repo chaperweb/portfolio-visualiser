@@ -142,6 +142,12 @@ class BrowserTestCase(StaticLiveServerTestCase):
                 (By.CSS_SELECTOR, css_selector), text),
             "Text '%s' failed to appear in '%s'." % (text, css_selector))
 
+    def assert_wait_that_element_clickable(self, element_id):
+        self.assert_wait(
+            EC.element_to_be_clickable((By.ID, element_id)),
+            "{} failed to become clickable".format(element_id)
+        )
+
     # Actual tests
 
     def test_add_organization(self):
@@ -483,3 +489,36 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
         # Modal should've added dependency(2 projects + addform)
         self.assertEquals(3, len(self.selenium.find_elements_by_css_selector('#associatedprojects-well-ul li')))
+
+
+    def test_add_path_snapshot(self):
+        self.open(reverse('path'))
+
+        self.assert_wait_that_element_clickable('project-selector')
+        Select(self.find('project-selector')).select_by_value("1")
+
+        self.find('save-path-snap-btn').click()
+
+        self.assert_that_element_appears('save-path-snap-modal')
+        self.find('path-snap-name').send_keys("PathSnapTest")
+        self.find('path-snap-desc').send_keys("PathSnapTestDescription")
+
+        self.find_css('#save-path-snap-form input[type="submit"]').click()
+
+        self.assert_that_element_appears('snap-info-cont')
+
+
+    def test_add_fourfield_snapshot(self):
+        self.open(reverse('fourfield'))
+
+        self.assert_wait_that_element_clickable('x-selector')
+
+        self.find('save-fourfield-snap-btn').click()
+
+        self.assert_that_element_appears('save-fourfield-snap-modal')
+        self.find('fourfield-snap-name').send_keys("FourFieldSnapTest")
+        self.find('fourfield-snap-desc').send_keys("FourFieldSnapTestDescription")
+
+        self.find_css('#save-fourfield-snap-form input[type="submit"]').click()
+
+        self.assert_that_element_appears('snap-info-cont')
