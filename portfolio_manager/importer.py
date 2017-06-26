@@ -1,3 +1,23 @@
+##
+#
+# Portfolio Visualizer
+#
+# Copyright (C) 2017 Codento
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##
 import gspread
 import os
 from dateutil.parser import parse
@@ -6,8 +26,8 @@ from django.db import connection
 from oauth2client.service_account import ServiceAccountCredentials
 import pytz
 
-from portfolio_manager.models import TextDimension, DecimalDimension, DateDimension, AssociatedOrganizationDimension, \
-    AssociatedProjectsDimension, AssociatedPersonDimension, AssociatedPersonsDimension, DecimalMilestone, \
+from portfolio_manager.models import TextDimension, NumberDimension, DateDimension, AssociatedOrganizationDimension, \
+    AssociatedProjectsDimension, AssociatedPersonDimension, AssociatedPersonsDimension, NumberMilestone, \
     DimensionMilestone, Project, FourFieldSnapshot, Milestone, ProjectDimension, ProjectTemplate, \
     ProjectTemplateDimension, GoogleSheet
 
@@ -18,7 +38,7 @@ class ImportHelper:
         self.dim_types = dim_types
         self.data_types = {
             'TEXT': TextDimension,
-            'NUM': DecimalDimension,
+            'NUM': NumberDimension,
             'DATE': DateDimension,
             'AORG': AssociatedOrganizationDimension,
             'APROJ': AssociatedProjectsDimension,
@@ -26,7 +46,7 @@ class ImportHelper:
             'APERS': AssociatedPersonsDimension
         }
         self.milestone_types = {
-            'NUM': DecimalMilestone
+            'NUM': NumberMilestone
         }
 
     def dimension_by_column(self, idx):

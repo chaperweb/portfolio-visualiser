@@ -22,7 +22,7 @@
     "fields": {
       "template": 1,
       "name": "Budget",
-      "content_type": ["portfolio_manager", "decimaldimension"]
+      "content_type": ["portfolio_manager", "numberdimension"]
     }
   }
 ]

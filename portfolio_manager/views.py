@@ -1,3 +1,23 @@
+##
+#
+# Portfolio Visualizer
+#
+# Copyright (C) 2017 Codento
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##
 import logging
 import json as json_module
 from django.core.serializers.json import DjangoJSONEncoder
@@ -85,7 +105,7 @@ def create_org(request):
         project_template_data_budget = {
             'template': template,
             'name': 'Budget',
-            'content_type': ct_objects.get_for_model(DecimalDimension),
+            'content_type': ct_objects.get_for_model(NumberDimension),
         }
         pt_dim = ProjectTemplateDimension(**project_template_data_budget)
         pt_dim.save()
@@ -218,7 +238,7 @@ def show_project(request, project_id):
 def project_edit(request, project_id, field_type):
     type_to_dimension = {
         'text': TextDimension,
-        'decimal': DecimalDimension,
+        'number': NumberDimension,
         'date': DateDimension,
         'associatedperson': AssociatedPersonDimension,
         'associatedorganization': AssociatedOrganizationDimension,
@@ -303,12 +323,12 @@ def json(request):
 
 # site to see all projects, grouped by organization
 def projects(request):
-    dd = ContentType.objects.get_for_model(DecimalDimension)
-    decimal_dimensions = ProjectDimension.objects.filter(content_type=dd)
+    dd = ContentType.objects.get_for_model(NumberDimension)
+    number_dimensions = ProjectDimension.objects.filter(content_type=dd)
     budgets = []
-    for dec_dim in decimal_dimensions:
-        if dec_dim.dimension_object.name == "Budget":
-            budgets.append(dec_dim)
+    for num_dim in number_dimensions:
+        if num_dim.dimension_object.name == "Budget":
+            budgets.append(num_dim)
     projects_all = Project.objects.all()
     organizations_all = Organization.objects.all()
 

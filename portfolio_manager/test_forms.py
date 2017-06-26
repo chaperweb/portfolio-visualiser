@@ -1,3 +1,23 @@
+##
+#
+# Portfolio Visualizer
+#
+# Copyright (C) 2017 Codento
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##
 
 from django.test import TestCase
 from django.utils.timezone import get_current_timezone, utc
@@ -5,7 +25,7 @@ from datetime import datetime
 from portfolio_manager.models import Project, Person, Organization
 from portfolio_manager.forms import AddProjectForm, TextDimensionForm, AssociatedProjectsDimensionForm, \
     AssociatedPersonsDimensionForm, AssociatedOrganizationDimensionForm, AssociatedPersonDimensionForm, \
-    DateDimensionForm, DecimalDimensionForm
+    DateDimensionForm, NumberDimensionForm
 
 
 class FormsTestCase(TestCase):
@@ -116,14 +136,14 @@ class FormsTestCase(TestCase):
         self.assertEquals(internal_date, stored_time.value)
         self.assertEquals(1, stored_time.history.all().count())
 
-    def test_decimal_dimension_form(self):
+    def test_number_dimension_form(self):
         project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
         project_form.save()
 
         dimension_name = 'Size'
-        decimal_form = DecimalDimensionForm({'value': 1}, dimension_name=dimension_name, project_form=project_form)
-        self.assertTrue(decimal_form.is_valid())
-        decimal_form.save()
+        number_form = NumberDimensionForm({'value': 1}, dimension_name=dimension_name, project_form=project_form)
+        self.assertTrue(number_form.is_valid())
+        number_form.save()
 
         self.assertEquals(1, project_form.instance.dimensions.all().count())
         self.assertEquals(dimension_name, project_form.instance.dimensions.all()[0].dimension_object.name)

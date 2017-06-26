@@ -1,7 +1,27 @@
+##
+#
+# Portfolio Visualizer
+#
+# Copyright (C) 2017 Codento
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##
 from django.test import TestCase
 from django.utils.timezone import make_aware
 
-from portfolio_manager.models import Project, Person, DecimalDimension, ProjectDimension, TextDimension, ContentType, \
+from portfolio_manager.models import Project, Person, NumberDimension, ProjectDimension, TextDimension, ContentType, \
     Organization
 from datetime import datetime
 import pytz
@@ -183,7 +203,7 @@ class ImporterTestCase(TestCase):
         project.id = 1
         project.save()
 
-        d1 = DecimalDimension()
+        d1 = NumberDimension()
         d1.name = 'Budget'
         d1.value = 5
         d1.save()
@@ -204,7 +224,7 @@ class ImporterTestCase(TestCase):
         self.assertResultTrue(result['result'])
         self.assertEqual(1, dimensions.count())
         self.assertTrue(isinstance(dimensions[0].dimension_object, TextDimension))
-        self.assertEqual(0, DecimalDimension.objects.all().count())
+        self.assertEqual(0, NumberDimension.objects.all().count())
         self.assertEqual(1, ProjectDimension.objects.all().count())
 
     def test_keep_unaffected_projects(self):
@@ -212,7 +232,7 @@ class ImporterTestCase(TestCase):
         project.id = 1
         project.save()
 
-        d1 = DecimalDimension()
+        d1 = NumberDimension()
         d1.name = 'Budget'
         d1.value = 5
         d1.save()
@@ -233,7 +253,7 @@ class ImporterTestCase(TestCase):
         self.assertResultTrue(result['result'])
         self.assertEqual(2, Project.objects.all().count())
         self.assertEqual(1, dimensions.count())
-        self.assertTrue(isinstance(dimensions[0].dimension_object, DecimalDimension))
+        self.assertTrue(isinstance(dimensions[0].dimension_object, NumberDimension))
 
     def test_importer_unknown_column(self):
         data = [
@@ -332,7 +352,7 @@ class ImporterTestCase(TestCase):
         )
         self.assertEqual('Budget', org1_dimensions[2].name)
         self.assertEqual(
-            ContentType.objects.get(model='decimaldimension'),
+            ContentType.objects.get(model='numberdimension'),
             org1_dimensions[2].content_type
         )
 
@@ -349,6 +369,6 @@ class ImporterTestCase(TestCase):
         )
         self.assertEqual('Budget', org2_dimensions[2].name)
         self.assertEqual(
-            ContentType.objects.get(model='decimaldimension'),
+            ContentType.objects.get(model='numberdimension'),
             org2_dimensions[2].content_type
         )

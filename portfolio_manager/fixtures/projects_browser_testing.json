@@ -29,7 +29,7 @@
     "fields": {
       "template": 2,
       "name": "Budget",
-      "content_type": ["portfolio_manager", "decimaldimension"]
+      "content_type": ["portfolio_manager", "numberdimension"]
     }
   },
   {
@@ -103,12 +103,12 @@
     "model": "portfolio_manager.ProjectDimension",
     "fields": {
       "project": 1,
-      "content_type": ["portfolio_manager", "decimaldimension"],
+      "content_type": ["portfolio_manager", "numberdimension"],
       "object_id": 1
     }
   },
   {
-    "model": "portfolio_manager.DecimalDimension",
+    "model": "portfolio_manager.NumberDimension",
     "pk": 1,
     "fields": {
       "name": "Budget",
