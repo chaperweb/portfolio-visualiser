@@ -14,17 +14,17 @@ For easy start we recommend installing `python3` and `python3-pip` and after tha
 
 ## Preparing and using virtualenv
 It is recommended but not necessary to have *Portfolio visualizer* running in `virtualenv`: then it will have its own dedicated python interpreter and libraries for required dependencies. In that way requirements for *Portfolio visualizer* won't affect your other python projects, anv vice versa.
- 
+
 The following command will create virtualenv named 'venv' with Python3.6 and its default libraries.
-  
+
     $ virtualenv venv
-  
+
 The command will report which python version it used as a base. If the reported version is python version is 2.x, delete the venv folder and try again with argument `--python=python3`, or with the full path to your python3 interpreter.
 
 Now, when doing anything related to *Portfolio visualizer* and its python scripts, you want to be *inside* the virtual environment. Activate it with:
 
     $ source venv/bin/activate
-    
+
 Now your command prompt should be prefixed with `(venv)`. All the following requirement installation and python commands should be done in (venv)-terminal. In following commands it is unnecessary to use `python3`, just `python` will do.    
 
 To deactivate virtualenv, just call
@@ -42,14 +42,14 @@ $ pip install -r requirements.txt
 
 ## Prepare the database
 
-Portfolio visualizer uses Django's default SQLLite — you don't have to start or create database separately, but you'll have to let migration scripts to shape it before the first launch of Portfolio visualizer.  
+Portfolio visualizer uses Django's default SQLite — you don't have to start or create database separately, but you'll have to let migration scripts to shape it before the first launch of Portfolio visualizer.  
 Setup the django models:
 ```
 $ python3 manage.py makemigrations
 $ python3 manage.py migrate
 ```
 
-## Running the server 
+## Running the server
 After these steps are successfully taken, you can run your local server version by typing:
 ```
 $ python3 manage.py runserver
