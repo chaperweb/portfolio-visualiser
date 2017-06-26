@@ -21,9 +21,9 @@
 from django.test import TestCase
 from django.utils.timezone import make_aware
 
-from portfolio_manager.models import TextDimension, DecimalDimension, DateDimension, AssociatedProjectsDimension, AssociatedPersonsDimension, \
+from portfolio_manager.models import TextDimension, NumberDimension, DateDimension, AssociatedProjectsDimension, AssociatedPersonsDimension, \
     Project, Person, AssociatedPersonDimension, Organization, AssociatedOrganizationDimension, ProjectDimension, \
-    Milestone, DimensionMilestone, DecimalMilestone, PathSnapshot, FourFieldSnapshot
+    Milestone, DimensionMilestone, NumberMilestone, PathSnapshot, FourFieldSnapshot
 from datetime import datetime
 from django.utils import timezone
 from portfolio_manager.importer import from_data_array
@@ -135,7 +135,7 @@ class DimensionsTestCase(TestCase):
     def test_path_snapshot(self):
         project = Project.objects.get(pk=1)
         x = TextDimension.objects.get(pk=1)
-        y = DecimalDimension.objects.get(pk=1)
+        y = NumberDimension.objects.get(pk=1)
 
         snap = PathSnapshot()
         snap.name = 'TestSnap'
@@ -152,9 +152,9 @@ class DimensionsTestCase(TestCase):
 
 
     def test_fourfield_snap(self):
-        x = DecimalDimension.objects.get(pk=1)
-        y = DecimalDimension.objects.get(pk=2)
-        r = DecimalDimension.objects.get(pk=3)
+        x = NumberDimension.objects.get(pk=1)
+        y = NumberDimension.objects.get(pk=2)
+        r = NumberDimension.objects.get(pk=3)
 
         snap = FourFieldSnapshot()
         snap.name = "FF Snap"

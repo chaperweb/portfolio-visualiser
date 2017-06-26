@@ -1,6 +1,6 @@
 [
   {
-    "model": "portfolio_manager.DecimalDimension",
+    "model": "portfolio_manager.NumberDimension",
     "pk": 1,
     "fields": {
       "name": "Budget",
@@ -8,7 +8,7 @@
     }
   },
   {
-    "model": "portfolio_manager.DecimalDimension",
+    "model": "portfolio_manager.NumberDimension",
     "pk": 2,
     "fields": {
       "name": "ManDays",
@@ -16,7 +16,7 @@
     }
   },
   {
-    "model": "portfolio_manager.DecimalDimension",
+    "model": "portfolio_manager.NumberDimension",
     "pk": 3,
     "fields": {
       "name": "Effect",
