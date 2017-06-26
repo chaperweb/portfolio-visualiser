@@ -119,6 +119,38 @@
     "model": "portfolio_manager.ProjectDimension",
     "fields": {
       "project": 1,
+      "content_type": ["portfolio_manager", "numberdimension"],
+      "object_id": 3
+    }
+  },
+  {
+    "model": "portfolio_manager.NumberDimension",
+    "pk": 3,
+    "fields": {
+      "name": "Mandays",
+      "value": 100
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectDimension",
+    "fields": {
+      "project": 1,
+      "content_type": ["portfolio_manager", "numberdimension"],
+      "object_id": 2
+    }
+  },
+  {
+    "model": "portfolio_manager.NumberDimension",
+    "pk": 2,
+    "fields": {
+      "name": "Effect",
+      "value": 10
+    }
+  },
+  {
+    "model": "portfolio_manager.ProjectDimension",
+    "fields": {
+      "project": 1,
       "content_type": ["portfolio_manager", "datedimension"],
       "object_id": 1
     }
