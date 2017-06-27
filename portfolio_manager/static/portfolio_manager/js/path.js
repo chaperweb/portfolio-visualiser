@@ -213,9 +213,7 @@ function generate_path_svg(pathData) {
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
      .call(d3.axisBottom(z))
-     .selectAll("text")
-     .data(pathData)
-     .text(function(d) { return ddmmyy(d.history_date) });
+     .tickFormat(ddmmyy());
 
   // Y-axis
   svg.append("g")
