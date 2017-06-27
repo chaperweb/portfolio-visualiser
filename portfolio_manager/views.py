@@ -28,6 +28,7 @@ import django.forms
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
+from django.contrib.auth.models import User
 
 from portfolio_manager.models import *
 from portfolio_manager.forms import *
@@ -73,6 +74,24 @@ def home(request):
     context["mils"] = mils
     context['dates'] = dateds
     return render(request, 'homepage.html', context)
+
+
+def signup(request):
+    if request.method == "POST":
+        user = User.objects.create_user(
+            request.POST['username'],
+            request.POST['password'],
+            request.POST.get('email'),
+            request.POST.get('first_name'),
+            request.POST.get('last_name')
+        )
+        user.save()
+        print("SIGNUP")
+        return redirect('homepage', permanent=True)
+    else:
+        print("Get singup page")
+        return render(request, 'registration/signup.html')
+
 
 def admin_tools(request):
     form = AddProjectForm()
