@@ -178,7 +178,7 @@ function generate_path_svg(pathData) {
               .attr("class", "svg-content");
 
   // The scales of the axis
-  var x = d3.scaleLinear().range([0,axisLengthX]),
+  var x = d3.scaleTime().range([0,axisLengthX]),
       y = d3.scaleLinear().range([axisLengthY,0]);
       z = d3.scaleTime().range([0,axisLengthX]);
 
