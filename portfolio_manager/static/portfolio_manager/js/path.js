@@ -180,7 +180,7 @@ function generate_path_svg(pathData) {
   // The scales of the axis
   var x = d3.scaleLinear().range([0,axisLengthX]),
       y = d3.scaleLinear().range([axisLengthY,0]);
-      z = d3.scaleLinear().range([0,axisLengthX]);
+      z = d3.scaleTime().range([0,axisLengthX]);
 
   x.domain([0, (pathData.length-1)]);
   y.domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})]);
@@ -211,11 +211,10 @@ function generate_path_svg(pathData) {
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
-     .call(d3.scaleTime(z))/*.ticks(pathData.length-1))
+     .call(d3.axisBottom(z).ticks(pathData.length-1))
      .selectAll("text")
      .data(pathData)
      .text(function(d) { return ddmmyy(Date.parse(d.history_date)) });
-     */
 
   // Y-axis
   svg.append("g")
