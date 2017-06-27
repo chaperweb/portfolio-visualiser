@@ -34,6 +34,14 @@
       <img style="padding-bottom: 5%;" src="{% static 'portfolio_manager/img/Codento_logo.png' %}" width="80%"/>
       {% csrf_token %}
       <div class="form-group">
+        <label for="username">Username:</label>
+        <input id="username" type="text" class="form-control" name="username" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input id="email" type="text" class="form-control" name="email" required />
+      </div>
+      <div class="form-group">
         <label for="first_name">First Name:</label>
         <input id="first_name" type="text" class="form-control" name="first_name" />
       </div>
@@ -42,20 +50,8 @@
         <input id="last_name" type="text" class="form-control" name="last_name" />
       </div>
       <div class="form-group">
-        <label for="email">Email:</label>
-        <input id="email" type="text" class="form-control" name="email" />
-      </div>
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input id="username" type="text" class="form-control" name="username" />
-      </div>
-      <div class="form-group">
         <label for="password">Password:</label>
-        <input id="password" type="password" class="form-control" name="password" />
-      </div>
-      <div class="form-group">
-        <label for="password-conf">Confirm password:</label>
-        <input id="password-conf" type="password" class="form-control" name="password-conf" />
+        <input id="password" type="password" class="form-control" name="password"/>
       </div>
       <input type="submit" value="Login" class="col-lg-6 col-lg-offset-3 btn btn-orange"/>
     </form>

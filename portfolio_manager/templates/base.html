@@ -70,7 +70,11 @@ $(document).ready(function() {
       <li><a class="navbar-item" href="{% url 'admin_tools' %}">Admin</a></li>
       <li><a class="navbar-item" href="{% url 'databaseview' %}">Database</a></li>
       <li><a class="navbar-item" href="{% url 'about' %}">About</a></li>
-
+      {% if user.is_authenticated %}
+      <li><a class="navbar-item" href="{% url 'logout' %}">Logout<span class="glyphicon glyphicon-log-out"></span></a></li>
+      {% else %}
+      <li><a class="navbar-item" href="{% url 'login' %}">Login<span class="glyphicon glyphicon-log-in"></span></a></li>
+      {% endif %}
     </ul>
     <!-- Dropdown menu -->
     <div id="navbardrop" class="collapse navbar-collapse">

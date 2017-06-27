@@ -29,6 +29,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
+from django.contrib.auth.views import login
 
 from portfolio_manager.models import *
 from portfolio_manager.forms import *
@@ -76,14 +77,21 @@ def home(request):
     return render(request, 'homepage.html', context)
 
 
+def custom_login(request):
+    if request.user.is_authenticated():
+        return redirect('homepage', permanent=True)
+    else:
+        return login(request)
+
+
 def signup(request):
     if request.method == "POST":
         user = User.objects.create_user(
-            request.POST['username'],
-            request.POST['password'],
-            request.POST.get('email'),
-            request.POST.get('first_name'),
-            request.POST.get('last_name')
+            username=request.POST['username'],
+            email=request.POST.get('email'),
+            password=request.POST['password'],
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name')
         )
         user.save()
         print("SIGNUP")

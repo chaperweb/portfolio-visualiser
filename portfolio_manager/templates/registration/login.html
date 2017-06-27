@@ -45,6 +45,7 @@
         {{ form.password | add_form_control }}
       </div>
       <input type="submit" value="Login" class="col-lg-6 col-lg-offset-3 btn btn-orange"/>
+      <input type="hidden" name="next" value="{% url 'homepage' %}" />
     </form>
   </div>
 </body>

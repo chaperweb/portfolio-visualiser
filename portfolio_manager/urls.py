@@ -35,6 +35,11 @@ ajax_patterns = [
     url(r'^get_proj$', views.get_proj, name='get_proj'),
     url(r'^get_multiple/(?P<field_type>[A-Za-z]+)/(?P<field_id>[0-9]+)$', views.get_multiple, name='get_multiple'),
 ]
+auth_patterns = [
+    url(r'^', include('django.contrib.auth.urls')),
+    url(r'^login$', views.custom_login, name="login"),
+    url(r'^signup$', views.signup, name="signup")
+]
 
 urlpatterns = [
     url(r'^$', views.home, name='homepage'),
@@ -54,11 +59,9 @@ urlpatterns = [
     url(r'^add_field$', views.add_field, name='add_field'),
     url(r'^snapshots(/(?P<vis_type>[A-Za-z]+))?(/(?P<snapshot_id>[0-9]+))?$', views.snapshots, name='snapshots'),
     url(r'^create_snapshot$', views.create_snapshot, name='create_snapshot'),
-    url(r'^', include('django.contrib.auth.urls')),
-    url(r'^signup$', views.signup, name="signup"),
-
-    #For stuff
     url(r"^json$", views.json, name='json'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
+    # For auth things
+    url(r'', include(auth_patterns)),
 ]
