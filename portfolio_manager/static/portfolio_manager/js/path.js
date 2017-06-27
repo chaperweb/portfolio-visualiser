@@ -182,9 +182,9 @@ function generate_path_svg(pathData) {
       y = d3.scaleLinear().range([axisLengthY,0]);
       z = d3.scaleTime().range([0,axisLengthX]);
 
-  x.domain([0, (pathData.length-1)]);
+  x.domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date]);
   y.domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})]);
-  z.domain([0, (pathData.length-1)]);
+  z.domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date]);
 
   var valueLine = d3.line()
                       .curve(d3.curveStepAfter)
