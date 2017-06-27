@@ -189,8 +189,8 @@ function generate_path_svg(pathData) {
 
   var valueLine = d3.line()
                       .curve(d3.curveStepAfter)
-                      .x( function(d) { x(return d.history_date) } )
-                      .y( function(d) { y(return d.y) } );
+                      .x( function(d) { return x(d.history_date) } )
+                      .y( function(d) { return y(d.y) } );
 
   // The path
   svg.append("path")
