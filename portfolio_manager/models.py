@@ -21,12 +21,14 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.timezone import get_current_timezone, is_naive, make_aware
 from simple_history.models import HistoricalRecords
 from dateutil.parser import parse
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save
+from django.dispatch import receiver
 
 # Class for getting subclasses of a abstract base class
 class GetSubclassesMixin(object):
@@ -111,11 +113,22 @@ class Organization (models.Model):
 
 
 class Person (models.Model):
-    first_name = models.CharField(max_length=64)
-    last_name = models.CharField(max_length=64)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="person", null=True)
+    first_name = models.CharField(max_length=64, blank=True)
+    last_name = models.CharField(max_length=64, blank=True)
 
     def __str__(self):
         return str("{} {}".format(self.first_name, self.last_name))
+
+@receiver(post_save, sender=User)
+def create_person(sender, instance, created, **kwargs):
+    if created:
+        Person.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_person(sender, instance, **kwargs):
+    instance.person.save()
 
 
 class ProjectTemplate(models.Model):
