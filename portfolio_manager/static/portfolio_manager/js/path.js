@@ -203,7 +203,7 @@ function generate_path_svg(pathData) {
   svg.append("g")
      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
      .attr("id", "x-axis")
-     .call(d3.axisBottom(x)
+     .call(d3.axisBottom(x))
      .selectAll("text")
      .data(pathData)
      .text(function(d){return d.x});
@@ -215,7 +215,7 @@ function generate_path_svg(pathData) {
      .call(d3.axisBottom(z))
      .selectAll("text")
      .data(pathData)
-     .text(function(d) { return ddmmyy(Date.parse(d.history_date)) });
+     .text(function(d) { return ddmmyy(d.history_date) });
 
   // Y-axis
   svg.append("g")
