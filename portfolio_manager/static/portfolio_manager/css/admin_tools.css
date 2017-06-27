@@ -50,3 +50,7 @@ h3.modal-title {
   outline: none;
   border-radius: 8px;
 }
+
+button, a[role="button"] {
+  overflow-x: hidden;
+}
