@@ -188,7 +188,7 @@ function generate_path_svg(pathData) {
 
   var valueLine = d3.line()
                       .curve(d3.curveStepAfter)
-                      .x(function(d,i){return x(i)})
+                      .x(function(d,i){return x(d.history_date)})
                       .y(function(d){return y(d.y)});
 
   // The path
@@ -211,10 +211,11 @@ function generate_path_svg(pathData) {
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
-     .call(d3.axisBottom(z).ticks(pathData.length-1))
+     .call(d3.axisBottom(z).ticks(pathData.length-1));/*
      .selectAll("text")
      .data(pathData)
      .text(function(d) { return ddmmyy(Date.parse(d.history_date)) });
+     */
 
   // Y-axis
   svg.append("g")
