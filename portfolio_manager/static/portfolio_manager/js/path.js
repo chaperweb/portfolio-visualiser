@@ -217,8 +217,8 @@ function generate_path_svg(pathData) {
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
-     .call(d3.axisBottom(z))
-     .tickFormat(ddmmyy());
+     .call(d3.axisBottom(z)
+             .tickFormat(ddmmyy()));
 
   // Y-axis
   svg.append("g")
