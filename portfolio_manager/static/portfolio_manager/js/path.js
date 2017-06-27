@@ -203,10 +203,15 @@ function generate_path_svg(pathData) {
   svg.append("g")
      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
      .attr("id", "x-axis")
+     .append("line")
+     .attr("x1", z.range()[0])
+     .attr("x2", z.range()[1]);
+     /*
      .call(d3.axisBottom(x))
      .selectAll("text")
      .data(pathData)
      .text(function(d){return d.x});
+     */
 
   // Time-axis underneath the x-axis
   svg.append("g")
