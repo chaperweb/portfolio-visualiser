@@ -30,7 +30,7 @@ function update_path_visualization(project_x_dimension, project_y_dimension) {
 // Generates the data for the visualization
 function generate_path_data(x_dimension, y_dimension) {
 
-  // Collect useful values from selected data
+  // Collect useful values from selected data, convert date to milliseconds
   x_data = x_dimension.dimension_object.history.map(function(val) {
     // Temporal variable to store one single pathData object
     var pathVal = {
@@ -39,7 +39,7 @@ function generate_path_data(x_dimension, y_dimension) {
       "y": undefined
     };
 
-    pathVal.history_date = val.history_date;
+    pathVal.history_date = Date.parse(val.history_date);
     pathVal.x = val.string;
     return pathVal;
   });
@@ -52,7 +52,7 @@ function generate_path_data(x_dimension, y_dimension) {
       "y": undefined
     };
 
-    pathVal.history_date = val.history_date;
+    pathVal.history_date = Date.parse(val.history_date);
     pathVal.y = val.value;
     return pathVal;
   });
@@ -60,9 +60,9 @@ function generate_path_data(x_dimension, y_dimension) {
   // Combine data into one array
   data = x_data.concat(y_data);
 
-  // Stable sort by date, parsing the time to millisecods to ensure the correct result
+  // Stable sort by date
   data = data.sort(function (a, b) {
-    return Date.parse(a.history_date) - Date.parse(b.history_date);
+    return a.history_date - b.history_date;
   });
 
   /* Creates data with no undefined values.
@@ -142,6 +142,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 
 // Generate the svg container for the visualization
 function generate_path_svg(pathData) {
+  console.log(pathData)
   // Dimension of the svg box
   // Left margin is hardcoded to ensure enough room for y-axis values
   var height =  Math.max(600, $(window).height() * 0.7),
