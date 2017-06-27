@@ -55,6 +55,7 @@ urlpatterns = [
     url(r'^snapshots(/(?P<vis_type>[A-Za-z]+))?(/(?P<snapshot_id>[0-9]+))?$', views.snapshots, name='snapshots'),
     url(r'^create_snapshot$', views.create_snapshot, name='create_snapshot'),
     url(r'^', include('django.contrib.auth.urls')),
+    url(r'^signup$', TemplateView.as_view(template_name="registration/signup.html"), name="signup"),
 
     #For stuff
     url(r"^json$", views.json, name='json'),
