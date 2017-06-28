@@ -146,7 +146,7 @@ function generate_path_svg(pathData) {
   // Dimension of the svg box
   // Left margin is hardcoded to ensure enough room for y-axis values
   var height =  Math.max(600, $(window).height() * 0.7),
-      width =   Math.max(800, ($(window).width() - 250) * 0.8),
+      width =   Math.max(800, ($(window).width() - 250) * 0.9),
       margin = {
         right: 0,
         left: 60,
@@ -155,7 +155,7 @@ function generate_path_svg(pathData) {
       };
 
   // Length of the axis
-  var axisLengthX = width * 0.9,
+  var axisLengthX = width * 0.95,
       axisLengthY = height * 0.9;
 
   // width of the x-axis
