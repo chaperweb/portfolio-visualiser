@@ -30,7 +30,7 @@
 </head>
 <body>
   <div class="vertical-center">
-    <form style="border-radius: 5%; background-color: #dee0e1;padding:19px;" class="text-center col-lg-2 col-lg-offset-5" method="post" action="{% url 'login' %}">
+    <form style="border-radius: 5%; background-color: #dee0e1;padding:19px;" class="text-center col-lg-2 col-lg-offset-5" method="post">
       <img style="padding-bottom: 5%;" src="{% static 'portfolio_manager/img/Codento_logo.png' %}" width="80%"/>
       {% if form.errors %}
         <p style="color:#ff0000;">Your username and password didn't match. Please try again.</p>
@@ -46,7 +46,6 @@
       </div>
       <a href="{% url 'signup' %}">Don't have an account? Sign up!</a>
       <input type="submit" value="Login" class="col-lg-6 col-lg-offset-3 btn btn-orange"/>
-      <input type="hidden" name="next" value="{% url 'homepage' %}" />
     </form>
   </div>
 </body>
