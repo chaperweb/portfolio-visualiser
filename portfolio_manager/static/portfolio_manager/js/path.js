@@ -158,14 +158,17 @@ function generate_path_svg(pathData) {
   var axisLengthX = width * 0.9,
       axisLengthY = height * 0.9;
 
+  // width of the x-axis
+  var xLineWidth = 3;
+
   // human readable timeformat from history_date
-  ddmmyy = d3.timeFormat("%d-%m-%Y");
+  var ddmmyy = d3.timeFormat("%d-%m-%Y");
 
   //  Parameters for axis transformations
   var pathTransformX = margin.left,
       pathTransformY = margin.top,
       xAxisTransformX = margin.left,
-      xAxisTransformY = height - (margin.bottom * 2) + margin.top,
+      xAxisTransformY = height - (margin.bottom * 2 - xLineWidth) + margin.top,
       timeAxisTransformX = margin.left,
       timeAxisTransformY = height - margin.bottom + margin.top,
       yAxisTransformX = margin.left,
@@ -206,7 +209,7 @@ function generate_path_svg(pathData) {
      .append("line")
      .attr("x1", z.range()[0])
      .attr("x2", z.range()[1])
-     .attr("stroke-width", 3)
+     .attr("stroke-width", xLineWidth)
      .attr("stroke", "red");
      /*
      .call(d3.axisBottom(x))
@@ -220,7 +223,7 @@ function generate_path_svg(pathData) {
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
      .call(d3.axisBottom(z)
-             .tickFormat(ddmmyy(z)));
+             .tickFormat(ddmmyy));
 
   // Y-axis
   svg.append("g")
