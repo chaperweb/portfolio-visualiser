@@ -48,33 +48,31 @@ $(document).ready(function() {
 	$('.nav > li > a[href="'+pathname+'"]').parent().addClass('active');
 })
 </script>
-<nav class="navbar navbar-default navbar-inverse">
+<nav class="navbar navbar-static-top">
   <div class="container-fluid">
-    <div class="navbar-header">
-      <!-- This button will only be displayed on narrow (mobile) screen sizes -->
-      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbardrop" aria-expanded="false" aria-controls="#navbardrop">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <!-- ALWAYS SHOWS -->
-      <ul class="nav navbar-nav">
-        <li class="col-xs-4 navbar-item"><a href="{% url 'homepage' %}">Home</a></li>
-        <li class="col-xs-4 navbar-item"><a href="{% url 'projects' %}">Projects</a></li>
-        <li class="col-xs-4 navbar-item"><a href="{% url 'snapshots' %}">Snapshots</a></li>
-      </ul>
-    </div>
-    <!-- SHOWS ON EVERYTHING BUT PHONE-SIZED -->
-    <ul class="nav navbar-nav navbar-right hidden-xs hidden-sm hidden-md">
-      <li><a class="navbar-item" href="{% url 'admin_tools' %}">Admin</a></li>
-      <li><a class="navbar-item" href="{% url 'databaseview' %}">Database</a></li>
-      <li><a class="navbar-item" href="{% url 'about' %}">About</a></li>
+    <ul class="nav nav-justified">
+      <li><a class="navbar-item" href="{% url 'homepage' %}">
+        <span class="glyphicon glyphicon-home"></span>
+      </a></li>
+      <li class="hidden-xs hidden-sm hidden-md"><a class="navbar-item" href="{% url 'projects' %}">Projects</a></li>
+      <li class="hidden-xs hidden-sm hidden-md"><a class="navbar-item" href="{% url 'snapshots' %}">Snapshots</a></li>
+      <li class="hidden-xs hidden-sm hidden-md"><a class="navbar-item" href="{% url 'admin_tools' %}">Admin</a></li>
+      <li class="hidden-xs hidden-sm hidden-md"><a class="navbar-item" href="{% url 'databaseview' %}">Database</a></li>
+      <li class="hidden-xs hidden-sm hidden-md"><a class="navbar-item" href="{% url 'about' %}">About</a></li>
       {% if user.is_authenticated %}
-      <li><a class="navbar-item" href="{% url 'logout' %}">Logout<span class="glyphicon glyphicon-log-out"></span></a></li>
+      <li class="hidden-xs hidden-sm hidden-md"><a class="navbar-item" href="{% url 'logout' %}">Logout</a></li>
       {% else %}
-      <li><a class="navbar-item" href="{% url 'login' %}">Login<span class="glyphicon glyphicon-log-in"></span></a></li>
+      <li class="hidden-xs hidden-sm hidden-md"><a class="navbar-item" href="{% url 'login' %}">Login</a></li>
       {% endif %}
+      <li class="hidden-lg hidden-xl">
+        <!-- This button will only be displayed on narrow (mobile) screen sizes -->
+        <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbardrop" aria-expanded="false" aria-controls="#navbardrop">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </li>
     </ul>
     <!-- Dropdown menu -->
     <div id="navbardrop" class="collapse navbar-collapse">
