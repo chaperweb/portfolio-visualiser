@@ -159,7 +159,7 @@ function generate_path_svg(pathData) {
       axisLengthY = height * 0.9;
 
   // width of the x-axis
-  var xLineWidth = 3;
+  var xLineWidth = 10;
 
   // human readable timeformat from history_date
   var ddmmyy = d3.timeFormat("%d-%m-%Y");
@@ -217,8 +217,8 @@ function generate_path_svg(pathData) {
      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
      .attr("id", "x-axis")
      .append("line")
-     .attr("x1", z.range()[0])
-     .attr("x2", z.range()[1])
+     .attr("x1", zScale.range()[0])
+     .attr("x2", zScale.range()[1])
      .attr("stroke-width", xLineWidth)
      .attr("stroke", "red")
      .call(d3.axisBottom(xScale)
