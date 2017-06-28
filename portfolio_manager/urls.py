@@ -39,8 +39,8 @@ ajax_patterns = [
 
 urlpatterns = [
     url(r'^signup/$', views.signup, name="signup"),
-    url(r'^login/$', auth_login, name="login"),
-    url(r'^logout/$', auth_logout, {'next_page': '/login/'}, name="logout"),
+    url(r'^signin/$', auth_login, name="login"),
+    url(r'^signout/$', auth_logout, {'next_page': '/signin/'}, name="logout"),
     url(r'^$', views.home, name='homepage'),
         url(r'^path$', TemplateView.as_view(template_name="path.html"), name='path'),
         url(r'^projectdependencies$', TemplateView.as_view(template_name="projectdependencies.html"), name='projectdependencies'),
