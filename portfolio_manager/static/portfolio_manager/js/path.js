@@ -205,7 +205,9 @@ function generate_path_svg(pathData) {
      .attr("id", "x-axis")
      .append("line")
      .attr("x1", z.range()[0])
-     .attr("x2", z.range()[1]);
+     .attr("x2", z.range()[1])
+     .attr("stroke-width", 3)
+     .attr("stroke", "red");
      /*
      .call(d3.axisBottom(x))
      .selectAll("text")
@@ -218,7 +220,7 @@ function generate_path_svg(pathData) {
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
      .call(d3.axisBottom(z)
-             .tickFormat(ddmmyy()));
+             .tickFormat(ddmmyy(z)));
 
   // Y-axis
   svg.append("g")
