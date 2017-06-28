@@ -182,13 +182,13 @@ function generate_path_svg(pathData) {
               .attr("class", "svg-content");
 
   // The scales of the axis
-  var x = d3.scaleTime()
+  var xScale = d3.scaleTime()
             .domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date])
             .range([0,axisLengthX]),
-      y = d3.scaleLinear()
+      yScale = d3.scaleLinear()
             .domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})])
             .range([axisLengthY,0]),
-      z = d3.scaleTime()
+      zScale = d3.scaleTime()
             .domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date])
             .range([0,axisLengthX]);
 
@@ -200,9 +200,9 @@ function generate_path_svg(pathData) {
   var xValues = [];
   var dayValues = [];
 
-  for (x in pathData) {
-    xValues.push(x.x);
-    dayValues.push(x.history_date);
+  for (item in pathData) {
+    xValues.push(item.x);
+    dayValues.push(item.history_date);
   }
 
   // The path
@@ -221,7 +221,7 @@ function generate_path_svg(pathData) {
      .attr("x2", z.range()[1])
      .attr("stroke-width", xLineWidth)
      .attr("stroke", "red")
-     .call(d3.axisBottom(x)
+     .call(d3.axisBottom(xScale)
               .tickValues(dayValues)
               .tickFormat(function(d,i) {
                 return xValues[i]
@@ -231,12 +231,12 @@ function generate_path_svg(pathData) {
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
-     .call(d3.axisBottom(z)
+     .call(d3.axisBottom(zScale)
              .tickFormat(ddmmyy));
 
   // Y-axis
   svg.append("g")
      .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
      .attr("id", "y-axis")
-     .call(d3.axisLeft(y));
+     .call(d3.axisLeft(yScale));
 }
