@@ -182,13 +182,15 @@ function generate_path_svg(pathData) {
               .attr("class", "svg-content");
 
   // The scales of the axis
-  var x = d3.scaleTime().range([0,axisLengthX]),
-      y = d3.scaleLinear().range([axisLengthY,0]);
-      z = d3.scaleTime().range([0,axisLengthX]);
-
-  x.domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date]);
-  y.domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})]);
-  z.domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date]);
+  var x = d3.scaleTime()
+            .domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date])
+            .range([0,axisLengthX]),
+      y = d3.scaleLinear()
+            .domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})])
+            .range([axisLengthY,0]),
+      z = d3.scaleTime()
+            .domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date])
+            .range([0,axisLengthX]);
 
   var valueLine = d3.line()
                       .curve(d3.curveStepAfter)
@@ -211,7 +213,7 @@ function generate_path_svg(pathData) {
      .attr("x2", z.range()[1])
      .attr("stroke-width", xLineWidth)
      .attr("stroke", "red")
-     .call(d3.axisBottom(x).
+     .call(d3.axisBottom(x)
               .tickFormat(function(d,i) {
                 return pathData[i].x
               }));
