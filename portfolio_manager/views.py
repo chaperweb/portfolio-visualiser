@@ -29,7 +29,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
-from django.contrib.auth.views import login
+from django.contrib.auth.views import login,logout
 
 from portfolio_manager.models import *
 from portfolio_manager.forms import *
@@ -43,6 +43,8 @@ from portfolio_manager.importer import from_google_sheet
 logger = logging.getLogger('django.request')
 
 def home(request):
+    if not request.user.is_authenticated():
+        return redirect('login')
     # milestones for project sneak peeks
     # (only future milestones), ordered by date
     now = datetime.now()
@@ -77,13 +79,6 @@ def home(request):
     return render(request, 'homepage.html', context)
 
 
-def custom_login(request):
-    if request.user.is_authenticated():
-        return redirect('homepage', permanent=True)
-    else:
-        return login(request)
-
-
 def signup(request):
     if request.method == "POST":
         user = User.objects.create_user(
@@ -94,10 +89,8 @@ def signup(request):
             last_name=request.POST.get('last_name')
         )
         user.save()
-        print("SIGNUP")
-        return redirect('homepage', permanent=True)
+        return redirect('homepage')
     else:
-        print("Get singup page")
         return render(request, 'registration/signup.html')
 
 

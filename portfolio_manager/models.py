@@ -123,7 +123,11 @@ class Person (models.Model):
 @receiver(post_save, sender=User)
 def create_person(sender, instance, created, **kwargs):
     if created:
-        Person.objects.create(user=instance)
+        Person.objects.create(
+            user=instance,
+            first_name=instance.first_name,
+            last_name=instance.last_name
+        )
 
 
 @receiver(post_save, sender=User)

@@ -21,6 +21,7 @@
 from django.conf import settings
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
+from django.contrib.auth.views import login as auth_login, logout as auth_logout
 
 from . import views
 
@@ -35,13 +36,11 @@ ajax_patterns = [
     url(r'^get_proj$', views.get_proj, name='get_proj'),
     url(r'^get_multiple/(?P<field_type>[A-Za-z]+)/(?P<field_id>[0-9]+)$', views.get_multiple, name='get_multiple'),
 ]
-auth_patterns = [
-    url(r'^', include('django.contrib.auth.urls')),
-    url(r'^login$', views.custom_login, name="login"),
-    url(r'^signup$', views.signup, name="signup")
-]
 
 urlpatterns = [
+    url(r'^signup/$', views.signup, name="signup"),
+    url(r'^login/$', auth_login, name="login"),
+    url(r'^logout/$', auth_logout, {'next_page': '/login/'}, name="logout"),
     url(r'^$', views.home, name='homepage'),
         url(r'^path$', TemplateView.as_view(template_name="path.html"), name='path'),
         url(r'^projectdependencies$', TemplateView.as_view(template_name="projectdependencies.html"), name='projectdependencies'),
@@ -62,6 +61,4 @@ urlpatterns = [
     url(r"^json$", views.json, name='json'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
-    # For auth things
-    url(r'', include(auth_patterns)),
 ]

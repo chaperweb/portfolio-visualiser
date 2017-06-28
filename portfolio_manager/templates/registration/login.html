@@ -44,6 +44,7 @@
         {{ form.password.label_tag }}
         {{ form.password | add_form_control }}
       </div>
+      <a href="{% url 'signup' %}">Don't have an account? Sign up!</a>
       <input type="submit" value="Login" class="col-lg-6 col-lg-offset-3 btn btn-orange"/>
       <input type="hidden" name="next" value="{% url 'homepage' %}" />
     </form>
