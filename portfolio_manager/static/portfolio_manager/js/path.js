@@ -197,6 +197,14 @@ function generate_path_svg(pathData) {
                       .x( function(d) { return x(d.history_date) } )
                       .y( function(d) { return y(d.y) } );
 
+  var xValues = [];
+  var dayValues = [];
+
+  for (x in pathData) {
+    xValues.push(x.x);
+    dayValues.push(x.history_date);
+  }
+
   // The path
   svg.append("path")
       .attr("class", "line")
@@ -214,8 +222,9 @@ function generate_path_svg(pathData) {
      .attr("stroke-width", xLineWidth)
      .attr("stroke", "red")
      .call(d3.axisBottom(x)
+              .tickValues(dayValues)
               .tickFormat(function(d,i) {
-                return pathData[i].x
+                return xValues[i]
               }));
 
   // Time-axis underneath the x-axis
