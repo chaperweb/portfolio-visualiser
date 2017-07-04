@@ -174,6 +174,11 @@ function generate_path_svg(pathData) {
       yAxisTransformX = margin.left,
       yAxisTransformY = margin.top;
 
+  // colorScale for xAxes
+  var xAxesColors = d3.scaleOrdinal()
+                      .range([colors[0], colors[1], colors[2]]);
+
+
   // The svg box that everything goes in
   var svg = d3.select("#visualization")
               .append("svg")
@@ -209,6 +214,49 @@ function generate_path_svg(pathData) {
       .attr("height", height)
       .attr("d", valueLine(pathData));
 
+  var axes = [pathData]
+  var axeh = 20
+  var rounds = 1
+  var amountC = xAxesColors.range().length
+
+  //Append a defs (for definition) element to your SVG
+  var defs = svg.append("defs");
+
+  for (round in axes) {
+    //Append a linearGradient element to the defs and give it a unique id
+    var linearGradient = defs.append("linearGradient")
+                              .attr("id", "gradient-"+String(rounds));
+
+    linearGradient.attr("x1", "0%")
+                  .attr("y1", "0%")
+                  .attr("x2", "100%")
+                  .attr("y2", "0%");
+
+    var gradStops = ["0%"]
+
+    for (color in axes[round]) {
+      linearGradient.append("stop")
+                    .attr("offset", gradStops[color])
+                    .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+
+      gradStops.push((axes[round][color].x / 400)*100 +"%")
+
+      linearGradient.append("stop")
+                    .attr("offset", gradStops[(Number(color) + 1)])
+                    .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+    }
+
+  svg.append("path")
+      .data([lineData])
+      .attr("fill", "url(#gradient-"+rounds+")")
+      .attr("class", "area")
+      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+      .attr("id", rounds)
+      .attr("d", d3.area().x(function(d) {return xScale(d.x)})
+                          .y0(function(d) {return rounds * axeh})
+                          .y1(function(d) {return rounds * axeh + (axeh - 2)}));
+    rounds++;
+  }
   // X-Axis
   svg.append("g")
      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
