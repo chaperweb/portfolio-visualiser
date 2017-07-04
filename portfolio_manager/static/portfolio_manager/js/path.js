@@ -239,7 +239,7 @@ function generate_path_svg(pathData) {
                     .attr("offset", gradStops[color])
                     .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
 
-      gradStops.push((axes[round][color].x / 400)*100 +"%")
+      gradStops.push((axes[round][color].history_date - xScale.domain()[0] / xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0])*100 +"%")
 
       linearGradient.append("stop")
                     .attr("offset", gradStops[(Number(color) + 1)])
