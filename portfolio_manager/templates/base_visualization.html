@@ -6,16 +6,14 @@
 <div class="sidebar navbar-fixed-left navbar-inverse xs-hidden col-md-2">
   <ul class="nav sidebar-nav">
     <!-- Press this list item to show all the visualizations -->
-    <li data-toggle="collapse" data-target="#visus" class="navbar-toggle sidebar-item">Visualizations</li>
+    <li data-toggle="collapse" data-target="#visualizationlist" class="navbar-toggle sidebar-item">Visualizations</li>
     <li>
       <!-- Expandable list with all the visualizations -->
-      <div id="visus" class="collapse in">
+      <div id="visualizationlist" class="collapse in">
         <ul class="nav">
-
           <li><a class="sidebar-subitem" href="{%url 'path' %}">Path</a></li>
           <li><a class="sidebar-subitem" href="{%url 'projectdependencies' %}">Dependencies</a></li>
           <li><a class="sidebar-subitem" href="{%url 'fourfield' %}">4-Field</a></li>
-
         </ul>
       </div>
     </li>
@@ -26,9 +24,7 @@
 <!-- /sidebar -->
 
 {% block visualization_content %}
-  
-{% endblock %}
 
 {% endblock %}
 
-
+{% endblock %}
