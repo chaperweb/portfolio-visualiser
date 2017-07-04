@@ -250,7 +250,7 @@ function generate_path_svg(pathData) {
       .data([pathData])
       .attr("fill", "url(#gradient-"+rounds+")")
       .attr("class", "area")
-      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+      //.attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
       .attr("id", rounds)
       .attr("d", d3.area().x(function(d) {return xScale(d.x)})
                           .y0(function(d) {return rounds * axeh})
