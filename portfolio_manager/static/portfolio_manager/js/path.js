@@ -144,18 +144,18 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 function generate_path_svg(pathData) {
   console.log(pathData)
   // Dimension of the svg box
-  // Left margin is hardcoded to ensure enough room for y-axis values
+  // Left and right margin is hardcoded to ensure enough room for axis values
   var height =  Math.max(600, $(window).height() * 0.7),
       width =   Math.max(800, ($(window).width() - 250) * 0.9),
       margin = {
-        right: 0,
-        left: 60,
+        right: 35,
+        left: 65,
         top: height * 0.02,
         bottom: height * 0.05
       };
 
   // Length of the axis
-  var axisLengthX = width * 0.95,
+  var axisLengthX = width - (margin.right + margin.left),
       axisLengthY = height * 0.9;
 
   // width of the x-axis
@@ -187,10 +187,7 @@ function generate_path_svg(pathData) {
             .range([0,axisLengthX]),
       yScale = d3.scaleLinear()
             .domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})])
-            .range([axisLengthY,0]),
-      zScale = d3.scaleTime()
-            .domain([pathData[0].history_date, pathData[(pathData.length-1)].history_date])
-            .range([0,axisLengthX]);
+            .range([axisLengthY,0]);
 
   var valueLine = d3.line()
                       .curve(d3.curveStepAfter)
@@ -216,11 +213,6 @@ function generate_path_svg(pathData) {
   svg.append("g")
      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
      .attr("id", "x-axis")
-     .append("line")
-     .attr("x1", zScale.range()[0])
-     .attr("x2", zScale.range()[1])
-     .attr("stroke-width", xLineWidth)
-     .attr("stroke", "red")
      .call(d3.axisBottom(xScale)
               .tickValues(dayValues)
               .tickFormat(function(d,i) {
@@ -231,7 +223,7 @@ function generate_path_svg(pathData) {
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
-     .call(d3.axisBottom(zScale)
+     .call(d3.axisBottom(xScale)
              .tickFormat(ddmmyy));
 
   // Y-axis
