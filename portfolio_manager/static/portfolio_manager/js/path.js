@@ -247,7 +247,7 @@ function generate_path_svg(pathData) {
     }
 
   svg.append("path")
-      .data([lineData])
+      .data([pathData])
       .attr("fill", "url(#gradient-"+rounds+")")
       .attr("class", "area")
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
