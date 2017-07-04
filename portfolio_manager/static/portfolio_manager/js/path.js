@@ -239,7 +239,8 @@ function generate_path_svg(pathData) {
                     .attr("offset", gradStops[color])
                     .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
 
-      gradStops.push((axes[round][color].history_date - xScale.domain()[0] / xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0])*100 +"%")
+      gradStops.push(((axes[round][color].history_date - xScale.domain()[0]) /
+                      (xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0]))*100 +"%")
 
       linearGradient.append("stop")
                     .attr("offset", gradStops[(Number(color) + 1)])
@@ -250,9 +251,9 @@ function generate_path_svg(pathData) {
       .data([pathData])
       .attr("fill", "url(#gradient-"+rounds+")")
       .attr("class", "area")
-      //.attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
       .attr("id", rounds)
-      .attr("d", d3.area().x(function(d) {return xScale(d.x)})
+      .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                           .y0(function(d) {return rounds * axeh})
                           .y1(function(d) {return rounds * axeh + (axeh - 2)}));
     rounds++;
