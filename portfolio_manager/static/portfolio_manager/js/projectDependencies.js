@@ -244,35 +244,49 @@ function dependancies(json) {
 
 	// add the curvy lines
 	function tick() {
-		// !!! browser inspection spews errors when (startX == endX && startY == endY) !!!
+        // Takes care that balls don't get out of canvas by force
+		node.attr("transform", function(d) {
+		    // It is OK to use 'validate' directly to force algorithm's results. On the next iteration cycle neighbors
+		    // just react to the new position and overlaps caused by this sudden move get fixed automatically.
+			d.x = validate(d.x,0,width, linearScale(d.value)+ballOutline)
+			d.y = validate(d.y,0,height, linearScale(d.value)+ballOutline)
+			return "translate(" + d.x + "," + d.y + ")";
+		});
+
 		path.attr("d", function(d) {
-				// defining distance of two nodes
+			// defining distance of two nodes
 			var dx = (d.target.x - d.source.x) ,
   				dy = (d.target.y - d.source.y) ,
-  				dr = Math.sqrt(dx * dx + dy * dy),
+  				// avoid division by zero by never allowing dr to be 0,
+  				dr = (dx == 0 && dy == 0) ? 0.1 : Math.sqrt(dx * dx + dy * dy),
   				/* calculating the shortest distance between two circles
-           * gives coordinates of start and end points
-           */
+                * gives coordinates of start and end points
+                */
   				startX = d.source.x + dx * linearScale(d.budgetS) / dr,
   				startY = d.source.y + dy * linearScale(d.budgetS) / dr,
   				endX = d.target.x - dx * linearScale(d.budgetT) / dr,
-  				endY = d.target.y - dy * linearScale(d.budgetT) / dr;
-
-			//Parsing the elliptical arc using previously calculated variables
-			return "M" +
-      				startX + "," +
-      				startY + "A" +
-      				dr + "," + dr + " 0 0,1 " +
-      				endX + "," +
-      				endY;
+  				endY = d.target.y - dy * linearScale(d.budgetT) / dr,
+            /* we need a third point for quadratic curve. Assume a straight line between startXY and endXY.
+            * Start from the middle point of that line, and take a point that is at right angle towards that point at
+            * distance line_length / 2. It is easy to calculate a line at the right angle towards the original line:
+            * just switch X and Y component of the original line and negate one of them. No trigonometry needed!
+            */
+  				midX = (startX + endX) / 2 - (startY - endY) / 4,
+  				midY = (startY + endY) / 2 + (startX - endX) / 4;
+            /* then make sure that control point stays within the visible area */
+            if (midX < 0) {
+                midX = 0;
+            } else if (midX > width) {
+                midX = width;
+            }
+            if (midY < 0) {
+                midY = 0;
+            } else if (midY > height) {
+                midY = height;
+            }
+      		return "M " + startX + ", " + startY + " Q " + midX + ", " + midY + ", " + endX + ", " + endY;
 		});
 
-    // Takes care that balls don't get out of canvas by force
-		node.attr("transform", function(d) {
-			var dx = validate(d.x,0,width, linearScale(d.value)+ballOutline)
-			var dy = validate(d.y,0,height, linearScale(d.value)+ballOutline)
-				return "translate(" + dx + "," + dy + ")";
-		});
 	}
 
   /* action to take on mouse click
