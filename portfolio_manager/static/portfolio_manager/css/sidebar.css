@@ -15,22 +15,22 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   border: 0;
 }
 
-.proju,
-.proju:hover
-.proju:visited {
+.projectbox,
+.projectbox:hover
+.projectbox:visited {
   color: #ffffff;
   background-color: rgb(156,156,156);
   font-family: "Exo 2", sans-serif;
   border-radius: 5px;
   margin: 1% 4%;
 }
-.proju > p {
+.projectbox > p {
   margin-top: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
-.proju > p:hover {
+.projectbox > p:hover {
   text-overflow: none;
   overflow: visible;
 }
