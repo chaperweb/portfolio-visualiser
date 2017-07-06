@@ -45,3 +45,9 @@ def get_valuetype(dim_type):
         return 'multiple'
     else:
         return 'None'
+
+@register.filter
+def add_form_control(input):
+    input.field.widget.attrs['class'] = 'form-control'
+    print(input.field.widget.attrs['class'])
+    return input

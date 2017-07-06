@@ -28,6 +28,9 @@ import django.forms
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
+from django.contrib.auth.models import User
+from django.contrib.auth.views import login,logout
+from django.contrib.auth.decorators import login_required
 
 from portfolio_manager.models import *
 from portfolio_manager.forms import *
@@ -40,7 +43,26 @@ from portfolio_manager.importer import from_google_sheet
 # LOGGING
 logger = logging.getLogger('django.request')
 
+
+def signup(request):
+    if request.method == "POST":
+        user = User.objects.create_user(
+        username=request.POST['username'],
+        email=request.POST.get('email'),
+        password=request.POST['password'],
+        first_name=request.POST.get('first_name'),
+        last_name=request.POST.get('last_name')
+        )
+        user.save()
+        return redirect('homepage')
+    else:
+        return render(request, 'registration/signup.html')
+
+
+@login_required
 def home(request):
+    if not request.user.is_authenticated():
+        return redirect('login')
     # milestones for project sneak peeks
     # (only future milestones), ordered by date
     now = datetime.now()
@@ -74,14 +96,17 @@ def home(request):
     context['dates'] = dateds
     return render(request, 'homepage.html', context)
 
+
+@login_required
 def admin_tools(request):
     form = AddProjectForm()
     form.fields['name'].widget.attrs['class'] = 'form-control'
     form.fields['organization'].widget.attrs['class'] = 'form-control'
     return render(request, 'admin_tools.html', {'pre_add_project_form': form})
 
-# Site to add a new organization
+
 @require_POST
+@login_required
 def create_org(request):
     data = {'name': request.POST.get('orgName')}
     form = OrganizationForm(data)
@@ -137,8 +162,9 @@ def create_org(request):
             content_type="application/json"
         )
 
-# Site to add a new person
+
 @require_POST
+@login_required
 def create_person(request):
     first = request.POST.get('first')
     last = request.POST.get('last')
@@ -160,8 +186,9 @@ def create_person(request):
             content_type="application/json"
         )
 
-# Function to add field
+
 @require_POST
+@login_required
 def add_field(request):
     try:
         form = ProjectTemplateForm(request.POST)
@@ -209,6 +236,8 @@ def add_field(request):
         }
         return render(request, 'database.html', render_data)
 
+
+@login_required
 def show_project(request, project_id):
     all_projects = Project.objects.all()
     project = all_projects.get(pk=project_id)
@@ -234,7 +263,9 @@ def show_project(request, project_id):
 
     return render(request, 'project.html', context)
 
+
 # Function that edits a project by either updating, adding or removing values
+@login_required
 def project_edit(request, project_id, field_type):
     type_to_dimension = {
         'text': TextDimension,
@@ -282,6 +313,8 @@ def project_edit(request, project_id, field_type):
 
 
 #   Import google sheet
+#   TODO: Require admin
+@login_required
 def importer(request):
     if request.method == "POST":
         response_data = from_google_sheet(request.POST.get('url'))
@@ -300,6 +333,7 @@ def importer(request):
             content_type="application/json"
         )
 
+
 #   Gets all previously uploaded sheets and returns them in JSON
 @require_GET
 def get_sheets(request):
@@ -314,6 +348,7 @@ def get_sheets(request):
         return HttpResponse(sheetJSON)
     return redirect('homepage')
 
+
 def json(request):
     try:
         serializer = ProjectSerializer(Project.objects.all(), many=True)
@@ -321,7 +356,9 @@ def json(request):
     except Exception as e:
         print("Error in JSON serialization: {}".format(e))
 
+
 # site to see all projects, grouped by organization
+@login_required
 def projects(request):
     dd = ContentType.objects.get_for_model(NumberDimension)
     number_dimensions = ProjectDimension.objects.filter(content_type=dd)
@@ -339,7 +376,9 @@ def projects(request):
     }
     return render(request, 'projects.html', response_data)
 
+
 # site to show datafields by organization
+@login_required
 def databaseview(request):
     if request.method == "POST":
         form = OrgForm(request.POST)
@@ -371,6 +410,8 @@ def databaseview(request):
         }
     return render(request, 'database.html', render_data)
 
+
+@login_required
 def addproject(request):
     add_project_form = None
     add_project_form_prefix = 'add_project_form'
@@ -432,20 +473,24 @@ def addproject(request):
 
     return render(request, 'add_project.html', {'forms': forms})
 
+
 # Gets all organizations and return them in a JSON string
 def get_orgs(request):
     serializer = OrganizationSerializer(Organization.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
+
 
 # Gets all persons and return them in a JSON string
 def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
+
 # Gets all projects and returns them with name and id in a JSON
 def get_proj(request):
     serializer = ProjectNameIdSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
+
 
 #   Function that gets the value of a dimension that has multiple
 #   items. Takes in the field type and the id of the dimension
@@ -489,6 +534,7 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
     return ff_snap
 
 
+@login_required
 def snapshots(request, vis_type=None, snapshot_id=None):
     response_data = {}
     template = 'snapshots/error.html'
@@ -586,6 +632,7 @@ def snapshots(request, vis_type=None, snapshot_id=None):
     return render(request, template, response_data)
 
 
+@login_required
 def create_snapshot(request):
     if request.method == 'POST':
         snapshot_type = request.POST['type']
