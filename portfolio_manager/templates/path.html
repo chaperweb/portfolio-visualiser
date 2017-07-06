@@ -40,17 +40,29 @@ Path
         </select>
       </li>
       <li class="sidebar-subitem">
-        <label for="sel1">Select x-axis dimension:</label>
-        <select class="form-control" id="x-selector" disabled="true">
-        <option>---</option>
-        </select>
-      </li>
-      <li class="sidebar-subitem">
         <label for="sel1">Select y-axis dimension:</label>
         <select class="form-control" id="y-selector" disabled="true">
         <option>---</option>
         </select>
       </li>
+      <li class="sidebar-subitem">
+        <label for="sel1">Select x-axis dimensions:</label>
+        <dl class="dropdown">
+          <dt>
+            <a href="#">
+              <span class="hida">Select</span>
+              <p class="multiSel"></p>
+            </a>
+          </dt>
+          <dd>
+            <div class="form-control" id="x-selector" disabled="true">
+              <ul id="x-selectorlist">
+              </ul>
+            </div>
+          </dd>
+      </dl>
+      </li>
+
     </ul>
   </div>
 </li>

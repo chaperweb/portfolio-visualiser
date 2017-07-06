@@ -251,7 +251,7 @@ function generate_path_svg(pathData) {
       .data([pathData])
       .attr("fill", "url(#gradient-"+rounds+")")
       .attr("class", "area")
-      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
       .attr("id", rounds)
       .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                           .y0(function(d) {return rounds * axeh})
@@ -259,6 +259,7 @@ function generate_path_svg(pathData) {
     rounds++;
   }
   // X-Axis
+  /*
   svg.append("g")
      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
      .attr("id", "x-axis")
@@ -267,7 +268,7 @@ function generate_path_svg(pathData) {
               .tickFormat(function(d,i) {
                 return xValues[i]
               }));
-
+  */            
   // Time-axis underneath the x-axis
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
