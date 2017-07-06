@@ -12,20 +12,27 @@ html, body {
   padding: 0;
 }
 
-.navbar .container-fluid .navbar-item {
+.navbar .nav-justified .navbar-item,
+.navbar .navbar-header .navbar-item {
   font-size: 150%;
   font-family: "Exo 2", sans-serif;
   min-height: 4vh;
   color: #ffffff;
 }
-.navbar .container-fluid .navbar-item:hover {
+.navbar .nav-justified .navbar-item:hover,
+.navbar .navbar-header .navbar-item:hover {
   color: #000000;
   background-color: #dee0e1;
 }
 
-.navbar .container-fluid .navbar-nav > .active > a {
+.navbar .nav-justified > li > .active,
+.navbar .navbar-header > .active {
   color: #f39911;
   background-color: inherit;
+}
+.navbar .nav-justified > li > .active:hover,
+.navbar .navbar-header > .active:hover {
+  color: #f39911;
 }
 
 .btn-orange, .btn-orange:focus, .btn-orange.focus {
