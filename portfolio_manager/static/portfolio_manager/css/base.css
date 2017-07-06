@@ -3,28 +3,29 @@ html, body {
 }
 
 .navbar {
+  border: 0;
   background-color: #757477;
   color: white;
-  border: 0;
-  border-radius: 0;
-  min-height: 4vh;
+}
+
+.navbar .container-fluid {
+  padding: 0;
 }
 
 .navbar .container-fluid .navbar-item {
   font-size: 150%;
   font-family: "Exo 2", sans-serif;
   min-height: 4vh;
+  color: #ffffff;
+}
+.navbar .container-fluid .navbar-item:hover {
+  color: #000000;
+  background-color: #dee0e1;
 }
 
-.navbar .container-fluid .navbar-nav > li > a {
-  color: white;
-}
 .navbar .container-fluid .navbar-nav > .active > a {
   color: #f39911;
   background-color: inherit;
-}
-.navbar-right {
-  padding-right: 15px;
 }
 
 .btn-orange, .btn-orange:focus, .btn-orange.focus {
