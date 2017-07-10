@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 $(function() {
 
   function change_if_all_selected() {
-    var xIsChosen = $('#x-selector').chosen().val() != '---',
+    var xIsChosen = $('#x-selector').val() != '---',
         yIsChosen = $('#y-selector').val() != '---',
         projectIsChosen = $('#r-selector').val() != '---';
 
@@ -30,7 +30,7 @@ $(function() {
   }
 
   function dimension_selector_change() {
-    x_dimension_id = $('#x-selector').chosen().find("option:selected").val();
+    x_dimension_id = $('#x-selector').find("option:selected").val();
     y_dimension_id = $('#y-selector').find("option:selected").val();
 
     selected_project = get_selected_project();
@@ -54,10 +54,10 @@ $(function() {
   $('#project-selector').on('change', function() {
     project_id = $(this).find("option:selected").val();
 
-    preserved_x_name = $('#x-selector').chosen().find("option:selected").text();
+    preserved_x_name = $('#x-selector').find("option:selected").text();
     preserved_y_name = $('#y-selector').find("option:selected").text();
 
-    $('#x-selector').chosen().html('<option>---</option>');
+    $('#x-selector').html('<option>---</option>');
     $('#y-selector').html('<option>---</option>');
 
     for (var i = 0, len = db_json.length; i < len; i++) {
@@ -65,8 +65,8 @@ $(function() {
         project = db_json[i];
         for (var j = 0; j < project.dimensions.length; j++) {
           if('history' in project.dimensions[j].dimension_object) {
-            $('#x-selector').chosen().append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
-            $('#x-selector').chosen().prop('disabled', false);
+            $('#x-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
+            $('#x-selector').prop('disabled', false);
             if (project.dimensions[j].dimension_type == 'NumberDimension') {
               $('#y-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
               $('#y-selector').prop('disabled', false);
@@ -87,19 +87,24 @@ $(function() {
       $('#y-selector').val(y_id);
 
     var x_id = null;
-    $('#x-selector').chosen().children().each(function(i, option) {
+    $('#x-selector').children().each(function(i, option) {
       if (option.value != '---'
           && (option.text == preserved_x_name
               || (x_id == null && option.value != y_id)))
         x_id = option.value;
     });
     if (x_id != null)
-      $('#x-selector').chosen().val(x_id);
+      $('#x-selector').val(x_id);
 
+    $('#x-selector').chosen({
+        width: '50%',
+        allow_single_deselect: true
+    });
+    
     change_if_all_selected();
   });
 
-  $('#x-selector').chosen().on('change', change_if_all_selected);
+  $('#x-selector').on('change', change_if_all_selected);
   $('#y-selector').on('change', change_if_all_selected);
 
 });
