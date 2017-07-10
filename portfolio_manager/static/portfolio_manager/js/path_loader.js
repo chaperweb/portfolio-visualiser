@@ -88,7 +88,7 @@ $(function() {
     $('#x-selector').children().each( function(i, option) {
       if (preserved_x_array.some(function(element) {
         return option.value === element
-      } ) option.selected = true;
+      } )) option.selected = true;
     });
 
     $('#x-selector').chosen({
