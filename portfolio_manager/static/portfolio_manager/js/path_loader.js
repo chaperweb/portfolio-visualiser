@@ -53,7 +53,7 @@ $(function() {
   $('#project-selector').on('change', function() {
     project_id = $(this).find("option:selected").val();
 
-    preserved_x_array = $('#x-selector').find("option:selected").val();
+    preserved_x_array = $('#x-selector').val();
     preserved_y_name = $('#y-selector').find("option:selected").text();
 
     $('#x-selector').html('')
