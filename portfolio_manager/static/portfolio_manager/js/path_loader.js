@@ -18,12 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $(function() {
 
-  function change_if_all_selected() {
-    var xIsChosen = $('#x-selector').val() != '---',
-        yIsChosen = $('#y-selector').val() != '---',
+  function change_if_pathdata_selected() {
+    var yIsChosen = $('#y-selector').val() != '---',
         projectIsChosen = $('#r-selector').val() != '---';
 
-    if (xIsChosen && yIsChosen && projectIsChosen) {
+    if (yIsChosen && projectIsChosen) {
       dimension_selector_change();
     }
     return;
@@ -54,10 +53,9 @@ $(function() {
   $('#project-selector').on('change', function() {
     project_id = $(this).find("option:selected").val();
 
-    preserved_x_name = $('#x-selector').find("option:selected").text();
+    preserved_x_array = $('#x-selector').find("option:selected").val();
     preserved_y_name = $('#y-selector').find("option:selected").text();
 
-    $('#x-selector').html('<option>---</option>');
     $('#y-selector').html('<option>---</option>');
 
     for (var i = 0, len = db_json.length; i < len; i++) {
@@ -85,22 +83,22 @@ $(function() {
     });
     if (y_id != null)
       $('#y-selector').val(y_id);
-
+    /*
     var x_id = null;
     $('#x-selector').children().each(function(i, option) {
       if (option.value != '---'
-          && (option.text == preserved_x_name
+          && (option.text == preserved_x_array
               || (x_id == null && option.value != y_id)))
         x_id = option.value;
     });
     if (x_id != null)
       $('#x-selector').val(x_id);
-
+    */  
     $('#x-selector').chosen({
-        max_selected_options: 5        
+        max_selected_options: 5
     });
 
-    change_if_all_selected();
+    change_if_pathdata_selected();
   });
 
   $('#x-selector').on('change', change_if_all_selected);
