@@ -29,7 +29,7 @@ $(function() {
   }
 
   function dimension_selector_change() {
-    x_dimension_id = $('#x-selector').find("option:selected").val();
+    x_dimension_id = $('#x-selector').find("option:selected").text();
     y_dimension_id = $('#y-selector').find("option:selected").val();
 
     selected_project = get_selected_project();
@@ -86,11 +86,12 @@ $(function() {
     if (y_id != null)
       $('#y-selector').val(y_id);
 
-    $('#x-selector').children().each( function(i, option) {
-      if (preserved_x_array.some(function(element) {
-        return option.value === element
-      } )) option.selected = true;
-    });
+    if (preserved_x_array !== undefined)  
+      $('#x-selector').children().each( function(i, option) {
+        if (preserved_x_array.some(function(element) {
+          return option.text === element
+        } )) option.selected = true;
+      });
 
     $('#x-selector').chosen({
         max_selected_options: 5
