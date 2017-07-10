@@ -97,10 +97,9 @@ $(function() {
       $('#x-selector').val(x_id);
 
     $('#x-selector').chosen({
-        width: '50%',
-        allow_single_deselect: true
+        max_selected_options: 5        
     });
-    
+
     change_if_all_selected();
   });
 
