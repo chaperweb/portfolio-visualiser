@@ -56,6 +56,7 @@ $(function() {
     preserved_x_array = $('#x-selector').find("option:selected").val();
     preserved_y_name = $('#y-selector').find("option:selected").text();
 
+    $('#x-selector').html()
     $('#y-selector').html('<option>---</option>');
 
     for (var i = 0, len = db_json.length; i < len; i++) {
