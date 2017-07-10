@@ -110,7 +110,7 @@ def admin_tools(request):
 def add_user(request):
     context = {}
     if request.method == 'POST':
-        org = request.user.groups.first().employees.organization
+        org = request.user.groups.first()
         user = User.objects.create_user(
             username=request.POST['username'],
             email=request.POST.get('email'),
@@ -119,7 +119,7 @@ def add_user(request):
             last_name=request.POST.get('last_name')
         )
         user.save()
-        user.groups.add(org.employees.first())
+        user.groups.add(org)
         context['successmsg'] = '{} created successfully!'.format(str(user))
     return render(request, 'add_user.html', context)
 

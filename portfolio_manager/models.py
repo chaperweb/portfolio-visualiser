@@ -105,7 +105,7 @@ def dimension_cleanup(sender, instance, *args, **kwargs):
 pre_delete.connect(dimension_cleanup, sender=ProjectDimension)
 
 class Organization (models.Model):
-    name = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50, unique=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -128,6 +128,11 @@ def create_person(sender, instance, created, **kwargs):
             first_name=instance.first_name,
             last_name=instance.last_name
         )
+    else:
+        p = Person.objects.get(user=instance)
+        p.first_name = instance.first_name
+        p.last_name = instance.last_name
+        p.save()
 
 
 @receiver(post_save, sender=User)
