@@ -83,7 +83,9 @@ $(function() {
     });
     if (y_id != null)
       $('#y-selector').val(y_id);
-  
+
+    $('#x-selector').val(preserved_x_array);
+
     $('#x-selector').chosen({
         max_selected_options: 5
     });
