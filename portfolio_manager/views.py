@@ -47,11 +47,11 @@ logger = logging.getLogger('django.request')
 def signup(request):
     if request.method == "POST":
         user = User.objects.create_user(
-        username=request.POST['username'],
-        email=request.POST.get('email'),
-        password=request.POST['password'],
-        first_name=request.POST.get('first_name'),
-        last_name=request.POST.get('last_name')
+            username=request.POST['username'],
+            email=request.POST.get('email'),
+            password=request.POST['password'],
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name')
         )
         user.save()
         return redirect('homepage')
@@ -103,6 +103,25 @@ def admin_tools(request):
     form.fields['name'].widget.attrs['class'] = 'form-control'
     form.fields['organization'].widget.attrs['class'] = 'form-control'
     return render(request, 'admin_tools.html', {'pre_add_project_form': form})
+
+
+# TODO: Require admin
+@login_required
+def add_user(request):
+    context = {}
+    if request.method == 'POST':
+        org = request.user.groups.first().employees.organization
+        user = User.objects.create_user(
+            username=request.POST['username'],
+            email=request.POST.get('email'),
+            password=request.POST['password'],
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name')
+        )
+        user.save()
+        user.groups.add(org.employees.first())
+        context['successmsg'] = '{} created successfully!'.format(str(user))
+    return render(request, 'add_user.html', context)
 
 
 @require_POST
