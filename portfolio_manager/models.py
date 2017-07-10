@@ -21,7 +21,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.timezone import get_current_timezone, is_naive, make_aware
@@ -373,3 +373,30 @@ class FourFieldSnapshot(Snapshot):
     start_date = models.DateField()
     end_date = models.DateField()
     zoom = models.PositiveIntegerField()
+
+
+class Employees(Group):
+    organization = models.ForeignKey(Organization, related_name='employees')
+
+
+class OrganizationAdmins(Group):
+    organization = models.ForeignKey(Organization, related_name='admins')
+
+
+@receiver(post_save, sender=Organization)
+def create_person(sender, instance, created, **kwargs):
+    if created:
+        Employees.objects.create(
+            organization=instance,
+            name='{}_Employees'.format(instance.name)
+        )
+        OrganizationAdmins.objects.create(
+            organization=instance,
+            name='{}_OrgAdmins'.format(instance.name)
+        )
+
+
+@receiver(post_save, sender=Organization)
+def save_person(sender, instance, **kwargs):
+    instance.employees.save()
+    instance.orgadmins.save()
