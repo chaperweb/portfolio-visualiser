@@ -376,27 +376,36 @@ class FourFieldSnapshot(Snapshot):
 
 
 class Employees(Group):
-    organization = models.ForeignKey(Organization, related_name='employees')
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
 
 
 class OrganizationAdmins(Group):
-    organization = models.ForeignKey(Organization, related_name='admins')
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
 
 
 @receiver(post_save, sender=Organization)
-def create_person(sender, instance, created, **kwargs):
+def create_groups(sender, instance, created, **kwargs):
     if created:
         Employees.objects.create(
             organization=instance,
-            name='{}_Employees'.format(instance.name)
+            name = '{}_Employees'.format(instance.name)
         )
         OrganizationAdmins.objects.create(
             organization=instance,
-            name='{}_OrgAdmins'.format(instance.name)
+            name = '{}_OrgAdmins'.format(instance.name)
         )
+    else:
+        e = Employees.objects.get(organization=instance)
+        a = OrganizationAdmins.objects.get(organization=instance)
+
+        e.name = '{}_Employees'.format(instance.name)
+        a.name = '{}_OrgAdmins'.format(instance.name)
+
+        e.save()
+        a.save()
 
 
 @receiver(post_save, sender=Organization)
-def save_person(sender, instance, **kwargs):
+def save_groups(sender, instance, **kwargs):
     instance.employees.save()
-    instance.orgadmins.save()
+    instance.organizationadmins.save()
