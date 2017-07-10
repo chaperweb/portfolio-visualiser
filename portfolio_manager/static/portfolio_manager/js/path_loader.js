@@ -81,10 +81,15 @@ $(function() {
           && (option.text == preserved_y_name || y_id == null))
         y_id = option.value;
     });
+
     if (y_id != null)
       $('#y-selector').val(y_id);
 
-    $('#x-selector').val(preserved_x_array);
+    $('#x-selector').children().each( function(i, option) {
+      if (preserved_x_array.some(function(element) {
+        return option.value === element
+      } ) option.selected = true;
+    });
 
     $('#x-selector').chosen({
         max_selected_options: 5
