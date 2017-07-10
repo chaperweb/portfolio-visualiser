@@ -56,7 +56,7 @@ $(function() {
     preserved_x_array = $('#x-selector').find("option:selected").val();
     preserved_y_name = $('#y-selector').find("option:selected").text();
 
-    $('#x-selector').html()
+    $('#x-selector').html('')
     $('#y-selector').html('<option>---</option>');
 
     for (var i = 0, len = db_json.length; i < len; i++) {
@@ -86,7 +86,7 @@ $(function() {
     if (y_id != null)
       $('#y-selector').val(y_id);
 
-    if (preserved_x_array !== undefined)  
+    if (preserved_x_array !== undefined)
       $('#x-selector').children().each( function(i, option) {
         if (preserved_x_array.some(function(element) {
           return option.text === element
