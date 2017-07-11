@@ -150,6 +150,43 @@ class ProjectTemplateDimension(models.Model):
     name = models.CharField(max_length=50)
     content_type = models.ForeignKey(ContentType, null=False, on_delete=models.CASCADE)
 
+@receiver(post_save, sender=Organization)
+def create_orgtemplate(sender, instance, created, **kwargs):
+    if created:
+        t = ProjectTemplate.objects.create(
+                name="default",
+                organization=instance
+            )
+        t.save()
+
+        ct_objects = ContentType.objects
+        project_template_data_budget = {
+            'template': t,
+            'name': 'Budget',
+            'content_type': ct_objects.get_for_model(NumberDimension),
+        }
+        pt_dim = ProjectTemplateDimension(**project_template_data_budget)
+        pt_dim.save()
+
+        # End date
+        project_template_data_enddate = {
+            'template': t,
+            'name': 'EndDate',
+            'content_type': ct_objects.get_for_model(DateDimension),
+        }
+        pt_dim_2 = ProjectTemplateDimension(**project_template_data_enddate)
+        pt_dim_2.save()
+
+        # Project manager
+        project_template_data_pm = {
+            'template': t,
+            'name': 'ProjectManager',
+            'content_type': ct_objects.get_for_model(AssociatedPersonDimension),
+        }
+        pt_dim_3 = ProjectTemplateDimension(**project_template_data_pm)
+        pt_dim_3.save()
+
+
 
 class Dimension (models.Model):
     class Meta:

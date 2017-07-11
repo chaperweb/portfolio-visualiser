@@ -134,44 +134,6 @@ def create_org(request):
         organization = Organization(name = form.cleaned_data['name'])
         organization.save()
 
-        template_data = {
-            'name': 'default',
-            'organization': organization
-        }
-        template = ProjectTemplate(**template_data)
-        template.save()
-
-        ct_objects = ContentType.objects
-
-        ####    PROJECT TEMPLATES   ###
-
-        # Budget
-        project_template_data_budget = {
-            'template': template,
-            'name': 'Budget',
-            'content_type': ct_objects.get_for_model(NumberDimension),
-        }
-        pt_dim = ProjectTemplateDimension(**project_template_data_budget)
-        pt_dim.save()
-
-        # End date
-        project_template_data_enddate = {
-            'template': template,
-            'name': 'EndDate',
-            'content_type': ct_objects.get_for_model(DateDimension),
-        }
-        pt_dim_2 = ProjectTemplateDimension(**project_template_data_enddate)
-        pt_dim_2.save()
-
-        # Project manager
-        project_template_data_pm = {
-            'template': template,
-            'name': 'ProjectManager',
-            'content_type': ct_objects.get_for_model(AssociatedPersonDimension),
-        }
-        pt_dim_3 = ProjectTemplateDimension(**project_template_data_pm)
-        pt_dim_3.save()
-
         ###     RESPONSE    ###
         response_data = {}
         response_data['result'] = 'Created organization successfully!'
@@ -211,7 +173,7 @@ def create_person(request):
 def add_field(request):
     try:
         form = ProjectTemplateForm(request.POST)
-        org = Organization.objects.get(name=request.POST['organization'])
+        org = Organization.objects.get(pk=request.POST['organization'])
         template = ProjectTemplate.objects.get(organization=org)
         ct = ContentType.objects.get_for_id(request.POST['field_type'])
         template_dim_data = {
@@ -406,7 +368,7 @@ def databaseview(request):
             add_field_form.initial = {'organization': request.POST['orgs']}
             # (dimension name -> datatype) dictionary
             dims = {}
-            organization = Organization.objects.get(name=request.POST['orgs'])
+            organization = Organization.objects.get(pk=request.POST['orgs'])
             templates = organization.templates.all()
             if len(templates) > 0:
                 template = templates[0]
@@ -416,7 +378,8 @@ def databaseview(request):
                     dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
             #redirect to the url where you'll process the input
             render_data = {
-                'form':form, 'dims':dims,
+                'form':form,
+                'dims':dims,
                 'add_field_form': add_field_form
             }
             return render(request, 'database.html', render_data)
