@@ -21,6 +21,7 @@
 from django.conf import settings
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
+from django.contrib.auth.views import login as auth_login, logout as auth_logout
 
 from . import views
 
@@ -37,6 +38,9 @@ ajax_patterns = [
 ]
 
 urlpatterns = [
+    url(r'^signup/$', views.signup, name="signup"),
+    url(r'^signin/$', auth_login, name="login"),
+    url(r'^signout/$', auth_logout, {'next_page': '/signin/'}, name="logout"),
     url(r'^$', views.home, name='homepage'),
         url(r'^path$', TemplateView.as_view(template_name="path.html"), name='path'),
         url(r'^projectdependencies$', TemplateView.as_view(template_name="projectdependencies.html"), name='projectdependencies'),
@@ -54,8 +58,6 @@ urlpatterns = [
     url(r'^add_field$', views.add_field, name='add_field'),
     url(r'^snapshots(/(?P<vis_type>[A-Za-z]+))?(/(?P<snapshot_id>[0-9]+))?$', views.snapshots, name='snapshots'),
     url(r'^create_snapshot$', views.create_snapshot, name='create_snapshot'),
-
-    #For stuff
     url(r"^json$", views.json, name='json'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
