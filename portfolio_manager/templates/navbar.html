@@ -16,7 +16,7 @@
     <ul class="nav nav-justified">
       <li><a class="navbar-item" href="{% url 'projects' %}">Projects</a></li>
       <li><a class="navbar-item" href="{% url 'snapshots' %}">Snapshots</a></li>
-      {% if user|is_orgadmin %}
+      {% if user|is_orgadmin or user.is_superuser %}
       <li class="dropdown">
         <a class="dropdown-toggle navbar-item" data-toggle="dropdown">
           Manage <span class="caret"></span>
