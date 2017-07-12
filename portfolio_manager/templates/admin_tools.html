@@ -20,38 +20,8 @@ Administrative Tools
 </div>
 
 <div id="cont">
-<!-- History Modal -->
-<div class="modal fade" id="history-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h3><strong>HISTORY</strong></h3>
-        <div class="well">
-          <ul id="history-well-ul" class="list-group">
-          </ul>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default col-md-4 col-md-offset-4" data-dismiss="modal" aria-label="Close">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Confirmation Modal -->
-<div class="modal fade" id="confirmation-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div id="conf-modal-body" class="modal-body text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-orange col-md-4 col-md-offset-4" data-dismiss="modal" aria-label="Close">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+{% include "modals/sheethistory_modal.html" %}
+{% include "modals/confirmation_modal.html" %}
 
 <!-- Actual body of page -->
 
@@ -63,7 +33,7 @@ Administrative Tools
 <!-- First row of boxes -->
 <div class="row">
   <!-- Import sheet box -->
-  <div style="min-height:30vh;" class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
+  <div class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
     <div class="row text-center" style="padding-bottom:4vh;">
       <h3>Import Sheet</h3>
     </div>
@@ -82,7 +52,7 @@ Administrative Tools
   <!-- /upload sheet box -->
 
   <!-- Add project box -->
-  <div style="min-height:30vh;" class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
+  <div class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
     <div class="row text-center" style="padding-bottom:4vh;">
       <h3>Add Project</h3>
     </div>
@@ -111,30 +81,8 @@ Administrative Tools
 
 <!-- Second row of boxes -->
 <div class="row">
-  <!-- Add organizations box -->
-
-  <div style="min-height:30vh;" class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
-    <div class="row text-center" style="padding-bottom:4vh;">
-      <h3>Add Organization</h3>
-    </div>
-    <form action="{% url 'create_org' %}" method="POST" id="org-form">
-      {% csrf_token %}
-      <div class="form-group row" style="padding-bottom:4vh;">
-        <label class="col-lg-2 col-form-label" for="orgName">Name</label>
-        <div class="col-lg-10">
-          <input name="orgName" class="form-control" id="orgName" placeholder="Organization name" type="text"/>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-orange col-md-6 col-md-offset-3">
-        <span class="glyphicon glyphicon-plus"></span>
-        Add Organization
-      </button>
-    </form>
-  </div>
-  <!-- /add organization box -->
-
   <!-- Add person box -->
-  <div style="min-height:30vh;" class="admin-box well col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-2">
+  <div class="admin-box well col-lg-3 col-lg-offset-7">
     <div class="row text-center" style="padding-bottom:2vh;">
       <h3>Add Person</h3>
     </div>
