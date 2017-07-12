@@ -1,3 +1,4 @@
+{% load auth_tags %}
 <nav class="navbar navbar-default navbar-static-top container-fluid" role="navigation">
   <div class="navbar-header">
     <!-- This button will only be displayed on narrow (mobile) screen sizes -->
@@ -15,6 +16,7 @@
     <ul class="nav nav-justified">
       <li><a class="navbar-item" href="{% url 'projects' %}">Projects</a></li>
       <li><a class="navbar-item" href="{% url 'snapshots' %}">Snapshots</a></li>
+      {% if user|is_orgadmin %}
       <li class="dropdown">
         <a class="dropdown-toggle navbar-item" data-toggle="dropdown">
           Manage <span class="caret"></span>
@@ -27,6 +29,7 @@
         </ul>
       </li>
       <li><a class="navbar-item" href="{% url 'databaseview' %}">Database</a></li>
+      {% endif %}
       <li><a class="navbar-item" href="{% url 'about' %}">About</a></li>
       {% if user.is_authenticated %}
       <li><a class="navbar-item" href="{% url 'logout' %}">Logout</a></li>
