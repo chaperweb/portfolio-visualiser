@@ -23,6 +23,7 @@ import json as json_module
 from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
 from itertools import groupby
+from collections import defaultdict
 
 import django.forms
 from django.http import JsonResponse, HttpResponse
@@ -376,10 +377,14 @@ def databaseview(request):
                     #TODO: group them by types to make the site easier to view?
                     t_dim_name = t_dim.content_type.model_class().__name__
                     dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
-            #redirect to the url where you'll process the input
+            # Group them by datatype
+            defdict = {}
+            for k,v in dims.items():
+                defdict.setdefault(v, []).append(k)
+
             render_data = {
                 'form':form,
-                'dims':dims,
+                'dims':defdict,
                 'add_field_form': add_field_form
             }
     elif request.user.is_superuser:
@@ -404,9 +409,12 @@ def databaseview(request):
                 #TODO: group them by types to make the site easier to view?
                 t_dim_name = t_dim.content_type.model_class().__name__
                 dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
-        #redirect to the url where you'll process the input
+        # Group them by datatype
+        defdict = {}
+        for k,v in dims.items():
+            defdict.setdefault(v, []).append(k)
         render_data = {
-            'dims':dims,
+            'dims': defdict,
             'add_field_form': add_field_form
         }
 
