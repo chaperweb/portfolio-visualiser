@@ -111,6 +111,20 @@ class Organization (models.Model):
     def __str__(self):
         return str(self.name)
 
+    def add_template(self, template_name, dim_obj):
+        try:
+            template = self.templates.get(name=template_name)
+        except:
+            template = ProjectTemplate()
+            template.name = template_name
+            template.organization = self
+            template.save()
+        template_dimension = ProjectTemplateDimension()
+        template_dimension.template = template
+        template_dimension.name = dim_obj.name
+        template_dimension.content_type = dim_obj.get_content_type()
+        template_dimension.save()
+
 
 class Person (models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="person", null=True)
