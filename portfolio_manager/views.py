@@ -382,14 +382,34 @@ def databaseview(request):
                 'dims':dims,
                 'add_field_form': add_field_form
             }
-            return render(request, 'database.html', render_data)
-    else:
+    elif request.user.is_superuser:
         add_field_form = ProjectTemplateForm()
         form = OrgForm()
         render_data = {
             'form':form,
             'add_field_form': add_field_form
         }
+    else:
+        try:
+            organization = request.user.groups.first().employees.organization
+        except:
+            organization = request.user.groups.first().organizationadmins.organization
+        add_field_form = ProjectTemplateForm()
+        add_field_form.initial = {'organization': organization.pk}
+        templates = organization.templates.all()
+        dims = {}
+        if len(templates) > 0:
+            template = templates[0]
+            for t_dim in template.dimensions.all():
+                #TODO: group them by types to make the site easier to view?
+                t_dim_name = t_dim.content_type.model_class().__name__
+                dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
+        #redirect to the url where you'll process the input
+        render_data = {
+            'dims':dims,
+            'add_field_form': add_field_form
+        }
+
     return render(request, 'database.html', render_data)
 
 
