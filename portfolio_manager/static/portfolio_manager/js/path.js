@@ -99,61 +99,6 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   };
 }
 
-// Generates the colored x-axes under the graph
-function generate_x_axes(x_data) {
-
-  var axes = x_data
-  var axeh = 20
-  var rounds = 1
-
-  // colorScale for xAxes
-  var xAxesColors = d3.scaleOrdinal()
-                      .range([colors[0], colors[1], colors[2]]);
-
-  var amountC = xAxesColors.range().length
-
-  //Append a defs (for definition) element to your SVG
-  var defs = svg.append("defs");
-
-  for (round in axes) {
-    var axe_label = axes[round].dimension_name
-    //Append a linearGradient element to the defs and give it a unique id
-    var linearGradient = defs.append("linearGradient")
-                              .attr("id", "gradient-"+String(rounds));
-
-    linearGradient.attr("x1", "0%")
-                  .attr("y1", "0%")
-                  .attr("x2", "100%")
-                  .attr("y2", "0%");
-
-    var gradStops = ["0%"]
-
-    for (color in axes[round].data) {
-      linearGradient.append("stop")
-                    .attr("offset", gradStops[color])
-                    .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
-
-      gradStops.push(((axes[round][color].history_date - xScale.domain()[0]) /
-                      (xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0]))*100 +"%")
-
-      linearGradient.append("stop")
-                    .attr("offset", gradStops[(Number(color) + 1)])
-                    .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
-    }
-
-  svg.append("path")
-      .data([axes[round].data])
-      .attr("fill", "url(#gradient-"+rounds+")")
-      .attr("class", "area")
-      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
-      .attr("id", rounds)
-      .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
-                          .y0(function(d) {return rounds * axeh})
-                          .y1(function(d) {return rounds * axeh + (axeh - 2)}));
-    rounds++;
-  }
-}
-
 // Generate the svg container for the visualization
 function generate_path_svg(pathData) {
   console.log(pathData)
@@ -232,4 +177,59 @@ function generate_path_svg(pathData) {
      .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
      .attr("id", "y-axis")
      .call(d3.axisLeft(yScale));
+};
+
+// Generates the colored x-axes under the graph
+function generate_x_axes(x_data) {
+
+  var axes = x_data
+  var axeh = 20
+  var rounds = 1
+
+  // colorScale for xAxes
+  var xAxesColors = d3.scaleOrdinal()
+                      .range([colors[0], colors[1], colors[2]]);
+
+  var amountC = xAxesColors.range().length
+
+  //Append a defs (for definition) element to your SVG
+  var defs = svg.append("defs");
+
+  for (round in axes) {
+    var axe_label = axes[round].dimension_name
+    //Append a linearGradient element to the defs and give it a unique id
+    var linearGradient = defs.append("linearGradient")
+                              .attr("id", "gradient-"+String(rounds));
+
+    linearGradient.attr("x1", "0%")
+                  .attr("y1", "0%")
+                  .attr("x2", "100%")
+                  .attr("y2", "0%");
+
+    var gradStops = ["0%"]
+
+    for (color in axes[round].data) {
+      linearGradient.append("stop")
+                    .attr("offset", gradStops[color])
+                    .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+
+      gradStops.push(((axes[round][color].history_date - xScale.domain()[0]) /
+                      (xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0]))*100 +"%")
+
+      linearGradient.append("stop")
+                    .attr("offset", gradStops[(Number(color) + 1)])
+                    .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+    }
+
+  svg.append("path")
+      .data([axes[round].data])
+      .attr("fill", "url(#gradient-"+rounds+")")
+      .attr("class", "area")
+      .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
+      .attr("id", rounds)
+      .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
+                          .y0(function(d) {return rounds * axeh})
+                          .y1(function(d) {return rounds * axeh + (axeh - 2)}));
+    rounds++;
+  }
 }
