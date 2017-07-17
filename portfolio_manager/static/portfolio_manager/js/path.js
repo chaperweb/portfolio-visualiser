@@ -213,7 +213,7 @@ function generate_x_axes(svg, x_data) {
                     .attr("offset", gradStops[color])
                     .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
 
-      gradStops.push(((axes[round][color].history_date - xScale.domain()[0]) /
+      gradStops.push(((axes[round].data[color].history_date - xScale.domain()[0]) /
                       (xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0]))*100 +"%")
 
       linearGradient.append("stop")
