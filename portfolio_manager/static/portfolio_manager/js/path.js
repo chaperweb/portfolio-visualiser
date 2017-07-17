@@ -163,7 +163,7 @@ function generate_path_svg(pathData) {
       .attr("height", height)
       .attr("d", valueLine(y_data));
 
-  generate_x_axes(x_data);
+  generate_x_axes(svg, x_data);
 
   // Time-axis underneath the x-axis
   svg.append("g")
@@ -180,7 +180,7 @@ function generate_path_svg(pathData) {
 };
 
 // Generates the colored x-axes under the graph
-function generate_x_axes(x_data) {
+function generate_x_axes(svg, x_data) {
 
   var axes = x_data
   var axeh = 20
