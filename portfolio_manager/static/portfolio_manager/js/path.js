@@ -105,6 +105,11 @@ function generate_x_axes(x_data) {
   var axes = x_data
   var axeh = 20
   var rounds = 1
+
+  // colorScale for xAxes
+  var xAxesColors = d3.scaleOrdinal()
+                      .range([colors[0], colors[1], colors[2]]);
+
   var amountC = xAxesColors.range().length
 
   //Append a defs (for definition) element to your SVG
@@ -185,11 +190,6 @@ function generate_path_svg(pathData) {
       timeAxisTransformY = height - margin.bottom + margin.top,
       yAxisTransformX = margin.left,
       yAxisTransformY = margin.top;
-
-  // colorScale for xAxes
-  var xAxesColors = d3.scaleOrdinal()
-                      .range([colors[0], colors[1], colors[2]]);
-
 
   // The svg box that everything goes in
   var svg = d3.select("#visualization")
