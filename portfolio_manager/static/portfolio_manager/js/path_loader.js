@@ -35,11 +35,11 @@ $(function() {
 
     data_id_array = x_dimension_id
 
-    data_id_array.unshift(y_dimension_id)
+    data_id_array.unshift(y_dimension_id);
 
-    update_path_visualization( project_id, data_id_array));
+    update_path_visualization( project_id, data_id_array);
 
-  }
+  };
 
   $.ajax({
     url: "json"

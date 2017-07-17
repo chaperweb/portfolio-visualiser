@@ -83,14 +83,15 @@ function generate_data_chunk(dimension) {
     pathVal.history_date = Date.parse(val.history_date);
     pathVal.value = val.string;
     return pathVal;
-  }
+  });
+
     // Stable sort by date
     data = data.sort(function (a, b) {
       return a.history_date - b.history_date;
     });
 
     return data;
-}
+};
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = {
