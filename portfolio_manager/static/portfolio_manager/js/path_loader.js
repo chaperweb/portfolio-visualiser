@@ -29,7 +29,7 @@ $(function() {
   }
 
   function dimension_selector_change() {
-    x_dimension_id = $('#x-selector').find("option:selected").val();
+    x_dimension_id = $('#x-selector').val();
     y_dimension_id = $('#y-selector').find("option:selected").val();
     project_id = $('#project-selector').find("option:selected").val();
 
