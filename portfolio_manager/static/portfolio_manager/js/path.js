@@ -148,7 +148,7 @@ function generate_path_svg(pathData) {
             .domain([y_data[0].history_date, y_data[y_data.length - 1].history_date])
             .range([0,axisLengthX]),
       yScale = d3.scaleLinear()
-            .domain([0, d3.max(pathData, function(d){return parseFloat(d.value)})])
+            .domain([0, d3.max(y_data, function(d){return parseFloat(d.value)})])
             .range([axisLengthY,0]);
 
   var valueLine = d3.line()
