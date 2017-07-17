@@ -60,7 +60,7 @@ $(function() {
       var $this = $(this);
       if ($this.length) {
         var selText = $this.text();
-        preserved_x_array.push(selText));
+        preserved_x_array.push(selText);
       }
     });
 
