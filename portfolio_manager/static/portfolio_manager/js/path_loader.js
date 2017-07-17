@@ -29,15 +29,16 @@ $(function() {
   }
 
   function dimension_selector_change() {
-    x_dimension_id = $('#x-selector').find("option:selected").text();
+    x_dimension_id = $('#x-selector').find("option:selected").val();
     y_dimension_id = $('#y-selector').find("option:selected").val();
+    project_id = $('#project-selector').find("option:selected").val();
 
-    selected_project = get_selected_project();
+    data_id_array = x_dimension_id
 
-    update_path_visualization(
-      get_dimension(selected_project, x_dimension_id),
-      get_dimension(selected_project, y_dimension_id)
-    );
+    data_id_array.unshift(y_dimension_id)
+
+    update_path_visualization( project_id, data_id_array));
+
   }
 
   $.ajax({
@@ -53,7 +54,16 @@ $(function() {
   $('#project-selector').on('change', function() {
     project_id = $(this).find("option:selected").val();
 
-    preserved_x_array = $('#x-selector').val();
+    preserved_x_array = [];
+
+    $('#x-selector option:selected').each(function () {
+      var $this = $(this);
+      if ($this.length) {
+        var selText = $this.text();
+        preserved_x_array.push(selText));
+      }
+    });
+
     preserved_y_name = $('#y-selector').find("option:selected").text();
 
     $('#x-selector').html('')
