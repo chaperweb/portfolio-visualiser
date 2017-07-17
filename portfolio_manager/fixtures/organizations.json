@@ -5,5 +5,12 @@
     "fields": {
       "name": "org1"
     }
+  },
+  {
+    "model": "portfolio_manager.Organization",
+    "pk": 2,
+    "fields": {
+      "name": "Awesome Organization"
+    }
   }
 ]

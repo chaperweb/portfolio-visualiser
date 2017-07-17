@@ -125,7 +125,7 @@ class DimensionsTestCase(TestCase):
         d.from_sheet('org2', now)
         d.save()
 
-        org1 = Organization.objects.get(pk=2)
+        org1 = Organization.objects.get(pk=3)
 
         self.assertEquals(org1, d.value)
         self.assertEquals(org1, d.history.all()[0].value)

@@ -1,17 +1,10 @@
 [
   {
-    "model": "portfolio_manager.Organization",
-    "pk": 1,
-    "fields": {
-      "name": "Awesome Organization"
-    }
-  },
-  {
     "model": "portfolio_manager.Project",
     "pk": 1,
     "fields": {
       "name": "Project1",
-      "parent": 1
+      "parent": 2
     }
   },
   {

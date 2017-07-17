@@ -60,7 +60,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
     """
     vdisplay = None
     selenium = None
-    fixtures = ['organizations', 'project_templates', 'persons_browser_testing', 'projects_browser_testing']
+    fixtures = ['organizations', 'persons_browser_testing', 'projects_browser_testing', 'project_templates']
 
     @classmethod
     def setUpClass(cls):
@@ -150,46 +150,6 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     # Actual tests
 
-    def test_add_organization(self):
-        """Add organization from admin page"""
-        self.open(reverse('admin_tools'))
-
-        add_organization_name = 'Örganizaatio'
-
-        # Insert values to "Add organization form and submit"
-        self.find('orgName').send_keys(add_organization_name)
-        self.find('org-form').submit()
-
-        # Wait for notification message that reports success
-        msg = 'Organization created: {}'.format(add_organization_name)
-        self.assert_that_text_appears("#conf-modal-body h4", msg)
-
-        # Check that organization was property added to db
-        organization = Organization.objects.get(pk=add_organization_name)
-        templates = organization.templates.all()
-        template = templates[0]
-        template_dimensions = template.dimensions.all()
-
-        self.assertIsInstance(organization, Organization)
-        self.assertEquals(1, templates.count())
-        self.assertEquals('default', template.name)
-        self.assertEquals(3, template_dimensions.count())
-        self.assertEquals(
-            NumberDimension,
-            template_dimensions[0].content_type.model_class()
-        )
-        self.assertEquals('Budget', template_dimensions[0].name)
-        self.assertEquals(
-            DateDimension,
-            template_dimensions[1].content_type.model_class()
-        )
-        self.assertEquals('EndDate', template_dimensions[1].name)
-        self.assertEquals(
-            AssociatedPersonDimension,
-            template_dimensions[2].content_type.model_class()
-        )
-        self.assertEquals('ProjectManager', template_dimensions[2].name)
-
     def test_add_organization_add_project(self):
         """Add new organization and new project under that organization"""
         #   Add person that will act as project manager later
@@ -263,7 +223,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
 
     def _test_add_project(self):
         project_name = "FooBar"
-        organization = Organization.objects.get(pk='org1')
+        organization = Organization.objects.get(pk=1)
 
         # Fill in details of new project and click "Continue"
         self.find('id_name').send_keys(project_name)
