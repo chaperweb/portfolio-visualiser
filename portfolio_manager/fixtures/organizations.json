@@ -1,17 +1,9 @@
 [
   {
     "model": "portfolio_manager.Organization",
-    "pk": "org1",
+    "pk": 1,
     "fields": {
-      
+      "name": "org1"
     }
   }
 ]
-
-
-      
-   
-  
-
- 
-      

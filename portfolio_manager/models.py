@@ -119,11 +119,12 @@ class Organization (models.Model):
             template.name = template_name
             template.organization = self
             template.save()
-        template_dimension = ProjectTemplateDimension()
-        template_dimension.template = template
-        template_dimension.name = dim_obj.name
-        template_dimension.content_type = dim_obj.get_content_type()
-        template_dimension.save()
+        if not template.dimensions.filter(name=dim_obj.name):
+            template_dimension = ProjectTemplateDimension()
+            template_dimension.template = template
+            template_dimension.name = dim_obj.name
+            template_dimension.content_type = dim_obj.get_content_type()
+            template_dimension.save()
 
 
 class Person (models.Model):

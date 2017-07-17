@@ -1,71 +1,9 @@
 [
   {
     "model": "portfolio_manager.Organization",
-    "pk": "Awesome Organization",
+    "pk": 1,
     "fields": {
       "name": "Awesome Organization"
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectTemplate",
-    "pk": 2,
-    "fields": {
-      "name": "default",
-      "organization": "Awesome Organization"
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectTemplateDimension",
-    "pk": 3,
-    "fields": {
-      "template": 2,
-      "name": "Phase",
-      "content_type": ["portfolio_manager", "textdimension"]
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectTemplateDimension",
-    "pk": 4,
-    "fields": {
-      "template": 2,
-      "name": "Budget",
-      "content_type": ["portfolio_manager", "numberdimension"]
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectTemplateDimension",
-    "pk": 5,
-    "fields": {
-      "template": 2,
-      "name": "EndDate",
-      "content_type": ["portfolio_manager", "datedimension"]
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectTemplateDimension",
-    "pk": 6,
-    "fields": {
-      "template": 2,
-      "name": "Dependencies",
-      "content_type": ["portfolio_manager", "associatedprojectsdimension"]
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectTemplateDimension",
-    "pk": 7,
-    "fields": {
-      "template": 2,
-      "name": "ProjectManager",
-      "content_type": ["portfolio_manager", "associatedpersondimension"]
-    }
-  },
-  {
-    "model": "portfolio_manager.ProjectTemplateDimension",
-    "pk": 8,
-    "fields": {
-      "template": 2,
-      "name": "Members",
-      "content_type": ["portfolio_manager", "associatedpersonsdimension"]
     }
   },
   {
@@ -73,7 +11,7 @@
     "pk": 1,
     "fields": {
       "name": "Project1",
-      "parent": "Awesome Organization"
+      "parent": 1
     }
   },
   {

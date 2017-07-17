@@ -32,7 +32,7 @@ class FormsTestCase(TestCase):
     fixtures = ['organizations', 'persons']
 
     def test_text_dimension_form(self):
-        project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
+        project_form = AddProjectForm({'parent': 1, 'organization': 1, 'name': 'FooProject'});
         project_form.save()
 
         dimension_name = 'Phase'
@@ -46,14 +46,14 @@ class FormsTestCase(TestCase):
         self.assertEquals(1, project_form.instance.dimensions.all()[0].dimension_object.history.all().count())
 
     def test_add_project_form(self):
-        form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
+        form = AddProjectForm({'parent': 1, 'organization': 1, 'name': 'FooProject'});
         self.assertTrue(form.is_valid())
         form.save()
         project = Project.objects.get(name='FooProject')
-        self.assertEquals(Organization.objects.get(pk='org1'), project.parent)
+        self.assertEquals(Organization.objects.get(pk=1), project.parent)
 
     def testAssociatedProjectsDimensionForm(self):
-        project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
+        project_form = AddProjectForm({'parent': 1, 'organization': 1, 'name': 'FooProject'});
         project_form.save()
 
         dimension_name = 'Dependencies'
@@ -69,7 +69,7 @@ class FormsTestCase(TestCase):
         self.assertEquals(1, project_form.instance.dimensions.all()[0].dimension_object.value.all().count())
 
     def test_associated_persons_dimension_form(self):
-        project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
+        project_form = AddProjectForm({'parent': 1, 'organization': 1, 'name': 'FooProject'});
         project_form.save()
 
         dimension_name = 'Members'
@@ -88,23 +88,23 @@ class FormsTestCase(TestCase):
         self.assertEquals(2, project_form.instance.dimensions.all()[0].dimension_object.value.all().count())
 
     def test_associated_organization_dimension_form(self):
-        project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
+        project_form = AddProjectForm({'parent': 1, 'organization': 1, 'name': 'FooProject'});
         project_form.save()
 
         dimension_name = 'OwningOrganization'
-        person_form = AssociatedOrganizationDimensionForm({'value': Organization.objects.get(pk='org1').pk},
+        person_form = AssociatedOrganizationDimensionForm({'value': Organization.objects.get(pk=1).pk},
                                                           dimension_name=dimension_name, project_form=project_form)
         self.assertTrue(person_form.is_valid())
         person_form.save()
 
         self.assertEquals(1, project_form.instance.dimensions.all().count())
         self.assertEquals(dimension_name, project_form.instance.dimensions.all()[0].dimension_object.name)
-        self.assertEquals(Organization.objects.get(pk='org1'),
+        self.assertEquals(Organization.objects.get(pk=1),
                           project_form.instance.dimensions.all()[0].dimension_object.value)
         self.assertEquals(1, project_form.instance.dimensions.all()[0].dimension_object.history.all().count())
 
     def test_associated_person_dimension_form(self):
-        project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
+        project_form = AddProjectForm({'parent': 1, 'organization': 1, 'name': 'FooProject'});
         project_form.save()
 
         dimension_name = 'Manager'
@@ -119,7 +119,7 @@ class FormsTestCase(TestCase):
         self.assertEquals(1, project_form.instance.dimensions.all()[0].dimension_object.history.all().count())
 
     def test_date_dimension_form(self):
-        project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
+        project_form = AddProjectForm({'parent': 1, 'organization': 1, 'name': 'FooProject'});
         project_form.save()
         dimension_name = 'StartDate'
         client_tz = get_current_timezone()
@@ -137,7 +137,7 @@ class FormsTestCase(TestCase):
         self.assertEquals(1, stored_time.history.all().count())
 
     def test_number_dimension_form(self):
-        project_form = AddProjectForm({'parent': 'org1', 'organization': 'org1', 'name': 'FooProject'});
+        project_form = AddProjectForm({'parent': 1, 'organization': 1, 'name': 'FooProject'});
         project_form.save()
 
         dimension_name = 'Size'

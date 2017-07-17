@@ -137,7 +137,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ('name',)
+        fields = ('id','name',)
 
 class AssociatedOrganizationHistorySerializer(serializers.ModelSerializer):
 
@@ -153,7 +153,7 @@ class AssociatedOrganizationSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = AssociatedOrganizationDimension
-    fields = ('name', 'history')
+    fields = ('id', 'name', 'history')
 
 class AssociatedProjectsSerializer(serializers.ModelSerializer):
 
