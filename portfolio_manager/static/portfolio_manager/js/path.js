@@ -204,12 +204,14 @@ function generate_path_svg(pathData) {
                     .attr("x2", "100%")
                     .attr("y2", "0%");
 
-      var gradStops = ["0%"]
+      var gradStops = []
 
       for (color in axes[round].data) {
-        linearGradient.append("stop")
-                      .attr("offset", gradStops[color])
-                      .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+        if (gradStops.length !== 0) {
+          linearGradient.append("stop")
+                        .attr("offset", gradStops[color])
+                        .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+        };
 
         gradStops.push(((axes[round].data[color].history_date - xScale.domain()[0]) /
                         (xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0]))*100 +"%")
