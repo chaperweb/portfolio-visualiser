@@ -24,11 +24,6 @@ function update_path_visualization(project_id, data_id_array) {
   $('#visualization').html('');
 
   generate_path_svg(generate_path_data(project_id, data_id_array))
-
-  /*
-  generate_path_svg(generate_path_data(jQuery.extend(true, {}, project_x_dimension),
-                                       jQuery.extend(true, {}, project_y_dimension)));
-  */
 }
 
 function get_selected_project(project_id) {
@@ -66,6 +61,12 @@ function generate_path_data(project_id, data_id_array) {
         };
         pathData.push(dataVal);
       }
+      /*takes the last date from the first data set
+      * the date is used to ensure that the last value
+      * of the x-data is properly shown on the coloured axis
+      * in case that the last update of the said value has been
+      * before the last update of the y-value.
+      */
       if (Number(id) === 0) {
         y_end_date = pathData[0].data[pathData[0].data.length - 1].history_date
       } else if (pathData[id].data[pathData[id].data.length - 1].history_date !== y_end_date) {
@@ -215,7 +216,11 @@ function generate_path_svg(pathData) {
                     .attr("y2", "0%");
 
       var gradStops = []
-
+      /* Coloring the linearGradient, the color appears as blocks because
+      *  the color change locations are with identical offset
+      *
+      *  for the dataset of length = 1 the last point is added.
+      */
       for (color in axes[round].data) {
         if (gradStops.length >= 1) {
           linearGradient.append("stop")
