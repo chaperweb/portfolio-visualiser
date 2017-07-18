@@ -105,6 +105,14 @@ def admin_tools(request):
     return render(request, 'admin_tools.html', {'pre_add_project_form': form})
 
 
+@login_required
+def milestones(request):
+    milestones = Milestone.objects.all()
+    context = {}
+    context['milestones'] = milestones
+    return render(request, 'manage/milestones.html', context)
+
+
 @require_POST
 @login_required
 def create_org(request):
