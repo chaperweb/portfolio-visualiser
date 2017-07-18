@@ -107,3 +107,18 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   border-style: solid;
   border-color: rgb(116, 116, 116);
 }
+
+button.dropdown-toggle {
+  width: 100%;
+  border-width: 1px;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+.dropdown .dropdown-menu[style*="display: block"]+#projects-button {
+  background-color: #dee0e1;
+}
+.dropdown .dropdown-menu {
+  width: 80%;
+  margin-left: 10%;
+  text-align: center;
+}

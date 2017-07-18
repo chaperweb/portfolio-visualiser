@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 //  COOOOOOOKIES
 function getCookie(name)
 {
@@ -93,6 +94,12 @@ function add_multiple_row(name, id, type, field, projectID) {
 
 $(function()
 {
+  $('#projects-button').click(function(){
+    $('.dropdown-menu').animate({
+      height: 'toggle'
+    });
+  });
+
   //  Add field type to modal when opened
   $(".modify-button").click(function(e) {
     e.stopPropagation();  // Stop panelbody from opening

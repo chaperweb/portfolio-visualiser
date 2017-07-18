@@ -21,30 +21,22 @@ Projects | {{project.name}}
 {% block content %}
 {% load tz %}
 {% load project_tags %}
-<!-- Sidebar -->
-<div class="sidebar navbar-fixed-left navbar-inverse xs-hidden col-md-2">
-  <ul class="nav navbar-nav">
-    <!-- Press this list item to show all the projects -->
-    <li data-toggle="collapse" data-target="#projects" class="navbar-toggle sidebar-item">Projects</li>
-    <li>
-      <!-- Expandable list with all the projects -->
-      <div id="projects" class="collapse in">
-        <ul class="nav">
-          {% for p in projects %}
-            <li><a class="sidebar-subitem" href="/projects/{{p.pk}}">{{p.name}}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-    </li>
-  </ul>
-</div>
-<!-- /sidebar -->
 
 <!-- Page Content -->
-<div id="page-content-wrapper" class="container col-lg-10">
+<div id="page-content-wrapper" class="container col-lg-10 col-lg-offset-1">
   <div class="col-md-8 col-md-offset-2">
     <div class="title text-center" id="project-name">
-      <b>{{ project.name }}</b>
+      <div class="dropdown text-center">
+        <ul class="col-lg-4 dropdown-menu">
+          {% for p in projects %}
+            <li role="presentation"><a href="/projects/{{p.pk}}">{{p.name}}</a></li>
+          {% endfor %}
+        </ul>
+        <button id="projects-button" class="dropdown-toggle" type="button">
+          {{ project.name }}
+          <span class="caret"></span>
+        </button>
+      </div>
     </div>
     {% for dim_type, dim_list in dimensions.items %}
       <h4><u>{{ dim_type | ct_name | upper }} FIELDS: </u></h4>
