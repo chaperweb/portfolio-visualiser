@@ -207,7 +207,7 @@ function generate_path_svg(pathData) {
       var gradStops = []
 
       for (color in axes[round].data) {
-        if (gradStops.length <= 1) {
+        if (gradStops.length > 1) {
           linearGradient.append("stop")
                         .attr("offset", gradStops[(Number(color) - 1)])
                         .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
