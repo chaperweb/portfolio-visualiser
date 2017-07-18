@@ -242,6 +242,14 @@ function generate_path_svg(pathData) {
         }
       }
 
+    // Add the x-axis label
+    svg.append("text")
+       .attr("class", "pathXlabel")
+       .attr("y", (xAxisTransformY + (rounds * xAxesHeight)))
+       .attr("x", 0)
+       .text(axes[round].dimension_name);
+
+    // Add the coloured area
     svg.append("path")
         .data([axes[round].data])
         .attr("fill", "url(#gradient-"+rounds+")")
