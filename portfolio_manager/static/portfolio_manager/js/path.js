@@ -54,6 +54,7 @@ function generate_path_data(project_id, data_id_array) {
 
   var project = get_selected_project(project_id);
   var pathData = [];
+  var y_end_date = 0;
 
   if (project) {
     for (id in data_id_array) {
@@ -63,8 +64,17 @@ function generate_path_data(project_id, data_id_array) {
           "dimension_name": dimension.dimension_object.name,
           "data": generate_data_chunk(dimension)
         };
-
         pathData.push(dataVal);
+      }
+      if (Number(id) === 0) {
+        y_end_date = pathData[0].data[pathData[0].data.length - 1].history_date
+      } else if (pathData[id].data[pathData[id].data.length - 1].history_date !== y_end_date) {
+        pathData[id].data.push(
+          {
+            "history_date": y_end_date,
+            "value": pathData[id].data[pathData[id].data.length - 1].value
+          }
+        );
       }
     }
   }
@@ -233,7 +243,7 @@ function generate_path_svg(pathData) {
         .attr("class", "area")
         .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
         .attr("id", rounds)
-        .attr("d", d3.area().x(xScale.domain()[xScale.domain().length - 1])
+        .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight})
                             .y1(function(d) {return rounds * xAxesHeight + (xAxesHeight - 2)}));
       rounds++;
