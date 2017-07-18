@@ -209,7 +209,7 @@ function generate_path_svg(pathData) {
       for (color in axes[round].data) {
         if (gradStops.length !== 0) {
           linearGradient.append("stop")
-                        .attr("offset", gradStops[color])
+                        .attr("offset", gradStops[(Number(color) - 1)])
                         .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
         };
 
@@ -217,7 +217,7 @@ function generate_path_svg(pathData) {
                         (xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0]))*100 +"%")
 
         linearGradient.append("stop")
-                      .attr("offset", gradStops[(Number(color) + 1)])
+                      .attr("offset", gradStops[Number(color)])
                       .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
       }
 
