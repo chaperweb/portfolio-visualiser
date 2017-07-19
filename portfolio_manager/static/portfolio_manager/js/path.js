@@ -280,8 +280,8 @@ function generate_path_svg(pathData) {
       linearGradient.selectAll("stop")
                     .data([
                       {offset: "0%", color: "#000000"},
-                      {offset: ((margin.left - 5 )/ textWidth) + "%", color: "#000000"},
-                      {offset: (margin.left / textWidth) + "%", color: "#ffffff"},
+                      {offset: (((margin.left - 5 )/ textWidth) * 100) + "%", color: "#000000"},
+                      {offset: ((margin.left / textWidth) * 100) + "%", color: "#ffffff"},
                       {offset: "100%", color: "#ffffff"}
                       ])
                     .enter().append("stop")
