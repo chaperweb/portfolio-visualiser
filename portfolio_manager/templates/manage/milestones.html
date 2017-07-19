@@ -21,13 +21,11 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {% for field in mile.dimensions %}
-                      {% for fieldname, value in field.items %}
-                        <tr>
-                          <td>{{ fieldname }}</td>
-                          <td>{{ value }}</td>
-                        </tr>
-                      {% endfor %}
+                    {% for fieldname, value in mile.dimensions.items %}
+                      <tr>
+                        <td>{{ fieldname }}</td>
+                        <td>{{ value }}</td>
+                      </tr>
                     {% endfor %}
                   </tbody>
                 </table>
