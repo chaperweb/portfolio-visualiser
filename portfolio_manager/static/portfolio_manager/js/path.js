@@ -264,9 +264,10 @@ function generate_path_svg(pathData) {
     /*
     * If the label doesn't fit to left margin the overflowing text will be faded
     */
-    if (xLabel.getBBox().width > (margin.left - 5)) {
 
-      var textWidth = xLabel.getBBox().width;
+    var textWidth = xLabel.node().getBBox().width;
+
+    if (textWidth > (margin.left - 5)) {
 
       linearGradient = defs.append("linearGradient")
                             .attr("id", "textGradient-"+String(rounds));
