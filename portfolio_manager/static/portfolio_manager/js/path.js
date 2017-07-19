@@ -189,6 +189,12 @@ function generate_path_svg(pathData) {
      .attr("id", "y-axis")
      .call(d3.axisLeft(yScale));
 
+  // Y-axis label   
+  svg.append("text")
+     .attr("id", "yAxisLabel")
+     .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+     .text(pathData[0].dimension_name)
+
   // Generates the colored x-axes under the graph
   function generate_x_axes(x_data) {
 
