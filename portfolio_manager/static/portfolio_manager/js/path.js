@@ -259,9 +259,12 @@ function generate_path_svg(pathData) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight})
                             .y1(function(d) {return rounds * xAxesHeight + (xAxesHeight - 2)}));
-  
 
-    if (xLabel.getBBox().width > (margin.left - 5) {
+
+    /*
+    * If the label doesn't fit to left margin the overflowing text will be faded
+    */
+    if (xLabel.getBBox().width > (margin.left - 5)) {
 
       var textWidth = xLabel.getBBox().width;
 
