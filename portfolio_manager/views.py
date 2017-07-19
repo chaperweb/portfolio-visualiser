@@ -108,8 +108,13 @@ def admin_tools(request):
 @login_required
 def milestones(request):
     milestones = Milestone.objects.all()
-    context = {}
-    context['milestones'] = milestones
+    context = {'milestones': {}}
+    grouped_miles = groupby(milestones, lambda milestone: milestone.project)
+    for project, milestones in grouped_miles:
+        context['milestones'][project] = []
+        for milestone in milestones:
+            context['milestones'][project].append(milestone.get_display_data())
+
     return render(request, 'manage/milestones.html', context)
 
 
