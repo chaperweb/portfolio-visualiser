@@ -245,7 +245,7 @@ function generate_path_svg(pathData) {
     // Add the x-axis label
     var xLabel = svg.append("text")
                      .attr("class", "pathXlabel")
-                     .attr("y", (xAxisTransformY + (xAxesHeight - 2) + (rounds * xAxesHeight)))
+                     .attr("y", (xAxisTransformY + (xAxesHeight) + (rounds * xAxesHeight)))
                      .attr("x", 0)
                      .text(axes[round].dimension_name);
 
@@ -280,7 +280,7 @@ function generate_path_svg(pathData) {
       linearGradient.selectAll("stop")
                     .data([
                       {offset: "0%", color: "#000000"},
-                      {offset: (((margin.left - 5 )/ textWidth) * 100) + "%", color: "#000000"},
+                      {offset: (((margin.left - 15 )/ textWidth) * 100) + "%", color: "#000000"},
                       {offset: ((margin.left / textWidth) * 100) + "%", color: "#ffffff"},
                       {offset: "100%", color: "#ffffff"}
                       ])
