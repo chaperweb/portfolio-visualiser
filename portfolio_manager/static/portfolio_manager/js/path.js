@@ -243,11 +243,11 @@ function generate_path_svg(pathData) {
       }
 
     // Add the x-axis label
-    svg.append("text")
-       .attr("class", "pathXlabel")
-       .attr("y", (xAxisTransformY + xAxesHeight + (rounds * xAxesHeight)))
-       .attr("x", 0)
-       .text(axes[round].dimension_name);
+    var xLabel = svg.append("text")
+                     .attr("class", "pathXlabel")
+                     .attr("y", (xAxisTransformY + (xAxesHeight - 2) + (rounds * xAxesHeight)))
+                     .attr("x", 0)
+                     .text(axes[round].dimension_name);
 
     // Add the coloured area
     svg.append("path")
@@ -259,6 +259,34 @@ function generate_path_svg(pathData) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight})
                             .y1(function(d) {return rounds * xAxesHeight + (xAxesHeight - 2)}));
+  
+
+    if (xLabel.getBBox().width > (margin.left - 5) {
+
+      var textWidth = xLabel.getBBox().width;
+
+      linearGradient = defs.append("linearGradient")
+                            .attr("id", "textGradient-"+String(rounds));
+
+      linearGradient.attr("x1", "0%")
+                    .attr("y1", "0%")
+                    .attr("x2", "100%")
+                    .attr("y2", "0%");
+
+      linearGradient.selectAll("stop")
+                    .data([
+                      {offset: "0%", color: "#000000"},
+                      {offset: ((margin.left - 5 )/ textWidth) + "%", color: "#000000"},
+                      {offset: (margin.left / textWidth) + "%", color: "#ffffff"},
+                      {offset: "100%", color: "#ffffff"}
+                      ])
+                    .enter().append("stop")
+                    .attr("offset", function(d) { return d.offset; })
+                    .attr("stop-color", function(d) { return d.color; });
+
+      xLabel.attr("fill", "url(#textGradient-"+rounds+")")
+    };
+
       rounds++;
     }
   }
