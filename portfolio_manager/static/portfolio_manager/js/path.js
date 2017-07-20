@@ -251,7 +251,7 @@ function generate_path_svg(pathData) {
     // Add the x-axis label
     var xLabel = svg.append("text")
                      .attr("class", "pathXlabel")
-                     .attr("transform", "translate("0","+xAxisTransformY+")")
+                     .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
                      .attr("y", ((rounds * xAxesHeight)))
                      .attr("x", 0)
                      .text(axes[round].dimension_name);
