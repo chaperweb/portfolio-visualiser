@@ -119,7 +119,7 @@ function generate_path_svg(pathData) {
       width =   Math.max(800, ($(window).width() - 250) * 0.9),
       margin = {
         right: 35,
-        left: 65,
+        left: 85,
         top: height * 0.02,
         bottom: height * 0.05
       };
@@ -264,8 +264,8 @@ function generate_path_svg(pathData) {
         .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
         .attr("id", rounds)
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
-                            .y0(function(d) {return rounds * xAxesHeight + 2})
-                            .y1(function(d) {return rounds * xAxesHeight + xAxesHeight}));
+                            .y0(function(d) {return rounds * xAxesHeight + 1})
+                            .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}));
 
 
     /*
