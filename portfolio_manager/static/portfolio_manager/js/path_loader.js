@@ -35,9 +35,13 @@ $(function() {
 
     data_id_array = x_dimension_id
 
+    /* Adding the project id and y-data in the beginning of dataset
+    *  Data will be in form of [project_id, y_id, <x1_id...xn_id>]
+    */
     data_id_array.unshift(y_dimension_id);
+    data_id_array.unshift(project_id);
 
-    update_path_visualization( project_id, data_id_array);
+    generate_path_svg( "visualization", data_id_array);
 
   };
 

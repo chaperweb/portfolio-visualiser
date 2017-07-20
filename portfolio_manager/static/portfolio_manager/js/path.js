@@ -18,14 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 var db_json;
 
-// Updates the visualization in case of change in the dropdown
-function update_path_visualization(project_id, data_id_array) {
-
-  $('#visualization').html('');
-
-  generate_path_svg(generate_path_data(project_id, data_id_array))
-}
-
 function get_selected_project(project_id) {
   for (var i = 0; i < db_json.length; i++) {
     if(db_json[i].id == project_id) {
@@ -45,11 +37,13 @@ function get_dimension(project, id) {
   return null;
 };
 
-function generate_path_data(project_id, data_id_array) {
+function generate_path_data(data_id_array) {
 
-  var project = get_selected_project(project_id);
+  var project = get_selected_project(data_id_array[0]);
   var pathData = [];
   var y_end_date = 0;
+
+  data_id_array = data_id_array.slice(1)
 
   if (project) {
     for (id in data_id_array) {
@@ -104,15 +98,11 @@ function generate_data_chunk(dimension) {
     return data;
 };
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = {
-    generate_path_data: generate_path_data
-  };
-}
-
 // Generate the svg container for the visualization
-function generate_path_svg(pathData) {
+function generate_path_svg(target, data_id_array) {
   console.log(pathData)
+
+  $('#visualization').html('');
   // Dimension of the svg box
   // Left and right margin are hardcoded to ensure enough room for axis values
   var height =  Math.max(600, $(window).height() * 0.8),
@@ -124,6 +114,7 @@ function generate_path_svg(pathData) {
         bottom: height * 0.05
       };
 
+  var pathData = generate_path_data(data_id_array)
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
 
@@ -148,7 +139,7 @@ function generate_path_svg(pathData) {
       yAxisTransformY = margin.top;
 
   // The svg box that everything goes in
-  var svg = d3.select("#visualization")
+  var svg = d3.select("#"+ target)
               .append("svg")
               .attr("height", height)
               .attr("width", width)
