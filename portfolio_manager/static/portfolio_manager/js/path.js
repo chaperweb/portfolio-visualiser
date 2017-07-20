@@ -264,8 +264,8 @@ function generate_path_svg(pathData) {
         .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
         .attr("id", rounds)
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
-                            .y0(function(d) {return rounds * xAxesHeight})
-                            .y1(function(d) {return rounds * xAxesHeight + (xAxesHeight - 2)}));
+                            .y0(function(d) {return rounds * xAxesHeight + 2})
+                            .y1(function(d) {return rounds * xAxesHeight + xAxesHeight}));
 
 
     /*
