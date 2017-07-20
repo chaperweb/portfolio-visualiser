@@ -100,9 +100,9 @@ function generate_data_chunk(dimension) {
 
 // Generate the svg container for the visualization
 function generate_path_svg(target, data_id_array) {
-  console.log(pathData)
 
-  $('#visualization').html('');
+  $('#'+ target).html('');
+
   // Dimension of the svg box
   // Left and right margin are hardcoded to ensure enough room for axis values
   var height =  Math.max(600, $(window).height() * 0.8),
@@ -120,10 +120,11 @@ function generate_path_svg(target, data_id_array) {
 
   // height of the colored x-axis area
   var xAxesHeight = 20;
+  var xAxesMaxOptions = 5;
 
   // Length of the axis
   var axisLengthX = width - (margin.right + margin.left),
-      axisLengthY = height - (margin.top + margin.bottom + (5 * xAxesHeight));
+      axisLengthY = height - (margin.top + margin.bottom + (xAxesMaxOptions * xAxesHeight));
 
   // human readable timeformat from history_date
   var ddmmyy = d3.timeFormat("%d-%m-%Y");
@@ -132,9 +133,9 @@ function generate_path_svg(target, data_id_array) {
   var pathTransformX = margin.left,
       pathTransformY = margin.top,
       xAxisTransformX = margin.left,
-      xAxisTransformY = height - (margin.bottom + (5 * xAxesHeight)),
+      xAxisTransformY = height - (margin.bottom + (xAxesMaxOptions * xAxesHeight)),
       timeAxisTransformX = margin.left,
-      timeAxisTransformY = height - (margin.bottom + (5 * xAxesHeight)),
+      timeAxisTransformY = height - (margin.bottom + (xAxesMaxOptions * xAxesHeight)),
       yAxisTransformX = margin.left,
       yAxisTransformY = margin.top;
 
@@ -255,7 +256,7 @@ function generate_path_svg(target, data_id_array) {
         .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
         .attr("id", rounds)
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
-                            .y0(function(d) {return rounds * xAxesHeight + 1})
+                            .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}));
 
 
