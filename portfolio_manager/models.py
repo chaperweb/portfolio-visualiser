@@ -21,7 +21,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.timezone import get_current_timezone, is_naive, make_aware
@@ -75,9 +75,33 @@ class GoogleSheet (models.Model):
     def __str__(self):
         return str(self.name)
 
+
+class Organization (models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return str(self.name)
+
+    def add_template(self, template_name, dim_obj):
+        try:
+            template = self.templates.get(name=template_name)
+        except:
+            template = ProjectTemplate()
+            template.name = template_name
+            template.organization = self
+            template.save()
+        if not template.dimensions.filter(name=dim_obj.name):
+            template_dimension = ProjectTemplateDimension()
+            template_dimension.template = template
+            template_dimension.name = dim_obj.name
+            template_dimension.content_type = dim_obj.get_content_type()
+            template_dimension.save()
+
+
 class Project (models.Model):
     name = models.CharField(max_length=50)
-    parent = models.ForeignKey('Organization', null=True,on_delete=models.CASCADE)
+    parent = models.ForeignKey(Organization, null=True,on_delete=models.CASCADE)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -104,13 +128,6 @@ def dimension_cleanup(sender, instance, *args, **kwargs):
 
 pre_delete.connect(dimension_cleanup, sender=ProjectDimension)
 
-class Organization (models.Model):
-    name = models.CharField(max_length=50, primary_key=True)
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return str(self.name)
-
 
 class Person (models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="person", null=True)
@@ -128,6 +145,11 @@ def create_person(sender, instance, created, **kwargs):
             first_name=instance.first_name,
             last_name=instance.last_name
         )
+    else:
+        p = Person.objects.get(user=instance)
+        p.first_name = instance.first_name
+        p.last_name = instance.last_name
+        p.save()
 
 
 @receiver(post_save, sender=User)
@@ -144,6 +166,43 @@ class ProjectTemplateDimension(models.Model):
     template = models.ForeignKey(ProjectTemplate, null=False, on_delete=models.CASCADE, related_name='dimensions')
     name = models.CharField(max_length=50)
     content_type = models.ForeignKey(ContentType, null=False, on_delete=models.CASCADE)
+
+@receiver(post_save, sender=Organization)
+def create_orgtemplate(sender, instance, created, **kwargs):
+    if created:
+        t = ProjectTemplate.objects.create(
+                name="default",
+                organization=instance
+            )
+        t.save()
+
+        ct_objects = ContentType.objects
+        project_template_data_budget = {
+            'template': t,
+            'name': 'Budget',
+            'content_type': ct_objects.get_for_model(NumberDimension),
+        }
+        pt_dim = ProjectTemplateDimension(**project_template_data_budget)
+        pt_dim.save()
+
+        # End date
+        project_template_data_enddate = {
+            'template': t,
+            'name': 'EndDate',
+            'content_type': ct_objects.get_for_model(DateDimension),
+        }
+        pt_dim_2 = ProjectTemplateDimension(**project_template_data_enddate)
+        pt_dim_2.save()
+
+        # Project manager
+        project_template_data_pm = {
+            'template': t,
+            'name': 'ProjectManager',
+            'content_type': ct_objects.get_for_model(AssociatedPersonDimension),
+        }
+        pt_dim_3 = ProjectTemplateDimension(**project_template_data_pm)
+        pt_dim_3.save()
+
 
 
 class Dimension (models.Model):
@@ -384,3 +443,39 @@ class FourFieldSnapshot(Snapshot):
     start_date = models.DateField()
     end_date = models.DateField()
     zoom = models.PositiveIntegerField()
+
+
+class Employees(Group):
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
+
+
+class OrganizationAdmins(Group):
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=Organization)
+def create_groups(sender, instance, created, **kwargs):
+    if created:
+        Employees.objects.create(
+            organization=instance,
+            name = '{}_Employees'.format(instance.name)
+        )
+        OrganizationAdmins.objects.create(
+            organization=instance,
+            name = '{}_OrgAdmins'.format(instance.name)
+        )
+    else:
+        e = Employees.objects.get(organization=instance)
+        a = OrganizationAdmins.objects.get(organization=instance)
+
+        e.name = '{}_Employees'.format(instance.name)
+        a.name = '{}_OrgAdmins'.format(instance.name)
+
+        e.save()
+        a.save()
+
+
+@receiver(post_save, sender=Organization)
+def save_groups(sender, instance, **kwargs):
+    instance.employees.save()
+    instance.organizationadmins.save()

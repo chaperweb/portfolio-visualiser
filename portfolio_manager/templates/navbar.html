@@ -1,4 +1,5 @@
-<nav class="navbar navbar-default navbar-static-top" role="navigation">
+{% load auth_tags %}
+<nav class="navbar navbar-default navbar-static-top container-fluid" role="navigation">
   <div class="navbar-header">
     <!-- This button will only be displayed on narrow (mobile) screen sizes -->
     <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbardrop" aria-expanded="false" aria-controls="#navbardrop">
@@ -15,8 +16,20 @@
     <ul class="nav nav-justified">
       <li><a class="navbar-item" href="{% url 'projects' %}">Projects</a></li>
       <li><a class="navbar-item" href="{% url 'snapshots' %}">Snapshots</a></li>
-      <li><a class="navbar-item" href="{% url 'admin_tools' %}">Admin</a></li>
+      {% if user|is_orgadmin or user.is_superuser %}
+      <li class="dropdown">
+        <a class="dropdown-toggle navbar-item" data-toggle="dropdown">
+          Manage <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="{% url 'add_user' %}">Persons</a></li>
+          <li><a href="{% url 'admin_tools' %}">Projects</a></li>
+          <li><a href="{% url 'admin_tools' %}">Milestones</a></li>
+          <li><a href="{% url 'admin_tools' %}">Sheets</a></li>
+        </ul>
+      </li>
       <li><a class="navbar-item" href="{% url 'databaseview' %}">Database</a></li>
+      {% endif %}
       <li><a class="navbar-item" href="{% url 'about' %}">About</a></li>
       {% if user.is_authenticated %}
       <li><a class="navbar-item" href="{% url 'logout' %}">Logout</a></li>

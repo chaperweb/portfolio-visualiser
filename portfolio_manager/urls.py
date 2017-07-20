@@ -60,6 +60,7 @@ urlpatterns = [
     url(r'^create_snapshot$', views.create_snapshot, name='create_snapshot'),
     url(r"^json$", views.json, name='json'),
     url(r'^milestone$', views.milestones, name="milestones"),
+    url(r"^add_user$", views.add_user, name='add_user'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
 ]

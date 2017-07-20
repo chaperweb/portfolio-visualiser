@@ -322,11 +322,11 @@ class ImporterTestCase(TestCase):
 
     def test_import_owningorganization(self):
         data = [
-            [u'id', u'__history_date', u'OwningOrganization', u'Name', u'Budget'],
-            ['', '', 'AORG', 'TEXT', 'NUM'],
-            [u'1', '2013-03-16T17:41:28+00:00', 'Org1', 'boo', '4'],
-            [u'1', '2013-03-18T17:41:28+00:00', 'Org2', 'biz'],
-            [u'1', '2013-03-19T17:41:28+00:00', 'Org1 '],
+            [u'id', u'__history_date'          , u'OwningOrganization', u'Name', u'Budget'],
+            [''   , ''                         , 'AORG'               , 'TEXT' , 'NUM'    ],
+            [u'1' , '2013-03-16T17:41:28+00:00', 'Org1'               , 'boo'  , '4'      ],
+            [u'1' , '2013-03-18T17:41:28+00:00', 'Org2'               , 'biz'             ],
+            [u'1' , '2013-03-19T17:41:28+00:00', 'Org1'                                   ],
         ]
         result = from_data_array(data)
         org1_templates = Organization.objects.get(name='Org1').templates.all()
@@ -338,37 +338,68 @@ class ImporterTestCase(TestCase):
         self.assertEqual(1, org1_templates.count())
         self.assertEqual(1, org2_templates.count())
 
+        for i in range(5):
+            print("i={}; name={}".format(i, org1_dimensions[i].name))
+
         self.assertEqual('default', org1_templates[0].name)
-        self.assertEqual(3, org1_dimensions.count())
-        self.assertEqual('OwningOrganization', org1_dimensions[0].name)
-        self.assertEqual(
-            ContentType.objects.get(model='associatedorganizationdimension'),
-            org1_dimensions[0].content_type
-        )
-        self.assertEqual('Name', org1_dimensions[1].name)
-        self.assertEqual(
-            ContentType.objects.get(model='textdimension'),
-            org1_dimensions[1].content_type
-        )
-        self.assertEqual('Budget', org1_dimensions[2].name)
+        # Budget, EndDate, ProjectManager, OwningOrganization, Name
+        self.assertEqual(5, org1_dimensions.count())
+        self.assertEqual(5, org2_dimensions.count())
+
+        self.assertEqual('Budget', org1_dimensions[0].name)
         self.assertEqual(
             ContentType.objects.get(model='numberdimension'),
+            org1_dimensions[0].content_type
+        )
+
+        self.assertEqual('EndDate', org1_dimensions[1].name)
+        self.assertEqual(
+            ContentType.objects.get(model='datedimension'),
+            org1_dimensions[1].content_type
+        )
+
+        self.assertEqual('ProjectManager', org1_dimensions[2].name)
+        self.assertEqual(
+            ContentType.objects.get(model='associatedpersondimension'),
             org1_dimensions[2].content_type
         )
 
-        self.assertEqual(3, org2_dimensions.count())
-        self.assertEqual('OwningOrganization', org2_dimensions[0].name)
+        self.assertEqual('OwningOrganization', org1_dimensions[3].name)
         self.assertEqual(
             ContentType.objects.get(model='associatedorganizationdimension'),
-            org2_dimensions[0].content_type
+            org1_dimensions[3].content_type
         )
-        self.assertEqual('Name', org2_dimensions[1].name)
+        self.assertEqual('Name', org1_dimensions[4].name)
         self.assertEqual(
             ContentType.objects.get(model='textdimension'),
-            org2_dimensions[1].content_type
+            org1_dimensions[4].content_type
         )
-        self.assertEqual('Budget', org2_dimensions[2].name)
+
+        self.assertEqual('Budget', org2_dimensions[0].name)
         self.assertEqual(
             ContentType.objects.get(model='numberdimension'),
+            org2_dimensions[0].content_type
+        )
+
+        self.assertEqual('EndDate', org2_dimensions[1].name)
+        self.assertEqual(
+            ContentType.objects.get(model='datedimension'),
+            org2_dimensions[1].content_type
+        )
+
+        self.assertEqual('ProjectManager', org2_dimensions[2].name)
+        self.assertEqual(
+            ContentType.objects.get(model='associatedpersondimension'),
             org2_dimensions[2].content_type
+        )
+
+        self.assertEqual('OwningOrganization', org2_dimensions[3].name)
+        self.assertEqual(
+            ContentType.objects.get(model='associatedorganizationdimension'),
+            org2_dimensions[3].content_type
+        )
+        self.assertEqual('Name', org2_dimensions[4].name)
+        self.assertEqual(
+            ContentType.objects.get(model='textdimension'),
+            org2_dimensions[4].content_type
         )

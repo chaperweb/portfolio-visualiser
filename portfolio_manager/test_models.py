@@ -107,7 +107,7 @@ class DimensionsTestCase(TestCase):
     def test_associated_organization_dimension_org_exists(self):
 
         now = timezone.now()
-        org1 = Organization.objects.get(pk='org1')
+        org1 = Organization.objects.get(pk=1)
 
         d = AssociatedOrganizationDimension()
         d.from_sheet('org1', now)
@@ -125,7 +125,7 @@ class DimensionsTestCase(TestCase):
         d.from_sheet('org2', now)
         d.save()
 
-        org1 = Organization.objects.get(pk='org2')
+        org1 = Organization.objects.get(pk=3)
 
         self.assertEquals(org1, d.value)
         self.assertEquals(org1, d.history.all()[0].value)
@@ -184,7 +184,7 @@ class CascadeDeleteTestCase(TestCase):
         result = from_data_array(data)
         self.assertTrue(result['result'], 'Failed to validate field types in imported data')
 
-        Organization.objects.get(pk='org1').delete()
+        Organization.objects.get(pk=1).delete()
         self.assertFalse(Organization.objects.all())
         self.assertFalse(Project.objects.all())
         self.assertFalse(ProjectDimension.objects.all())

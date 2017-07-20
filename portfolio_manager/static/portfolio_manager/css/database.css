@@ -1,19 +1,15 @@
 table {
     font-family: "Exo 2", sans-serif;
-    border-collapse: collapse;
     width: 100%;
-
+    margin-bottom: 1vh;
 }
 
 td, th {
-    /*border: 1px solid #dddddd;*/
-    text-align: left;
-    padding: 8px;
-
+    padding: 1%;
 }
 
 tr:nth-child(even) {
-    background-color: rgb(156,156,156);
+    background-color: #babbbe;
 }
 
 .itemleft {
@@ -22,14 +18,7 @@ tr:nth-child(even) {
 }
 
 .itemright {
+  text-align: right;
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
-}
-
-.container button#open_add_field_modal_btn {
-  position: fixed;
-  width: 20vw;
-  left: 40vw;
-  bottom: 0;
-  margin-bottom: 10px;
 }

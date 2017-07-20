@@ -49,5 +49,4 @@ def get_valuetype(dim_type):
 @register.filter
 def add_form_control(input):
     input.field.widget.attrs['class'] = 'form-control'
-    print(input.field.widget.attrs['class'])
     return input
