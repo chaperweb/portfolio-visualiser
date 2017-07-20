@@ -118,7 +118,7 @@ function generate_path_svg(target, data_id_array) {
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
 
-  // height of the colored x-axis area
+  // height of the colored x-axis area and maximum amount of x-axis
   var xAxesHeight = 20;
   var xAxesMaxOptions = 5;
 
@@ -186,6 +186,14 @@ function generate_path_svg(target, data_id_array) {
      .attr("id", "yAxisLabel")
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
+
+  focus.append("circle")
+       .attr("class", "focus")
+       .attr("fill", "red")
+       .attr("r", 10)
+
+  focus.select("circle.focus")
+       .attr("transform", "translate("+d.history_date+", "+d.value+")");
 
   // Generates the colored x-axes under the graph
   function generate_x_axes(x_data) {
