@@ -1,40 +1,38 @@
 {% extends "base.html" %}
 
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'portfolio_manager/css/milestone.css' %}" />
+{% endblock %}
+
 {% block content %}
+{% load project_tags %}
 <div class="col-lg-6 col-lg-offset-3">
   {% for project, data in milestones.items %}
-    <div id="{{ project.id }}-wrapper">
-      <h3 class="text-center row project-name">{{ project.name }}</h3>
-      <div id="milestones-wrapper">
-        {% for mile in data %}
-          <div class="panel panel-default">
-            <div class="panel-heading text-center">
-              {{ mile.due_date }}
-            </div>
-            <div class="panel-body">
-              <div class="col-lg-8 col-lg-offset-2">
-                <table class="table text-center">
-                  <thead>
-                    <tr>
-                      <th class="text-center">Field</th>
-                      <th class="text-center">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for fieldname, value in mile.dimensions.items %}
-                      <tr>
-                        <td>{{ fieldname }}</td>
-                        <td>{{ value }}</td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+    <div id="{{ project.id }}-wrapper" class="project-wrapper">
+      <h2 class="text-center row project-name">{{ project.name }}</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            {% for field in fields|get:project %}
+              <th>{{ field }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <div id="milestones-wrapper">
+            {% for mile in data %}
+              <tr>
+                <td>{{ mile.due_date|date:"d/m/Y" }}</td>
+                {% for fieldname, value in mile.dimensions.items %}
+                  <td>{{ value }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
           </div>
-        {% endfor %}
-      </div>
+        </tbody>
+      </table>
     </div>
   {% endfor %}
-</div>
 {% endblock %}
