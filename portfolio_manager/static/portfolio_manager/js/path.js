@@ -196,7 +196,7 @@ function generate_path_svg(target, data_id_array) {
        .attr("r", 10)
 
   focus.select("circle.focus")
-       .attr("transform", "translate("+d.history_date+", "+d.value+")");
+       .attr("transform", "translate("+xScale(d.history_date)+", "+yScale(d.value)+")");
 
   // Generates the colored x-axes under the graph
   function generate_x_axes(x_data) {
