@@ -193,18 +193,12 @@ def from_data_array(data):
                             project_dimension_objects[idx] = project_dimension
 
                 # Create default project template for every organization that some project belongs to.
-                if project.parent and project.parent.templates.all().count() == 0:
-                    template = ProjectTemplate()
-                    template.name = 'default'
-                    template.organization = project.parent
-                    template.save()
-
+                if project.parent:
                     for key, dimension_object in dimension_objects.items():
-                        template_dimension = ProjectTemplateDimension()
-                        template_dimension.template = template
-                        template_dimension.name = dimension_object.name
-                        template_dimension.content_type = dimension_object.get_content_type()
-                        template_dimension.save()
+                        project.parent.add_template(
+                            template_name='default',
+                            dim_obj=dimension_object
+                        )
         except Exception as e:
             print("ERROR: {}. Skipping row {}".format(e, counter+3))
             rows_skipped += 1

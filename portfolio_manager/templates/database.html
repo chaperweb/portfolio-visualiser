@@ -19,35 +19,40 @@ Database
 {% block content %}
 <div class="container">
   <div class="row text-center">
-    <h3>Database</h3>
+    <h3>DATABASE</h3>
   </div>
+  {% if user.is_superuser %}
   <form class="col-lg-4" action="{% url 'databaseview' %}" method="POST">
     {% csrf_token %}
     <h4>Organization:</h4>
     {{ form.orgs }}
   </form>
+  {% endif %}
 
   {% if add_field_success %}<h4 class="col-lg-4 text-center" style="color: #00ff00;">{{ add_field_success }}</h4>{% endif %}
   {% if add_field_fail %}<h4 class="col-lg-4 text-center" style="color: #ff0000;">{{ add_field_fail }}</h4>{% endif %}
 
-  <div class="col-lg-12">
+  <div class="col-lg-6 col-lg-offset-3">
     <table class="item">
       <tr>
-        <th>Name</th>
-        <th>Datatype</th>
+        <th class="itemleft">Name</th>
+        <th class="itemright">Datatype</th>
       </tr>
-
-      {% for key, value in dims.items %}
-      <tr>
-        <td class="itemleft">{{ key }}</td>
-        <td class="itemright">{{ value }}</td>
-      </tr>
+      {% for datatype, dimlist in dims.items %}
+        {% for dim in dimlist %}
+        <tr>
+          <td class="itemleft">{{ dim }}</td>
+          <td class="itemright">{{ datatype }}</td>
+        </tr>
+        {% endfor %}
       {% endfor %}
     </table>
   </div>
   {% include "modals/add_field_modal.html" %}
   {% if dims %}
-  <button id="open_add_field_modal_btn" class="btn btn-orange" data-toggle="modal" data-target="#add_field_modal"><span class="glyphicon glyphicon-plus"></span>Add Field</button>
+  <button id="open_add_field_modal_btn" class="col-lg-4 col-lg-offset-4 btn btn-orange" data-toggle="modal" data-target="#add_field_modal">
+    <span class="glyphicon glyphicon-plus"></span>Add Field
+  </button>
   {% endif %}
 </div>
 {% endblock %}

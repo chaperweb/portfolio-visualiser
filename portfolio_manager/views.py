@@ -23,6 +23,7 @@ import json as json_module
 from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
 from itertools import groupby
+from collections import defaultdict
 
 import django.forms
 from django.http import JsonResponse, HttpResponse
@@ -47,11 +48,11 @@ logger = logging.getLogger('django.request')
 def signup(request):
     if request.method == "POST":
         user = User.objects.create_user(
-        username=request.POST['username'],
-        email=request.POST.get('email'),
-        password=request.POST['password'],
-        first_name=request.POST.get('first_name'),
-        last_name=request.POST.get('last_name')
+            username=request.POST['username'],
+            email=request.POST.get('email'),
+            password=request.POST['password'],
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name')
         )
         user.save()
         return redirect('homepage')
@@ -105,6 +106,25 @@ def admin_tools(request):
     return render(request, 'admin_tools.html', {'pre_add_project_form': form})
 
 
+# TODO: Require admin
+@login_required
+def add_user(request):
+    context = {}
+    if request.method == 'POST':
+        org = request.user.groups.first()
+        user = User.objects.create_user(
+            username=request.POST['username'],
+            email=request.POST.get('email'),
+            password=request.POST['password'],
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name')
+        )
+        user.save()
+        user.groups.add(org)
+        context['successmsg'] = '{} created successfully!'.format(str(user))
+    return render(request, 'add_user.html', context)
+
+
 @require_POST
 @login_required
 def create_org(request):
@@ -114,44 +134,6 @@ def create_org(request):
         # Save a new Organization
         organization = Organization(name = form.cleaned_data['name'])
         organization.save()
-
-        template_data = {
-            'name': 'default',
-            'organization': organization
-        }
-        template = ProjectTemplate(**template_data)
-        template.save()
-
-        ct_objects = ContentType.objects
-
-        ####    PROJECT TEMPLATES   ###
-
-        # Budget
-        project_template_data_budget = {
-            'template': template,
-            'name': 'Budget',
-            'content_type': ct_objects.get_for_model(NumberDimension),
-        }
-        pt_dim = ProjectTemplateDimension(**project_template_data_budget)
-        pt_dim.save()
-
-        # End date
-        project_template_data_enddate = {
-            'template': template,
-            'name': 'EndDate',
-            'content_type': ct_objects.get_for_model(DateDimension),
-        }
-        pt_dim_2 = ProjectTemplateDimension(**project_template_data_enddate)
-        pt_dim_2.save()
-
-        # Project manager
-        project_template_data_pm = {
-            'template': template,
-            'name': 'ProjectManager',
-            'content_type': ct_objects.get_for_model(AssociatedPersonDimension),
-        }
-        pt_dim_3 = ProjectTemplateDimension(**project_template_data_pm)
-        pt_dim_3.save()
 
         ###     RESPONSE    ###
         response_data = {}
@@ -192,7 +174,7 @@ def create_person(request):
 def add_field(request):
     try:
         form = ProjectTemplateForm(request.POST)
-        org = Organization.objects.get(name=request.POST['organization'])
+        org = Organization.objects.get(pk=request.POST['organization'])
         template = ProjectTemplate.objects.get(organization=org)
         ct = ContentType.objects.get_for_id(request.POST['field_type'])
         template_dim_data = {
@@ -387,7 +369,7 @@ def databaseview(request):
             add_field_form.initial = {'organization': request.POST['orgs']}
             # (dimension name -> datatype) dictionary
             dims = {}
-            organization = Organization.objects.get(name=request.POST['orgs'])
+            organization = Organization.objects.get(pk=request.POST['orgs'])
             templates = organization.templates.all()
             if len(templates) > 0:
                 template = templates[0]
@@ -395,19 +377,47 @@ def databaseview(request):
                     #TODO: group them by types to make the site easier to view?
                     t_dim_name = t_dim.content_type.model_class().__name__
                     dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
-            #redirect to the url where you'll process the input
+            # Group them by datatype
+            defdict = {}
+            for k,v in dims.items():
+                defdict.setdefault(v, []).append(k)
+
             render_data = {
-                'form':form, 'dims':dims,
+                'form':form,
+                'dims':defdict,
                 'add_field_form': add_field_form
             }
-            return render(request, 'database.html', render_data)
-    else:
+    elif request.user.is_superuser:
         add_field_form = ProjectTemplateForm()
         form = OrgForm()
         render_data = {
             'form':form,
             'add_field_form': add_field_form
         }
+    else:
+        try:
+            organization = request.user.groups.first().employees.organization
+        except:
+            organization = request.user.groups.first().organizationadmins.organization
+        add_field_form = ProjectTemplateForm()
+        add_field_form.initial = {'organization': organization.pk}
+        templates = organization.templates.all()
+        dims = {}
+        if len(templates) > 0:
+            template = templates[0]
+            for t_dim in template.dimensions.all():
+                #TODO: group them by types to make the site easier to view?
+                t_dim_name = t_dim.content_type.model_class().__name__
+                dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
+        # Group them by datatype
+        defdict = {}
+        for k,v in dims.items():
+            defdict.setdefault(v, []).append(k)
+        render_data = {
+            'dims': defdict,
+            'add_field_form': add_field_form
+        }
+
     return render(request, 'database.html', render_data)
 
 

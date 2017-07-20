@@ -46,3 +46,10 @@ html, body {
   background-color: #D2820C;
   border-color: #D2820C;
 }
+
+.dropdown-menu,
+.dropdown-menu > li,
+.dropdown-menu > li > a {
+    background-color: #969498;
+    color: #ffffff;
+}
