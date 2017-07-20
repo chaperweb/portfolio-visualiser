@@ -192,7 +192,7 @@ function generate_path_svg(pathData) {
   // Y-axis label
   svg.append("text")
      .attr("id", "yAxisLabel")
-     .attr("transform", "translate("+pathTransformX + 10 +","+pathTransformY + margin.top +")")
+     .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
 
   // Generates the colored x-axes under the graph
@@ -286,7 +286,7 @@ function generate_path_svg(pathData) {
       linearGradient.selectAll("stop")
                     .data([
                       {offset: "0%", color: "#000000"},
-                      {offset: (((margin.left - 15 )/ textWidth) * 100) + "%", color: "#000000"},
+                      {offset: (((margin.left - 20 )/ textWidth) * 100) + "%", color: "#000000"},
                       {offset: (((margin.left - 5) / textWidth) * 100) + "%", color: "#ffffff"},
                       {offset: "100%", color: "#ffffff"}
                       ])
