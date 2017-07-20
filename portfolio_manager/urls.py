@@ -48,7 +48,9 @@ urlpatterns = [
     url(r'^projects$', views.projects, name='projects'),
         url(r"^projects/(?P<project_id>[0-9]+)$", views.show_project, name='show_project'),
             url(r'^projects/(?P<project_id>[0-9]+)/edit/(?P<field_type>[A-Za-z]+)$', views.project_edit, name='project_edit'),
-    url(r'^admin_tools$', views.admin_tools, name='admin_tools'),
+    url(r'^manage/admin_tools$', views.admin_tools, name='admin_tools'),
+    url(r'^manage/milestone$', views.milestones, name="milestones"),
+    url(r"^manage/add_user$", views.add_user, name='add_user'),
         url(r"^importer$", views.importer, name='importer'),
         url(r'^create_org$', views.create_org, name='create_org'),
         url(r'^create_person$', views.create_person, name='create_person'),
@@ -59,8 +61,6 @@ urlpatterns = [
     url(r'^snapshots(/(?P<vis_type>[A-Za-z]+))?(/(?P<snapshot_id>[0-9]+))?$', views.snapshots, name='snapshots'),
     url(r'^create_snapshot$', views.create_snapshot, name='create_snapshot'),
     url(r"^json$", views.json, name='json'),
-    url(r'^milestone$', views.milestones, name="milestones"),
-    url(r"^add_user$", views.add_user, name='add_user'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
 ]

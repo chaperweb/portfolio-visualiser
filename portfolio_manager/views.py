@@ -103,7 +103,7 @@ def admin_tools(request):
     form = AddProjectForm()
     form.fields['name'].widget.attrs['class'] = 'form-control'
     form.fields['organization'].widget.attrs['class'] = 'form-control'
-    return render(request, 'admin_tools.html', {'pre_add_project_form': form})
+    return render(request, 'manage/admin_tools.html', {'pre_add_project_form': form})
 
 
 @login_required
@@ -141,7 +141,7 @@ def add_user(request):
         user.save()
         user.groups.add(org)
         context['successmsg'] = '{} created successfully!'.format(str(user))
-    return render(request, 'add_user.html', context)
+    return render(request, 'manage/add_user.html', context)
 
 
 @require_POST
