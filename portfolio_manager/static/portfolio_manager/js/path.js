@@ -187,6 +187,9 @@ function generate_path_svg(target, data_id_array) {
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
 
+  var focus = svg.append("g")
+                 .style("display", "none");
+
   focus.append("circle")
        .attr("class", "focus")
        .attr("fill", "red")
