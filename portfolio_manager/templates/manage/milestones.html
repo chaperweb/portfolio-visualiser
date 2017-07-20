@@ -25,9 +25,11 @@
             {% for mile in data %}
               <tr>
                 <td>{{ mile.due_date|date:"d/m/Y" }}</td>
-                {% for fieldname, value in mile.dimensions.items %}
-                  <td>{{ value }}</td>
-                {% endfor %}
+                {% with mile.dimensions as dims %}
+                  {% for fieldname in fields|get:project %}
+                    <td>{{ dims|get_or_empty:fieldname }}</td>
+                  {% endfor %}
+                {% endwith %}
               </tr>
             {% endfor %}
           </div>
