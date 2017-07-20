@@ -6,6 +6,10 @@ div.project-wrapper {
 }
 
 /* Table styling */
+table.table {
+  margin-bottom: 5px;
+}
+
 th:first-child {
   border-top-left-radius: 5px;
 }

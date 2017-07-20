@@ -5,11 +5,15 @@
 <link rel="stylesheet" href="{% static 'portfolio_manager/css/milestone.css' %}" />
 {% endblock %}
 
+{% block javascript %}
+<script src="{% static 'portfolio_manager/js/manage/milestone.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 {% load project_tags %}
 <div class="col-lg-6 col-lg-offset-3">
   {% for project, data in milestones.items %}
-    <div id="{{ project.id }}-wrapper" class="project-wrapper">
+    <div id="{{ project.id }}-wrapper" class="row project-wrapper">
       <h2 class="text-center row project-name">{{ project.name }}</h2>
       <table class="table">
         <thead>
@@ -20,21 +24,23 @@
             {% endfor %}
           </tr>
         </thead>
-        <tbody>
-          <div id="milestones-wrapper">
-            {% for mile in data %}
-              <tr>
-                <td>{{ mile.due_date|date:"d/m/Y" }}</td>
-                {% with mile.dimensions as dims %}
-                  {% for fieldname in fields|get:project %}
-                    <td>{{ dims|get_or_empty:fieldname }}</td>
-                  {% endfor %}
-                {% endwith %}
-              </tr>
-            {% endfor %}
-          </div>
+        <tbody id="{{ project.id }}-tablebody">
+          {% for mile in data %}
+            <tr>
+              <td>{{ mile.due_date|date:"d/m/Y" }}</td>
+              {% with mile.dimensions as dims %}
+                {% for fieldname in fields|get:project %}
+                  <td>{{ dims|get_or_empty:fieldname }}</td>
+                {% endfor %}
+              {% endwith %}
+            </tr>
+          {% endfor %}
         </tbody>
       </table>
+      <button class="btn btn-success col-lg-4 col-lg-offset-4" data-pid="{{ project.id }}">
+        <span class="glyphicon glyphicon-plus"></span>
+      </button>
     </div>
   {% endfor %}
+</div>
 {% endblock %}
