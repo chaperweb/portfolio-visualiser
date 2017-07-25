@@ -37,8 +37,11 @@
           {% endfor %}
         </tbody>
       </table>
-      <button class="btn btn-success col-lg-4 col-lg-offset-4" data-pid="{{ project.id }}">
-        <span class="glyphicon glyphicon-plus"></span>
+      <button class="add-row-btn btn btn-success col-lg-4 col-lg-offset-4" data-pid="{{ project.id }}" data-submit='0'>
+        <span class="icons">
+          <span class="vertical"></span>
+          <span class="horizontal"></span>
+        </span>
       </button>
     </div>
   {% endfor %}
