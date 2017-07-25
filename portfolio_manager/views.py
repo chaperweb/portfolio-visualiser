@@ -108,6 +108,9 @@ def admin_tools(request):
 
 @login_required
 def milestones(request):
+    if request.method == 'POST':
+        print("POST")
+
     milestones = Milestone.objects.all()
     context = {
         'milestones': {},
