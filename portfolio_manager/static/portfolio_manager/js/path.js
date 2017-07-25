@@ -187,16 +187,6 @@ function generate_path_svg(target, data_id_array) {
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
 
-  var focus = svg.append("g")
-                 .style("display", "none");
-
-  focus.append("circle")
-       .attr("class", "focus")
-       .attr("fill", "red")
-       .attr("r", 10)
-
-  focus.select("circle.focus")
-       .attr("transform", "translate("+xScale(d.history_date)+", "+yScale(d.value)+")");
 
   // Generates the colored x-axes under the graph
   function generate_x_axes(x_data) {
@@ -212,6 +202,13 @@ function generate_path_svg(target, data_id_array) {
 
     //Append a defs (for definition) element to your SVG
     var defs = svg.append("defs");
+
+    // div element for the x-axis values
+    var div = d3.select("#ordinalScale").append("div")
+          .style("position", "absolute")
+          .style("background", "white")
+          .style("pointer-events", "none")
+          .style("opacity", 0);
 
     for (round in axes) {
       var axe_label = axes[round].dimension_name
@@ -269,7 +266,10 @@ function generate_path_svg(target, data_id_array) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}));
-
+                            .on("mouseover", function(d){ div.style("opacity", .7); div.html(d[bisectX(d, d3.event.offsetX)].value)
+                                        .style("left", this.getScreenCTM().e + this.getBBox().x + "px")
+                                        .style("top", this.getScreenCTM().f + this.getBBox().y + "px");})
+                            .on("mouseout", function(){return div.style("opacity", 0);});
 
     /*
     * If the label doesn't fit to left margin the overflowing text will be faded
