@@ -213,11 +213,11 @@ function generate_path_svg(target, data_id_array) {
 
    function showWholeLabel(id) {
      console.log(id, d3.select("xHover1"));
-     d3.select("#xHover"+String(id)).style("opacity", 1);
+     d3.select("#"+String(id)+"Hover").style("opacity", 1);
    };
 
    function hideWholeLabel(id) {
-     d3.select("#xHover"+String(id)).style("opacity", 0);
+     d3.select("#"+String(id)+"Hover").style("opacity", 0);
    };
 
   // Generates the colored x-axes under the graph
@@ -276,11 +276,12 @@ function generate_path_svg(target, data_id_array) {
     // Add the x-axis label
     var xLabel = svg.append("text")
                      .attr("class", "pathXlabel")
+                     .attr("id", "xLabel"+rounds)
                      .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
                      .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
                      .attr("x", 0)
-                     .on("mouseover", function(rounds){ showWholeLabel(rounds);})
-                     .on("mouseout", function(rounds){ hideWholeLabel(rounds);})
+                     .on("mouseover", function(){ showWholeLabel(this.id);})
+                     .on("mouseout", function(){ hideWholeLabel(this.id);})
                      .text(axes[round].dimension_name);
 
     // Add the coloured area
@@ -298,7 +299,7 @@ function generate_path_svg(target, data_id_array) {
 
 
         svg.append("text")
-           .attr("id", "xHover"+rounds)
+           .attr("id", "xLabel"+rounds+"Hover")
            .attr("class", "pathXlabel")
            .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
            .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
