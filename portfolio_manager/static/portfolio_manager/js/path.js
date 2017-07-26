@@ -297,19 +297,6 @@ function generate_path_svg(target, data_id_array) {
         .on("mousein", function(d){ updateDiv(d, this);})
         .on("mouseout", function(){return div.style("opacity", 0);});
 
-
-        svg.append("text")
-           .attr("id", "xLabel"+rounds+"Hover")
-           .attr("class", "pathXlabel")
-           .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
-           .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
-           .attr("x", 0)
-           .text(axes[round].dimension_name)
-           .style("pointer-events", "none")
-           .style("fill", "white")
-           .style("border-radius","8px")
-           .style("opacity", 0);
-
     /*
     * If the label doesn't fit to left margin the overflowing text will be faded
     */
@@ -337,6 +324,18 @@ function generate_path_svg(target, data_id_array) {
                     .attr("stop-color", function(d) { return d.color; });
 
       xLabel.attr("fill", "url(#textGradient-"+rounds+")")
+
+      var textRect = xLabel.node().getBBox()
+
+      svg.append("text")
+         .attr("id", "xLabel"+rounds+"Hover")
+         .attr("class", "pathXlabel")
+         .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
+         .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
+         .attr("x", 0)
+         .text(axes[round].dimension_name)
+         .style("pointer-events", "none")
+         .style("opacity", 0);
     };
 
       rounds++;
