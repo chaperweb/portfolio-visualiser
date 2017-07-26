@@ -270,7 +270,9 @@ function generate_path_svg(target, data_id_array) {
                      .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
                      .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
                      .attr("x", 0)
-                     .text(axes[round].dimension_name);
+                     .text(axes[round].dimension_name)
+                     .on("mouseover", function(){ xHoverLabel.style("opacity", 1)};)
+                     .on("mouseout", function(){ xHoverLabel.style("opacity", 0);});;
 
     // Add the coloured area
     svg.append("path")
@@ -282,13 +284,22 @@ function generate_path_svg(target, data_id_array) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}))
-                            .on("mousemove", function(d){ updateDiv(d, this)})
-                            .on("mouseout", function(){return div.style("opacity", 0);});
+        .on("mousemove", function(d){ updateDiv(d, this)};)
+        .on("mouseout", function(){return div.style("opacity", 0);});
+
+
+    var xHoverLabel = svg.append("text")
+                         .attr("class", "pathXlabel")
+                         .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
+                         .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
+                         .attr("x", 0)
+                         .text(axes[round].dimension_name)
+                         .style("pointer-events", "none")
+                         .style("opacity", 0);
 
     /*
     * If the label doesn't fit to left margin the overflowing text will be faded
     */
-
     var textWidth = xLabel.node().getBBox().width;
 
     if (textWidth > (margin.left - 5)) {
