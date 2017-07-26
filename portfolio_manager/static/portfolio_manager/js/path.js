@@ -201,7 +201,6 @@ function generate_path_svg(target, data_id_array) {
 
    // Updates the div element value and relocates it when needed.
    function updateDiv(data, element) {
-     console.log("What now")
      var currentId = bisectX(data, Date.parse(xScale.invert(d3.event.offsetX)))
      if (currentId != divValueId || div.text() != data[currentId - 1]) {
        divValueId = currentId
@@ -296,7 +295,7 @@ function generate_path_svg(target, data_id_array) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}))
-        .on("mousein", function(d){ updateDiv(d, this);})
+        .on("mousemove", function(d){ updateDiv(d, this);})
         .on("mouseout", function(){return div.style("opacity", 0);});
 
     /*
@@ -327,7 +326,7 @@ function generate_path_svg(target, data_id_array) {
 
       xLabel.attr("fill", "url(#textGradient-"+rounds+")")
 
-      var textRect = xLabel.node().getBBox()
+    };
 
       svg.append("text")
          .attr("id", "xLabel"+rounds+"Hover")
@@ -338,7 +337,6 @@ function generate_path_svg(target, data_id_array) {
          .text(axes[round].dimension_name)
          .style("pointer-events", "none")
          .style("opacity", 0);
-    };
 
       rounds++;
     }
