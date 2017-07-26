@@ -19,11 +19,13 @@
 #
 ##
 import logging
+import pytz
 import json as json_module
 from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
 from itertools import groupby
 from collections import defaultdict
+from dateutil.parser import parse
 
 import django.forms
 from django.http import JsonResponse, HttpResponse
@@ -108,14 +110,30 @@ def admin_tools(request):
 
 @login_required
 def milestones(request):
-    if request.method == 'POST':
-        print("POST")
-
-    milestones = Milestone.objects.all()
     context = {
         'milestones': {},
         'fields': {}
     }
+    milestones = Milestone.objects.all()
+
+    if request.method == 'POST':
+        print("---POST---")
+        print(request.POST)
+        pid = request.POST['pid']
+        due_date = parse(request.POST['due_date'], yearfirst=True)
+        budget = request.POST['budget']
+        effect = request.POST['effect']
+        mandays = request.POST['mandays']
+
+        project = Project.objects.get(pk=pid)
+
+        mile = Milestone()
+        mile.project = project
+        if due_date.tzinfo is None or due_date.tzinfo.utcoffset(due_date) is None:
+            due_date = due_date.replace(tzinfo=pytz.utc)
+        mile.due_date = due_date
+        mile.save()
+
     grouped_miles = groupby(milestones, lambda milestone: milestone.project)
     for project, milestones in grouped_miles:
         context['milestones'][project] = []
@@ -125,6 +143,7 @@ def milestones(request):
             context['milestones'][project].append(data)
             for field in data['dimensions']:
                 context['fields'][project].add(field)
+
     return render(request, 'manage/milestones.html', context)
 
 
