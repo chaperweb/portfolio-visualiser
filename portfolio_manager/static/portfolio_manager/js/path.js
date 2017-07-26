@@ -211,6 +211,14 @@ function generate_path_svg(target, data_id_array) {
      }
    }
 
+   function showWholeLabel(id) {
+     d3.select("svg").select("#xHover"+id).style("opacity", 1);}
+   };
+
+   function hideWholeLabel(id) {
+     d3.select("svg").select("#xHover"+id).style("opacity", 1);}
+   };
+
   // Generates the colored x-axes under the graph
   function generate_x_axes(x_data) {
 
@@ -271,8 +279,8 @@ function generate_path_svg(target, data_id_array) {
                      .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
                      .attr("x", 0)
                      .text(axes[round].dimension_name)
-                     .on("mouseover", function(){ d3.select("svg").select("#xHover"+rounds).style("opacity", 1);})
-                     .on("mouseout", function(){  d3.select("svg").select("#xHover"+rounds).style("opacity", 0);});
+                     .on("mouseover", function(rounds){ showWholeLabel(rounds);})
+                     .on("mouseout", function(rounds){  hideWholeLabel(rounds);});
 
     // Add the coloured area
     svg.append("path")
