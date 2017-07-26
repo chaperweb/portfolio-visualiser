@@ -201,6 +201,7 @@ function generate_path_svg(target, data_id_array) {
 
    // Updates the div element value and relocates it when needed.
    function updateDiv(data, element) {
+     console.log("What now")
      var currentId = bisectX(data, Date.parse(xScale.invert(d3.event.offsetX)))
      if (currentId != divValueId || div.text() != data[currentId - 1]) {
        divValueId = currentId
@@ -212,12 +213,13 @@ function generate_path_svg(target, data_id_array) {
    }
 
    function showWholeLabel(id) {
-     console.log(id, d3.select("xHover1"));
      d3.select("#"+String(id)+"Hover").style("opacity", 1);
+     d3.select("#"+String(id)).style("opacity", 0);
    };
 
    function hideWholeLabel(id) {
      d3.select("#"+String(id)+"Hover").style("opacity", 0);
+     d3.select("#"+String(id)).style("opacity", 1);
    };
 
   // Generates the colored x-axes under the graph
