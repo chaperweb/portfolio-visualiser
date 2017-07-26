@@ -80,20 +80,18 @@ function addClick(btn){
     due_date_cell = $('<input>').attr('name', 'due_date')
                                 .attr('class', inputClass)
                                 .attr('type', 'date'),
-    budget_cell = $('<input>').attr('name', 'budget')
-                                .attr('class', inputClass)
-                                .attr('type', 'number'),
-    effect_cell = $('<input>').attr('name', 'effect')
-                                .attr('class', inputClass)
-                                .attr('type', 'number'),
-    mandays_cell = $('<input>').attr('name', 'mandays')
-                                .attr('class', inputClass)
-                                .attr('type', 'number');
+    row = $('<tr>').append($('<td>').append(due_date_cell)),
+    ths = $('#' + pid + '-tablehead').children('tr').children();
 
-  var row = $('<tr>').append($('<td>').append(due_date_cell))
-                     .append($('<td>').append(budget_cell))
-                     .append($('<td>').append(effect_cell))
-                     .append($('<td>').append(mandays_cell));
+  $.each(ths, function(idx, th) {
+    if( th.innerText != '') {
+      row.append($('<td>').append($('<input>')
+                           .attr('name', th.innerText)
+                           .attr('class', inputClass)
+                           .attr('type', 'number')
+                           .attr('step', 0.01)));
+    }
+  });
   tablebody.append(row);
 
   row.children()
@@ -101,7 +99,6 @@ function addClick(btn){
      .parent()
      .find('td > div')
      .slideDown(100);
-
 
   $(btn).toggleClass('submit');
   $(btn).children('.icons').toggleClass('icons-active');
