@@ -272,7 +272,7 @@ function generate_path_svg(target, data_id_array) {
                      .attr("x", 0)
                      .text(axes[round].dimension_name)
                      .on("mouseover", function(){ xHoverLabel.style("opacity", 1)};)
-                     .on("mouseout", function(){ xHoverLabel.style("opacity", 0);});;
+                     .on("mouseout", function(){ xHoverLabel.style("opacity", 0);});
 
     // Add the coloured area
     svg.append("path")
