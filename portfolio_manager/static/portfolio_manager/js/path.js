@@ -210,6 +210,19 @@ function generate_path_svg(target, data_id_array) {
           .style("pointer-events", "none")
           .style("opacity", 0);
 
+    var divValueId = Infinity;
+
+    function updateDiv(data, element) {
+      var currentId = bisectX(d, Date.parse(xScale.invert(d3.event.offsetX)))
+      if (currentId != divValueId) {
+        divValueId = currentId
+        div.style("opacity", .7);
+        div.html(data[divValueId - 1].value)
+            .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
+            .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
+      }
+    }
+
     for (round in axes) {
       var axe_label = axes[round].dimension_name
       //Append a linearGradient element to the defs and give it a unique id
@@ -268,11 +281,7 @@ function generate_path_svg(target, data_id_array) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}))
-                            .on("mouseover", function(d){ console.log();
-                                                          div.style("opacity", .7);
-                                                          div.html(d[bisectX(d, Date.parse(xScale.invert(d3.event.offsetX))) - 1].value)
-                                                             .style("left", this.getScreenCTM().e + xScale(d[bisectX(d, Date.parse(xScale.invert(d3.event.offsetX))) -  1].history_date) + "px")
-                                                             .style("top", this.getScreenCTM().f + this.getBBox().y + "px");})
+                            .on("mousemove", function(d){ updateDiv(d, this)})
                             .on("mouseout", function(){return div.style("opacity", 0);});
 
     /*
