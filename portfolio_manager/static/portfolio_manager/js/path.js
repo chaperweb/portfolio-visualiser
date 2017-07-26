@@ -212,11 +212,11 @@ function generate_path_svg(target, data_id_array) {
    }
 
    function showWholeLabel(id) {
-     d3.select("#xHover"+id).style("opacity", 1);
+     d3.select("#xHover"+String(id)).style("opacity", 1);
    };
 
    function hideWholeLabel(id) {
-     d3.select("#xHover"+id).style("opacity", 0);
+     d3.select("#xHover"+String(id)).style("opacity", 0);
    };
 
   // Generates the colored x-axes under the graph
