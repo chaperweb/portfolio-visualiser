@@ -268,10 +268,9 @@ function generate_path_svg(target, data_id_array) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}))
-                            .on("mouseover", function(d){ console.log(d, xScale.invert(d3.event.offsetX))
-                                                          div.style("opacity", .7);
-                                                          div.html(d[bisectX(d, xScale.invert(d3.event.offsetX))].value)
-                                                             .style("left", this.getScreenCTM().e + xScale(d[bisectX(d, xScale(d3.event.offsetX))].history_date) + "px")
+                            .on("mouseover", function(d){ div.style("opacity", .7);
+                                                          div.html(d[bisectX(d, Date.parse(xScale.invert(d3.event.offsetX)))].value)
+                                                             .style("left", this.getScreenCTM().e + xScale(d[bisectX(d, Date.parse(xScale.invert(d3.event.offsetX)))].history_date) + "px")
                                                              .style("top", this.getScreenCTM().f + this.getBBox().y + "px");})
                             .on("mouseout", function(){return div.style("opacity", 0);});
 
