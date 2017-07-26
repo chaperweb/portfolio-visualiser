@@ -30,10 +30,6 @@ $.ajaxSetup({
   }
 });
 
-$.fn.refresh = function() {
-    return $(this.selector);
-};
-
 function checkRows(pid) {
   var inputs = $('.new-mile-field-' + pid),
     errorFree = true;
@@ -79,13 +75,33 @@ function inputsToCells(pid) {
 
 function addClick(btn){
   var pid = $(btn).data('pid'),
-    tbody = pid + "-tablebody",
-    due_date = "<td><input name='due_date' class='text-center new-mile-field-" + pid + "' type='date'/></td>",
-    budget = "<td><input name='budget' class='text-center new-mile-field-" + pid + "' type='number'/></td>",
-    effect = "<td><input name='effect' class='text-center new-mile-field-" + pid + "' type='number'/></td>",
-    mandays = "<td><input name='mandays' class='text-center new-mile-field-" + pid + "' type='number'/></td>",
-    tr = "<tr>" + due_date + budget + effect + mandays + "</tr>";
-  $(tr).appendTo("#" + tbody);
+    tablebody = $('#' + pid + "-tablebody"),
+    inputClass = 'text-center new-mile-field-' + pid,
+    due_date_cell = $('<input>').attr('name', 'due_date')
+                                .attr('class', inputClass)
+                                .attr('type', 'date'),
+    budget_cell = $('<input>').attr('name', 'budget')
+                                .attr('class', inputClass)
+                                .attr('type', 'number'),
+    effect_cell = $('<input>').attr('name', 'effect')
+                                .attr('class', inputClass)
+                                .attr('type', 'number'),
+    mandays_cell = $('<input>').attr('name', 'mandays')
+                                .attr('class', inputClass)
+                                .attr('type', 'number');
+
+  var row = $('<tr>').append($('<td>').append(due_date_cell))
+                     .append($('<td>').append(budget_cell))
+                     .append($('<td>').append(effect_cell))
+                     .append($('<td>').append(mandays_cell));
+  tablebody.append(row);
+
+  row.children()
+     .wrapInner('<div style="display:none;"></div>')
+     .parent()
+     .find('td > div')
+     .slideDown(100);
+
 
   $(btn).toggleClass('submit');
   $(btn).children('.icons').toggleClass('icons-active');

@@ -8,6 +8,7 @@ div.project-wrapper {
 /* Table styling */
 table.table {
   margin-bottom: 5px;
+  table-layout: fixed;
 }
 
 th:first-child {
@@ -49,7 +50,6 @@ tbody > tr:nth-child(even) {
 .add-row-btn {
   height: 30px;
 }
-
 
 .icons .horizontal {
   width: 3px;
