@@ -188,6 +188,29 @@ function generate_path_svg(target, data_id_array) {
      .text(pathData[0].dimension_name)
 
 
+   // div element for the x-axis values
+   var div = d3.select("#"+target).append("div")
+         .style("position", "fixed")
+         .style("background", "white")
+         .style("pointer-events", "none")
+         .style("opacity", 0);
+
+   // Variable to hold previous divValueId and bisector for x-values
+   var divValueId = Infinity;
+   var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
+
+   // Updates the div element value and relocates it when needed.
+   function updateDiv(data, element) {
+     var currentId = bisectX(d, Date.parse(xScale.invert(d3.event.offsetX)))
+     if (currentId != divValueId || div.text() != data[currentId - 1]) {
+       divValueId = currentId
+       div.style("opacity", .7);
+       div.html(data[divValueId - 1].value)
+           .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
+           .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
+     }
+   }
+
   // Generates the colored x-axes under the graph
   function generate_x_axes(x_data) {
 
@@ -203,25 +226,7 @@ function generate_path_svg(target, data_id_array) {
     //Append a defs (for definition) element to your SVG
     var defs = svg.append("defs");
 
-    // div element for the x-axis values
-    var div = d3.select("#"+target).append("div")
-          .style("position", "fixed")
-          .style("background", "white")
-          .style("pointer-events", "none")
-          .style("opacity", 0);
 
-    var divValueId = Infinity;
-
-    function updateDiv(data, element) {
-      var currentId = bisectX(d, Date.parse(xScale.invert(d3.event.offsetX)))
-      if (currentId != divValueId) {
-        divValueId = currentId
-        div.style("opacity", .7);
-        div.html(data[divValueId - 1].value)
-            .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
-            .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
-      }
-    }
 
     for (round in axes) {
       var axe_label = axes[round].dimension_name
@@ -268,8 +273,6 @@ function generate_path_svg(target, data_id_array) {
                      .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
                      .attr("x", 0)
                      .text(axes[round].dimension_name);
-
-    bisectX = d3.bisector(function(d) { return d.history_date; }).right;
 
     // Add the coloured area
     svg.append("path")
