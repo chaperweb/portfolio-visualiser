@@ -256,7 +256,7 @@ function generate_path_svg(target, data_id_array) {
                      .attr("x", 0)
                      .text(axes[round].dimension_name);
 
-    bisectX = d3.bisector(function(d) { return d.x; }).right;
+    bisectX = d3.bisector(function(d) { return d.history_date; }).right;
 
     // Add the coloured area
     svg.append("path")
