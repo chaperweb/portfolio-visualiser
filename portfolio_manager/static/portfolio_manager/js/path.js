@@ -201,7 +201,7 @@ function generate_path_svg(target, data_id_array) {
 
    // Updates the div element value and relocates it when needed.
    function updateDiv(data, element) {
-     var currentId = bisectX(d, Date.parse(xScale.invert(d3.event.offsetX)))
+     var currentId = bisectX(data, Date.parse(xScale.invert(d3.event.offsetX)))
      if (currentId != divValueId || div.text() != data[currentId - 1]) {
        divValueId = currentId
        div.style("opacity", .7);
@@ -225,8 +225,6 @@ function generate_path_svg(target, data_id_array) {
 
     //Append a defs (for definition) element to your SVG
     var defs = svg.append("defs");
-
-
 
     for (round in axes) {
       var axe_label = axes[round].dimension_name
