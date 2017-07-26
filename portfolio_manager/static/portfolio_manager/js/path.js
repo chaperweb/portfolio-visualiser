@@ -265,14 +265,14 @@ function generate_path_svg(target, data_id_array) {
       }
 
     // Add the x-axis label
-    var xLabel = svg.append("text")
-                     .attr("class", "pathXlabel")
-                     .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
-                     .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
-                     .attr("x", 0)
-                     .text(axes[round].dimension_name)
-                     .on("mouseover", function(){ d3.selectAll(".pathXlabel").select("#xHover"+rounds).style("opacity", 1);})
-                     .on("mouseout", function(){  d3.selectAll(".pathXlabel").select("#xHover"+rounds).style("opacity", 0);});
+    svg.append("text")
+       .attr("class", "pathXlabel")
+       .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
+       .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
+       .attr("x", 0)
+       .text(axes[round].dimension_name)
+       .on("mouseover", function(){ d3.select("svg").select("#xHover"+rounds).style("opacity", 1);})
+       .on("mouseout", function(){  d3.select("svg").select("#xHover"+rounds).style("opacity", 0);});
 
     // Add the coloured area
     svg.append("path")
@@ -288,17 +288,17 @@ function generate_path_svg(target, data_id_array) {
         .on("mouseout", function(){return div.style("opacity", 0);});
 
 
-    var xHoverLabel = svg.append("text")
-                         .attr("id", "xHover"+rounds)
-                         .attr("class", "pathXlabel")
-                         .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
-                         .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
-                         .attr("x", 0)
-                         .text(axes[round].dimension_name)
-                         .style("pointer-events", "none")
-                         .style("fill", "white")
-                         .style("border-radius","8px")
-                         .style("opacity", 0);
+        svg.append("text")
+           .attr("id", "xHover"+rounds)
+           .attr("class", "pathXlabel")
+           .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
+           .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
+           .attr("x", 0)
+           .text(axes[round].dimension_name)
+           .style("pointer-events", "none")
+           .style("fill", "white")
+           .style("border-radius","8px")
+           .style("opacity", 0);
 
     /*
     * If the label doesn't fit to left margin the overflowing text will be faded
