@@ -86,7 +86,7 @@ function addClick(btn){
   $.each(ths, function(idx, th) {
     if( th.innerText != '') {
       row.append($('<td>').append($('<input>')
-                           .attr('name', th.innerText)
+                           .attr('name', th.dataset.dimid)
                            .attr('class', inputClass)
                            .attr('type', 'number')
                            .attr('step', 0.01)));

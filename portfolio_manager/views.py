@@ -112,36 +112,53 @@ def admin_tools(request):
 def milestones(request):
     context = {
         'milestones': {},
-        'fields': {}
+        'fields': {},
+        'fieldToId': {}
     }
-    milestones = Milestone.objects.all()
+    milestones = Milestone.objects.all().order_by('project')
 
     if request.method == 'POST':
-        print("---POST---")
-        print(request.POST)
-        pid = request.POST['pid']
-        due_date = parse(request.POST['due_date'], yearfirst=True)
-        budget = request.POST['budget']
-        effect = request.POST['effect']
-        mandays = request.POST['mandays']
+        fields = {}
+        for key, value in request.POST.items():
+            if key == 'pid':
+                pid = value
+            elif key == 'due_date':
+                due_date = parse(value, yearfirst=True)
+            else:
+                fields[key] = value
 
-        project = Project.objects.get(pk=pid)
+        if pid and due_date:
+            project = Project.objects.get(pk=pid)
 
-        mile = Milestone()
-        mile.project = project
-        if due_date.tzinfo is None or due_date.tzinfo.utcoffset(due_date) is None:
-            due_date = due_date.replace(tzinfo=pytz.utc)
-        mile.due_date = due_date
-        mile.save()
+            mile = Milestone()
+            mile.project = project
+            if due_date.tzinfo is None or due_date.tzinfo.utcoffset(due_date) is None:
+                due_date = due_date.replace(tzinfo=pytz.utc)
+            mile.due_date = due_date
+            mile.save()
+
+            for proj_dim_id, value in fields.items():
+                proj_dim = ProjectDimension.objects.get(pk=proj_dim_id)
+
+                dim_mile_object = NumberMilestone()
+                dim_mile_object.from_sheet(value)
+                dim_mile_object.save()
+
+                dim_mile = DimensionMilestone()
+                dim_mile.milestone = mile
+                dim_mile.dimension_milestone_object = dim_mile_object
+                dim_mile.project_dimension = proj_dim
+                dim_mile.save()
 
     grouped_miles = groupby(milestones, lambda milestone: milestone.project)
     for project, milestones in grouped_miles:
         context['milestones'][project] = []
         context['fields'][project] = set()
-        for milestone in milestones:
+        for milestone in sorted(list(milestones), key=lambda m: m.due_date):
             data = milestone.get_display_data()
+            context['fieldToId'][project] = data['dimensions_ids']
             context['milestones'][project].append(data)
-            for field in data['dimensions']:
+            for field, field_data in data['dimensions'].items():
                 context['fields'][project].add(field)
 
     return render(request, 'manage/milestones.html', context)

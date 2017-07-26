@@ -20,7 +20,7 @@
           <tr>
             <th></th>
             {% for field in fields|get:project %}
-              <th>{{ field }}</th>
+              <th data-dimid="{{ fieldToId|get:project|get:field }}">{{ field }}</th>
             {% endfor %}
           </tr>
         </thead>
