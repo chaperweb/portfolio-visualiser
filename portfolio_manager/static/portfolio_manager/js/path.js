@@ -204,8 +204,8 @@ function generate_path_svg(target, data_id_array) {
     var defs = svg.append("defs");
 
     // div element for the x-axis values
-    var div = d3.select("#ordinalScale").append("div")
-          .style("position", "absolute")
+    var div = d3.select("#"+target).append("div")
+          .style("position", "fixed")
           .style("background", "white")
           .style("pointer-events", "none")
           .style("opacity", 0);
@@ -268,10 +268,10 @@ function generate_path_svg(target, data_id_array) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}))
-                            .on("mouseover", function(d){ console.log(bisectX(d, Date.parse(xScale.invert(d3.event.offsetX))));
+                            .on("mouseover", function(d){ console.log();
                                                           div.style("opacity", .7);
                                                           div.html(d[bisectX(d, Date.parse(xScale.invert(d3.event.offsetX)))].value)
-                                                             .style("left", this.getScreenCTM().e + xScale(d[bisectX(d, Date.parse(xScale.invert(d3.event.offsetX)))].history_date) + "px")
+                                                             .style("left", this.getScreenCTM().e + xScale(d[bisectX(d, Date.parse(xScale.invert(d3.event.offsetX))) -  1].history_date) + "px")
                                                              .style("top", this.getScreenCTM().f + this.getBBox().y + "px");})
                             .on("mouseout", function(){return div.style("opacity", 0);});
 
