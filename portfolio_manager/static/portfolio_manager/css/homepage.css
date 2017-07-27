@@ -22,4 +22,5 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
 
 .img-responsive {
   border-style: dashed;
+  border-width: thin;
 }
