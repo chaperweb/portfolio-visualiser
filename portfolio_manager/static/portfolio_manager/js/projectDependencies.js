@@ -239,6 +239,7 @@ function dependancies(json) {
 	// add the text, currently project name
 	node.append("text")
   		.attr("x", 12)
+      .attr("text-anchor", "middle")
   		.attr("dy", ".35em")
   		.text(function(d) { return d.name; });
 
@@ -297,10 +298,8 @@ function dependancies(json) {
 	function click() {
 		d3.select(this).select("text").transition()
 			.duration(750)
-			.attr("x", 22);
-
-		d3.select(this).select("circle").transition()
-			.duration(750);
+			.attr("x", 22)
+      .style("font-weight", "bold");
 	}
 
 	/* action to take on mouse double click
@@ -313,8 +312,9 @@ function dependancies(json) {
 			.duration(750)
 			.attr("fixed", d.fixed = false)
 			.style("stroke", "none");
+
 		d3.select(this).select("text").transition()
-			.style("fill", "black");
+			.style("font-weight", "normal");
 	}
 
 	/* action to take on dragstart,

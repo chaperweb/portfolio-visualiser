@@ -16,7 +16,7 @@ circle {
 
 text {
   fill: #000;
-  font-size: 12px;
+  font-size: 15px;
   font-family: "Exo 2", sans-serif;
   pointer-events: none;
 }
