@@ -33,8 +33,8 @@ $(function() {
     x_dimension = $('#x-selector').find("option:selected").text();
     y_dimension = $('#y-selector').find("option:selected").text();
     r_dimension = $('#r-selector').find("option:selected").text();
-    start_date = Date.parse($('#start-date-selector').datepicker( "getDate" );)/1000;
-    end_date = Date.parse($('#end-date-selector').datepicker( "getDate" );)/1000;
+    start_date = Date.parse($('#start-date-selector').datepicker( "getDate" ))/1000;
+    end_date = Date.parse($('#end-date-selector').datepicker( "getDate" ))/1000;
     slider_value = $('#slider-value-selector').val();
     $('#visualization').html('');
     fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value);
