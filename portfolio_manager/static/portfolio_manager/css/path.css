@@ -1,21 +1,9 @@
-.bar {
-  fill: none;
-}
-
 .line{
   fill: none;
   stroke: black;
   stroke-width: 5px;
 }
-ul {
-  font-weight: bold;
-}
-li {
-  font-weight: normal;
-}
-#visualization {
-  margin-top:50px;
-}
+
 img#loading-icon {
   padding-top: 15%;
   cursor: wait;
