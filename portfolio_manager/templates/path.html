@@ -19,6 +19,7 @@ Path
 {% block javascript %}
 {% load static %}
 <script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/colorGenerator.js' %}"></script>
 <script src="{% static 'portfolio_manager/js/path.js' %}"></script>
 <script src="{% static 'portfolio_manager/js/path_loader.js' %}"></script>
 <script src="{% static 'portfolio_manager/js/snapshot/path.js' %}"></script>
@@ -39,9 +40,8 @@ Path
         </select>
       </li>
       <li class="sidebar-subitem">
-        <label for="sel1">Select x-axis dimension:</label>
-        <select class="form-control" id="x-selector" disabled="true">
-        <option>---</option>
+        <label for="sel1">Select x-axis dimensions:</label>
+        <select class="form-control" id="x-selector" multiple disabled="true">
         </select>
       </li>
       <li class="sidebar-subitem">
