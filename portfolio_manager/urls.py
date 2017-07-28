@@ -35,6 +35,7 @@ ajax_patterns = [
     url(r'^get_pers$', views.get_pers, name='get_pers'),
     url(r'^get_proj$', views.get_proj, name='get_proj'),
     url(r'^get_multiple/(?P<field_type>[A-Za-z]+)/(?P<field_id>[0-9]+)$', views.get_multiple, name='get_multiple'),
+    url(r'^get/(?P<project_id>[0-9]+)/fields/$', views.get, name="get_projectfields")
 ]
 
 urlpatterns = [

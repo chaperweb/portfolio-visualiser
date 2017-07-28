@@ -560,6 +560,19 @@ def get_proj(request):
     return JsonResponse(serializer.data, safe=False)
 
 
+@require_GET
+def get(request, project_id):
+    project = Project.objects.get(pk=project_id)
+    ct = ContentType.objects.get_for_model(NumberDimension)
+
+    existing = json_module.loads(request.GET.get('existing'))
+    proj_dims = project.dimensions.filter(content_type=ct).exclude(id__in=existing)
+    dims = {}
+    for d in proj_dims:
+        dims[d.id] = d.dimension_object.name
+
+    return JsonResponse({'fields':dims})
+
 #   Function that gets the value of a dimension that has multiple
 #   items. Takes in the field type and the id of the dimension
 @require_GET

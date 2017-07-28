@@ -30,6 +30,43 @@ $.ajaxSetup({
   }
 });
 
+function addColClick(pid) {
+  var lastTds = $('#'+pid+'-tablebody').children('tr').children('td:last-child'),
+      lastTh = $('#'+pid+'-tablehead').children('tr:last-child').children('th:last-child'),
+      numberInput = $('<input>').attr('class', 'text-center new-mile-field-'+pid)
+                                .attr('type', 'number')
+                                .attr('step', 0.01);
+
+  $.each(lastTds, function(idx, td) {
+    $('<td>').insertAfter(td);
+  });
+  $('#'+pid+'-tablebody').children('tr')
+                         .children('td:last-child')
+                         .last()
+                         .append(numberInput);
+  var ths = $('#'+pid+'-tablehead').children('tr').children();
+  var existingMileFields = [];
+  $.each(ths, function(idx, th) {
+    var id = th.dataset.dimid;
+    if(id != undefined) {
+      existingMileFields.push(parseInt(id));
+    }
+  });
+
+  $.ajax({
+    method: "GET",
+    url: "/get/"+pid+"/fields/",
+    data: {'existing': JSON.stringify(existingMileFields)},
+    success: function(fields){
+      var select = $('<select>').attr('class', 'text-center');
+      $.each(fields.fields, function(id, name) {
+        select.append($('<option>').attr('value', id).append(name));
+      });
+      $('<th>').append(select).insertAfter(lastTh);
+    }
+  });
+}
+
 function checkRows(pid) {
   var inputs = $('.new-mile-field-' + pid),
     errorFree = true;
@@ -81,7 +118,11 @@ function addClick(btn){
                                 .attr('class', inputClass)
                                 .attr('type', 'date'),
     row = $('<tr>').append($('<td>').append(due_date_cell)),
-    ths = $('#' + pid + '-tablehead').children('tr').children();
+    ths = $('#' + pid + '-tablehead').children('tr').children(),
+    plus = $('<span>').attr('class', 'glyphicon glyphicon-plus'),
+    button = $('<button>').attr('type', 'button')
+                          .attr('class', 'btn btn-success add-col-btn text-center')
+                          .append(plus);
 
   $.each(ths, function(idx, th) {
     if( th.innerText != '') {
@@ -99,6 +140,11 @@ function addClick(btn){
      .parent()
      .find('td > div')
      .slideDown(100);
+
+  tablebody.append(button);
+  button.click(function() {
+    addColClick(pid);
+  });
 
   $(btn).toggleClass('submit');
   $(btn).children('.icons').toggleClass('icons-active');

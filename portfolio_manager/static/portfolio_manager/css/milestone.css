@@ -51,6 +51,16 @@ tbody > tr:nth-child(even) {
   height: 30px;
 }
 
+.add-col-btn {
+  position: absolute;
+  left: 103%;
+  transform: translateY(-34px);
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  border-radius: 100%;
+}
+
 .icons .horizontal {
   width: 3px;
   height: 15px;
