@@ -19,3 +19,8 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   min-height: 93vh;
   overflow-y: auto;
 }
+
+.img-responsive {
+  border-style: dashed;
+  border-width: thin;
+}
