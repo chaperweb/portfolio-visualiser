@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 //basic colorscale for visualizations, codento colors at the moment
 // orange, red, yellow, green, blue, grey
 var colors = ["#f39911","#9f004d", "#fdca00","#61b020","#00708d","#757477"];

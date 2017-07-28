@@ -18,207 +18,327 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 var db_json;
 
-// Updates the visualization in case of change in the dropdown
-function update_path_visualization(project_x_dimension, project_y_dimension) {
-
-  $('#visualization').html('');
-
-  generate_path_svg(generate_path_data(jQuery.extend(true, {}, project_x_dimension),
-                                       jQuery.extend(true, {}, project_y_dimension)));
-}
-
-// Generates the data for the visualization
-function generate_path_data(x_dimension, y_dimension) {
-
-  // Collect useful values from selected data
-  x_data = x_dimension.dimension_object.history.map(function(val) {
-    // Temporal variable to store one single pathData object
-    var pathVal = {
-      "history_date": "",
-      "x": undefined,
-      "y": undefined
-    };
-
-    pathVal.history_date = val.history_date;
-    pathVal.x = val.string;
-    return pathVal;
-  });
-
-  y_data = y_dimension.dimension_object.history.map(function(val) {
-    // Temporal variable to store one single pathData object
-    var pathVal = {
-      "history_date": "",
-      "x": undefined,
-      "y": undefined
-    };
-
-    pathVal.history_date = val.history_date;
-    pathVal.y = val.value;
-    return pathVal;
-  });
-
-  // Combine data into one array
-  data = x_data.concat(y_data);
-
-  // Stable sort by date, parsing the time to millisecods to ensure the correct result
-  data = data.sort(function (a, b) {
-    return Date.parse(a.history_date) - Date.parse(b.history_date);
-  });
-
-  /* Creates data with no undefined values.
-
-     If there is no new value for x or y it takes previous value,
-     in case of change takes the new value.
-
-     If two history_dates are the same, combines values to one element.
-     The current and next values are combined to next element, and current element
-     is ignored in finalData
-
-     If both are defined leaves that date untouched, occurs when the current element
-     is combined one from the last loop.
-  */
-  var finalData = [];
-  for (var i = 0; i < data.length; i++) {
-    var current = data[i];
-    if (current.x !== undefined && current.y !== undefined) {
-      finalData.push(current)
-    } else if (i !== data.length - 1 && current.history_date === data[ i + 1 ].history_date) {
-      if (data[ i + 1 ].y === undefined) {
-        data[ i + 1 ].y = current.y
-      } else if (data[ i + 1 ].x === undefined) {
-        data[ i + 1 ].x = current.x
-      }
-    } else if (current.x === undefined) {
-      if (i > 0) {
-        current.x = data[i-1].x;
-      } else {
-        current.x = '';
-      }
-      finalData.push(current)
-    } else if (current.y === undefined) {
-      if (i > 0) {
-        current.y = data[i-1].y;
-      } else {
-        current.y = 0;
-      }
-      finalData.push(current)
-    }
-  };
-
-  // If there is just one value it will be duplicated
-  if (finalData.length == 1) {
-    finalData[1] = finalData[0];
-  }
-
-  return finalData;
-}
-
-function get_selected_project() {
-  project_id = $('#project-selector').find("option:selected").val();
+function get_selected_project(project_id) {
   for (var i = 0; i < db_json.length; i++) {
     if(db_json[i].id == project_id) {
       return db_json[i];
     }
   }
   return null;
-}
+};
 
 function get_dimension(project, id) {
-  if (project) {
-    for (var j = 0; j < project.dimensions.length; j++) {
-        if(project.dimensions[j].id == id) {
-          return project.dimensions[j];
-        }
-    }
+
+  for (var j = 0; j < project.dimensions.length; j++) {
+      if(project.dimensions[j].id == id) {
+        return project.dimensions[j];
+      }
   }
   return null;
-}
+};
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = {
-    generate_path_data: generate_path_data
-  };
-}
+function generate_path_data(data_id_array) {
+
+  var project = get_selected_project(data_id_array[0]);
+  var pathData = [];
+  var y_end_date = 0;
+
+  data_id_array = data_id_array.slice(1)
+
+  if (project) {
+    for (id in data_id_array) {
+      var dimension = get_dimension(project, data_id_array[id]);
+      if (dimension) {
+        var dataVal = {
+          "dimension_name": dimension.dimension_object.name,
+          "data": generate_data_chunk(dimension)
+        };
+        pathData.push(dataVal);
+      }
+      /*takes the last date from the first data set
+      * the date is used to ensure that the last value
+      * of the x-data is properly shown on the coloured axis
+      * in case that the last update of the said value has been
+      * before the last update of the y-value.
+      */
+      if (Number(id) === 0) {
+        y_end_date = pathData[0].data[pathData[0].data.length - 1].history_date
+      } else if (pathData[id].data[pathData[id].data.length - 1].history_date !== y_end_date) {
+        pathData[id].data.push(
+          {
+            "history_date": y_end_date,
+            "value": pathData[id].data[pathData[id].data.length - 1].value
+          }
+        );
+      }
+    }
+  }
+  return pathData;
+};
+
+// Generates two dimensional set of the data sorted by date
+function generate_data_chunk(dimension) {
+  data = dimension.dimension_object.history.map(function(val) {
+    // Temporal variable to store one single pathData object
+    var pathVal = {
+      "history_date": "",
+      "value": undefined
+    };
+
+    pathVal.history_date = Date.parse(val.history_date);
+    pathVal.value = val.string;
+    return pathVal;
+  });
+
+    // Stable sort by date
+    data = data.sort(function (a, b) {
+      return a.history_date - b.history_date;
+    });
+
+    return data;
+};
 
 // Generate the svg container for the visualization
-function generate_path_svg(pathData) {
+function generate_path_svg(target, data_id_array) {
+
+  $('#'+ target).html('');
+
   // Dimension of the svg box
-  // Left margin is hardcoded to ensure enough room for y-axis values
-  var height =  Math.max(600, $(window).height() * 0.7),
-      width =   Math.max(800, ($(window).width() - 250) * 0.8),
+  // Left and right margin are hardcoded to ensure enough room for axis values
+  var height =  Math.max(600, $(window).height() * 0.8),
+      width =   Math.max(800, ($(window).width() - 250) * 0.9),
       margin = {
-        right: 0,
-        left: 60,
+        right: 35,
+        left: 85,
         top: height * 0.02,
         bottom: height * 0.05
       };
 
+  var pathData = generate_path_data(data_id_array)
+  var y_data = pathData[0].data
+  var x_data = pathData.slice(1)
+
+  // height of the colored x-axis area and maximum amount of x-axis
+  var xAxesHeight = 20;
+  var xAxesMaxOptions = 5;
+
   // Length of the axis
-  var axisLengthX = width * 0.9,
-      axisLengthY = height * 0.9;
+  var axisLengthX = width - (margin.right + margin.left),
+      axisLengthY = height - (margin.top + margin.bottom + (xAxesMaxOptions * xAxesHeight));
 
   // human readable timeformat from history_date
-  ddmmyy = d3.timeFormat("%d-%m-%Y");
+  var ddmmyy = d3.timeFormat("%d-%m-%Y");
 
   //  Parameters for axis transformations
   var pathTransformX = margin.left,
       pathTransformY = margin.top,
       xAxisTransformX = margin.left,
-      xAxisTransformY = height - (margin.bottom * 2) + margin.top,
+      xAxisTransformY = height - (margin.bottom + (xAxesMaxOptions * xAxesHeight)),
       timeAxisTransformX = margin.left,
-      timeAxisTransformY = height - margin.bottom + margin.top,
+      timeAxisTransformY = height - (margin.bottom + (xAxesMaxOptions * xAxesHeight)),
       yAxisTransformX = margin.left,
       yAxisTransformY = margin.top;
 
   // The svg box that everything goes in
-  var svg = d3.select("#visualization")
+  var svg = d3.select("#"+ target)
               .append("svg")
               .attr("height", height)
               .attr("width", width)
               .attr("class", "svg-content");
 
   // The scales of the axis
-  var x = d3.scaleLinear().range([0,axisLengthX]),
-      y = d3.scaleLinear().range([axisLengthY,0]);
-      z = d3.scaleLinear().range([0,axisLengthX]);
-
-  x.domain([0, (pathData.length-1)]);
-  y.domain([0, d3.max(pathData, function(d){return parseFloat(d.y)})]);
-  z.domain([0, (pathData.length-1)]);
+  var xScale = d3.scaleTime()
+            .domain([y_data[0].history_date, y_data[y_data.length - 1].history_date])
+            .range([0,axisLengthX]),
+      yScale = d3.scaleLinear()
+            .domain([0, d3.max(y_data, function(d){return parseFloat(d.value)})])
+            .range([axisLengthY,0]);
 
   var valueLine = d3.line()
                       .curve(d3.curveStepAfter)
-                      .x(function(d,i){return x(i)})
-                      .y(function(d){return y(d.y)});
+                      .x( function(d) { return xScale(d.history_date); } )
+                      .y( function(d) { return yScale(d.value); } );
 
   // The path
   svg.append("path")
       .attr("class", "line")
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
       .attr("height", height)
-      .attr("d", valueLine(pathData));
+      .attr("d", valueLine(y_data));
 
-  // X-Axis
-  svg.append("g")
-     .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
-     .attr("id", "x-axis")
-     .call(d3.axisBottom(x).ticks(pathData.length-1))
-     .selectAll("text")
-     .data(pathData)
-     .text(function(d){return d.x});
+  generate_x_axes(x_data);
 
   // Time-axis underneath the x-axis
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
-     .call(d3.axisBottom(z).ticks(pathData.length-1))
-     .selectAll("text")
-     .data(pathData)
-     .text(function(d) { return ddmmyy(Date.parse(d.history_date)) });
+     .call(d3.axisBottom(xScale)
+             .tickFormat(ddmmyy));
 
   // Y-axis
   svg.append("g")
      .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
      .attr("id", "y-axis")
-     .call(d3.axisLeft(y));
-}
+     .call(d3.axisLeft(yScale));
+
+  // Y-axis label
+  svg.append("text")
+     .attr("id", "yAxisLabel")
+     .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
+     .text(pathData[0].dimension_name)
+
+
+   // div element for the x-axis values
+   var div = d3.select("#"+target).append("div")
+         .style("position", "fixed")
+         .style("background", "white")
+         .style("pointer-events", "none")
+         .style("opacity", 0);
+
+   // Variable to hold previous divValueId and bisector for x-values
+   var divValueId = Infinity;
+   var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
+
+   // Updates the div element value and relocates it when needed.
+   function updateDiv(data, element) {
+     var currentId = bisectX(data, Date.parse(xScale.invert(d3.event.offsetX)))
+     if (currentId != divValueId || div.text() != data[currentId - 1]) {
+       divValueId = currentId
+       div.style("opacity", .7);
+       div.html(data[divValueId - 1].value)
+           .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
+           .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
+     }
+   }
+
+   function showWholeLabel(id) {
+     d3.select("#"+String(id)+"Hover").style("opacity", 1);
+     d3.select("#"+String(id)).style("opacity", 0);
+   };
+
+   function hideWholeLabel(id) {
+     d3.select("#"+String(id)+"Hover").style("opacity", 0);
+     d3.select("#"+String(id)).style("opacity", 1);
+   };
+
+  // Generates the colored x-axes under the graph
+  function generate_x_axes(x_data) {
+
+    var axes = x_data
+    var rounds = 1
+
+    // colorScale for xAxes
+    var xAxesColors = d3.scaleOrdinal()
+                        .range([colors[0], colors[1], colors[2]]);
+
+    var amountC = xAxesColors.range().length
+
+    //Append a defs (for definition) element to your SVG
+    var defs = svg.append("defs");
+
+    for (round in axes) {
+      var axe_label = axes[round].dimension_name
+      //Append a linearGradient element to the defs and give it a unique id
+      var linearGradient = defs.append("linearGradient")
+                                .attr("id", "gradient-"+String(rounds));
+
+      linearGradient.attr("x1", "0%")
+                    .attr("y1", "0%")
+                    .attr("x2", "100%")
+                    .attr("y2", "0%");
+
+      var gradStops = []
+      /* Coloring the linearGradient, the color appears as blocks because
+      *  the color change locations are with identical offset
+      *
+      *  for the dataset of length = 1 the last point is added.
+      */
+      for (color in axes[round].data) {
+        if (gradStops.length >= 1) {
+          linearGradient.append("stop")
+                        .attr("offset", gradStops[(Number(color) - 1)])
+                        .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+        };
+
+        gradStops.push(((axes[round].data[color].history_date - xScale.domain()[0]) /
+                        (xScale.domain()[xScale.domain().length - 1] - xScale.domain()[0]))*100 +"%")
+
+        linearGradient.append("stop")
+                      .attr("offset", gradStops[Number(color)])
+                      .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+
+        if (Number(color) === axes[round].data.length-1 && gradStops[gradStops.length-1] != "100%") {
+          linearGradient.append("stop")
+                        .attr("offset", "100%")
+                        .attr("stop-color", xAxesColors.range()[Number(color) % amountC]);
+        }
+      }
+
+    // Add the x-axis label
+    var xLabel = svg.append("text")
+                     .attr("class", "pathXlabel")
+                     .attr("id", "xLabel"+rounds)
+                     .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
+                     .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
+                     .attr("x", 0)
+                     .on("mouseover", function(){ showWholeLabel(this.id);})
+                     .on("mouseout", function(){ hideWholeLabel(this.id);})
+                     .text(axes[round].dimension_name);
+
+    // Add the coloured area
+    svg.append("path")
+        .data([axes[round].data])
+        .attr("fill", "url(#gradient-"+rounds+")")
+        .attr("class", "area")
+        .attr("transform", "translate("+xAxisTransformX+","+xAxisTransformY+")")
+        .attr("id", rounds)
+        .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
+                            .y0(function(d) {return rounds * xAxesHeight + 2})
+                            .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}))
+        .on("mousemove", function(d){ updateDiv(d, this);})
+        .on("mouseout", function(){return div.style("opacity", 0);});
+
+    /*
+    * If the label doesn't fit to left margin the overflowing text will be faded
+    */
+    var textWidth = xLabel.node().getBBox().width;
+
+    if (textWidth > (margin.left - 5)) {
+
+      linearGradient = defs.append("linearGradient")
+                            .attr("id", "textGradient-"+String(rounds));
+
+      linearGradient.attr("x1", "0%")
+                    .attr("y1", "0%")
+                    .attr("x2", "100%")
+                    .attr("y2", "0%");
+
+      linearGradient.selectAll("stop")
+                    .data([
+                      {offset: "0%", color: "#000000"},
+                      {offset: (((margin.left - 20 )/ textWidth) * 100) + "%", color: "#000000"},
+                      {offset: (((margin.left - 5) / textWidth) * 100) + "%", color: "#ffffff"},
+                      {offset: "100%", color: "#ffffff"}
+                      ])
+                    .enter().append("stop")
+                    .attr("offset", function(d) { return d.offset; })
+                    .attr("stop-color", function(d) { return d.color; });
+
+      xLabel.attr("fill", "url(#textGradient-"+rounds+")")
+
+    };
+
+      svg.append("text")
+         .attr("id", "xLabel"+rounds+"Hover")
+         .attr("class", "pathXlabel")
+         .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
+         .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
+         .attr("x", 0)
+         .text(axes[round].dimension_name)
+         .style("pointer-events", "none")
+         .style("opacity", 0);
+
+      rounds++;
+    }
+  }
+};
