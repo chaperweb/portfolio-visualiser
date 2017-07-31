@@ -31,6 +31,7 @@ td:not(:last-child), th:not(:last-child) {
 td, th {
   text-align: center;
   vertical-align: middle;
+  overflow: scroll;
 }
 table.table > tbody > tr > td {
   border-top: 1px solid black;

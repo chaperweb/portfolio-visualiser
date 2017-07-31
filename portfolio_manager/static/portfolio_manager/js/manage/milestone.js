@@ -63,6 +63,9 @@ function addColClick(pid) {
         select.append($('<option>').attr('value', id).append(name));
       });
       $('<th>').append(select).insertAfter(lastTh);
+      select.change(function() {
+        numberInput.attr('name', $(this).val());
+      });
     }
   });
 }

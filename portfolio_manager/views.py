@@ -113,7 +113,7 @@ def milestones(request):
     context = {
         'milestones': {},
         'fields': {},
-        'fieldToId': {}
+        'fieldToId': defaultdict(lambda: {})
     }
     milestones = Milestone.objects.all().order_by('project')
 
@@ -156,10 +156,11 @@ def milestones(request):
         context['fields'][project] = set()
         for milestone in sorted(list(milestones), key=lambda m: m.due_date):
             data = milestone.get_display_data()
-            context['fieldToId'][project] = data['dimensions_ids']
+            context['fieldToId'][project].update(data['dimensions_ids'])
             context['milestones'][project].append(data)
             for field, field_data in data['dimensions'].items():
                 context['fields'][project].add(field)
+
 
     return render(request, 'manage/milestones.html', context)
 
