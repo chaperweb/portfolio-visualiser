@@ -30,13 +30,11 @@ $.ajaxSetup({
   }
 });
 
-function addColClick(pid) {
+function addColClick(pid, fields) {
   var lastTds = $('#'+pid+'-tablebody').children('tr').children('td:last-child'),
-      lastTh = $('#'+pid+'-tablehead').children('tr:last-child').children('th:last-child'),
       numberInput = $('<input>').attr('class', 'text-center new-mile-field-'+pid)
                                 .attr('type', 'number')
                                 .attr('step', 0.01);
-
   $.each(lastTds, function(idx, td) {
     $('<td>').insertAfter(td);
   });
@@ -44,30 +42,17 @@ function addColClick(pid) {
                          .children('td:last-child')
                          .last()
                          .append(numberInput);
-  var ths = $('#'+pid+'-tablehead').children('tr').children();
-  var existingMileFields = [];
-  $.each(ths, function(idx, th) {
-    var id = th.dataset.dimid;
-    if(id != undefined) {
-      existingMileFields.push(parseInt(id));
-    }
-  });
 
-  $.ajax({
-    method: "GET",
-    url: "/get/"+pid+"/fields/",
-    data: {'existing': JSON.stringify(existingMileFields)},
-    success: function(fields){
-      var select = $('<select>').attr('class', 'text-center');
-      $.each(fields.fields, function(id, name) {
-        select.append($('<option>').attr('value', id).append(name));
-      });
-      numberInput.attr('name', Object.keys(fields.fields)[0]);
-      $('<th>').append(select).insertAfter(lastTh);
-      select.change(function() {
-        numberInput.attr('name', $(this).val());
-      });
-    }
+  var select = $('<select>').attr('class', 'text-center');
+  $.each(fields, function(id, name) {
+    select.append($('<option>').attr('value', id).append(name));
+  });
+  numberInput.attr('name', Object.keys(fields)[0]);
+
+  var lastTh = $('#'+pid+'-tablehead').children('tr:last-child').children('th:last-child');
+  $('<th>').append(select).insertAfter(lastTh);
+  select.change(function() {
+    numberInput.attr('name', $(this).val());
   });
 }
 
@@ -145,13 +130,33 @@ function addClick(btn){
      .find('td > div')
      .slideDown(100);
 
-  tablebody.append(button);
-  button.click(function() {
-    addColClick(pid);
-  });
-
   $(btn).toggleClass('submit');
   $(btn).children('.icons').toggleClass('icons-active');
+
+  /*  ADD COL STUFF */
+  var ths = $('#'+pid+'-tablehead').children('tr').children();
+  var existingMileFields = [];
+  $.each(ths, function(idx, th) {
+    var id = th.dataset.dimid;
+    if(id != undefined) {
+      existingMileFields.push(parseInt(id));
+    }
+  });
+
+
+  $.ajax({
+    method: "GET",
+    url: "/get/"+pid+"/fields/",
+    data: {'existing': JSON.stringify(existingMileFields)},
+    success: function(fields){
+      if(Object.keys(fields.fields).length > 0) {
+        tablebody.append(button);
+        button.click(function() {
+          addColClick(pid, fields.fields);
+        });
+      }
+    }
+  });
 }
 
 function submitClick(btn) {
