@@ -62,6 +62,7 @@ function addColClick(pid) {
       $.each(fields.fields, function(id, name) {
         select.append($('<option>').attr('value', id).append(name));
       });
+      numberInput.attr('name', Object.keys(fields.fields)[0]);
       $('<th>').append(select).insertAfter(lastTh);
       select.change(function() {
         numberInput.attr('name', $(this).val());
