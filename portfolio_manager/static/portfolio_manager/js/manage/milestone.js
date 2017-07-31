@@ -56,6 +56,10 @@ function addColClick(pid, fields) {
   });
 }
 
+function lockColClick() {
+  console.log("LOCK THE COL");
+}
+
 function checkRows(pid) {
   var inputs = $('.new-mile-field-' + pid),
     errorFree = true;
@@ -109,6 +113,7 @@ function addClick(btn){
     row = $('<tr>').append($('<td>').append(due_date_cell)),
     ths = $('#' + pid + '-tablehead').children('tr').children();
 
+  /*  Add the form row  */
   $.each(ths, function(idx, th) {
     if( th.innerText != '') {
       row.append($('<td>').append($('<input>')
@@ -120,6 +125,7 @@ function addClick(btn){
   });
   tablebody.append(row);
 
+  /*  Hide them and then slide them out  */
   row.children()
      .wrapInner('<div style="display:none;"></div>')
      .parent()
@@ -129,9 +135,11 @@ function addClick(btn){
   $(btn).toggleClass('submit');
   $(btn).children('.icons').toggleClass('icons-active');
 
-  /*  ADD COL STUFF */
-  var ths = $('#'+pid+'-tablehead').children('tr').children();
-  var existingMileFields = [];
+
+  /*  ADD COL STUFF  */
+  /*  Gather the existing fields  */
+  var ths = $('#'+pid+'-tablehead').children('tr').children(),
+      existingMileFields = [];
   $.each(ths, function(idx, th) {
     var id = th.dataset.dimid;
     if(id != undefined) {
@@ -139,7 +147,7 @@ function addClick(btn){
     }
   });
 
-
+  /*  Get the alternatives for new fields  */
   $.ajax({
     method: "GET",
     url: "/get/"+pid+"/fields/",
@@ -153,9 +161,17 @@ function addClick(btn){
                                   .attr('class', 'btn btn-success add-col-btn')
                                   .append(plus);
         tablebody.append(button);
-        button.click(function() {
-          addColClick(pid, fields.fields);
-          $(this).toggleClass('icons-active')
+        button.click(function(e) {
+          /*  When you add the col  */
+          if(!$(e.target).hasClass('lockcol')) {
+            addColClick(pid, fields.fields);
+          }
+          /*  When you lock it in  */
+          else {
+            lockColClick();
+          }
+          $(this).children('.icons').toggleClass('icons-active');
+          $(this).toggleClass('lockcol');
         });
       }
     }
