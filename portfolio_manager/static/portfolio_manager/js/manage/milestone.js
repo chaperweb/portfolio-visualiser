@@ -107,11 +107,7 @@ function addClick(btn){
                                 .attr('class', inputClass)
                                 .attr('type', 'date'),
     row = $('<tr>').append($('<td>').append(due_date_cell)),
-    ths = $('#' + pid + '-tablehead').children('tr').children(),
-    plus = $('<span>').attr('class', 'glyphicon glyphicon-plus'),
-    button = $('<button>').attr('type', 'button')
-                          .attr('class', 'btn btn-success add-col-btn text-center')
-                          .append(plus);
+    ths = $('#' + pid + '-tablehead').children('tr').children();
 
   $.each(ths, function(idx, th) {
     if( th.innerText != '') {
@@ -150,9 +146,16 @@ function addClick(btn){
     data: {'existing': JSON.stringify(existingMileFields)},
     success: function(fields){
       if(Object.keys(fields.fields).length > 0) {
+        var plus = $('<span>').attr('class', 'icons')
+                              .append($('<span>').attr('class', 'vertical'))
+                              .append($('<span>').attr('class', 'horizontal')),
+            button = $('<button>').attr('type', 'button')
+                                  .attr('class', 'btn btn-success add-col-btn')
+                                  .append(plus);
         tablebody.append(button);
         button.click(function() {
           addColClick(pid, fields.fields);
+          $(this).toggleClass('icons-active')
         });
       }
     }
