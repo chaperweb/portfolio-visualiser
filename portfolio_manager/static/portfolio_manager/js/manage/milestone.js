@@ -75,13 +75,23 @@ function lockColClick(pid) {
 
 function checkRows(pid) {
   var inputs = $('.new-mile-field-' + pid),
-    errorFree = true;
+      text = "",
+      errorFree = true;
 
   inputs.each(function() {
-    errorFree = errorFree && ($(this).val() != '');
+    if($(this).val() == '') {
+      errorFree = false;
+      text = "Please fill in all the fields";
+    }
   });
 
-  return errorFree;
+  var lastTh = $('#'+pid+'-tablehead').children('tr').children('th').last();
+  if(lastTh.children('select').length > 0) {
+    errorFree = false;
+    text = "Please lock new fields or refresh to remove them";
+  }
+
+  return [errorFree, text];
 }
 
 function submitRow(pid) {
@@ -194,8 +204,10 @@ function addClick(btn){
 }
 
 function submitClick(btn) {
-  var pid = $(btn).data('pid');
-  if(checkRows(pid)) {
+  var pid = $(btn).data('pid'),
+      checkRowsResult = checkRows(pid);
+
+  if(checkRowsResult[0]) {
     submitRow(pid);
     inputsToCells(pid);
 
@@ -203,8 +215,7 @@ function submitClick(btn) {
     $(btn).children('.icons').toggleClass('icons-active');
   }
   else {
-    // DO SMARTER ERROR MESSAGE
-    alert("Please fill in all the fields!");
+    alert(checkRowsResult[1]);
   }
 }
 
