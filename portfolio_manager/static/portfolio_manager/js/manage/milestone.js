@@ -213,6 +213,7 @@ function submitClick(btn) {
 
     $(btn).toggleClass('submit');
     $(btn).children('.icons').toggleClass('icons-active');
+    $('#add-col-btn-'+pid).remove();
   }
   else {
     alert(checkRowsResult[1]);
