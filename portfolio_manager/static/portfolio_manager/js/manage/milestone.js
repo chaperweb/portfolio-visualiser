@@ -1,3 +1,5 @@
+var availableFields = {};
+
 //  COOOOOOOKIES
 function getCookie(name)
 {
@@ -30,8 +32,10 @@ $.ajaxSetup({
   }
 });
 
-function addColClick(pid, fields) {
-  var lastTds = $('#'+pid+'-tablebody').children('tr').children('td:last-child'),
+/*  Adds a new column to the correct table  */
+function addColClick(pid) {
+  var fields = availableFields[pid],
+      lastTds = $('#'+pid+'-tablebody').children('tr').children('td:last-child'),
       numberInput = $('<input>').attr('class', 'text-center new-mile-field-'+pid)
                                 .attr('type', 'number')
                                 .attr('step', 0.01);
@@ -43,7 +47,8 @@ function addColClick(pid, fields) {
                          .last()
                          .append(numberInput);
 
-  var select = $('<select>').attr('class', 'text-center');
+  var select = $('<select>').attr('class', 'text-center')
+                            .attr('id', 'new-col-name-'+pid);
   $.each(fields, function(id, name) {
     select.append($('<option>').attr('value', id).append(name));
   });
@@ -56,8 +61,16 @@ function addColClick(pid, fields) {
   });
 }
 
-function lockColClick() {
-  console.log("LOCK THE COL");
+function lockColClick(pid) {
+  var select = $('#new-col-name-'+pid),
+      selectText = $('#new-col-name-'+pid+' :selected').text();
+
+  select.parents('th').attr('data-dimid', select.val()).append(selectText);
+  select.remove();
+  delete availableFields[pid][select.val()];
+  if (Object.keys(availableFields[pid]).length <= 0) {
+    $('#add-col-btn-'+pid).remove();
+  }
 }
 
 function checkRows(pid) {
@@ -153,22 +166,24 @@ function addClick(btn){
     url: "/get/"+pid+"/fields/",
     data: {'existing': JSON.stringify(existingMileFields)},
     success: function(fields){
-      if(Object.keys(fields.fields).length > 0) {
+      availableFields[pid] = fields.fields;
+      if(Object.keys(availableFields[pid]).length > 0) {
         var plus = $('<span>').attr('class', 'icons')
                               .append($('<span>').attr('class', 'vertical'))
                               .append($('<span>').attr('class', 'horizontal')),
             button = $('<button>').attr('type', 'button')
                                   .attr('class', 'btn btn-success add-col-btn')
+                                  .attr('id', 'add-col-btn-'+pid)
                                   .append(plus);
         tablebody.append(button);
         button.click(function(e) {
           /*  When you add the col  */
           if(!$(e.target).hasClass('lockcol')) {
-            addColClick(pid, fields.fields);
+            addColClick(pid);
           }
           /*  When you lock it in  */
           else {
-            lockColClick();
+            lockColClick(pid);
           }
           $(this).children('.icons').toggleClass('icons-active');
           $(this).toggleClass('lockcol');
