@@ -1,6 +1,10 @@
 div.project-wrapper {
   padding-bottom: 10px;
 }
+div.table-wrapper {
+  max-width: 100%;
+  overflow: scroll;
+}
 .project-name {
   text-decoration: underline;
 }
@@ -31,7 +35,7 @@ td:not(:last-child), th:not(:last-child) {
 td, th {
   text-align: center;
   vertical-align: middle;
-  overflow: scroll;
+  width: 180px;
 }
 table.table > tbody > tr > td {
   border-top: 1px solid black;

@@ -15,28 +15,30 @@
   {% for project, data in milestones.items %}
     <div id="{{ project.id }}-wrapper" class="row project-wrapper">
       <h2 class="text-center row project-name">{{ project.name }}</h2>
-      <table class="table">
-        <thead id="{{ project.id }}-tablehead">
-          <tr>
-            <th></th>
-            {% for field in fields|get:project %}
-              <th data-dimid="{{ fieldToId|get:project|get:field }}">{{ field }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody id="{{ project.id }}-tablebody">
-          {% for mile in data %}
+      <div class="table-wrapper">
+        <table class="table">
+          <thead id="{{ project.id }}-tablehead">
             <tr>
-              <td>{{ mile.due_date|date:"d/m/Y" }}</td>
-              {% with mile.dimensions as dims %}
-                {% for fieldname in fields|get:project %}
-                  <td>{{ dims|get_or_empty:fieldname }}</td>
-                {% endfor %}
-              {% endwith %}
+              <th></th>
+              {% for field in fields|get:project %}
+                <th data-dimid="{{ fieldToId|get:project|get:field }}">{{ field }}</th>
+              {% endfor %}
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody id="{{ project.id }}-tablebody">
+            {% for mile in data %}
+              <tr>
+                <td>{{ mile.due_date|date:"d/m/Y" }}</td>
+                {% with mile.dimensions as dims %}
+                  {% for fieldname in fields|get:project %}
+                    <td>{{ dims|get_or_empty:fieldname }}</td>
+                  {% endfor %}
+                {% endwith %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
       <button class="add-row-btn btn btn-success col-lg-4 col-lg-offset-4" data-pid="{{ project.id }}" data-submit='0'>
         <span class="icons">
           <span class="vertical"></span>
