@@ -159,8 +159,8 @@ function dependancies(json) {
 		width = Math.max(700, $(window).width()*0.60),
 		color = d3.scale.category20();
 
- // Ball outline is 3 pixels wide
-  var ballOutline = 3;
+ // Ball outline is 1 pixels wide
+  var ballOutline = 1;
 
 	//maximum and minimum value of the nodes
 	var minDataPoint = d3.min(values);
@@ -239,6 +239,7 @@ function dependancies(json) {
 	// add the text, currently project name
 	node.append("text")
   		.attr("x", 12)
+      .attr("text-anchor", "middle")
   		.attr("dy", ".35em")
   		.text(function(d) { return d.name; });
 
@@ -298,11 +299,7 @@ function dependancies(json) {
 		d3.select(this).select("text").transition()
 			.duration(750)
 			.attr("x", 22)
-			.style("stroke", "lightsteelblue")
-			.style("stroke-width", ".5px")
-			.style("font", "20px sans-serif");
-		d3.select(this).select("circle").transition()
-			.duration(750);
+      .style("font-weight", "bold");
 	}
 
 	/* action to take on mouse double click
@@ -315,11 +312,9 @@ function dependancies(json) {
 			.duration(750)
 			.attr("fixed", d.fixed = false)
 			.style("stroke", "none");
+
 		d3.select(this).select("text").transition()
-			.attr("x", 12)
-			.style("fill", "black")
-			.style("stroke", "none")
-			.style("font", "10px sans-serif");
+			.style("font-weight", "normal");
 	}
 
 	/* action to take on dragstart,
@@ -331,7 +326,7 @@ function dependancies(json) {
 	  d3.select(this).select("circle").transition()
 	  .attr("fixed", d.fixed = true)
 	  .style("stroke", "black")
-	  .style("stroke-width", "3px"); // Should be bind with ballOutline variable?
+	  .style("stroke-width", ballOutline + "px");
 	}
 
 	// this function drags the node inside the height-width limits
