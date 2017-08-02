@@ -342,18 +342,25 @@ def json(request):
 # site to see all projects, grouped by organization
 @login_required
 def projects(request):
+    projects_all = Project.objects.all()
+
+    projects_grouped = {}
+    for org, ps in groupby(projects_all, lambda p: p.parent):
+        projects_grouped[org] = []
+        for p in ps:
+            projects_grouped[org].append(p)
+
+
     dd = ContentType.objects.get_for_model(NumberDimension)
     number_dimensions = ProjectDimension.objects.filter(content_type=dd)
     budgets = []
     for num_dim in number_dimensions:
         if num_dim.dimension_object.name == "Budget":
             budgets.append(num_dim)
-    projects_all = Project.objects.all()
-    organizations_all = Organization.objects.all()
 
     response_data = {
         'projects': projects_all,
-        'organizations': organizations_all,
+        'organizations': projects_grouped,
         'budgets':budgets
     }
     return render(request, 'projects.html', response_data)

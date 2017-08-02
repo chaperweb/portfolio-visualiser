@@ -8,30 +8,26 @@ Projects
 {# CSS HERE #}
 {% block css %}
 {% load static %}
-<link rel="stylesheet" href="{% static "portfolio_manager/css/sidebar.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/projects.css" %}">
 {% endblock %}
 
 {% block content %}
   <div class="col-lg-3">
     <nav id="spymenu" class="col-lg-6 col-lg-offset-3">
-      <ul class="text-center nav nav-pills nav-stacked" style="margin-top: 8vh; border: 1px solid lightgrey;border-radius: 10px; position:fixed; width: 12.5%;">
-        {% for org in organizations %}
-          <li><a href="#{{ org.id }}-container">{{ org.name }}</a></li>
+      <ul class="text-center nav nav-pills nav-stacked">
+        {% for org, p in organizations.items %}
+          <li><a href="#{{ org.id }}-wrapper">{{ org.name }}</a></li>
         {% endfor %}
-        <li><a href="#section1">Section 1</a></li>
-        <li><a href="#section2">Section 2</a></li>
-        <li><a href="#section3">Section 3</a></li>
-        <li><a href="#section4">Section 4</a></li>
       </ul>
     </nav>
   </div>
   <div class="col-lg-6">
-    {% for org in organizations %}
-      <div id="{{ org.id }}-container" class="col-lg-12">
-        <h2 class="text-center" style="border-bottom: 2px solid #000000; padding-bottom: 5px;">{{ org.name }}</h2>
+    {% for org, projects in organizations.items %}
+      <div id="{{ org.id }}-wrapper" class="org-wrapper col-lg-12">
+        <h2 class="text-center">{{ org.name }}</h2>
         {% for project in projects %}
-          <a href="{% url 'show_project' project.pk %}" class="text-center col-lg-8 col-lg-offset-2" style="background-color: LIGHTGREY; margin-bottom: 10px; color: #000000; border-radius:10px;">
-            <h4 style="text-decoration: underline;">{{ project.name }}</h4>
+          <a href="{% url 'show_project' project.pk %}" class="projectbox text-center col-lg-8 col-lg-offset-2">
+            <h4>{{ project.name }}</h4>
             <div>Budget: 100000</div>
             <div>Project manager: Pekka Haavisto</div>
           </a>
