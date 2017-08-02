@@ -28,8 +28,8 @@ Projects
         {% for project in projects %}
           <a href="{% url 'show_project' project.pk %}" class="projectbox text-center col-lg-8 col-lg-offset-2">
             <h4>{{ project.name }}</h4>
-            <div>Budget: 100000</div>
-            <div>Project manager: Pekka Haavisto</div>
+            <div>Budget: {{ project.get_budget }}</div>
+            <div>Project manager: {{ project.get_project_manager }}</div>
           </a>
         {% endfor %}
       </div>
