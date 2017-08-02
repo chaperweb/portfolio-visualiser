@@ -12,54 +12,31 @@ Projects
 {% endblock %}
 
 {% block content %}
-<div class="container">
-{% for org in organizations %}
-  <div class="panel panel-default col-lg-12">
-    <div class="panel-heading row" data-toggle="collapse" data-target="#{{ org.name.split|join:"_" }}" aria-controls="#org-panel" aria-expanded="false">
-      <div class="{{org.name.split|join:"_"}}preview">
-        <div class="col-lg-1">
-          <span class="{{org.name.split|join:"_"}}glyph glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-          <span class="{{org.name.split|join:"_"}}glyph glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-        </div>
-        <div class="col-lg-4">
-          {{ org.name }}
-        </div>
-      </div>
-    </div>
-    <div class="panel-body">
-      <!-- DO NOT DELETE - this div is for first four projects  -->
-      <div id="alwaysvisible{{org.name.split|join:"_"}}" class="row"></div>
-
-      <!-- Div for rest of the projects, collapsable -->
-      <div id="{{org.name.split|join:"_"}}" class="collapse row">
+  <div class="col-lg-3">
+    <nav id="spymenu" class="col-lg-6 col-lg-offset-3">
+      <ul class="text-center nav nav-pills nav-stacked" style="margin-top: 8vh; border: 1px solid lightgrey;border-radius: 10px; position:fixed; width: 12.5%;">
+        {% for org in organizations %}
+          <li><a href="#{{ org.id }}-container">{{ org.name }}</a></li>
+        {% endfor %}
+        <li><a href="#section1">Section 1</a></li>
+        <li><a href="#section2">Section 2</a></li>
+        <li><a href="#section3">Section 3</a></li>
+        <li><a href="#section4">Section 4</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="col-lg-6">
+    {% for org in organizations %}
+      <div id="{{ org.id }}-container" class="col-lg-12">
+        <h2 class="text-center" style="border-bottom: 2px solid #000000; padding-bottom: 5px;">{{ org.name }}</h2>
         {% for project in projects %}
-          {% if project.parent == org %}
-            <!-- Single project -->
-            <a href="{% url 'show_project' project.pk %}" class="projectbox {{org.name.split|join:"_"}} col-lg-2">
-                <p>{{ project.name }}</p>
-                {% for budget in budgets %}
-                  {% if budget.project.pk == project.pk %}
-                    <p>Budget: {{ budget.dimension_object.value }}</p>
-                  {% endif %}
-                {% endfor %}
-            </a>
-          {% endif %}
+          <a href="{% url 'show_project' project.pk %}" class="text-center col-lg-8 col-lg-offset-2" style="background-color: LIGHTGREY; margin-bottom: 10px; color: #000000; border-radius:10px;">
+            <h4 style="text-decoration: underline;">{{ project.name }}</h4>
+            <div>Budget: 100000</div>
+            <div>Project manager: Pekka Haavisto</div>
+          </a>
         {% endfor %}
       </div>
-    </div>
+    {% endfor %}
   </div>
-
-  <!-- This script moves first 4 projects of an organization to div "alwaysvisible" -->
-  <script>
-    $(".{{org.name.split|join:"_"}}").slice(0,4).detach().appendTo("#alwaysvisible{{org.name.split|join:"_"}}");
-    var n = $(".{{org.name.split|join:"_"}}").length;
-    if (n <= 4) {
-      $(".{{org.name.split|join:"_"}}glyph").hide();
-    }
-
-    $(".{{org.name.split|join:"_"}}preview").append("<span class='badge pull-right'>" + n + "</span>");
-  </script>
-  {% endfor %}
-</div>
-
 {% endblock %}
