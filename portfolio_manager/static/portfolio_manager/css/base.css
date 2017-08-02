@@ -56,3 +56,8 @@ body {
     background-color: #969498;
     color: #ffffff;
 }
+.dropdown .dropdown-menu {
+  width: 80%;
+  margin-left: 10%;
+  text-align: center;
+}
