@@ -382,6 +382,6 @@ function dependancies(json) {
           .attr("x", legendRectSize + legendSpacing)
           .attr("y", legendRectSize - legendSpacing)
           .text(function(d){
-            return d[0] + "Budget: " + d[1] + "€";
+            return d[0] + " Budget: " + d[1] + "€";
           });
 }
