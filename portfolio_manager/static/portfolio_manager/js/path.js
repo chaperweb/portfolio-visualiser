@@ -122,7 +122,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
 
   // human readable timeformat from history_date
-  var ddmmyy = d3.timeFormat("dd-mm-yy");
+  var ddmmyy = d3.timeFormat("%d-%m-%Y");
 
   $('.datepicker').datepicker("option", "minDate", startDefault)
                   .datepicker("option", "maxDate", endDefault);
