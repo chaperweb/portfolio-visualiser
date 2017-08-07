@@ -30,8 +30,6 @@ function dependancies(json) {
       jsonlen = json.length,
     	valueArray = [];
 
-  console.log(json);
-
   /* Going through json input and collecting budget values from objects
    * that have values in ProjectDependencies. To be used in defining need
    * for denominaor != 1
@@ -92,15 +90,18 @@ function dependancies(json) {
 			}
 		}
 	}
-	var values = [];
-	var nameArray = [];
-	var valueArray = [];
-	var nodeValueArray = [];
+	var values = [],
+      nameArray = [],
+	    valueArray = [],
+	    nodeValueArray = [];
 	d3.values(nodes).forEach(function(node) {
-		values.push(node.value)
-		nameArray.push(node.name)
-		nodeValueArray.push(node.name + " Budget: " + (node.value * denominator));
+		values.push(node.value);
+		nameArray.push(node.name);
+    nodeValueArray.push([node.name, node.value*denominator]);
 	});
+  nodeValueArray.sort(function(a,b){
+    return b[1]-a[1];
+  });
 
 	/* searches the name of the project with the given ID.
    * If name with given ID is not found returns empty string
@@ -380,5 +381,7 @@ function dependancies(json) {
           .data(nodeValueArray)
           .attr("x", legendRectSize + legendSpacing)
           .attr("y", legendRectSize - legendSpacing)
-          .text(function(d){return ""+d+"€"});
+          .text(function(d){
+            return d[0] + " Budget: " + d[1] + "€";
+          });
 }
