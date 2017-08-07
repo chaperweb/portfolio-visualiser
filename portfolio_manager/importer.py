@@ -104,10 +104,12 @@ class ImportHelper:
 
 
 def from_data_array(data):
+    #   Counters for result message
     rows_imported = 0
     milestones_imported = 0
     rows_skipped = 0
-    helper = ImportHelper(dim_names=data[0][2:], dim_types=data[1][2:])
+
+    helper = ImportHelper(dim_names=data[0][3:], dim_types=data[1][3:])
     prev_id = -1
     dimension_objects = None
     project_dimension_objects = None
@@ -134,10 +136,9 @@ def from_data_array(data):
         milestonerow = False
         try:
             history_date = helper.parse_date_tz(update[1])
-            if 'm;' in update[0]: # Sheet row represents a milestone
+            if update[2]: # Sheet row represents a milestone
                 milestonerow = True
-                parts = update[0].split(';') # ID column format m;[milestone_due_date]
-                milestone_due_date = helper.parse_date_tz(parts[1])
+                milestone_due_date = helper.parse_date_tz(update[2])
 
                 milestone = Milestone()
                 milestone.due_date = milestone_due_date
@@ -145,16 +146,16 @@ def from_data_array(data):
                 milestone._history_date = history_date
                 milestone.save()
 
-                for idx, milestone_value in enumerate(update[2:]):
+                for idx, milestone_value in enumerate(update[3:]):
                     if milestone_value:
                         helper.create_milestone(idx, milestone_value, milestone, project_dimension_objects[idx])
             else: # Row represents an update to project's dimensions
-                if update[0] != prev_id: # new project
+                if update[0] != prev_id: # new project TODO: get or create style
                     project = helper.remove_and_create_project(update[0])
                     prev_id = update[0]
                     dimension_objects = {}
                     project_dimension_objects = {}
-                for idx, dimension_update in enumerate(update[2:]):
+                for idx, dimension_update in enumerate(update[3:]):
                     if dimension_update:    # If there is a value in the cell
                         dimension_object = None
                         create_project_dimension = False  # Check
