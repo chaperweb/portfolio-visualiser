@@ -60,6 +60,14 @@ def signup(request):
         return render(request, 'registration/signup.html')
 
 
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 @login_required
 def home(request):
     if not request.user.is_authenticated():
@@ -262,12 +270,12 @@ def project_edit(request, project_id, field_type):
         data = request.POST
         field = data.get('field')
         value = data.get('value')
-        if not isinstance(field, int):
+        if not is_int(field):
             dimension = type_to_dimension[field_type]()
             dimension.value = value
             dimension.name = field
             dimension.save()
-            
+
             projdim = ProjectDimension()
             projdim.dimension_object = dimension
             projdim.project = Project.objects.get(pk=project_id)
