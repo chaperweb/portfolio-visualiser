@@ -248,11 +248,11 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
          sliceEnd = data.length-1;
 
      if (startDate != startDefault) {
-       sliceStart = bisectX(data, startDate) - 1
+       sliceStart = bisectX(data, Date.parse(startDate)) - 1
      }
 
      if (endDate != endDefault) {
-       sliceEnd = bisectX(data, endDate) - 1
+       sliceEnd = bisectX(data, Date.parse(endDate)) - 1
      }
 
      data = data.slice(sliceStart, sliceEnd)
