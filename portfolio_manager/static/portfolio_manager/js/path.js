@@ -99,7 +99,7 @@ function generate_data_chunk(dimension) {
 };
 
 // Generate the svg container for the visualization
-function generate_path_svg(target, data_id_array) {
+function generate_path_svg(target, data_id_array, startDate, endDate) {
 
   $('#'+ target).html('');
 
@@ -117,6 +117,20 @@ function generate_path_svg(target, data_id_array) {
   var pathData = generate_path_data(data_id_array)
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
+  var startDefault = y_data[0].history_date
+  var endDefault = y_data[y_data.length - 1].history_date]
+
+  $('.datepicker').datepicker("option", "minDate", startDefault)
+                  .datepicker("option", "maxDate", endDefault);
+
+  if (isNaN(startDate)) {
+    startDate = startDefault;
+    $('#start-date-selector').val(ddmmyy(startDate));
+  }
+  if(isNaN(endDate)) {
+    endDate = endDefault;
+    $('#end-date-selector').val(ddmmyy(endDate));
+  }
 
   // height of the colored x-axis area and maximum amount of x-axis
   var xAxesHeight = 20;
@@ -148,7 +162,7 @@ function generate_path_svg(target, data_id_array) {
 
   // The scales of the axis
   var xScale = d3.scaleTime()
-            .domain([y_data[0].history_date, y_data[y_data.length - 1].history_date])
+            .domain([startDate, endDate])
             .range([0,axisLengthX]),
       yScale = d3.scaleLinear()
             .domain([0, d3.max(y_data, function(d){return parseFloat(d.value)})])

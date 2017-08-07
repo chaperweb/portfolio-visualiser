@@ -30,8 +30,10 @@ $(function() {
 
   function dimension_selector_change() {
     x_dimension_id = $('#x-selector').val();
-    y_dimension_id = $('#y-selector').find("option:selected").val();
-    project_id = $('#project-selector').find("option:selected").val();
+    y_dimension_id = $('#y-selector').val();
+    project_id = $('#project-selector').val();
+    start_date = Date.parse($('#start-date-selector').datepicker( "getDate" ));
+    end_date = Date.parse($('#end-date-selector').datepicker( "getDate" ));
 
     data_id_array = x_dimension_id
 
@@ -41,7 +43,7 @@ $(function() {
     data_id_array.unshift(y_dimension_id);
     data_id_array.unshift(project_id);
 
-    generate_path_svg( "visualization", data_id_array);
+    generate_path_svg( "visualization", data_id_array, start_date, end_date);
 
   };
 
@@ -116,5 +118,7 @@ $(function() {
 
   $('#x-selector').on('change', change_if_pathdata_selected);
   $('#y-selector').on('change', change_if_pathdata_selected);
+
+  $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd/mm/yy'});
 
 });
