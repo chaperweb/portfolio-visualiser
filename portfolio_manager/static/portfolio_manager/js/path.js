@@ -218,11 +218,11 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
    // Variable to hold previous divValueId and bisector for x-values
    var divValueId = Infinity;
-   var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
+   var bisectByDate = d3.bisector(function(d) { return d.history_date; }).right;
 
    // Updates the div element value and relocates it when needed.
    function updateDiv(data, element) {
-     var currentId = bisectX(data, Date.parse(xScale.invert(d3.event.offsetX-margin.left)));
+     var currentId = bisectByDate(data, Date.parse(xScale.invert(d3.event.offsetX-margin.left)));
      if (currentId != divValueId || div.text() != data[currentId - 1]) {
        divValueId = currentId
        div.style("opacity", .7);
@@ -248,11 +248,13 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
          sliceEnd = data.length-1;
 
      if (startDate != startDefault) {
-       sliceStart = bisectX(data, Date.parse(startDate)) - 1
+       sliceStart = bisectByDate(data, Date.parse(startDate))
+       sliceStart -= 1;
      }
 
      if (endDate != endDefault) {
-       sliceEnd = bisectX(data, Date.parse(endDate)) - 1
+       sliceEnd = bisectByDate(data, Date.parse(endDate))
+       sliceEnd -= 1;
      }
 
      data = data.slice(sliceStart, sliceEnd)
