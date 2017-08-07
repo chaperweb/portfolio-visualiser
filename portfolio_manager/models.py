@@ -110,6 +110,21 @@ class Project (models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_budget(self):
+        ct = ContentType.objects.get_for_model(NumberDimension)
+        num_dims = self.dimensions.filter(content_type=ct)
+        for num_dim in num_dims:
+            if num_dim.dimension_object.name == 'Budget':
+                return num_dim.dimension_object.value
+        return 0
+
+    def get_project_manager(self):
+        ct = ContentType.objects.get_for_model(AssociatedPersonDimension)
+        pers_dims = self.dimensions.filter(content_type=ct)
+        for pers_dim in pers_dims:
+            if pers_dim.dimension_object.name == 'ProjectManager':
+                return str(pers_dim.dimension_object.value)
+        return ''
 
 class ProjectDimension (models.Model):
     project = models.ForeignKey(Project, null=False, on_delete=models.CASCADE, related_name='dimensions')

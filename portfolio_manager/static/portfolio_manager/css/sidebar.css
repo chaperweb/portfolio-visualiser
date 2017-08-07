@@ -6,35 +6,6 @@ div[aria-expanded=true] .glyphicon-triangle-bottom {
   display: none;
 }
 
-/*Projects specific css*/
-
-.panel .panel-heading {
-  background-color: rgb(116,116,116);
-  font-family: "Exo 2", sans-serif;
-  color: white;
-  border: 0;
-}
-
-.projectbox,
-.projectbox:hover
-.projectbox:visited {
-  color: #ffffff;
-  background-color: rgb(156,156,156);
-  font-family: "Exo 2", sans-serif;
-  border-radius: 5px;
-  margin: 1% 4%;
-}
-.projectbox > p {
-  margin-top: 10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.projectbox > p:hover {
-  text-overflow: none;
-  overflow: visible;
-}
-
 /* PANEL CSS */
 
 .container .panel-group .panel-heading {
@@ -116,9 +87,4 @@ button.dropdown-toggle {
 }
 .dropdown .dropdown-menu[style*="display: block"]+#projects-button {
   background-color: #dee0e1;
-}
-.dropdown .dropdown-menu {
-  width: 80%;
-  margin-left: 10%;
-  text-align: center;
 }

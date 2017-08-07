@@ -1,6 +1,9 @@
 html, body {
   font-family: "Exo 2", sans-serif;
 }
+body {
+  position: relative;
+}
 
 .navbar {
   border: 0;
@@ -52,4 +55,9 @@ html, body {
 .dropdown-menu > li > a {
     background-color: #969498;
     color: #ffffff;
+}
+.dropdown .dropdown-menu {
+  width: 80%;
+  margin-left: 10%;
+  text-align: center;
 }
