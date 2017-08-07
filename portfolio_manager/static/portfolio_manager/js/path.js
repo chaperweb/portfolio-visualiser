@@ -118,7 +118,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
   var startDefault = y_data[0].history_date
-  var endDefault = y_data[y_data.length - 1].history_date]
+  var endDefault = y_data[y_data.length - 1].history_date
 
   $('.datepicker').datepicker("option", "minDate", startDefault)
                   .datepicker("option", "maxDate", endDefault);
