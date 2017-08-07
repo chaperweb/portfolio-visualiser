@@ -10,6 +10,13 @@ def get(dict, key):
         return None
 
 @register.filter
+def get_or_empty(dict, key):
+    try:
+        return dict[key]
+    except KeyError:
+        return ''
+
+@register.filter
 def ct_name(ct):
     return ct.name.replace(' dimension', '').capitalize()
 

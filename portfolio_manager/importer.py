@@ -61,7 +61,6 @@ class ImportHelper:
         return self.dim_names[idx].strip()
 
     def create_milestone(self, idx, value, milestone, project_dimension):
-        dim_name = self.dim_name_by_column(idx)
         dim_mile_object = self.milestone_by_column(idx)
         dim_mile_object.from_sheet(value)
         dim_mile_object.save()
