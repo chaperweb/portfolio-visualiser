@@ -120,16 +120,20 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
   var startDefault = y_data[0].history_date
   var endDefault = y_data[y_data.length - 1].history_date
 
+
+  // human readable timeformat from history_date
+  var ddmmyy = d3.timeFormat("dd-mm-yy");
+
   $('.datepicker').datepicker("option", "minDate", startDefault)
                   .datepicker("option", "maxDate", endDefault);
 
   if (isNaN(startDate)) {
     startDate = startDefault;
-    $('#start-date-selector').val(startDate);
+    $('#start-date-selector').val(ddmmyy(startDate));
   }
   if(isNaN(endDate)) {
     endDate = endDefault;
-    $('#end-date-selector').val(endDate);
+    $('#end-date-selector').val(ddmmyy(endDate));
   }
 
   // height of the colored x-axis area and maximum amount of x-axis
@@ -139,9 +143,6 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
   // Length of the axis
   var axisLengthX = width - (margin.right + margin.left),
       axisLengthY = height - (margin.top + margin.bottom + (xAxesMaxOptions * xAxesHeight));
-
-  // human readable timeformat from history_date
-  var ddmmyy = d3.timeFormat("%d-%m-%Y");
 
   //  Parameters for axis transformations
   var pathTransformX = margin.left,

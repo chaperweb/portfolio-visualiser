@@ -113,12 +113,14 @@ $(function() {
         max_selected_options: 5
     });
 
+    $('.datepicker').prop('disabled', false);
+
     change_if_pathdata_selected();
   });
 
   $('#x-selector').on('change', change_if_pathdata_selected);
   $('#y-selector').on('change', change_if_pathdata_selected);
 
-  $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd/mm/yy'});
+  $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd-mm-yy'});
 
 });
