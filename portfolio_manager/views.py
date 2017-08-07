@@ -19,11 +19,13 @@
 #
 ##
 import logging
+import pytz
 import json as json_module
 from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
 from itertools import groupby
 from collections import defaultdict
+from dateutil.parser import parse
 
 import django.forms
 from django.http import JsonResponse, HttpResponse
@@ -103,7 +105,64 @@ def admin_tools(request):
     form = AddProjectForm()
     form.fields['name'].widget.attrs['class'] = 'form-control'
     form.fields['organization'].widget.attrs['class'] = 'form-control'
-    return render(request, 'admin_tools.html', {'pre_add_project_form': form})
+    return render(request, 'manage/admin_tools.html', {'pre_add_project_form': form})
+
+
+@login_required
+def milestones(request):
+    context = {
+        'milestones': {},
+        'fields': {},
+        'fieldToId': defaultdict(lambda: {})
+    }
+    milestones = Milestone.objects.all().order_by('project')
+
+    if request.method == 'POST':
+        fields = {}
+        for key, value in request.POST.items():
+            if key == 'pid':
+                pid = value
+            elif key == 'due_date':
+                due_date = parse(value, yearfirst=True)
+            else:
+                fields[key] = value
+
+        if pid and due_date:
+            project = Project.objects.get(pk=pid)
+
+            mile = Milestone()
+            mile.project = project
+            if due_date.tzinfo is None or due_date.tzinfo.utcoffset(due_date) is None:
+                due_date = due_date.replace(tzinfo=pytz.utc)
+            mile.due_date = due_date
+            mile.save()
+
+            for proj_dim_id, value in fields.items():
+                proj_dim = ProjectDimension.objects.get(pk=proj_dim_id)
+
+                dim_mile_object = NumberMilestone()
+                dim_mile_object.from_sheet(value)
+                dim_mile_object.save()
+
+                dim_mile = DimensionMilestone()
+                dim_mile.milestone = mile
+                dim_mile.dimension_milestone_object = dim_mile_object
+                dim_mile.project_dimension = proj_dim
+                dim_mile.save()
+
+    grouped_miles = groupby(milestones, lambda milestone: milestone.project)
+    for project, milestones in grouped_miles:
+        context['milestones'][project] = []
+        context['fields'][project] = set()
+        for milestone in sorted(list(milestones), key=lambda m: m.due_date):
+            data = milestone.get_display_data()
+            context['fieldToId'][project].update(data['dimensions_ids'])
+            context['milestones'][project].append(data)
+            for field, field_data in data['dimensions'].items():
+                context['fields'][project].add(field)
+
+
+    return render(request, 'manage/milestones.html', context)
 
 
 # TODO: Require admin
@@ -122,7 +181,7 @@ def add_user(request):
         user.save()
         user.groups.add(org)
         context['successmsg'] = '{} created successfully!'.format(str(user))
-    return render(request, 'add_user.html', context)
+    return render(request, 'manage/add_user.html', context)
 
 
 @require_POST
@@ -501,6 +560,19 @@ def get_proj(request):
     serializer = ProjectNameIdSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
+
+@require_GET
+def get(request, project_id):
+    project = Project.objects.get(pk=project_id)
+    ct = ContentType.objects.get_for_model(NumberDimension)
+
+    existing = json_module.loads(request.GET.get('existing'))
+    proj_dims = project.dimensions.filter(content_type=ct).exclude(id__in=existing)
+    dims = {}
+    for d in proj_dims:
+        dims[d.id] = d.dimension_object.name
+
+    return JsonResponse({'fields':dims})
 
 #   Function that gets the value of a dimension that has multiple
 #   items. Takes in the field type and the id of the dimension

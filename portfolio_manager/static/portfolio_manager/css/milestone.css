@@ -1,0 +1,123 @@
+div.project-wrapper {
+  padding-bottom: 10px;
+}
+div.table-wrapper {
+  max-width: 100%;
+  overflow: scroll;
+}
+.project-name {
+  text-decoration: underline;
+}
+
+/* Table styling */
+table.table {
+  margin-bottom: 5px;
+  table-layout: fixed;
+}
+
+th:first-child {
+  border-top-left-radius: 5px;
+}
+th:last-child {
+  border-top-right-radius: 5px;
+}
+tr:last-child > td:first-child {
+  border-bottom-left-radius: 5px;
+}
+tr:last-child > td:last-child {
+  border-bottom-right-radius: 5px;
+}
+
+td:not(:last-child), th:not(:last-child) {
+  border-right: 1px solid black;
+}
+
+td, th {
+  text-align: center;
+  vertical-align: middle;
+  width: 180px;
+}
+table.table > tbody > tr > td {
+  border-top: 1px solid black;
+}
+table.table > thead > tr > th {
+  border-bottom: 0;
+}
+
+thead > tr > th {
+  background-color: #f39911;
+}
+
+tbody > tr:nth-child(even) {
+  background-color: #dee0e1;
+}
+
+.add-row-btn {
+  height: 30px;
+}
+
+.add-col-btn {
+  position: absolute;
+  left: 103%;
+  transform: translateY(-34px);
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  border-radius: 100%;
+}
+
+.icons .horizontal {
+  width: 3px;
+  height: 15px;
+  background: #fff;
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  margin: auto;
+
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+.icons .vertical {
+  width: 3px;
+  height: 15px;
+  background: #fff;
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  margin: auto;
+
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+.icons-active .horizontal {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+
+  height: 16px;
+}
+.icons-active .vertical {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+
+  height: 7px;
+  top: 5px;
+  right: 13px;
+}
