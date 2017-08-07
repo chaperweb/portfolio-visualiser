@@ -62,6 +62,14 @@ def signup(request):
         return render(request, 'registration/signup.html')
 
 
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 @login_required
 def home(request):
     if not request.user.is_authenticated():
@@ -319,10 +327,23 @@ def project_edit(request, project_id, field_type):
     }
     if request.method == "POST":
         data = request.POST
-        dimension = type_to_dimension[field_type].objects.get(pk=data.get('field'))
+        field = data.get('field')
         value = data.get('value')
+        if not is_int(field):
+            dimension = type_to_dimension[field_type]()
+            dimension.value = value
+            dimension.name = field
+            dimension.save()
+
+            projdim = ProjectDimension()
+            projdim.dimension_object = dimension
+            projdim.project = Project.objects.get(pk=project_id)
+            projdim.save()
+        else:
+            dimension = type_to_dimension[field_type].objects.get(pk=field)
+
         if field_type == "associatedorganization":
-            dimension.value = Organization.objects.get(name=value)
+            dimension.value = Organization.objects.get(pk=value)
         elif field_type == "associatedperson":
             dimension.value = Person.objects.get(pk=value)
         elif field_type == "associatedpersons":

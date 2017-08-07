@@ -105,13 +105,16 @@ $(function()
     e.stopPropagation();  // Stop panelbody from opening
 
     //  Add info about which field we are handling
-    $("#hidden-"+$(this).data('type')+"-info").val($(this).data('field'));
+    var field = $(this).data('field');
+    if(field == '') {   // Field has no projectdimension
+      field = $(this).attr('id').replace('-modifybtn', '');
+    }
+    $("#hidden-"+$(this).data('type')+"-info").val(field);
 
     var valuetype = $(this).data('valuetype');
     // If the field is a multiple-field
     if (valuetype == 'multiple') {
       // Buttons data variables
-      var field = $(this).data('field');
       var projectID = $(this).data('projectid');
       var type = $(this).data('type');
 
