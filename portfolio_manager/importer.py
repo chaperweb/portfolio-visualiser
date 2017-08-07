@@ -103,6 +103,11 @@ class ImportHelper:
         return
 
 
+    def column_is_associated(self, idx):
+        associated_fields = ['AORG', 'APROJ']
+        return self.dim_types[idx] in associated_fields
+
+
 def from_data_array(data):
     #   Counters for result message
     rows_imported = 0
@@ -111,9 +116,10 @@ def from_data_array(data):
 
     helper = ImportHelper(dim_names=data[0][3:], dim_types=data[1][3:])
     prev_id = -1
-    dimension_objects = None
-    project_dimension_objects = None
+    dimension_objects = {}
+    project_dimension_objects = {}
     project = None
+    revisits = []
 
     type_row_is_valid, row_num = helper.type_row_is_valid()
     if not type_row_is_valid:
@@ -135,6 +141,7 @@ def from_data_array(data):
     for counter, update in enumerate(data[2:]):
         milestonerow = False
         try:
+            current_id = update[0]
             history_date = helper.parse_date_tz(update[1])
             if update[2]: # Sheet row represents a milestone
                 milestonerow = True
@@ -148,57 +155,43 @@ def from_data_array(data):
 
                 for idx, milestone_value in enumerate(update[3:]):
                     if milestone_value:
-                        helper.create_milestone(idx, milestone_value, milestone, project_dimension_objects[idx])
+                        helper.create_milestone(idx, milestone_value, milestone, project_dimension_objects[current_id][idx])
             else: # Row represents an update to project's dimensions
-                if update[0] != prev_id: # new project TODO: get or create style
-                    project = helper.remove_and_create_project(update[0])
-                    prev_id = update[0]
-                    dimension_objects = {}
-                    project_dimension_objects = {}
+                if current_id != prev_id: # new project
+                    project = helper.remove_and_create_project(current_id)
+                    prev_id = current_id
+                    dimension_objects[current_id] = {}
+                    project_dimension_objects[current_id] = {}
                 for idx, dimension_update in enumerate(update[3:]):
                     if dimension_update:    # If there is a value in the cell
-                        dimension_object = None
-                        create_project_dimension = False  # Check
-                        dimension_object_name = helper.dim_name_by_column(idx)
-                        try:
-                            dimension_object = dimension_objects[idx]
-                        except KeyError:
-                            dimension_object = helper.dimension_by_column(idx)
-                            dimension_object.name = dimension_object_name
-                            create_project_dimension = True
-                        dimension_object.from_sheet(dimension_update.strip(), history_date)
-                        dimension_object.save()
+                        if helper.column_is_associated(idx):
+                            revisits.append((counter, idx))
+                        else:
+                            dimension_object = None
+                            create_project_dimension = False  # Check
+                            dimension_object_name = helper.dim_name_by_column(idx)
+                            try:
+                                dimension_object = dimension_objects[current_id][idx]
+                            except KeyError:
+                                dimension_object = helper.dimension_by_column(idx)
+                                dimension_object.name = dimension_object_name
+                                create_project_dimension = True
+                            dimension_object.from_sheet(dimension_update.strip(), history_date)
+                            dimension_object.save()
 
-                        # We should get rid of project.parent and use some AssociatedOrganization type of
-                        # dimension instead. In general all project attributes should be represented by
-                        # Dimensions
-                        if dimension_object_name == 'OwningOrganization':
-                            project.parent = dimension_object.value
-                            project.save()
+                            if dimension_object_name == 'Name':
+                                project.name = dimension_object.value
+                                project.save()
 
-                        # We should get rid of project.name and use some TextDimension type of
-                        # dimension instead. In general all project attributes should be represented by
-                        # Dimensions
-                        if dimension_object_name == 'Name':
-                            project.name = dimension_object.value
-                            project.save()
+                            if create_project_dimension:
+                                project_dimension = ProjectDimension()
+                                project_dimension.project = project
+                                project_dimension.dimension_object = dimension_object
+                                project_dimension.save()
 
-                        if create_project_dimension:
-                            project_dimension = ProjectDimension()
-                            project_dimension.project = project
-                            project_dimension.dimension_object = dimension_object
-                            project_dimension.save()
+                                dimension_objects[current_id][idx] = dimension_object
+                                project_dimension_objects[current_id][idx] = project_dimension
 
-                            dimension_objects[idx] = dimension_object
-                            project_dimension_objects[idx] = project_dimension
-
-                # Create default project template for every organization that some project belongs to.
-                if project.parent:
-                    for key, dimension_object in dimension_objects.items():
-                        project.parent.add_template(
-                            template_name='default',
-                            dim_obj=dimension_object
-                        )
         except Exception as e:
             print("ERROR: {}. Skipping row {}".format(e, counter+3))
             rows_skipped += 1
@@ -209,6 +202,46 @@ def from_data_array(data):
             else:
                 rows_imported += 1
 
+    #   Go through the dependencies
+    for y,x in revisits:
+        pid = data[y+2][0]
+        project = Project.objects.get(pk=pid)
+        dim_name = data[0][x+3]
+
+        dimension_object = None
+        create_project_dimension = False  # Check
+        dimension_object_name = helper.dim_name_by_column(x)
+        try:
+            dimension_object = dimension_objects[pid][x]
+        except KeyError:
+            dimension_object = helper.dimension_by_column(x)
+            dimension_object.name = dimension_object_name
+            create_project_dimension = True
+        dimension_object.from_sheet(data[y+2][x+3].strip(), history_date)
+        dimension_object.save()
+
+        if dimension_object_name == 'OwningOrganization':
+            project.parent = dimension_object.value
+            project.save()
+
+        if create_project_dimension:
+            project_dimension = ProjectDimension()
+            project_dimension.project = project
+            project_dimension.dimension_object = dimension_object
+            project_dimension.save()
+
+            dimension_objects[pid][x] = dimension_object
+            project_dimension_objects[pid][x] = project_dimension
+
+    # Fix templates
+    for pid, dim_objects in dimension_objects.items():
+        project = Project.objects.get(pk=pid)
+        if(project.parent):
+            for key, dimension_object in dim_objects.items():
+                project.parent.add_template(
+                    template_name='default',
+                    dim_obj=dimension_object
+                )
     result = {
         'result': True,
         'rows_imported': rows_imported,
