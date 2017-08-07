@@ -125,11 +125,11 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
   if (isNaN(startDate)) {
     startDate = startDefault;
-    $('#start-date-selector').val(ddmmyy(startDate));
+    $('#start-date-selector').val(startDate);
   }
   if(isNaN(endDate)) {
     endDate = endDefault;
-    $('#end-date-selector').val(ddmmyy(endDate));
+    $('#end-date-selector').val(endDate);
   }
 
   // height of the colored x-axis area and maximum amount of x-axis
