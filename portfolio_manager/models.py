@@ -243,6 +243,20 @@ class Milestone(models.Model):
     due_date = models.DateTimeField()
     __history_date = None
 
+    def get_display_data(self):
+        data = {
+            'due_date': self.due_date,
+            'dimensions': {},
+            'dimensions_ids': {}
+        }
+        for dim_miles in self.dimensions.all():
+            field = dim_miles.project_dimension.dimension_object.name
+            value = dim_miles.dimension_milestone_object.value
+            data['dimensions'][field] = value
+            data['dimensions_ids'][field] = dim_miles.project_dimension.id
+
+        return data
+
 
 class NumberMilestone(models.Model):
     value = models.DecimalField(max_digits = 20, decimal_places=2)
