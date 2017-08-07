@@ -124,16 +124,22 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
   // human readable timeformat from history_date
   var ddmmyy = d3.timeFormat("%d-%m-%Y");
 
+  // set the min and max date by the selected project data
   $('.datepicker').datepicker("option", "minDate", new Date(startDefault))
                   .datepicker("option", "maxDate", new Date(endDefault));
 
+  // If there is no selected date or the date is outside borders use the default dates
   if (isNaN(startDate) || startDate < startDefault || startDate > endDefault) {
     startDate = startDefault;
     $('#start-date-selector').val(ddmmyy(startDate));
   }
-  if(isNaN(endDate) || endDate < startDefault || endDate > endDefault) {
+  if (isNaN(endDate) || endDate < startDefault || endDate > endDefault) {
     endDate = endDefault;
     $('#end-date-selector').val(ddmmyy(endDate));
+  }
+
+  if (endDate != endDefault || startDate != startDefault) {
+    y_data = truncateData(y_data, startDate, endDate);
   }
 
   // height of the colored x-axis area and maximum amount of x-axis
@@ -235,6 +241,34 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      d3.select("#"+String(id)+"Hover").style("opacity", 0);
      d3.select("#"+String(id)).style("opacity", 1);
    };
+
+   // Truncate the data to match the given dates
+   function truncateData(data, startDate, endDate) {
+     var sliceStart = 0,
+         sliceEnd = data.length-1;
+
+     if (startDate != startDefault) {
+       sliceStart = bisectX(data, startDate) - 1
+     }
+
+     if (endDate != endDefault) {
+       sliceEnd = bisectX(data, endDate) - 1
+     }
+
+     data = data.slice(sliceStart, sliceEnd)
+
+     data[0].history_date = startDate;
+
+     var pathEnd = {
+       "history_date": endDate,
+       "value": data[sliceEnd].value
+     };
+
+     data.push(pathEnd);
+
+     return data;
+   }
+
 
   // Generates the colored x-axes under the graph
   function generate_x_axes(x_data) {
