@@ -120,6 +120,7 @@ $(function() {
 
   $('#x-selector').on('change', change_if_pathdata_selected);
   $('#y-selector').on('change', change_if_pathdata_selected);
+  $('.datepicker').on('change', change_if_pathdata_selected);
 
   $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd-mm-yy'});
 

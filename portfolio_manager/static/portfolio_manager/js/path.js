@@ -127,11 +127,11 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
   $('.datepicker').datepicker("option", "minDate", new Date(startDefault))
                   .datepicker("option", "maxDate", new Date(endDefault));
 
-  if (isNaN(startDate)) {
+  if (isNaN(startDate) || startDate < startDefault || startDate > endDefault) {
     startDate = startDefault;
     $('#start-date-selector').val(ddmmyy(startDate));
   }
-  if(isNaN(endDate)) {
+  if(isNaN(endDate) || endDate < startDefault || endDate > endDefault) {
     endDate = endDefault;
     $('#end-date-selector').val(ddmmyy(endDate));
   }
