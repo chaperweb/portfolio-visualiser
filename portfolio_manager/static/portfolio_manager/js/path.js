@@ -138,6 +138,10 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
     $('#end-date-selector').val(ddmmyy(endDate));
   }
 
+  /* If the selected dates are not the default dates,
+   * trucate the data to given period.
+   * With whole dataset the graph will overflow the given area.
+  */
   if (endDate != endDefault || startDate != startDefault) {
     y_data = truncateData(y_data, startDate, endDate);
 
