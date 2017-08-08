@@ -253,12 +253,12 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
          sliceEnd = data.length-1;
 
      if (startDate != startDefault) {
-       sliceStart = bisectByDate(data, Date.parse(startDate));
+       sliceStart = bisectByDate(data, startDate);
        sliceStart -= 1;
      }
 
      if (endDate != endDefault) {
-       sliceEnd = bisectByDate(data, Date.parse(endDate));
+       sliceEnd = bisectByDate(data, endDate);
        sliceEnd -= 1;
      }
 
