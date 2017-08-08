@@ -142,6 +142,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
     y_data = truncateData(y_data, startDate, endDate);
     temp_x_data = []
     x_data.forEach( function(d) {
+      console.log(d)
       truncX = truncateData(d, startDate, endDate)
       temp_x_data.push(truncX);
     });
