@@ -247,6 +247,8 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
    // Truncate the data to match the given dates
    function truncateData(data, startDate, endDate) {
 
+     bisectByDate = d3.bisector(function(d) { return d.history_date; }).right;
+
      console.log(bisectByDate(data, Date.parse(startDate)));
 
      console.log(data, startDate, endDate);
