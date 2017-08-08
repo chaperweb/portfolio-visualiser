@@ -265,7 +265,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      var lastValue = data[sliceEnd].value
 
      var truncData = data.slice(sliceStart, sliceEnd)
-     console.log(truncData)
+     console.log(sliceStart, sliceEnd, truncData)
 
      truncData[0].history_date = startDate;
 
