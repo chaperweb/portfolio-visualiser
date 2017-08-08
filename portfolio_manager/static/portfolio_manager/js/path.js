@@ -140,11 +140,14 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
   if (endDate != endDefault || startDate != startDefault) {
     y_data = truncateData(y_data, startDate, endDate);
+
     temp_x_data = []
     x_data.forEach( function(d) {
-      console.log(d)
-      truncX = truncateData(d, startDate, endDate)
-      temp_x_data.push(truncX);
+      truncX = truncateData(d.data, startDate, endDate)
+      temp_x_data.push({
+        "dimension_name": d.dimension_name,
+        "data": truncX
+      });
     });
     x_data = temp_x_data
   }
