@@ -140,6 +140,12 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
   if (endDate != endDefault || startDate != startDefault) {
     y_data = truncateData(y_data, startDate, endDate);
+    temp_x_data = []
+    x_data.forEach( function(d) {
+      truncX = truncateData(d, startDate, endDate)
+      temp_x_data.push(truncX);
+    });
+    x_data = temp_x_data
   }
 
   // height of the colored x-axis area and maximum amount of x-axis
@@ -265,7 +271,6 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      var lastValue = data[sliceEnd].value
 
      var truncData = data.slice(sliceStart, sliceEnd)
-     console.log(sliceStart, sliceEnd, truncData)
 
      truncData[0].history_date = startDate;
 
