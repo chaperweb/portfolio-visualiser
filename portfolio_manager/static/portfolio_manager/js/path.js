@@ -246,6 +246,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
    // Truncate the data to match the given dates
    function truncateData(data, startDate, endDate) {
+     console.log(data, startDate, endDate);
      var sliceStart = 0,
          sliceEnd = data.length-1;
 
