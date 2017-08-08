@@ -108,3 +108,4 @@ node_modules/
 xmlrunner/
 junit/
 service_account.json
+authhelper.py

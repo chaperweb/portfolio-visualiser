@@ -62,6 +62,9 @@ urlpatterns = [
     url(r'^snapshots(/(?P<vis_type>[A-Za-z]+))?(/(?P<snapshot_id>[0-9]+))?$', views.snapshots, name='snapshots'),
     url(r'^create_snapshot$', views.create_snapshot, name='create_snapshot'),
     url(r"^json$", views.json, name='json'),
+    url(r'^testhome$', views.testhome, name='testhome'),
+    url(r'^gettoken/$', views.gettoken, name='gettoken'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
+
 ]

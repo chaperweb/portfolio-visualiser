@@ -28,12 +28,13 @@ from collections import defaultdict
 from dateutil.parser import parse
 
 import django.forms
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login,logout
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 
 from portfolio_manager.models import *
 from portfolio_manager.forms import *
@@ -42,6 +43,8 @@ from portfolio_manager.serializers import ProjectSerializer, \
                                           PersonSerializer, \
                                           ProjectNameIdSerializer
 from portfolio_manager.importer import from_google_sheet
+from portfolio_manager.authhelper import get_signin_url, get_token_from_code
+from portfolio_manager.outlookservice import get_me
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -68,6 +71,24 @@ def is_int(s):
         return True
     except ValueError:
         return False
+
+
+def testhome(request):
+    redirect_uri = request.build_absolute_uri(reverse('portfolio_manager:gettoken'))
+    sign_in_url = get_signin_url(redirect_uri)
+    return HttpResponse('<a href="' + sign_in_url +'">Click here to sign in and view your mail</a>')
+
+
+def gettoken(request):
+    auth_code = request.GET['code']
+    redirect_uri = request.build_absolute_uri(reverse('portfolio_manager:gettoken'))
+    token = get_token_from_code(auth_code, redirect_uri)
+    access_token = token['access_token']
+    user = get_me(access_token)
+
+    request.session['access_token'] = access_token
+    request.session['user_email'] = user['mail']
+    return HttpResponse('User Email: {0}, Access token: {1}'.format(user['mail'], access_token))
 
 
 @login_required
