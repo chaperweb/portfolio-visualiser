@@ -242,10 +242,13 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      d3.select("#"+String(id)).style("opacity", 1);
    };
 
-   console.log(bisectByDate(data, Date.parse(startDate)));
+
 
    // Truncate the data to match the given dates
    function truncateData(data, startDate, endDate) {
+
+     console.log(bisectByDate(data, Date.parse(startDate)));
+
      console.log(data, startDate, endDate);
      var sliceStart = 0,
          sliceEnd = data.length-1;
