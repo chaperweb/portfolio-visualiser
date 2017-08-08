@@ -230,7 +230,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
            .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
            .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
      }
-   }
+   };
 
    function showWholeLabel(id) {
      d3.select("#"+String(id)+"Hover").style("opacity", 1);
@@ -241,6 +241,8 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      d3.select("#"+String(id)+"Hover").style("opacity", 0);
      d3.select("#"+String(id)).style("opacity", 1);
    };
+
+   console.log(bisectByDate(data, Date.parse(startDate)););
 
    // Truncate the data to match the given dates
    function truncateData(data, startDate, endDate) {
@@ -269,7 +271,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      data.push(pathEnd);
 
      return data;
-   }
+   };
 
 
   // Generates the colored x-axes under the graph
