@@ -186,10 +186,10 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
              .tickFormat(ddmmyy));
 
   // Y-axis
-  svg.append("g")
-     .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
-     .attr("id", "y-axis")
-     .call(d3.axisLeft(yScale));
+  var yAxis = svg.append("g")
+                 .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
+                 .attr("id", "y-axis")
+                 .call(d3.axisLeft(yScale));
 
   // Y-axis label
   svg.append("text")
