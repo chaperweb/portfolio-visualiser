@@ -195,11 +195,11 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
 
-  // If the given dates are invalid, asks for valid ones   
+  // If the given dates are invalid, asks for valid ones
   if (endDate <= startDate) {
     svg.append("text")
        .attr("id", "pathDateError")
-       .attr("transform", "translate("+pathTransformX + (axisLengthX / 2)+","+pathTransformY + (axisLengthY / 2)+")")
+       .attr("transform", "translate("+(pathTransformX + (axisLengthX / 2))+","+(pathTransformY + (axisLengthY / 2))+")")
        .text("Please check the given dates");
 
        return;
