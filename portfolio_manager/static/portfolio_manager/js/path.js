@@ -228,11 +228,9 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
     yScaleMax = d3.max(y_data, function(d){return parseFloat(d.value)})
 
-    yScale = d3.scaleLinear()
-          .domain([0, (yScaleMax * 1.05)])
-          .range([axisLengthY,0]);
+    yScale.domain([0, (yScaleMax * 1.05)]);
 
-    svg.select("g #y-axis").call(yAxis);
+    svg.select("g #y-axis").transition().call(yAxis);
   }
 
 
@@ -301,7 +299,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      var lastValue = data[sliceEnd].value
 
      var truncData = data.slice(sliceStart, sliceEnd)
-     console.log(yAxis.domain, data, sliceStart, sliceEnd, truncData)
+     console.log(yAxis.domain(), data, sliceStart, sliceEnd, truncData)
 
      if (truncData.length === 0) {
        var pathStart = {
