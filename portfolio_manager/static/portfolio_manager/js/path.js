@@ -164,11 +164,13 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
               .attr("class", "svg-content");
 
   // The scales of the axis
+  var yScaleMax = d3.max(y_data, function(d){return parseFloat(d.value)})
+
   var xScale = d3.scaleTime()
             .domain([startDate, endDate])
             .range([0,axisLengthX]),
       yScale = d3.scaleLinear()
-            .domain([0, d3.max(y_data, function(d){return parseFloat(d.value)})])
+            .domain([0, (yScaleMax * 1.05)])
             .range([axisLengthY,0]);
 
   var valueLine = d3.line()
@@ -221,6 +223,10 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
       });
     });
     x_data = temp_x_data
+
+    yScaleMax = d3.max(y_data, function(d){return parseFloat(d.value)})
+
+    yScale.domain = [0, (yScaleMax * 1.05)]
   }
 
 
