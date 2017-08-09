@@ -228,9 +228,11 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
     yScaleMax = d3.max(y_data, function(d){return parseFloat(d.value)})
 
-    yScale.domain = [0, (yScaleMax * 1.05)]
+    yScale = d3.scaleLinear()
+          .domain([0, (yScaleMax * 1.05)])
+          .range([axisLengthY,0]);
 
-    svg.select("#y-axis").call(yAxis);
+    svg.select("g #y-axis").call(yAxis);
   }
 
 
