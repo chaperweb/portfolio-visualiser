@@ -138,24 +138,6 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
     $('#end-date-selector').val(ddmmyy(endDate));
   }
 
-  /* If the selected dates are not the default dates,
-   * trucate the data to given period.
-   * With whole dataset the graph will overflow the given area.
-  */
-  if (endDate != endDefault || startDate != startDefault) {
-    y_data = truncateData(y_data, startDate, endDate);
-
-    temp_x_data = []
-    x_data.forEach( function(d) {
-      truncX = truncateData(d.data, startDate, endDate)
-      temp_x_data.push({
-        "dimension_name": d.dimension_name,
-        "data": truncX
-      });
-    });
-    x_data = temp_x_data
-  }
-
   // height of the colored x-axis area and maximum amount of x-axis
   var xAxesHeight = 20;
   var xAxesMaxOptions = 5;
@@ -213,6 +195,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
 
+  // If the given dates are invalid, asks for valid ones   
   if (endDate <= startDate) {
     svg.append("text")
        .attr("id", "pathDateError")
@@ -220,6 +203,24 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
        .text("Please check the given dates");
 
        return;
+  }
+
+  /* If the selected dates are not the default dates,
+   * trucate the data to given period.
+   * With whole dataset the graph will overflow the given area.
+  */
+  if (endDate != endDefault || startDate != startDefault) {
+    y_data = truncateData(y_data, startDate, endDate);
+
+    temp_x_data = []
+    x_data.forEach( function(d) {
+      truncX = truncateData(d.data, startDate, endDate)
+      temp_x_data.push({
+        "dimension_name": d.dimension_name,
+        "data": truncX
+      });
+    });
+    x_data = temp_x_data
   }
 
 
