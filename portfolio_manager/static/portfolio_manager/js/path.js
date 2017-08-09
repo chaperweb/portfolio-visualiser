@@ -299,7 +299,6 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      var lastValue = data[sliceEnd].value
 
      var truncData = data.slice(sliceStart, sliceEnd)
-     console.log(yAxis.domain(), data, sliceStart, sliceEnd, truncData)
 
      if (truncData.length === 0) {
        var pathStart = {
