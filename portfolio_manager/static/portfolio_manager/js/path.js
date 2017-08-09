@@ -230,7 +230,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
     yScale.domain([0, (yScaleMax * 1.05)]);
 
-    svg.select("#y-axis").call(yAxis);
+    d3.select("body").transition().select("#y-axis").call(yAxis);
   }
 
 
