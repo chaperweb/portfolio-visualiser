@@ -186,10 +186,12 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
              .tickFormat(ddmmyy));
 
   // Y-axis
-  var yAxis = svg.append("g")
-                 .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
-                 .attr("id", "y-axis")
-                 .call(d3.axisLeft(yScale));
+  var yAxis = d3.axisLeft(yScale)
+
+  svg.append("g")
+     .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
+     .attr("id", "y-axis")
+     .call(yAxis);
 
   // Y-axis label
   svg.append("text")
@@ -228,7 +230,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
     yScale.domain = [0, (yScaleMax * 1.05)]
 
-    svg.call(yAxis);
+    svg.select("#y-axis").call(yAxis);
   }
 
 
@@ -297,7 +299,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      var lastValue = data[sliceEnd].value
 
      var truncData = data.slice(sliceStart, sliceEnd)
-     console.log(data, sliceStart, sliceEnd, truncData)
+     console.log(yAxis.domain, data, sliceStart, sliceEnd, truncData)
 
      if (truncData.length === 0) {
        var pathStart = {
