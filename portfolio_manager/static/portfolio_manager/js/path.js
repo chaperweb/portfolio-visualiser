@@ -194,15 +194,6 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
                       .x( function(d) { return xScale(d.history_date); } )
                       .y( function(d) { return yScale(d.value); } );
 
-  // The path
-  svg.append("path")
-      .attr("class", "line")
-      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
-      .attr("height", height)
-      .attr("d", valueLine(y_data));
-
-  generate_x_axes(x_data);
-
   // Time-axis underneath the x-axis
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
@@ -221,6 +212,25 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      .attr("id", "yAxisLabel")
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
+
+  if (endDate <= startDate) {
+    svg.append("text")
+       .attr("id", "pathDateError")
+       .attr("transform", "translate("+pathTransformX + (axisLengthX / 2)+","+pathTransformY + (axisLengthY / 2)+")")
+       .text("Please check the given dates");
+
+       return;
+  }
+
+
+  // The path
+  svg.append("path")
+     .attr("class", "line")
+     .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+     .attr("height", height)
+     .attr("d", valueLine(y_data));
+
+  generate_x_axes(x_data);
 
 
    // div element for the x-axis values
