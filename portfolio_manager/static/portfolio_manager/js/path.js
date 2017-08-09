@@ -226,11 +226,16 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
     });
     x_data = temp_x_data
 
+    // Update the y-axis to match the current data
     yScaleMax = d3.max(y_data, function(d){return parseFloat(d.value)})
 
     yScale.domain([0, (yScaleMax * 1.05)]);
 
-    d3.select("body").transition().select("#y-axis").call(yAxis);
+    d3.select("body")
+      .transition()
+      .duration(750)
+      .select("#y-axis")
+      .call(yAxis);
   }
 
 
