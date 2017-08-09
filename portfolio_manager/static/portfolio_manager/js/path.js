@@ -264,7 +264,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      bisectByDate = d3.bisector(function(d) { return d.history_date; }).right;
 
      var sliceStart = 0,
-         sliceEnd = data.length-1;
+         sliceEnd = data.length;
 
      if (startDate != startDefault) {
        sliceStart = bisectByDate(data, startDate);
@@ -273,13 +273,19 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
      if (endDate != endDefault) {
        sliceEnd = bisectByDate(data, endDate);
-       sliceEnd -= 1;
      }
 
      var lastValue = data[sliceEnd].value
 
      var truncData = data.slice(sliceStart, sliceEnd)
      console.log(data, sliceStart, sliceEnd, truncData)
+
+     if (truncData.length === 0) {
+       var pathStart = {
+         "history_date": startDate,
+         "value": data[sliceStart].value
+       };
+     }
 
      truncData[0].history_date = startDate;
 
