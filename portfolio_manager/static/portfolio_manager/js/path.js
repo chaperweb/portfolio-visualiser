@@ -225,7 +225,7 @@ function generate_path_svg(target, data_id_array) {
    var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
 
    function moveFocus(svg) {
-     console.log(this, svg, d3.mouse(svg));
+     console.log(this, svg);
      focus.select('circle').attr("cx", d3.mouse(svg)[0])
                            .attr("cy", d3.mouse(svg)[1]);
 
