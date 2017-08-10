@@ -165,9 +165,9 @@ function generate_path_svg(target, data_id_array) {
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
       .attr("height", height)
       .attr("d", valueLine(y_data))
-      .on("mouseenter", focus.style("visibility", "visible");)
+      .on("mouseenter", focus.style("visibility", "visible"))
       .on("mousemove", moveFocus(this);)
-      .on("mouseout", focus.style("visibility", "hidden"););
+      .on("mouseout", focus.style("visibility", "hidden"));
 
   generate_x_axes(x_data);
 
@@ -193,24 +193,26 @@ function generate_path_svg(target, data_id_array) {
 
   var focus = svg.append('g')
                  .attr('class', 'focus')
-                 .append('circle')
-                 .attr("id", "focus")
-                 .attr('r', 10)
-                 .attr("cx", 50)
-                 .attr("cy", 50)
-                 .style("visibility", "hidden")
-                 .style("pointer-events", "none")
-                 .style("fill", "none")
-                 .style("stroke", "black");
 
-  var mouseLine = svg.append("line")
-                     .style("stroke-width", "1px")
-                     .style("stroke", "red")
-                     .style("stroke-dasharray", "3 3")
-                     .attr("x1",0)
-                     .attr("y1", 0)
-                     .attr("x2", 0)
-                     .attr("y2", 100);
+  focus.append('circle')
+       .attr("class", "focus")
+       .attr('r', 10)
+       .attr("cx", 50)
+       .attr("cy", 50)
+       .style("visibility", "hidden")
+       .style("pointer-events", "none")
+       .style("fill", "none")
+       .style("stroke", "black");
+
+  focus.append("line")
+       .attr("class", "focus")
+       .style("stroke-width", "1px")
+       .style("stroke", "red")
+       .style("stroke-dasharray", "3 3")
+       .attr("x1",0)
+       .attr("y1", 0)
+       .attr("x2", 0)
+       .attr("y2", 100);
 
    // div element for the x-axis values
    var div = d3.select("#"+target).append("div")
@@ -224,11 +226,12 @@ function generate_path_svg(target, data_id_array) {
    var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
 
    function moveFocus(element) {
-     focus.attr("cx", d3.mouse(element)[0]).attr("cy", d3.mouse(element)[1]);
-     mouseLine.attr("x1", d3.mouse(element)[0])
-               .attr("y1", d3.mouse(element)[1])
-               .attr("x2", d3.mouse(element)[0])
-               .attr("y2", height);
+     focus.select('circle').attr("cx", d3.mouse(element)[0]).attr("cy", d3.mouse(element)[1]);
+
+     focus.select('line').attr("x1", d3.mouse(element)[0])
+                         .attr("y1", d3.mouse(element)[1])
+                         .attr("x2", d3.mouse(element)[0])
+                         .attr("y2", height);
    };
 
    // Updates the div element value and relocates it when needed.
