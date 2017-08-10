@@ -167,10 +167,11 @@ function generate_path_svg(target, data_id_array) {
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
       .attr("height", height)
       .attr("d", valueLine(y_data))
+      /*
       .on("mouseenter", focus.selectAll(".focus").style("visibility", "visible"))
       .on("mousemove", function() {moveFocus(d3.select("svg"))})
       .on("mouseout", focus.selectAll(".focus").style("visibility", "hidden"));
-
+*/
   generate_x_axes(x_data);
 
   // Time-axis underneath the x-axis
@@ -331,9 +332,13 @@ function generate_path_svg(target, data_id_array) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}))
+        .on("mouseenter", focus.selectAll(".focus").style("visibility", "visible"))
+        .on("mousemove", function() {moveFocus(d3.select("svg"))})
+        .on("mouseout", focus.selectAll(".focus").style("visibility", "hidden"));
+        /*
         .on("mousemove", function(d){ updateDiv(d, this);})
         .on("mouseout", function(){return div.style("opacity", 0);});
-
+*/
     /*
     * If the label doesn't fit to left margin the overflowing text will be faded
     */
