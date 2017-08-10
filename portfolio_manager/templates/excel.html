@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Your Excels</h1>
+<table class="table">
+{% for row in sheets %}
+<tr>
+  {% for cell in row %}
+    <td>{{ cell }}</td>
+  {% endfor %}
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
