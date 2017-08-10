@@ -158,7 +158,9 @@ function generate_path_svg(target, data_id_array) {
                       .curve(d3.curveStepAfter)
                       .x( function(d) { return xScale(d.history_date); } )
                       .y( function(d) { return yScale(d.value); } );
-
+                      
+  var focus = svg.append('g')
+                 .attr('class', 'focus')
   // The path
   svg.append("path")
       .attr("class", "line")
@@ -190,9 +192,6 @@ function generate_path_svg(target, data_id_array) {
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
 
-
-  var focus = svg.append('g')
-                 .attr('class', 'focus')
 
   focus.append('circle')
        .attr("class", "focus")
