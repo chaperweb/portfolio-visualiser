@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <button onclick="window.history.back();" class="btn">
+    <span class="glyphicon glyphicon-arrow-left"></span>
+  </button>
+  <h1>DRIVE</h1>
+  {% for folder in folders %}
+    <a href="{% url 'drive' %}?item_id={{ folder.id }}" class="col-lg-2 col-lg-offset-1">FOLDER: {{ folder.name }}</a>
+  {% endfor %}
+  {% for excel in excels %}
+    <a href="{% url 'excel' %}?item_id={{ excel.id }}" class="col-lg-2 col-lg-offset-1">EXCEL: {{ excel.name }}</a>
+  {% endfor %}
+
+  {{ jsondata }}
+{% endblock %}

@@ -46,7 +46,9 @@ from portfolio_manager.serializers import ProjectSerializer, \
 from portfolio_manager.importer import from_google_sheet
 from portfolio_manager.authhelper import get_signin_url, get_token_from_code, \
                                          get_access_token
-from portfolio_manager.outlookservice import get_me, get_my_sheets
+from portfolio_manager.outlookservice import get_me, \
+                                             get_my_sheet, \
+                                             get_my_drive
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -105,15 +107,49 @@ def gettoken(request):
 
 def excel(request):
     try:
+        excel_id = request.GET['item_id']
+    except KeyError:
+        return redirect('drive')
+
+    try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.session['user_email']
+        sheets = get_my_sheet(access_token, user_email, excel_id)
+        context = {
+            'sheets': sheets
+        }
+        return render(request, 'excel.html', context)
+    except KeyError:
+        return redirect('testhome')
+
+
+def drive(request):
+    try:
+        path = 'items/{}/children'.format(request.GET['item_id'])
+        print(request.GET['item_id'])
+    except:
+        path = 'root/children'
+
+    try:
+        access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
+        user_email = request.session['user_email']
+        drive = get_my_drive(access_token, user_email, path)
+        folders = []
+        excels = []
+        for item in drive:
+            if 'folder' in item:
+                folders.append(item)
+            elif 'file' in item and item['name'].endswith('.xlsx'):
+                excels.append(item)
+
+        context = {
+            'folders': folders,
+            'excels': excels
+        }
+        return render(request, 'drive.html', context)
+
     except KeyError:  # There is no access_token
         return redirect('testhome')
-    sheets = get_my_sheets(access_token, user_email)
-    context = {
-        'sheets': sheets
-    }
-    return render(request, 'excel.html', context)
 
 
 @login_required

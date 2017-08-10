@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<button onclick="window.history.back();" class="btn">
+  <span class="glyphicon glyphicon-arrow-left"></span>
+</button>
 <h1>Your Excels</h1>
 <table class="table">
 {% for row in sheets %}

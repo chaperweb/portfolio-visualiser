@@ -48,10 +48,9 @@ def get_me(access_token):
     else:
         return '{0}: {1}'.format(r.status_code, r.text)
 
-# ATM this gets the sheet and loads it into the database
-# REQUIRES THERE TO BE ONLY ONE SHEET IN THE ACCOUNT AND SHEET NAMED "Sheet1"
-def get_my_sheets(access_token, user_email):
-    url = graph_endpoint.format('/me/drive/root/children')
+
+def get_my_drive(access_token, user_email, path):
+    url = graph_endpoint.format('/me/drive/{}'.format(path))
     r = make_api_call(
         'GET',
         url,
@@ -59,18 +58,18 @@ def get_my_sheets(access_token, user_email):
         user_email
     )
     if (r.status_code == requests.codes.ok):
-        for val in r.json()['value']:
-            return get_used_range(access_token, user_email, val['id'])
+        return r.json()['value']
     else:
         return "{0}: {1}".format(r.status_code, r.text)
 
+
 # Gets the used range and loads it from the file with the given file id
 # REQUIRES SHEETNAME TO BE "Sheet1"
-def get_used_range(access_token, user_email, file_id):
+def get_my_sheet(access_token, user_email, file_id):
     url = graph_endpoint.format('/me/drive/items/{}/workbook/worksheets/Sheet1/UsedRange'.format(file_id))
     r = make_api_call('GET', url, access_token, user_email)
     if (r.status_code == requests.codes.ok):
-        from_data_array(r.json()['formulas'])
+        # from_data_array(r.json()['formulas'])
         return r.json()['formulas']
     else:
         return "{0}: {1}".format(r.status_code, r.text)
