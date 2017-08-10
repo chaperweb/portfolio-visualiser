@@ -158,7 +158,7 @@ function generate_path_svg(target, data_id_array) {
                       .curve(d3.curveStepAfter)
                       .x( function(d) { return xScale(d.history_date); } )
                       .y( function(d) { return yScale(d.value); } );
-                      
+
   var focus = svg.append('g')
                  .attr('class', 'focus')
   // The path
@@ -224,12 +224,12 @@ function generate_path_svg(target, data_id_array) {
    var divValueId = Infinity;
    var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
 
-   function moveFocus(element) {
-     focus.select('circle').attr("cx", d3.mouse(element)[0]).attr("cy", d3.mouse(element)[1]);
+   function moveFocus() {
+     focus.select('circle').attr("cx", d3.mouse(svg)[0]).attr("cy", d3.mouse(svg)[1]);
 
-     focus.select('line').attr("x1", d3.mouse(element)[0])
-                         .attr("y1", d3.mouse(element)[1])
-                         .attr("x2", d3.mouse(element)[0])
+     focus.select('line').attr("x1", d3.mouse(svg)[0])
+                         .attr("y1", d3.mouse(svg)[1])
+                         .attr("x2", d3.mouse(svg)[0])
                          .attr("y2", height);
    };
 
