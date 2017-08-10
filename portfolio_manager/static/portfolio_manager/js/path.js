@@ -168,7 +168,7 @@ function generate_path_svg(target, data_id_array) {
       .attr("height", height)
       .attr("d", valueLine(y_data))
       .on("mouseenter", focus.selectAll(".focus").style("visibility", "visible"))
-      .on("mousemove", moveFocus(this))
+      .on("mousemove", moveFocus())
       .on("mouseout", focus.selectAll(".focus").style("visibility", "hidden"));
 
   generate_x_axes(x_data);
@@ -225,7 +225,9 @@ function generate_path_svg(target, data_id_array) {
    var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
 
    function moveFocus() {
-     focus.select('circle').attr("cx", d3.mouse(svg)[0]).attr("cy", d3.mouse(svg)[1]);
+     console.log(this, svg);
+     focus.select('circle').attr("cx", d3.mouse(svg)[0])
+                           .attr("cy", d3.mouse(svg)[1]);
 
      focus.select('line').attr("x1", d3.mouse(svg)[0])
                          .attr("y1", d3.mouse(svg)[1])
