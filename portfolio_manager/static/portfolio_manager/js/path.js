@@ -168,7 +168,7 @@ function generate_path_svg(target, data_id_array) {
       .attr("height", height)
       .attr("d", valueLine(y_data))
       .on("mouseenter", focus.selectAll(".focus").style("visibility", "visible"))
-      .on("mousemove", function() {moveFocus(d3.select("svg")})
+      .on("mousemove", function() {moveFocus(d3.select("svg"))})
       .on("mouseout", focus.selectAll(".focus").style("visibility", "hidden"));
 
   generate_x_axes(x_data);
