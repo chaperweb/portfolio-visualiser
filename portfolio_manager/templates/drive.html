@@ -1,32 +1,8 @@
 {% extends "base.html" %}
 
 {% block javascript %}
-<script>
-  $(function(){
-    $("#backbtn").click(function(){
-      var url = $(this).data('url'),
-          parents = JSON.parse($(this).data('parents').replace(/'/g, '"')),
-          newItem = parents.shift();
-
-      if(parents.length > 0) {
-        var fullUrl = url + '?item_id='+newItem+'&parents=' + JSON.stringify(parents);
-      }
-      else {
-        var fullUrl = url + '?item_id='+newItem
-      }
-      window.location.assign(fullUrl);
-    });
-    $(".itembtn").click(function(){
-      var url = $(this).data('url'),
-          parents = JSON.parse($(this).data('parents').replace(/'/g, '"')),
-          itemid = $(this).data('itemid'),
-          current = $(this).data('current');
-      parents.unshift(current);
-      var fullUrl = url + '?item_id='+itemid+'&parents=' + JSON.stringify(parents);
-      window.location.assign(fullUrl);
-    });
-  });
-</script>
+{% load static %}
+<script src="{% static 'portfolio_manager/js/microsoft.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -43,10 +19,8 @@
     </button>
   {% endfor %}
   {% for excel in excels %}
-    <button data-url="{% url 'drive' %}" data-current="{{ item_id }}" data-itemid="{{ excel.id }}" data-parents="{{ parents }}" class="itembtn col-lg-2 col-lg-offset-1">
+    <button data-url="{% url 'excel' %}" data-current="{{ item_id }}" data-itemid="{{ excel.id }}" data-parents="{{ parents }}" class="itembtn col-lg-2 col-lg-offset-1">
       EXCEL: {{ excel.name }}
     </button>
   {% endfor %}
-
-  {{ parents }}
 {% endblock %}
