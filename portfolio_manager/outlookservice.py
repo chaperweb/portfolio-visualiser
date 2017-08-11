@@ -36,6 +36,26 @@ def make_api_call(method, url, token, user_email, payload=None, parameters=None)
 
     return response
 
+
+def get_parents(access_token, user_email, item_id, parents):
+    if item_id == '':   # Search is from roo
+        return parents
+    else:
+        url = graph_endpoint.format('/me/drive/items/{}'.format(item_id))
+    r = make_api_call(
+        'GET',
+        url,
+        access_token,
+        user_email
+    )
+    jsondata = r.json()
+    try:
+        parents.append(jsondata['parentReference']['id'])
+        return get_parents(access_token, user_email, jsondata['parentReference']['id'], parents)
+    except KeyError:    # Root
+        return parents
+
+
 # Gets the microsoft user via API
 def get_me(access_token):
     get_me_url = graph_endpoint.format('/me')
@@ -49,7 +69,7 @@ def get_me(access_token):
         return '{0}: {1}'.format(r.status_code, r.text)
 
 
-def get_my_drive(access_token, user_email, path):
+def get_my_drive(access_token, user_email, path, item_id):
     url = graph_endpoint.format('/me/drive/{}'.format(path))
     r = make_api_call(
         'GET',
@@ -58,7 +78,11 @@ def get_my_drive(access_token, user_email, path):
         user_email
     )
     if (r.status_code == requests.codes.ok):
-        return r.json()['value']
+        parents = get_parents(access_token, user_email, item_id, [])
+        return {
+            'value': r.json()['value'],
+            'parents': parents
+        }
     else:
         return "{0}: {1}".format(r.status_code, r.text)
 

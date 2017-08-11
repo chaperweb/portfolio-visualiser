@@ -1,16 +1,52 @@
 {% extends "base.html" %}
 
+{% block javascript %}
+<script>
+  $(function(){
+    $("#backbtn").click(function(){
+      var url = $(this).data('url'),
+          parents = JSON.parse($(this).data('parents').replace(/'/g, '"')),
+          newItem = parents.shift();
+
+      if(parents.length > 0) {
+        var fullUrl = url + '?item_id='+newItem+'&parents=' + JSON.stringify(parents);
+      }
+      else {
+        var fullUrl = url + '?item_id='+newItem
+      }
+      window.location.assign(fullUrl);
+    });
+    $(".itembtn").click(function(){
+      var url = $(this).data('url'),
+          parents = JSON.parse($(this).data('parents').replace(/'/g, '"')),
+          itemid = $(this).data('itemid'),
+          current = $(this).data('current');
+      parents.unshift(current);
+      var fullUrl = url + '?item_id='+itemid+'&parents=' + JSON.stringify(parents);
+      window.location.assign(fullUrl);
+    });
+  });
+</script>
+{% endblock %}
+
 {% block content %}
-  <button onclick="window.history.back();" class="btn">
-    <span class="glyphicon glyphicon-arrow-left"></span>
-  </button>
+  {% if parents|length > 0 %}
+    <button id="backbtn" class="btn" data-url="{% url 'drive' %}" data-parents="{{ parents }}">
+      <span class="glyphicon glyphicon-arrow-left"></span>
+    </button>
+  {% endif %}
+
   <h1>DRIVE</h1>
   {% for folder in folders %}
-    <a href="{% url 'drive' %}?item_id={{ folder.id }}" class="col-lg-2 col-lg-offset-1">FOLDER: {{ folder.name }}</a>
+    <button data-url="{% url 'drive' %}" data-current="{{ item_id }}" data-itemid="{{ folder.id }}" data-parents="{{ parents }}" class="itembtn col-lg-2 col-lg-offset-1">
+      FOLDER: {{ folder.name }}
+    </button>
   {% endfor %}
   {% for excel in excels %}
-    <a href="{% url 'excel' %}?item_id={{ excel.id }}" class="col-lg-2 col-lg-offset-1">EXCEL: {{ excel.name }}</a>
+    <button data-url="{% url 'drive' %}" data-current="{{ item_id }}" data-itemid="{{ excel.id }}" data-parents="{{ parents }}" class="itembtn col-lg-2 col-lg-offset-1">
+      EXCEL: {{ excel.name }}
+    </button>
   {% endfor %}
 
-  {{ jsondata }}
+  {{ parents }}
 {% endblock %}

@@ -125,30 +125,33 @@ def excel(request):
 
 def drive(request):
     try:
-        path = 'items/{}/children'.format(request.GET['item_id'])
-        print(request.GET['item_id'])
-    except:
+        item_id = request.GET['item_id']
+        path = 'items/{}/children'.format(item_id)
+    except KeyError:
+        item_id = ''
         path = 'root/children'
 
     try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.session['user_email']
-        drive = get_my_drive(access_token, user_email, path)
+        drive = get_my_drive(access_token, user_email, path, item_id)
         folders = []
         excels = []
-        for item in drive:
+        for item in drive['value']:
             if 'folder' in item:
                 folders.append(item)
             elif 'file' in item and item['name'].endswith('.xlsx'):
                 excels.append(item)
-
         context = {
             'folders': folders,
-            'excels': excels
+            'excels': excels,
+            'item_id': item_id,
+            'parents': drive['parents']
         }
         return render(request, 'drive.html', context)
 
-    except KeyError:  # There is no access_token
+    except KeyError as e:  # There is no access_token
+        print(e)
         return redirect('testhome')
 
 
