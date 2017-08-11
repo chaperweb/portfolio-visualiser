@@ -166,12 +166,10 @@ function generate_path_svg(target, data_id_array) {
       .attr("class", "line")
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
       .attr("height", height)
-      .attr("d", valueLine(y_data))
-      /*
-      .on("mouseenter", focus.selectAll(".focus").style("visibility", "visible"))
-      .on("mousemove", function() {moveFocus(d3.select("svg"))})
-      .on("mouseout", focus.selectAll(".focus").style("visibility", "hidden"));
-*/
+      .attr("d", valueLine(y_data))        
+	.on("mousemove", function(d){ updateDiv(y_data, this);})
+        .on("mouseout", function(){return div.style("opacity", 0);});
+
   generate_x_axes(x_data);
 
   // Time-axis underneath the x-axis
@@ -199,7 +197,7 @@ function generate_path_svg(target, data_id_array) {
        .attr('r', 10)
        .attr("cx", 50)
        .attr("cy", 50)
-       .style("visibility", "hidden")
+       //.style("visibility", "hidden")
        .style("pointer-events", "none")
        .style("fill", "none")
        .style("stroke", "black");
@@ -209,6 +207,7 @@ function generate_path_svg(target, data_id_array) {
        .style("stroke-width", "1px")
        .style("stroke", "red")
        .style("stroke-dasharray", "3 3")
+       //.style("visibility", "hidden")
        .attr("x1",0)
        .attr("y1", 0)
        .attr("x2", 0)
@@ -226,14 +225,8 @@ function generate_path_svg(target, data_id_array) {
    var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
 
    function moveFocus(svg) {
-     console.log(this, svg);
-     focus.select('circle').attr("cx", d3.mouse(svg)[0])
-                           .attr("cy", d3.mouse(svg)[1]);
-
-     focus.select('line').attr("x1", d3.mouse(svg)[0])
-                         .attr("y1", d3.mouse(svg)[1])
-                         .attr("x2", d3.mouse(svg)[0])
-                         .attr("y2", height);
+     console.log(svg);
+     
    };
 
    // Updates the div element value and relocates it when needed.
@@ -246,6 +239,17 @@ function generate_path_svg(target, data_id_array) {
            .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
            .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
      }
+
+	//console.log(d3.mouse(element.parentElement));
+	//console.log(d3.select());
+
+     focus.select('circle').attr("cx", d3.mouse(element)[0] + margin.left)
+                           .attr("cy", d3.mouse(element)[1] + margin.top);
+
+     focus.select('line').attr("x1", d3.mouse(element)[0] + margin.left)
+                         .attr("y1", d3.mouse(element)[1] + margin.top)
+                         .attr("x2", d3.mouse(element)[0] + margin.left)
+                         .attr("y2", (height - ((xAxesMaxOptions - x_data.length) * xAxesHeight)) );
    }
 
    function showWholeLabel(id) {
@@ -332,13 +336,9 @@ function generate_path_svg(target, data_id_array) {
         .attr("d", d3.area().x(function(d) {return xScale(d.history_date)})
                             .y0(function(d) {return rounds * xAxesHeight + 2})
                             .y1(function(d) {return rounds * xAxesHeight + xAxesHeight - 1}))
-        .on("mouseenter", focus.selectAll(".focus").style("visibility", "visible"))
-        .on("mousemove", function() {moveFocus(d3.select("svg"))})
-        .on("mouseout", focus.selectAll(".focus").style("visibility", "hidden"));
-        /*
         .on("mousemove", function(d){ updateDiv(d, this);})
         .on("mouseout", function(){return div.style("opacity", 0);});
-*/
+
     /*
     * If the label doesn't fit to left margin the overflowing text will be faded
     */
