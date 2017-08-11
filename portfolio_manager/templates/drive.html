@@ -1,26 +1,42 @@
 {% extends "base.html" %}
 
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'portfolio_manager/css/microsoft.css' %}" />
+{% endblock %}
+
 {% block javascript %}
 {% load static %}
 <script src="{% static 'portfolio_manager/js/microsoft.js' %}"></script>
 {% endblock %}
 
 {% block content %}
-  {% if parents|length > 0 %}
-    <button id="backbtn" class="btn" data-url="{% url 'drive' %}" data-parents="{{ parents }}">
-      <span class="glyphicon glyphicon-arrow-left"></span>
-    </button>
-  {% endif %}
+  <div id="drive-container" class="col-lg-6 col-lg-offset-3">
+    <h1 class="row text-center">Your Drive</h1>
 
-  <h1>DRIVE</h1>
-  {% for folder in folders %}
-    <button data-url="{% url 'drive' %}" data-current="{{ item_id }}" data-itemid="{{ folder.id }}" data-parents="{{ parents }}" class="itembtn col-lg-2 col-lg-offset-1">
-      FOLDER: {{ folder.name }}
-    </button>
-  {% endfor %}
-  {% for excel in excels %}
-    <button data-url="{% url 'excel' %}" data-current="{{ item_id }}" data-itemid="{{ excel.id }}" data-parents="{{ parents }}" class="itembtn col-lg-2 col-lg-offset-1">
-      EXCEL: {{ excel.name }}
-    </button>
-  {% endfor %}
+    {% if parents|length > 0 %}
+      <button id="backbtn" data-url="{% url 'drive' %}" data-parents="{{ parents }}">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+      </button>
+    {% endif %}
+
+    <ul class="row list-group" id="filelist">
+      {% for folder in folders %}
+        <li class="list-group-item">
+          <button data-url="{% url 'drive' %}" data-current="{{ item_id }}" data-itemid="{{ folder.id }}" data-parents="{{ parents }}" class="itembtn">
+            <span class="col-xs-1 glyphicon glyphicon-folder-open"></span>
+            {{ folder.name }}
+          </button>
+        </li>
+      {% endfor %}
+      {% for excel in excels %}
+        <li class="list-group-item">
+          <button data-url="{% url 'excel' %}" data-current="{{ item_id }}" data-itemid="{{ excel.id }}" data-parents="{{ parents }}" class="itembtn">
+            <span class="col-xs-1 glyphicon glyphicon-list-alt"></span>
+            {{ excel.name }}
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 {% endblock %}

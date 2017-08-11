@@ -1,0 +1,32 @@
+.list-group-item {
+  padding: 0;
+}
+.list-group-item:hover {
+  background-color: #dee0e1;
+}
+
+.list-group-item > button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background-color: inherit;
+  font-size: 120%;
+  padding: 10px 15px;
+}
+.list-group-item > button:focus {
+  outline: 0;
+  background-color: #dee0e1;
+}
+
+#backbtn {
+  margin: 10px 0;
+  font-size: 120%;
+  border: 2px solid #000000;
+  border-radius: 100%;
+  background-color: inherit;
+}
+#backbtn:focus,
+#backbtn:hover {
+  outline: 0;
+  background-color: #dee0e1;
+}
