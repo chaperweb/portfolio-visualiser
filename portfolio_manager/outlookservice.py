@@ -78,10 +78,9 @@ def get_my_drive(access_token, user_email, path, item_id):
         user_email
     )
     if (r.status_code == requests.codes.ok):
-        parents = get_parents(access_token, user_email, item_id, [])
         return {
             'value': r.json()['value'],
-            'parents': parents
+            'parents': get_parents(access_token, user_email, item_id, [])
         }
     else:
         return "{0}: {1}".format(r.status_code, r.text)
@@ -93,7 +92,9 @@ def get_my_sheet(access_token, user_email, file_id):
     url = graph_endpoint.format('/me/drive/items/{}/workbook/worksheets/Sheet1/UsedRange'.format(file_id))
     r = make_api_call('GET', url, access_token, user_email)
     if (r.status_code == requests.codes.ok):
-        # from_data_array(r.json()['formulas'])
-        return r.json()['formulas']
+        return {
+            'value': r.json()['formulas'],
+            'parents': get_parents(access_token, user_email, file_id, [])
+        }
     else:
         return "{0}: {1}".format(r.status_code, r.text)

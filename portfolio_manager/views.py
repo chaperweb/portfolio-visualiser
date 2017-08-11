@@ -116,7 +116,8 @@ def excel(request):
         user_email = request.session['user_email']
         sheets = get_my_sheet(access_token, user_email, excel_id)
         context = {
-            'sheets': sheets
+            'sheets': sheets['value'],
+            'parents': sheets['parents']
         }
         return render(request, 'excel.html', context)
     except KeyError:

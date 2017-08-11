@@ -30,3 +30,7 @@
   outline: 0;
   background-color: #dee0e1;
 }
+
+#excel-wrapper {
+  overflow-x: scroll;
+}
