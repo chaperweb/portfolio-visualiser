@@ -11,33 +11,52 @@
 {% endblock %}
 
 {% block content %}
-  <div id="excel-wrapper" class="col-lg-6 col-lg-offset-2">
-    <table class="table table-bordered">
-      {% for row in sheet %}
-        {% if forloop.counter == 1 %}
-          <tr>
-            {% for cell in row %}
-              <th>{{ cell }}</th>
-            {% endfor %}
-          </tr>
-        {% else %}
-          <tr>
-            {% for cell in row %}
-              <td>{{ cell }}</td>
-            {% endfor %}
-          </tr>
-        {% endif %}
-      {% endfor %}
-    </table>
-  </div>
-  <div id="actions-wrapper" class="col-lg-2 col-lg-offset-1 text-center">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        ACTIONS
-      </div>
-      <div class="panel-body">
-        LOAD
+  {% if excels %} <!-- ALL EXCELS -->
+    <div id="drive-container" class="col-lg-6 col-lg-offset-3">
+      <h1 class="row text-center">Your Excels</h1>
+      <ul class="row list-group" id="filelist">
+        {% for excel in excels %}
+          <li class="list-group-item">
+            <button data-url="{% url 'excel' %}" data-itemid="{{ excel.id }}" class="itembtn">
+              <span class="col-xs-1 glyphicon glyphicon-list-alt"></span>
+              {{ excel.name }}
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% else %} <!-- SINGLE EXCEL -->
+    <div id="excel-wrapper" class="col-lg-6 col-lg-offset-2">
+      <table class="table table-bordered">
+        {% for row in sheet %}
+          {% if forloop.counter == 1 %}
+            <tr>
+              {% for cell in row %}
+                <th>{{ cell }}</th>
+              {% endfor %}
+            </tr>
+          {% else %}
+            <tr>
+              {% for cell in row %}
+                <td>{{ cell }}</td>
+              {% endfor %}
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </table>
+    </div>
+    <div id="actions-wrapper" class="col-lg-2 col-lg-offset-1 text-center">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          ACTIONS
+        </div>
+        <div class="panel-body">
+          <ul class="list-group">
+            <li class="list-group-item">Load this sheet</li>
+            <li class="list-group-item">Export current data to this sheet</li>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
+  {% endif %}
 {% endblock %}

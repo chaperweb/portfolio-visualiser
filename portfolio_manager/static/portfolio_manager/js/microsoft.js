@@ -1,5 +1,7 @@
 $(function(){
   $('.itembtn').click(function(e){
-    window.location.assign($(this).data('url') + '?item_id=' + $(this).data('itemid'));
+    var url = $(this).data('url'),
+        itemid = $(this).data('itemid');
+    window.location.assign(url + '?item_id=' + itemid);
   });
 });

@@ -107,31 +107,20 @@ def gettoken(request):
 
 def excel(request):
     try:
-        excel_id = request.GET['item_id']
-    except KeyError:
-        return redirect('drive')
-
-    try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.session['user_email']
+    except KeyError as e:  # There is no access_token
+        return redirect('testhome')
+
+    try:
+        excel_id = request.GET['item_id']
         sheet = get_my_sheet(access_token, user_email, excel_id)
         context = {'sheet': sheet }
-        return render(request, 'excel.html', context)
     except KeyError:
-        return redirect('testhome')
-
-
-def drive(request):
-    try:
-        access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
-        user_email = request.session['user_email']
         excels = get_my_drive(access_token, user_email)
         context = { 'excels': excels }
-        return render(request, 'drive.html', context)
 
-    except KeyError as e:  # There is no access_token
-        print(e)
-        return redirect('testhome')
+    return render(request, 'excel.html', context)
 
 
 @login_required
