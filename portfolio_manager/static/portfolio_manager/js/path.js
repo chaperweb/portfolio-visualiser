@@ -175,7 +175,7 @@ function generate_path_svg(target, data_id_array) {
       .attr("class", "overlay")
       .attr("id", "pathOverlay")
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
-      .attr("height", axisLengthY)
+      .attr("height", height)
       .attr("width", axisLengthX)
       .style("fill", "none")
       .style("pointer-events", "all")
@@ -202,7 +202,7 @@ function generate_path_svg(target, data_id_array) {
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
 
-  // Add focus circle and line 
+  // Add focus circle, text and line 
   focus.append('circle')
        .attr("class", "focus")
        .attr('r', 10)
@@ -212,6 +212,14 @@ function generate_path_svg(target, data_id_array) {
        .style("pointer-events", "none")
        .style("fill", "none")
        .style("stroke", "black");
+
+	focus.append('text')
+	       .attr("class", "focus")
+	       .attr("x", 50)
+	       .attr("y", 50)
+	       .style("visibility", "hidden")
+	       .style("pointer-events", "none")
+	       .style("stroke", "black");
 
   focus.append("line")
        .attr("class", "focus")
@@ -270,6 +278,8 @@ function generate_path_svg(target, data_id_array) {
                          .attr("y1", 0)
                          .attr("x2", 0)
                          .attr("y2", lineEnd());
+
+	focus.select('text').attr("x", 0).attr("y", -15).text(data[currentId].value)
    }
 
    function showWholeLabel(id) {
