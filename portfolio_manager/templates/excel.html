@@ -12,58 +12,25 @@
 
 {% block content %}
   <div id="loading"></div>
-  {% if excels %} <!-- ALL EXCELS -->
-    <div id="drive-container" class="col-lg-6 col-lg-offset-3">
-      <h1 class="row text-center">Your Excels</h1>
-      <ul class="row list-group" id="filelist">
-        {% for excel in excels %}
-          <li class="list-group-item dropdown">
-            <button class="itembtn" data-url="{% url 'excel' %}" data-itemid="{{ excel.id }}">
-              <span class="col-xs-1 glyphicon glyphicon-list-alt"></span>
-              {{ excel.name }}
-            </button>
+  <div id="drive-container" class="col-lg-6 col-lg-offset-3">
+    <h1 class="row text-center">Your Excels</h1>
+    <ul class="row list-group" id="filelist">
+      {% for excel in excels %}
+        <li class="list-group-item dropdown">
+          <button class="itembtn" data-excelurl="{{ excel.webUrl }}">
+            <span class="col-xs-1 glyphicon glyphicon-list-alt"></span>
+            {{ excel.name }}
+          </button>
 
-            <button id="{{ excel.id }}-morebtn" class="pull-right morebtn dropdown-toggle" data-toggle="dropdown">
-              <span class="glyphicon glyphicon-option-vertical"></span>
-            </button>
-            <ul class="more-menu dropdown-menu dropdown-menu-right pull-right">
-              <li><a class="import-link" href="{% url 'import_excel' %}?item_id={{ excel.id }}">Import</a></li>
-              <li><a href="{% url 'excel' %}?item_id={{ excel.id }}">Export</a></li>
-            </ul>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% else %} <!-- SINGLE EXCEL -->
-    <div id="excel-wrapper" class="col-lg-6 col-lg-offset-2">
-      <table class="table table-bordered">
-        {% for row in sheet %}
-          {% if forloop.counter == 1 %}
-            <tr>
-              {% for cell in row %}
-                <th>{{ cell }}</th>
-              {% endfor %}
-            </tr>
-          {% else %}
-            <tr>
-              {% for cell in row %}
-                <td>{{ cell }}</td>
-              {% endfor %}
-            </tr>
-          {% endif %}
-        {% endfor %}
-      </table>
-    </div>
-    <div id="actions-wrapper" class="col-lg-2 col-lg-offset-1 text-center">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          ACTIONS
-        </div>
-        <div class="panel-body">
-          <a class="col-xs-12 import-link" href="{% url 'import_excel' %}?item_id={{ sheet_id }}">Import this excel</a>
-          <a class="col-xs-12" href="{% url 'excel' %}?item_id={{ sheet_id }}">Export current database to this sheet</a>
-        </div>
-      </div>
-    </div>
-  {% endif %}
+          <button id="{{ excel.id }}-morebtn" class="pull-right morebtn dropdown-toggle" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-option-vertical"></span>
+          </button>
+          <ul class="more-menu dropdown-menu dropdown-menu-right pull-right">
+            <li><a class="import-link" href="{% url 'import_excel' %}?item_id={{ excel.id }}">Import this excel</a></li>
+            <li class="disabled"><a href="{% url 'excel' %}?item_id={{ excel.id }}">Export to this excel</a></li>
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 {% endblock %}

@@ -51,7 +51,7 @@ def get_me(access_token):
 
 
 def get_my_drive(access_token, user_email):
-    url = graph_endpoint.format("/me/drive/root/microsoft.graph.search(q='.xlsx')?$select=id,name")
+    url = graph_endpoint.format("/me/drive/root/microsoft.graph.search(q='.xlsx')?$select=id,name,webUrl")
     r = make_api_call(
         'GET',
         url,
@@ -67,12 +67,11 @@ def get_my_drive(access_token, user_email):
 
 # Gets the used range and loads it from the file with the given file id
 # REQUIRES SHEETNAME TO BE "Sheet1"
-def get_my_sheet(access_token, user_email, file_id, do_import=False):
+def get_and_import_my_sheet(access_token, user_email, file_id):
     url = graph_endpoint.format('/me/drive/items/{}/workbook/worksheets/Sheet1/UsedRange'.format(file_id))
     r = make_api_call('GET', url, access_token, user_email)
     if (r.status_code == requests.codes.ok):
-        if do_import:
-            from_data_array(r.json()['formulas'])
+        from_data_array(r.json()['formulas'])
         return r.json()['formulas']
     else:
         return "{0}: {1}".format(r.status_code, r.text)

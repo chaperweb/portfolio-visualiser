@@ -47,7 +47,7 @@ from portfolio_manager.importer import from_google_sheet
 from portfolio_manager.authhelper import get_signin_url, get_token_from_code, \
                                          get_access_token
 from portfolio_manager.outlookservice import get_me, \
-                                             get_my_sheet, \
+                                             get_and_import_my_sheet, \
                                              get_my_drive
 
 # LOGGING
@@ -113,17 +113,8 @@ def excel(request):
     except KeyError as e:  # There is no access_token
         return redirect('testhome')
 
-    #   Get excel with item_id or get all excels
-    try:
-        excel_id = request.GET['item_id']
-        sheet = get_my_sheet(access_token, user_email, excel_id)
-        context = {
-            'sheet': sheet,
-            'sheet_id': excel_id
-        }
-    except KeyError:
-        excels = get_my_drive(access_token, user_email)
-        context = { 'excels': excels }
+    excels = get_my_drive(access_token, user_email)
+    context = { 'excels': excels }
 
     return render(request, 'excel.html', context)
 
@@ -137,8 +128,8 @@ def import_excel(request):
         return redirect('testhome')
 
     excel_id = request.GET['item_id']
-    sheet = get_my_sheet(access_token, user_email, excel_id, True)
-    return redirect('excel')
+    sheet = get_and_import_my_sheet(access_token, user_email, excel_id)
+    return redirect('projects')
 
 
 @login_required
