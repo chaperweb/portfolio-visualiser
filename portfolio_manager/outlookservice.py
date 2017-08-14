@@ -37,26 +37,6 @@ def make_api_call(method, url, token, user_email, payload=None, parameters=None)
     return response
 
 
-def get_parents(access_token, user_email, item_id, parents):
-    if item_id == '':   # Search is from roo
-        return parents
-    else:
-        url = graph_endpoint.format('/me/drive/items/{}'.format(item_id))
-    r = make_api_call(
-        'GET',
-        url,
-        access_token,
-        user_email
-    )
-    print("QUERY MADE!")
-    jsondata = r.json()
-    try:
-        parents.append(jsondata['parentReference']['id'])
-        return get_parents(access_token, user_email, jsondata['parentReference']['id'], parents)
-    except KeyError:    # Root
-        return parents
-
-
 # Gets the microsoft user via API
 def get_me(access_token):
     get_me_url = graph_endpoint.format('/me')
@@ -70,22 +50,17 @@ def get_me(access_token):
         return '{0}: {1}'.format(r.status_code, r.text)
 
 
-def get_my_drive(access_token, user_email, path, item_id, parents, back):
-    url = graph_endpoint.format('/me/drive/{}'.format(path))
+def get_my_drive(access_token, user_email):
+    url = graph_endpoint.format("/me/drive/root/microsoft.graph.search(q='.xlsx')?$select=id,name")
     r = make_api_call(
         'GET',
         url,
         access_token,
         user_email
     )
+
     if (r.status_code == requests.codes.ok):
-        if not back: # This search is not triggered from backbutton
-            print('---------------')
-            parents = get_parents(access_token, user_email, item_id, [])
-        return {
-            'value': r.json()['value'],
-            'parents': json.dumps(parents)
-        }
+        return r.json()['value']
     else:
         return "{0}: {1}".format(r.status_code, r.text)
 
@@ -96,9 +71,6 @@ def get_my_sheet(access_token, user_email, file_id):
     url = graph_endpoint.format('/me/drive/items/{}/workbook/worksheets/Sheet1/UsedRange'.format(file_id))
     r = make_api_call('GET', url, access_token, user_email)
     if (r.status_code == requests.codes.ok):
-        return {
-            'value': r.json()['formulas'],
-            'parents': get_parents(access_token, user_email, file_id, [])
-        }
+        return r.json()['formulas']
     else:
         return "{0}: {1}".format(r.status_code, r.text)

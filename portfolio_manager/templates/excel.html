@@ -11,23 +11,33 @@
 {% endblock %}
 
 {% block content %}
-  <h1 class="text-center row">Your Excels</h1>
-  {% if parents|length > 0 %}
-    <div class="col-lg-offset-3 col-lg-6">
-      <button id="backbtn" data-url="{% url 'drive' %}" data-parents="{{ parents }}">
-        <span class="glyphicon glyphicon-arrow-left"></span>
-      </button>
-    </div>
-  {% endif %}
-  <div id="excel-wrapper" class="col-lg-6 col-lg-offset-3">
+  <div id="excel-wrapper" class="col-lg-6 col-lg-offset-2">
     <table class="table table-bordered">
-      {% for row in sheets %}
-        <tr>
-          {% for cell in row %}
-            <td>{{ cell }}</td>
-          {% endfor %}
-        </tr>
+      {% for row in sheet %}
+        {% if forloop.counter == 1 %}
+          <tr>
+            {% for cell in row %}
+              <th>{{ cell }}</th>
+            {% endfor %}
+          </tr>
+        {% else %}
+          <tr>
+            {% for cell in row %}
+              <td>{{ cell }}</td>
+            {% endfor %}
+          </tr>
+        {% endif %}
       {% endfor %}
     </table>
+  </div>
+  <div id="actions-wrapper" class="col-lg-2 col-lg-offset-1 text-center">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        ACTIONS
+      </div>
+      <div class="panel-body">
+        LOAD
+      </div>
+    </div>
   </div>
 {% endblock %}

@@ -18,19 +18,9 @@
   background-color: #dee0e1;
 }
 
-#backbtn {
-  margin: 10px 0;
-  font-size: 120%;
-  border: 2px solid #000000;
-  border-radius: 100%;
-  background-color: inherit;
-}
-#backbtn:focus,
-#backbtn:hover {
-  outline: 0;
-  background-color: #dee0e1;
-}
-
 #excel-wrapper {
   overflow-x: scroll;
+}
+#excel-wrapper table.table th {
+  background-color: #babbbe;
 }
