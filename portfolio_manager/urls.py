@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^testhome$', views.testhome, name='testhome'),
     url(r'^gettoken/$', views.gettoken, name='gettoken'),
     url(r'^excel/$', views.excel, name='excel'),
+    url(r'^excel/import$', views.import_excel, name='import_excel'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
 

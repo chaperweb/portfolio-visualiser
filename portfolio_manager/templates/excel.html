@@ -51,10 +51,8 @@
           ACTIONS
         </div>
         <div class="panel-body">
-          <ul class="list-group">
-            <li class="list-group-item">Load this sheet</li>
-            <li class="list-group-item">Export current data to this sheet</li>
-          </ul>
+          <a class="col-xs-12" href="{% url 'import_excel' %}?item_id={{ sheet_id }}">Load this excel</a>
+          <a class="col-xs-12" href="{% url 'excel' %}?item_id={{ sheet_id }}">Export current database to this sheet</a>
         </div>
       </div>
     </div>
