@@ -161,18 +161,29 @@ function generate_path_svg(target, data_id_array) {
 
   var focus = svg.append('g')
                  .attr('class', 'focus')
+
   // The path
   svg.append("path")
       .attr("class", "line")
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
       .attr("height", height)
-      .attr("d", valueLine(y_data))        
-	.on("mousemove", function(d){ updateDiv(y_data, this);})
-        .on("mouseout", function(){return div.style("opacity", 0);});
+      .attr("d", valueLine(y_data));
 
   generate_x_axes(x_data);
 
-  // Time-axis underneath the x-axis
+  svg.append("rect")
+      .attr("class", "overlay")
+	.attr("id", "pathOverlay")
+      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+      .attr("height", axisLengthY) 
+	.attr("width", axisLengthX)
+      .style("fill", "none")
+	.style("pointer-events", "all")       
+	.on("mousemove", function(d){ updateFocus(y_data, this);})
+	.on("mouseout", function(){return d3.selectAll(".focus").style("visibility", "hidden");});
+
+
+  // Time-axis 
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
@@ -197,7 +208,7 @@ function generate_path_svg(target, data_id_array) {
        .attr('r', 10)
        .attr("cx", 50)
        .attr("cy", 50)
-       //.style("visibility", "hidden")
+       .style("visibility", "hidden")
        .style("pointer-events", "none")
        .style("fill", "none")
        .style("stroke", "black");
@@ -207,7 +218,7 @@ function generate_path_svg(target, data_id_array) {
        .style("stroke-width", "1px")
        .style("stroke", "red")
        .style("stroke-dasharray", "3 3")
-       //.style("visibility", "hidden")
+       .style("visibility", "hidden")
        .attr("x1",0)
        .attr("y1", 0)
        .attr("x2", 0)
@@ -239,17 +250,23 @@ function generate_path_svg(target, data_id_array) {
            .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
            .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
      }
+  }
 
-	//console.log(d3.mouse(element.parentElement));
-	//console.log(d3.select());
+  function updateFocus(data, element) {
+	d3.selectAll(".focus").style("visibility", "visible");
+	var currentId = bisectX(data, Date.parse(xScale.invert(d3.mouse(element)[0]))) - 1;
+	var lineEnd = function() {if (x_data.length == 0) 
+		return axisLengthY -((yScale(data[currentId].value))); 	
+		else return (axisLengthY -((yScale(data[currentId].value)) - ((1 + x_data.length) * xAxesHeight)));}
 
-     focus.select('circle').attr("cx", d3.mouse(element)[0] + margin.left)
-                           .attr("cy", d3.mouse(element)[1] + margin.top);
+	focus.attr("transform", "translate("+(d3.mouse(element)[0] + margin.left)+","+(yScale(data[currentId].value) + margin.top)+")")
+     	focus.select('circle').attr("cx", 0)
+                           	.attr("cy", 0);
 
-     focus.select('line').attr("x1", d3.mouse(element)[0] + margin.left)
-                         .attr("y1", d3.mouse(element)[1] + margin.top)
-                         .attr("x2", d3.mouse(element)[0] + margin.left)
-                         .attr("y2", (height - ((xAxesMaxOptions - x_data.length) * xAxesHeight)) );
+     	focus.select('line').attr("x1", 0)
+                         .attr("y1", 0)
+                         .attr("x2", 0)
+                         .attr("y2", lineEnd);
    }
 
    function showWholeLabel(id) {
