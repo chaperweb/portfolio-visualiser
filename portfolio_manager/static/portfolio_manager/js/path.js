@@ -173,17 +173,17 @@ function generate_path_svg(target, data_id_array) {
 
   svg.append("rect")
       .attr("class", "overlay")
-	.attr("id", "pathOverlay")
+      .attr("id", "pathOverlay")
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
-      .attr("height", axisLengthY) 
-	.attr("width", axisLengthX)
+      .attr("height", axisLengthY)
+      .attr("width", axisLengthX)
       .style("fill", "none")
-	.style("pointer-events", "all")       
-	.on("mousemove", function(d){ updateFocus(y_data, this);})
-	.on("mouseout", function(){return d3.selectAll(".focus").style("visibility", "hidden");});
+      .style("pointer-events", "all")
+      .on("mousemove", function(d){ updateFocus(y_data, this);})
+      .on("mouseout", function(){return d3.selectAll(".focus").style("visibility", "hidden");});
 
 
-  // Time-axis 
+  // Time-axis
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
@@ -202,7 +202,7 @@ function generate_path_svg(target, data_id_array) {
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
 
-
+  // Add focus circle and line 
   focus.append('circle')
        .attr("class", "focus")
        .attr('r', 10)
@@ -235,12 +235,7 @@ function generate_path_svg(target, data_id_array) {
    var divValueId = Infinity;
    var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
 
-   function moveFocus(svg) {
-     console.log(svg);
-     
-   };
-
-   // Updates the div element value and relocates it when needed.
+   // Updates the x-axis div element value and relocates it when needed.
    function updateDiv(data, element) {
      var currentId = bisectX(data, Date.parse(xScale.invert(d3.event.offsetX-margin.left)));
      if (currentId != divValueId || div.text() != data[currentId - 1]) {
@@ -252,21 +247,29 @@ function generate_path_svg(target, data_id_array) {
      }
   }
 
+  // Updates the valueline focus location
   function updateFocus(data, element) {
 	d3.selectAll(".focus").style("visibility", "visible");
 	var currentId = bisectX(data, Date.parse(xScale.invert(d3.mouse(element)[0]))) - 1;
-	var lineEnd = function() {if (x_data.length == 0) 
-		return axisLengthY -((yScale(data[currentId].value))); 	
-		else return (axisLengthY -((yScale(data[currentId].value)) - ((1 + x_data.length) * xAxesHeight)));}
+	function lineEnd() {
+                    if (x_data.length == 0) {
+                      return axisLengthY -((yScale(data[currentId].value)));
+                    }
+		                else {
+                      return (axisLengthY -((yScale(data[currentId].value)) -
+                      ((1 + x_data.length) * xAxesHeight)));
+                    }
+                    }
 
 	focus.attr("transform", "translate("+(d3.mouse(element)[0] + margin.left)+","+(yScale(data[currentId].value) + margin.top)+")")
-     	focus.select('circle').attr("cx", 0)
+
+      focus.select('circle').attr("cx", 0)
                            	.attr("cy", 0);
 
      	focus.select('line').attr("x1", 0)
                          .attr("y1", 0)
                          .attr("x2", 0)
-                         .attr("y2", lineEnd);
+                         .attr("y2", lineEnd());
    }
 
    function showWholeLabel(id) {
