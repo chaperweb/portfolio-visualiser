@@ -4,4 +4,8 @@ $(function(){
         itemid = $(this).data('itemid');
     window.location.assign(url + '?item_id=' + itemid);
   });
+
+  $('.import-link').click(function(e) {
+    $('#loading').show();
+  });
 });

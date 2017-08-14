@@ -11,16 +11,25 @@
 {% endblock %}
 
 {% block content %}
+  <div id="loading"></div>
   {% if excels %} <!-- ALL EXCELS -->
     <div id="drive-container" class="col-lg-6 col-lg-offset-3">
       <h1 class="row text-center">Your Excels</h1>
       <ul class="row list-group" id="filelist">
         {% for excel in excels %}
-          <li class="list-group-item">
-            <button data-url="{% url 'excel' %}" data-itemid="{{ excel.id }}" class="itembtn">
+          <li class="list-group-item dropdown">
+            <button class="itembtn" data-url="{% url 'excel' %}" data-itemid="{{ excel.id }}">
               <span class="col-xs-1 glyphicon glyphicon-list-alt"></span>
               {{ excel.name }}
             </button>
+
+            <button id="{{ excel.id }}-morebtn" class="pull-right morebtn dropdown-toggle" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-option-vertical"></span>
+            </button>
+            <ul class="more-menu dropdown-menu dropdown-menu-right pull-right">
+              <li><a class="import-link" href="{% url 'import_excel' %}?item_id={{ excel.id }}">Import</a></li>
+              <li><a href="{% url 'excel' %}?item_id={{ excel.id }}">Export</a></li>
+            </ul>
           </li>
         {% endfor %}
       </ul>
@@ -51,7 +60,7 @@
           ACTIONS
         </div>
         <div class="panel-body">
-          <a class="col-xs-12" href="{% url 'import_excel' %}?item_id={{ sheet_id }}">Load this excel</a>
+          <a class="col-xs-12 import-link" href="{% url 'import_excel' %}?item_id={{ sheet_id }}">Import this excel</a>
           <a class="col-xs-12" href="{% url 'excel' %}?item_id={{ sheet_id }}">Export current database to this sheet</a>
         </div>
       </div>
