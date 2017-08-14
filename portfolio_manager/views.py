@@ -77,10 +77,10 @@ def is_int(s):
         return False
 
 
-def testhome(request):
+def microsoft_signin(request):
     redirect_uri = request.build_absolute_uri(reverse('gettoken'))
     sign_in_url = get_signin_url(redirect_uri)
-    return HttpResponse('<a href="' + sign_in_url +'">Click here to sign in and view your mail</a>')
+    return redirect(sign_in_url)
 
 
 def gettoken(request):
@@ -111,7 +111,7 @@ def excel(request):
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.session['user_email']
     except KeyError as e:  # There is no access_token
-        return redirect('testhome')
+        return redirect('microsoft_signin')
 
     excels = get_my_drive(access_token, user_email)
     context = { 'excels': excels }
@@ -125,7 +125,7 @@ def import_excel(request):
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.session['user_email']
     except KeyError as e:  # There is no access_token
-        return redirect('testhome')
+        return redirect('microsoft_signin')
 
     excel_id = request.GET['item_id']
     sheet = get_and_import_my_sheet(access_token, user_email, excel_id)
