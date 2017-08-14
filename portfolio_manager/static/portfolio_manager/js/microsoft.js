@@ -1,14 +1,19 @@
 $(function(){
   $("#backbtn").click(function(){
     var url = $(this).data('url'),
-        parents = JSON.parse($(this).data('parents').replace(/'/g, '"')),
+        parents = $(this).data('parents'),
         newItem = parents.shift();
+    console.log(typeof parents);
+
+    var url_item_id = 'item_id=' + newItem,
+        url_parent = 'parents=' + JSON.stringify(parents),
+        url_back = 'back=1';
 
     if(parents.length > 0) {
-      var fullUrl = url + '?item_id='+newItem+'&parents=' + JSON.stringify(parents);
+      var fullUrl = url + '?'+url_item_id+'&'+url_parent+'&'+url_back;
     }
     else {
-      var fullUrl = url + '?item_id='+newItem
+      var fullUrl = url + '?'+url_item_id+'&'+url_back;
     }
     window.location.assign(fullUrl);
   });
@@ -17,9 +22,7 @@ $(function(){
         parents = $(this).data('parents'),
         itemid = $(this).data('itemid'),
         current = $(this).data('current');
-    if(parents.length > 0) {
-      parents = JSON.parse(parents.replace(/'/g, '"'));
-    }
+    console.log(typeof parents);
     parents.unshift(current);
     var fullUrl = url + '?item_id='+itemid+'&parents=' + JSON.stringify(parents);
     window.location.assign(fullUrl);

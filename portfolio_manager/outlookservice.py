@@ -48,6 +48,7 @@ def get_parents(access_token, user_email, item_id, parents):
         access_token,
         user_email
     )
+    print("QUERY MADE!")
     jsondata = r.json()
     try:
         parents.append(jsondata['parentReference']['id'])
@@ -69,7 +70,7 @@ def get_me(access_token):
         return '{0}: {1}'.format(r.status_code, r.text)
 
 
-def get_my_drive(access_token, user_email, path, item_id):
+def get_my_drive(access_token, user_email, path, item_id, parents, back):
     url = graph_endpoint.format('/me/drive/{}'.format(path))
     r = make_api_call(
         'GET',
@@ -78,9 +79,12 @@ def get_my_drive(access_token, user_email, path, item_id):
         user_email
     )
     if (r.status_code == requests.codes.ok):
+        if not back: # This search is not triggered from backbutton
+            print('---------------')
+            parents = get_parents(access_token, user_email, item_id, [])
         return {
             'value': r.json()['value'],
-            'parents': get_parents(access_token, user_email, item_id, [])
+            'parents': json.dumps(parents)
         }
     else:
         return "{0}: {1}".format(r.status_code, r.text)

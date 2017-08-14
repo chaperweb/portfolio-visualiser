@@ -135,7 +135,9 @@ def drive(request):
     try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.session['user_email']
-        drive = get_my_drive(access_token, user_email, path, item_id)
+        parents = request.GET.get('parents', [])
+        back = request.GET.get('back', 0)
+        drive = get_my_drive(access_token, user_email, path, item_id, parents, back)
         folders = []
         excels = []
         for item in drive['value']:
