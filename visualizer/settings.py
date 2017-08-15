@@ -13,8 +13,11 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 from envparse import env
 import dj_database_url
+from visualizer.secret_settings import *
 
 env.read_envfile()
+
+MICROSOFT_CLIENT_SECRET = ms_client_secret
 
 LOGGING = {
     'version': 1,
