@@ -252,7 +252,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
 var focus = svg.append('g')
                  .attr('class', 'focus')
- 
+
   focus.append('circle')
        .attr("class", "focus")
        .attr('r', 10)
@@ -345,10 +345,12 @@ var focus = svg.append('g')
                          .attr("x2", 0)
                          .attr("y2", lineEnd());
 
-	focus.select('text').attr("x", 0).attr("y", -15).text(data[currentId].value)
+      focus.select('text').attr("x", 0)
+                          .attr("y", -15)
+                          .text(data[currentId].value);
    };
 
-
+   // Functions to show the x-axis label on hover
    function showWholeLabel(id) {
      d3.select("#"+String(id)+"Hover").style("opacity", 1);
      d3.select("#"+String(id)).style("opacity", 0);
@@ -358,8 +360,6 @@ var focus = svg.append('g')
      d3.select("#"+String(id)+"Hover").style("opacity", 0);
      d3.select("#"+String(id)).style("opacity", 1);
    };
-
-
 
    // Truncate the data to match the given dates
    function truncateData(data, startDate, endDate) {
