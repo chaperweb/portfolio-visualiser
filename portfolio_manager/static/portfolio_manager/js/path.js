@@ -287,7 +287,7 @@ var focus = svg.append('g')
       .attr("class", "overlay")
       .attr("id", "pathOverlay")
       .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
-      .attr("height", height)
+      .attr("height", axisLengthY + xAxesHeight + 2)
       .attr("width", axisLengthX)
       .style("fill", "none")
       .style("pointer-events", "all")
@@ -316,10 +316,13 @@ var focus = svg.append('g')
            .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
      }
 
+   updateFocus(y_data, d3.select("svg").select("rect").node());
+
   }
 
   // Updates the valueline focus location
   function updateFocus(data, element) {
+
 	d3.selectAll(".focus").style("visibility", "visible");
 	var currentId = bisectByDate(data, Date.parse(xScale.invert(d3.mouse(element)[0]))) - 1;
 	function lineEnd() {
