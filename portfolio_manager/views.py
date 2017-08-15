@@ -34,7 +34,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login,logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse
 
 from portfolio_manager.models import *
@@ -52,6 +52,13 @@ from portfolio_manager.outlookservice import get_me, \
 
 # LOGGING
 logger = logging.getLogger('django.request')
+def is_admin(user):
+    if user.is_superuser:
+        return True
+    for group in user.groups.all(): # Check if admin
+        if group.name.endswith('_OrgAdmins'):
+            return True
+    return False
 
 
 def signup(request):
@@ -77,7 +84,10 @@ def is_int(s):
         return False
 
 
+# SUPERUSER CAN DO MS THINGS TO ALL ORGS
+# ADMINS ONLY GET TO DO MS THINGS TO ITS ORGS
 @login_required
+@user_passes_test(is_admin)
 def microsoft_signin(request):
     redirect_uri = request.build_absolute_uri(reverse('gettoken'))
     sign_in_url = get_signin_url(redirect_uri)
@@ -85,6 +95,7 @@ def microsoft_signin(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def gettoken(request):
     try:    # Check if the user already has connected
         request.user.m365connection
@@ -115,6 +126,7 @@ def gettoken(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def excel(request):
     #   Get access token
     try:
@@ -130,6 +142,7 @@ def excel(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def import_excel(request):
     #   Get access token
     try:
@@ -145,8 +158,11 @@ def import_excel(request):
 
 @login_required
 def home(request):
-    if not request.user.is_authenticated():
-        return redirect('login')
+    # SUPERUSER SEES THE CURRENT VIEW WITHOUT ADD PROEJCT BUTTON
+    # ADMIN SEES THE CURRENT VIEW BUT ONLY WITH ITS PROJECTS
+    # EMPLOYEE SEES STORIES AND SNAPS IT IS ALLOWED TO SEE
+    # PUBLIC SEES PUBLIC STORIES AND SNAPS
+
     # milestones for project sneak peeks
     # (only future milestones), ordered by date
     now = datetime.now()
@@ -191,6 +207,9 @@ def admin_tools(request):
 
 @login_required
 def milestones(request):
+    # SUPERUSER SEES all
+    # ADMIN SEES WHAT IT HAS ACCESS TO
+
     context = {
         'milestones': {},
         'fields': {},
@@ -249,6 +268,8 @@ def milestones(request):
 # TODO: Require admin
 @login_required
 def add_user(request):
+    # CAN ONLY BE DONE BY ADMIN
+
     context = {}
     if request.method == 'POST':
         org = request.user.groups.first()
@@ -265,6 +286,8 @@ def add_user(request):
     return render(request, 'manage/add_user.html', context)
 
 
+# TODO: Remove this since only superusers should be able to add orgs
+# Or modify it so that admins can add orgs beneath it somehow
 @require_POST
 @login_required
 def create_org(request):
@@ -285,9 +308,13 @@ def create_org(request):
         )
 
 
+# TODO: Make this better with deeper choices
 @require_POST
 @login_required
 def create_person(request):
+    #   SUPERUSERS USE ADMINSITE
+    #   ADMINS USE THIS
+
     first = request.POST.get('first')
     last = request.POST.get('last')
     data = {'first': first, 'last': last}
@@ -361,6 +388,8 @@ def add_field(request):
 
 @login_required
 def show_project(request, project_id):
+    #   ONLY FOR ADMINS AND SUPERUSERS
+
     all_projects = Project.objects.all()
     project = all_projects.get(pk=project_id)
     project_dims = project.dimensions.all()
@@ -389,6 +418,8 @@ def show_project(request, project_id):
 # Function that edits a project by either updating, adding or removing values
 @login_required
 def project_edit(request, project_id, field_type):
+    #   ADMIN ONLY
+
     type_to_dimension = {
         'text': TextDimension,
         'number': NumberDimension,
@@ -451,6 +482,8 @@ def project_edit(request, project_id, field_type):
 #   TODO: Require admin
 @login_required
 def importer(request):
+    #   SUPERUSERS AND ADMINS
+
     if request.method == "POST":
         response_data = from_google_sheet(request.POST.get('url'))
         return HttpResponse(
@@ -495,6 +528,8 @@ def json(request):
 # site to see all projects, grouped by organization
 @login_required
 def projects(request):
+    #   SHOW PROJECTS ACCORDING TO PERMISSION
+
     projects_all = Project.objects.all()
 
     projects_grouped = {}
@@ -521,7 +556,11 @@ def projects(request):
 
 # site to show datafields by organization
 @login_required
+@user_passes_test(is_admin)
 def databaseview(request):
+    #   SUPERUSERS CHOOSE ORG
+    #   ADMINS SEE THEIR ORGS
+
     if request.method == "POST":
         form = OrgForm(request.POST)
         if form.is_valid:
@@ -583,6 +622,8 @@ def databaseview(request):
 
 @login_required
 def addproject(request):
+    #   ADMINS AND SUPERUSERS ONLY?
+
     add_project_form = None
     add_project_form_prefix = 'add_project_form'
     if request.POST:
@@ -645,18 +686,21 @@ def addproject(request):
 
 
 # Gets all organizations and return them in a JSON string
+@require_GET
 def get_orgs(request):
     serializer = OrganizationSerializer(Organization.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
 
 # Gets all persons and return them in a JSON string
+@require_GET
 def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
 
 # Gets all projects and returns them with name and id in a JSON
+@require_GET
 def get_proj(request):
     serializer = ProjectNameIdSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
@@ -689,6 +733,8 @@ def get_multiple(request, field_type, field_id):
 
 
 def create_pathsnapshot(name, description, project_id, x, y):
+    #   ADMIN ONLY
+
     p_snap = PathSnapshot()
     project = Project.objects.get(pk=project_id)
     p_snap.name = name
@@ -702,6 +748,8 @@ def create_pathsnapshot(name, description, project_id, x, y):
 
 
 def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
+    #   ADMIN ONLY
+
     ff_snap = FourFieldSnapshot()
     ff_snap.name = name
     ff_snap.description = description
@@ -719,6 +767,8 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
 
 @login_required
 def snapshots(request, vis_type=None, snapshot_id=None):
+    #   FILTER THE SNAPS ACCORDING TO PERMISSION
+
     response_data = {}
     template = 'snapshots/error.html'
 
@@ -817,6 +867,8 @@ def snapshots(request, vis_type=None, snapshot_id=None):
 
 @login_required
 def create_snapshot(request):
+    # ONLY ADMIN
+
     if request.method == 'POST':
         snapshot_type = request.POST['type']
         if snapshot_type == 'path':
