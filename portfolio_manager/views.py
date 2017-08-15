@@ -86,32 +86,31 @@ def microsoft_signin(request):
 
 @login_required
 def gettoken(request):
-    auth_code = request.GET['code']
-    redirect_uri = request.build_absolute_uri(reverse('gettoken'))
-    token = get_token_from_code(auth_code, redirect_uri)
-    access_token = token['access_token']
-    user = get_me(access_token)
-    refresh_token = token['refresh_token']
-    expires_in = token['expires_in']
+    try:    # Check if the user already has connected
+        request.user.m365connection
+    except:
+        auth_code = request.GET['code']
+        redirect_uri = request.build_absolute_uri(reverse('gettoken'))
+        token = get_token_from_code(auth_code, redirect_uri)
+        access_token = token['access_token']
+        user = get_me(access_token)
+        refresh_token = token['refresh_token']
+        expires_in = token['expires_in']
 
-    # expires_in is in seconds
-    # Get current timestamp (seconds since Unix Epoch) and
-    # add expires_in to get expiration time
-    # Subtract 5 minutes to allow for clock differences
-    expiration = int(time.time()) + expires_in - 300
+        # expires_in is in seconds
+        # Get current timestamp (seconds since Unix Epoch) and
+        # add expires_in to get expiration time
+        # Subtract 5 minutes to allow for clock differences
+        expiration = int(time.time()) + expires_in - 300
 
-    m365 = Office365Connection()
-    m365.user = request.user
-    m365.access_token = access_token
-    m365.refresh_token = refresh_token
-    m365.expiration = expiration
-    m365.microsoft_email = user['mail']
-    m365.save()
-    
-    request.session['access_token'] = access_token
-    request.session['refresh_token'] = refresh_token
-    request.session['token_expires'] = expiration
-    request.session['user_email'] = user['mail']
+        m365 = Office365Connection()
+        m365.user = request.user
+        m365.access_token = access_token
+        m365.refresh_token = refresh_token
+        m365.expiration = expiration
+        m365.microsoft_email = user['mail']
+        m365.save()
+
     return redirect('excel')
 
 
@@ -120,8 +119,8 @@ def excel(request):
     #   Get access token
     try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
-        user_email = request.session['user_email']
-    except KeyError as e:  # There is no access_token
+        user_email = request.user.m365connection.microsoft_email
+    except Exception as e:  # There is no access_token
         return redirect('microsoft_signin')
 
     excels = get_my_drive(access_token, user_email)
@@ -135,7 +134,7 @@ def import_excel(request):
     #   Get access token
     try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
-        user_email = request.session['user_email']
+        user_email = request.user.m365connection.microsoft_email
     except KeyError as e:  # There is no access_token
         return redirect('microsoft_signin')
 
