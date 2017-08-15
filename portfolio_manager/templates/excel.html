@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'portfolio_manager/css/microsoft.css' %}" />
+{% endblock %}
+
+{% block javascript %}
+{% load static %}
+<script src="{% static 'portfolio_manager/js/microsoft.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <div id="loading"></div>
+  <div id="drive-container" class="col-lg-6 col-lg-offset-3">
+    <h1 class="row text-center">Your Excels</h1>
+    <ul class="row list-group" id="filelist">
+      {% for excel in excels %}
+        <li class="list-group-item dropdown">
+          <button class="itembtn" data-excelurl="{{ excel.webUrl }}">
+            <span class="col-xs-1 glyphicon glyphicon-list-alt"></span>
+            {{ excel.name }}
+          </button>
+
+          <button id="{{ excel.id }}-morebtn" class="pull-right morebtn dropdown-toggle" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-option-vertical"></span>
+          </button>
+          <ul class="more-menu dropdown-menu dropdown-menu-right pull-right">
+            <li><a class="import-link" href="{% url 'import_excel' %}?item_id={{ excel.id }}">Import this excel</a></li>
+            <li class="disabled"><a href="{% url 'excel' %}?item_id={{ excel.id }}">Export to this excel</a></li>
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

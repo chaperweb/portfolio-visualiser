@@ -62,6 +62,11 @@ urlpatterns = [
     url(r'^snapshots(/(?P<vis_type>[A-Za-z]+))?(/(?P<snapshot_id>[0-9]+))?$', views.snapshots, name='snapshots'),
     url(r'^create_snapshot$', views.create_snapshot, name='create_snapshot'),
     url(r"^json$", views.json, name='json'),
+    url(r'^microsoft_signin/$', views.microsoft_signin, name='microsoft_signin'),
+    url(r'^gettoken/$', views.gettoken, name='gettoken'),
+    url(r'^excel/$', views.excel, name='excel'),
+    url(r'^excel/import$', views.import_excel, name='import_excel'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
+
 ]
