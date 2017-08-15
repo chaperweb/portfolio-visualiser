@@ -77,12 +77,14 @@ def is_int(s):
         return False
 
 
+@login_required
 def microsoft_signin(request):
     redirect_uri = request.build_absolute_uri(reverse('gettoken'))
     sign_in_url = get_signin_url(redirect_uri)
     return redirect(sign_in_url)
 
 
+@login_required
 def gettoken(request):
     auth_code = request.GET['code']
     redirect_uri = request.build_absolute_uri(reverse('gettoken'))
@@ -98,6 +100,14 @@ def gettoken(request):
     # Subtract 5 minutes to allow for clock differences
     expiration = int(time.time()) + expires_in - 300
 
+    m365 = Office365Connection()
+    m365.user = request.user
+    m365.access_token = access_token
+    m365.refresh_token = refresh_token
+    m365.expiration = expiration
+    m365.microsoft_email = user['mail']
+    m365.save()
+    
     request.session['access_token'] = access_token
     request.session['refresh_token'] = refresh_token
     request.session['token_expires'] = expiration
@@ -105,6 +115,7 @@ def gettoken(request):
     return redirect('excel')
 
 
+@login_required
 def excel(request):
     #   Get access token
     try:
@@ -119,6 +130,7 @@ def excel(request):
     return render(request, 'excel.html', context)
 
 
+@login_required
 def import_excel(request):
     #   Get access token
     try:

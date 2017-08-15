@@ -471,6 +471,19 @@ class OrganizationAdmins(Group):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
 
 
+class Office365Connection(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete = models.CASCADE,
+        related_name = "m365connection",
+        null = True
+    ) # Local user
+    microsoft_email = models.CharField(max_length = 254) # Email for Microsoft
+    access_token = models.TextField()
+    refresh_token = models.TextField()
+    expiration = models.IntegerField()
+
+
 @receiver(post_save, sender=Organization)
 def create_groups(sender, instance, created, **kwargs):
     if created:
