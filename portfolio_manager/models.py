@@ -440,18 +440,11 @@ class Snapshot(GetSubclassesMixin, models.Model):
 
 
 class PathSnapshot(Snapshot):
-    project = models.ForeignKey(
-        Project,
-        on_delete=models.CASCADE,
-        related_name="pathsnapshots"
-    )
-    content_type_x = models.ForeignKey(ContentType, related_name="ct_x")
-    object_id_x = models.PositiveIntegerField()
-    dimension_object_x = GenericForeignKey('content_type_x', 'object_id_x')
-
-    content_type_y = models.ForeignKey(ContentType, related_name="ct_y")
-    object_id_y = models.PositiveIntegerField()
-    dimension_object_y = GenericForeignKey('content_type_y', 'object_id_y')
+    pid = models.CharField(max_length=64)
+    #x = models.CharField(max_length=64)
+    y =models.CharField(max_length=64)
+    start_date = models.DateField()
+    end_date = models.DateField()
 
 
 class FourFieldSnapshot(Snapshot):
