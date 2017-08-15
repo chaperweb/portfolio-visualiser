@@ -99,7 +99,7 @@ function generate_data_chunk(dimension) {
 };
 
 // Generate the svg container for the visualization
-function generate_path_svg(target, data_id_array) {
+function generate_path_svg(target, data_id_array, startDate, endDate) {
 
   $('#'+ target).html('');
 
@@ -117,6 +117,26 @@ function generate_path_svg(target, data_id_array) {
   var pathData = generate_path_data(data_id_array)
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
+  var startDefault = y_data[0].history_date
+  var endDefault = y_data[y_data.length - 1].history_date
+
+
+  // human readable timeformat from history_date
+  var ddmmyy = d3.timeFormat("%d-%m-%Y");
+
+  // set the min and max date by the selected project data
+  $('.datepicker').datepicker("option", "minDate", new Date(startDefault))
+                  .datepicker("option", "maxDate", new Date(endDefault));
+
+  // If there is no selected date or the date is outside borders use the default dates
+  if (isNaN(startDate) || startDate < startDefault || startDate > endDefault) {
+    startDate = startDefault;
+    $('#start-date-selector').val(ddmmyy(startDate));
+  }
+  if (isNaN(endDate) || endDate < startDefault || endDate > endDefault) {
+    endDate = endDefault;
+    $('#end-date-selector').val(ddmmyy(endDate));
+  }
 
   // height of the colored x-axis area and maximum amount of x-axis
   var xAxesHeight = 20;
@@ -125,9 +145,6 @@ function generate_path_svg(target, data_id_array) {
   // Length of the axis
   var axisLengthX = width - (margin.right + margin.left),
       axisLengthY = height - (margin.top + margin.bottom + (xAxesMaxOptions * xAxesHeight));
-
-  // human readable timeformat from history_date
-  var ddmmyy = d3.timeFormat("%d-%m-%Y");
 
   //  Parameters for axis transformations
   var pathTransformX = margin.left,
@@ -147,11 +164,13 @@ function generate_path_svg(target, data_id_array) {
               .attr("class", "svg-content");
 
   // The scales of the axis
+  var yScaleMax = d3.max(y_data, function(d){return parseFloat(d.value)})
+
   var xScale = d3.scaleTime()
-            .domain([y_data[0].history_date, y_data[y_data.length - 1].history_date])
+            .domain([startDate, endDate])
             .range([0,axisLengthX]),
       yScale = d3.scaleLinear()
-            .domain([0, d3.max(y_data, function(d){return parseFloat(d.value)})])
+            .domain([0, (yScaleMax * 1.05)])
             .range([axisLengthY,0]);
 
   var valueLine = d3.line()
@@ -191,10 +210,12 @@ function generate_path_svg(target, data_id_array) {
              .tickFormat(ddmmyy));
 
   // Y-axis
+  var yAxis = d3.axisLeft(yScale)
+
   svg.append("g")
      .attr("transform", "translate("+yAxisTransformX+","+yAxisTransformY+")")
      .attr("id", "y-axis")
-     .call(d3.axisLeft(yScale));
+     .call(yAxis);
 
   // Y-axis label
   svg.append("text")
@@ -232,6 +253,54 @@ function generate_path_svg(target, data_id_array) {
        .attr("x2", 0)
        .attr("y2", 100);
 
+  // If the given dates are invalid, asks for valid ones
+  if (endDate <= startDate) {
+    svg.append("text")
+       .attr("id", "pathDateError")
+       .attr("transform", "translate("+(pathTransformX + (axisLengthX / 2))+","+(pathTransformY + (axisLengthY / 2))+")")
+       .text("Please check the given dates");
+
+       return;
+  }
+
+  /* If the selected dates are not the default dates,
+   * trucate the data to given period.
+   * With whole dataset the graph will overflow the given area.
+  */
+  if (endDate != endDefault || startDate != startDefault) {
+    y_data = truncateData(y_data, startDate, endDate);
+
+    temp_x_data = []
+    x_data.forEach( function(d) {
+      truncX = truncateData(d.data, startDate, endDate)
+      temp_x_data.push({
+        "dimension_name": d.dimension_name,
+        "data": truncX
+      });
+    });
+    x_data = temp_x_data
+
+    // Update the y-axis to match the current data
+    yScaleMax = d3.max(y_data, function(d){return parseFloat(d.value)})
+
+    yScale.domain([0, (yScaleMax * 1.05)]);
+
+    d3.select("body")
+      .transition()
+      .duration(750)
+      .select("#y-axis")
+      .call(yAxis);
+  }
+
+  // The path
+  svg.append("path")
+     .attr("class", "line")
+     .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+     .attr("height", height)
+     .attr("d", valueLine(y_data));
+
+  generate_x_axes(x_data);
+
    // div element for the x-axis values
    var div = d3.select("#"+target).append("div")
          .style("position", "fixed")
@@ -241,11 +310,11 @@ function generate_path_svg(target, data_id_array) {
 
    // Variable to hold previous divValueId and bisector for x-values
    var divValueId = Infinity;
-   var bisectX = d3.bisector(function(d) { return d.history_date; }).right;
+   var bisectByDate = d3.bisector(function(d) { return d.history_date; }).right;
 
    // Updates the x-axis div element value and relocates it when needed.
    function updateDiv(data, element) {
-     var currentId = bisectX(data, Date.parse(xScale.invert(d3.event.offsetX-margin.left)));
+     var currentId = bisectByDate(data, Date.parse(xScale.invert(d3.event.offsetX-margin.left)));
      if (currentId != divValueId || div.text() != data[currentId - 1]) {
        divValueId = currentId
        div.style("opacity", .7);
@@ -253,12 +322,13 @@ function generate_path_svg(target, data_id_array) {
            .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
            .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
      }
+
   }
 
   // Updates the valueline focus location
   function updateFocus(data, element) {
 	d3.selectAll(".focus").style("visibility", "visible");
-	var currentId = bisectX(data, Date.parse(xScale.invert(d3.mouse(element)[0]))) - 1;
+	var currentId = bisectByDate(data, Date.parse(xScale.invert(d3.mouse(element)[0]))) - 1;
 	function lineEnd() {
                     if (x_data.length == 0) {
                       return axisLengthY -((yScale(data[currentId].value)));
@@ -280,7 +350,8 @@ function generate_path_svg(target, data_id_array) {
                          .attr("y2", lineEnd());
 
 	focus.select('text').attr("x", 0).attr("y", -15).text(data[currentId].value)
-   }
+   };
+
 
    function showWholeLabel(id) {
      d3.select("#"+String(id)+"Hover").style("opacity", 1);
@@ -291,6 +362,49 @@ function generate_path_svg(target, data_id_array) {
      d3.select("#"+String(id)+"Hover").style("opacity", 0);
      d3.select("#"+String(id)).style("opacity", 1);
    };
+
+
+
+   // Truncate the data to match the given dates
+   function truncateData(data, startDate, endDate) {
+
+     bisectByDate = d3.bisector(function(d) { return d.history_date; }).right;
+
+     var sliceStart = 0,
+         sliceEnd = data.length;
+
+     if (startDate != startDefault) {
+       sliceStart = bisectByDate(data, startDate);
+       sliceStart -= 1;
+     }
+
+     if (endDate != endDefault) {
+       sliceEnd = bisectByDate(data, endDate);
+     }
+
+     var lastValue = data[sliceEnd].value
+
+     var truncData = data.slice(sliceStart, sliceEnd)
+
+     if (truncData.length === 0) {
+       var pathStart = {
+         "history_date": startDate,
+         "value": data[sliceStart].value
+       };
+     }
+
+     truncData[0].history_date = startDate;
+
+     var pathEnd = {
+       "history_date": endDate,
+       "value": lastValue
+     };
+
+     truncData.push(pathEnd);
+
+     return truncData;
+   };
+
 
   // Generates the colored x-axes under the graph
   function generate_x_axes(x_data) {
