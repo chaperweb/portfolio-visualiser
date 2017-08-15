@@ -178,7 +178,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
                       .x( function(d) { return xScale(d.history_date); } )
                       .y( function(d) { return yScale(d.value); } );
 
-  // Time-axis underneath the x-axis
+  // Time-axis
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
      .attr("id", "time-axis")
@@ -238,16 +238,61 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
       .call(yAxis);
   }
 
-
   // The path
   svg.append("path")
      .attr("class", "line")
      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
      .attr("height", height)
-     .attr("d", valueLine(y_data));
+     .attr("d", valueLine(y_data))
+      .style("pointer-events", "none");
 
   generate_x_axes(x_data);
 
+// Add focus with circle, text and line
+
+var focus = svg.append('g')
+                 .attr('class', 'focus')
+
+  focus.append('circle')
+       .attr("class", "focus")
+       .attr('r', 10)
+       .attr("cx", 50)
+       .attr("cy", 50)
+       .style("visibility", "hidden")
+       .style("pointer-events", "none")
+       .style("fill", "none")
+       .style("stroke", "black");
+
+	focus.append('text')
+	       .attr("class", "focus")
+	       .attr("x", 50)
+	       .attr("y", 50)
+	       .style("visibility", "hidden")
+	       .style("pointer-events", "none")
+	       .style("stroke", "black");
+
+  focus.append("line")
+       .attr("class", "focus")
+       .style("stroke-width", "1px")
+       .style("stroke", "red")
+       .style("stroke-dasharray", "3 3")
+       .style("visibility", "hidden")
+       .attr("x1",0)
+       .attr("y1", 0)
+       .attr("x2", 0)
+       .attr("y2", 100);
+
+// rectangle to catch the mouse
+  svg.append("rect")
+      .attr("class", "overlay")
+      .attr("id", "pathOverlay")
+      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+      .attr("height", axisLengthY + xAxesHeight + 2)
+      .attr("width", axisLengthX)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .on("mousemove", function(d){ updateFocus(y_data, this);})
+      .on("mouseout", function(){return d3.selectAll(".focus").style("visibility", "hidden");});
 
    // div element for the x-axis values
    var div = d3.select("#"+target).append("div")
@@ -260,7 +305,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
    var divValueId = Infinity;
    var bisectByDate = d3.bisector(function(d) { return d.history_date; }).right;
 
-   // Updates the div element value and relocates it when needed.
+   // Updates the x-axis div element value and relocates it when needed.
    function updateDiv(data, element) {
      var currentId = bisectByDate(data, Date.parse(xScale.invert(d3.event.offsetX-margin.left)));
      if (currentId != divValueId || div.text() != data[currentId - 1]) {
@@ -270,8 +315,42 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
            .style("left", element.getScreenCTM().e + xScale(data[divValueId - 1].history_date) + "px")
            .style("top", element.getScreenCTM().f + element.getBBox().y + "px");
      }
+
+   updateFocus(y_data, d3.select("svg").select("rect").node());
+
+  }
+
+  // Updates the valueline focus location
+  function updateFocus(data, element) {
+
+	d3.selectAll(".focus").style("visibility", "visible");
+	var currentId = bisectByDate(data, Date.parse(xScale.invert(d3.mouse(element)[0]))) - 1;
+	function lineEnd() {
+                    if (x_data.length == 0) {
+                      return axisLengthY -((yScale(data[currentId].value)));
+                    }
+		                else {
+                      return (axisLengthY -((yScale(data[currentId].value)) -
+                      ((1 + x_data.length) * xAxesHeight)));
+                    }
+                    }
+
+	focus.attr("transform", "translate("+(d3.mouse(element)[0] + margin.left)+","+(yScale(data[currentId].value) + margin.top)+")")
+
+      focus.select('circle').attr("cx", 0)
+                           	.attr("cy", 0);
+
+     	focus.select('line').attr("x1", 0)
+                         .attr("y1", 0)
+                         .attr("x2", 0)
+                         .attr("y2", lineEnd());
+
+      focus.select('text').attr("x", 0)
+                          .attr("y", -15)
+                          .text(data[currentId].value);
    };
 
+   // Functions to show the x-axis label on hover
    function showWholeLabel(id) {
      d3.select("#"+String(id)+"Hover").style("opacity", 1);
      d3.select("#"+String(id)).style("opacity", 0);
@@ -281,8 +360,6 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      d3.select("#"+String(id)+"Hover").style("opacity", 0);
      d3.select("#"+String(id)).style("opacity", 1);
    };
-
-
 
    // Truncate the data to match the given dates
    function truncateData(data, startDate, endDate) {
