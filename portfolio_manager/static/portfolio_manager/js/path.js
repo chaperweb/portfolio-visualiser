@@ -178,30 +178,6 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
                       .x( function(d) { return xScale(d.history_date); } )
                       .y( function(d) { return yScale(d.value); } );
 
-  var focus = svg.append('g')
-                 .attr('class', 'focus')
-
-  // The path
-  svg.append("path")
-      .attr("class", "line")
-      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
-      .attr("height", height)
-      .attr("d", valueLine(y_data));
-
-  generate_x_axes(x_data);
-
-  svg.append("rect")
-      .attr("class", "overlay")
-      .attr("id", "pathOverlay")
-      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
-      .attr("height", height)
-      .attr("width", axisLengthX)
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .on("mousemove", function(d){ updateFocus(y_data, this);})
-      .on("mouseout", function(){return d3.selectAll(".focus").style("visibility", "hidden");});
-
-
   // Time-axis
   svg.append("g")
      .attr("transform", "translate("+timeAxisTransformX+","+timeAxisTransformY+")")
@@ -222,36 +198,6 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      .attr("id", "yAxisLabel")
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
-
-  // Add focus circle, text and line 
-  focus.append('circle')
-       .attr("class", "focus")
-       .attr('r', 10)
-       .attr("cx", 50)
-       .attr("cy", 50)
-       .style("visibility", "hidden")
-       .style("pointer-events", "none")
-       .style("fill", "none")
-       .style("stroke", "black");
-
-	focus.append('text')
-	       .attr("class", "focus")
-	       .attr("x", 50)
-	       .attr("y", 50)
-	       .style("visibility", "hidden")
-	       .style("pointer-events", "none")
-	       .style("stroke", "black");
-
-  focus.append("line")
-       .attr("class", "focus")
-       .style("stroke-width", "1px")
-       .style("stroke", "red")
-       .style("stroke-dasharray", "3 3")
-       .style("visibility", "hidden")
-       .attr("x1",0)
-       .attr("y1", 0)
-       .attr("x2", 0)
-       .attr("y2", 100);
 
   // If the given dates are invalid, asks for valid ones
   if (endDate <= startDate) {
@@ -297,9 +243,56 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      .attr("class", "line")
      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
      .attr("height", height)
-     .attr("d", valueLine(y_data));
+     .attr("d", valueLine(y_data))
+      .style("pointer-events", "none");
 
   generate_x_axes(x_data);
+
+// Add focus with circle, text and line
+
+var focus = svg.append('g')
+                 .attr('class', 'focus')
+ 
+  focus.append('circle')
+       .attr("class", "focus")
+       .attr('r', 10)
+       .attr("cx", 50)
+       .attr("cy", 50)
+       .style("visibility", "hidden")
+       .style("pointer-events", "none")
+       .style("fill", "none")
+       .style("stroke", "black");
+
+	focus.append('text')
+	       .attr("class", "focus")
+	       .attr("x", 50)
+	       .attr("y", 50)
+	       .style("visibility", "hidden")
+	       .style("pointer-events", "none")
+	       .style("stroke", "black");
+
+  focus.append("line")
+       .attr("class", "focus")
+       .style("stroke-width", "1px")
+       .style("stroke", "red")
+       .style("stroke-dasharray", "3 3")
+       .style("visibility", "hidden")
+       .attr("x1",0)
+       .attr("y1", 0)
+       .attr("x2", 0)
+       .attr("y2", 100);
+
+// rectangle to catch the mouse
+  svg.append("rect")
+      .attr("class", "overlay")
+      .attr("id", "pathOverlay")
+      .attr("transform", "translate("+pathTransformX+","+pathTransformY+")")
+      .attr("height", height)
+      .attr("width", axisLengthX)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .on("mousemove", function(d){ updateFocus(y_data, this);})
+      .on("mouseout", function(){return d3.selectAll(".focus").style("visibility", "hidden");});
 
    // div element for the x-axis values
    var div = d3.select("#"+target).append("div")
