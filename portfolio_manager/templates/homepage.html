@@ -83,7 +83,7 @@ Portfolio Visualizer
       </div>
     {% endif %}
     <div class="row">
-      {% for project in projects %}
+      {% for project, data in projects_data.items %}
         <div class="panel-group col-md-10 col-md-offset-1">
           <div class="panel panel-default">
             <div class="panel-heading" data-toggle="collapse" href="#collapse{{project.pk}}" aria-controls="#collapse{{project.pk}}" aria-expanded="false">
@@ -94,34 +94,14 @@ Portfolio Visualizer
               </b>
             </div>
             <div id="collapse{{project.pk}}" class="panel-collapse collapse text-center">
-              <br />
               <!-- if project has not milestones coming, show project end date -->
-              {% if not project in mils %}
-                {% for d in dates %}
-                  {% if d.dimension_object.name == "EndDate" and d.project == project %}
-                    <p>{{ d.dimension_object.name }}: {{ d.dimension_object.value }}</p>
-                  {% endif %}
-                {% endfor %}
+              {% if data.milestone %}
+                <p>Next milestone: {{ data.milestone.due_date }}</p>
+              {% else %}
+                <p>End date: {{ data.end_date.value }}</p>
               {% endif %}
-
-              <!-- next milestone for project -->
-              {% for key, value in mils.items %}
-                {% if key == project %}
-                  <p>Next milestone: {{ value }}</p>
-                {% endif %}
-              {% endfor %}
-              <br />
-
-              <!-- organization for project -->
-              <p>Organization: {{ project.parent }}</p>
-              <br />
-
-              <!-- project manager for project -->
-              {% for p in assPerson %}
-                {% if p.dimension_object.name == "ProjectManager" and p.project == project %}
-                  <p>Project manager: {{ p.dimension_object.value }}</p>
-                {% endif %}
-              {% endfor %}
+              <p>Organization: {{ data.organization.name }}</p>
+              <p>Project manager: {{ data.proj_manager.value }}</p>
             </div>
           </div>
         </div>

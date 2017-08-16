@@ -163,33 +163,37 @@ def home(request):
     # EMPLOYEE SEES STORIES AND SNAPS IT IS ALLOWED TO SEE
 
     user = request.user
-    print("ADMIN?: ")
-    print(user.has_perm('portfolio_manager.org_admin'))
-    print("EMPLOYEE?: ")
-    print(user.has_perm('portfolio_manager.employee'))
+    milestones = {}
+    projects_data = {}
 
-    print(user.groups.all())
-
-    # milestones for project sneak peeks
-    # (only future milestones), ordered by date
     if user.has_perm('portfolio_manager.org_admin') and not user.is_superuser:
-        user_org = user.groups.first()
-        projects = Project.objects.filter(parent=user_org.get_org())
-        milestones = {}
-        for project in projects:
-            milestones[project] = project.milestones.order_by('due_date').first()
-        print(milestones)
-    now = datetime.now()
-    milestones = Milestone.objects.filter(due_date__gte = now)
-    ordered_milestones = milestones.order_by('due_date')
+        user_org = user.groups.last().organizationadmins.organization
+        projects = Project.objects.filter(parent=user_org)
 
-    # dictionary for (project -> next milestone)
-    mils = {}
-    # Loop through the milestones
-    for m in ordered_milestones:
-        # Checks if m.project is already in the dictionary for next milestone
-        if m.project not in mils:
-            mils[m.project] = m.due_date
+        for project in projects:
+            # Get project manager
+            ct_apers = ContentType.objects.get_for_model(AssociatedPersonDimension)
+            for dim in project.dimensions.filter(content_type=ct_apers):
+                if dim.dimension_object.name == 'ProjectManager':
+                    proj_manager = dim.dimension_object
+
+            projects_data[project] = {
+                'organization': project.parent,
+                'proj_manager': proj_manager
+            }
+
+            p_miles = project.milestones.order_by('due_date').filter(due_date__gte = datetime.now())
+            if p_miles: # If it has a milestone after now use it
+                milestones[project] = p_miles.first().due_date
+                projects_data[project]['milestone'] = p_miles.first()
+            else:   # Else use the end date
+                ct = ContentType.objects.get_for_model(DateDimension)
+                for dim in project.dimensions.filter(content_type=ct):
+                    if dim.dimension_object.name == 'EndDate':
+                        end_date = dim.dimension_object
+                        projects_data[project]['end_date'] = end_date
+                        break
+
 
     # dimensions for project manager and end date of project
     # for project sneak peeks
@@ -201,13 +205,13 @@ def home(request):
     assPersonDs = dims.filter(content_type=assPersonD)
     dateds = dims.filter(content_type=dated)
 
-
     context = {}
-    context["projects"] = Project.objects.all()
+    context["projects"] = projects
     context["pre_add_project_form"] = AddProjectForm()
     context['assPerson'] = assPersonDs
-    context["mils"] = mils
+    context["mils"] = milestones
     context['dates'] = dateds
+    context['projects_data'] = projects_data
     return render(request, 'homepage.html', context)
 
 
