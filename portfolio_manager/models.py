@@ -438,7 +438,6 @@ class Snapshot(GetSubclassesMixin, models.Model):
         abstract = True
         ordering = ['created_at']
 
-
 class PathSnapshot(Snapshot):
     pid = models.CharField(max_length=64)
     #x = models.CharField(max_length=64)
