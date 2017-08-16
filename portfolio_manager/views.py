@@ -690,7 +690,7 @@ def get_multiple(request, field_type, field_id):
 
 def create_pathsnapshot(name, description, pid, x, y, start, end):
     p_snap = PathSnapshot()
-    project = Project.objects.get(pk=project_id)
+    project = Project.objects.get(pk=pid)
     p_snap.name = name
     p_snap.description = description
     p_snap.snap_type = 'PA'
@@ -708,7 +708,7 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
     ff_snap.name = name
     ff_snap.description = description
     ff_snap.snap_type = 'FF'
-    ff_snap.x_dimension = x
+    #ff_snap.x_dimension = x
     ff_snap.y_dimension = y
     ff_snap.radius_dimension = r
     ff_snap.start_date = start
@@ -837,7 +837,7 @@ def create_snapshot(request):
                         name=name,
                         description=description,
                         pid = pid,
-                        #x = x,
+                        x = x,
                         y = y,
                         start = start,
                         end = end

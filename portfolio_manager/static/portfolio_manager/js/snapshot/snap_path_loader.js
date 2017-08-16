@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $(function(){
   var djdata = $("#dj-data").data(),
-  start_date = Date.parse(djdata['start']),
-  end_date = Date.parse(djdata['end']),
+  start_date = Date.parse(djdata['start_date']),
+  end_date = Date.parse(djdata['end_date']),
   project_id = djdata['pid'],
   y_dimension_id = djdata['y'];
 

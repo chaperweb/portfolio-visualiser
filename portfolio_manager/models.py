@@ -440,7 +440,7 @@ class Snapshot(GetSubclassesMixin, models.Model):
 
 class PathSnapshot(Snapshot):
     pid = models.CharField(max_length=64)
-    #x = models.CharField(max_length=64)
+    x = models.CharField(max_length=64)
     y =models.CharField(max_length=64)
     start_date = models.DateField()
     end_date = models.DateField()
