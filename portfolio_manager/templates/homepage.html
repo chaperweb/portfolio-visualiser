@@ -73,12 +73,15 @@ Portfolio Visualizer
 
 <div id="projects">
   <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
-    <div class="row">
-      <button class="btn btn-orange btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal" id="add-project-btn">
-        <span class="glyphicon glyphicon-plus"></span>
-        &nbsp;Add Project
-      </button>
-    </div>
+    <h2 class="text-center">Projects</h2>
+    {% if not user.is_superuser %}
+      <div class="row">
+        <button class="btn btn-orange btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal" id="add-project-btn">
+          <span class="glyphicon glyphicon-plus"></span>
+          &nbsp;Add Project
+        </button>
+      </div>
+    {% endif %}
     <div class="row">
       {% for project in projects %}
         <div class="panel-group col-md-10 col-md-offset-1">

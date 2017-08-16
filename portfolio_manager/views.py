@@ -158,7 +158,7 @@ def import_excel(request):
 
 @login_required
 def home(request):
-    # SUPERUSER SEES THE CURRENT VIEW WITHOUT ADD PROEJCT BUTTON
+    # SUPERUSER SEES THE CURRENT VIEW WITHOUT ADD PROEJCT BUTTON    DONE
     # ADMIN SEES THE CURRENT VIEW BUT ONLY WITH ITS PROJECTS
     # EMPLOYEE SEES STORIES AND SNAPS IT IS ALLOWED TO SEE
 
@@ -168,8 +168,17 @@ def home(request):
     print("EMPLOYEE?: ")
     print(user.has_perm('portfolio_manager.employee'))
 
+    print(user.groups.all())
+
     # milestones for project sneak peeks
     # (only future milestones), ordered by date
+    if user.has_perm('portfolio_manager.org_admin') and not user.is_superuser:
+        user_org = user.groups.first()
+        projects = Project.objects.filter(parent=user_org.get_org())
+        milestones = {}
+        for project in projects:
+            milestones[project] = project.milestones.order_by('due_date').first()
+        print(milestones)
     now = datetime.now()
     milestones = Milestone.objects.filter(due_date__gte = now)
     ordered_milestones = milestones.order_by('due_date')
