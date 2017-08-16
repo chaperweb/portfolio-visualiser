@@ -466,9 +466,20 @@ class FourFieldSnapshot(Snapshot):
 class Employees(Group):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
 
+    class Meta:
+        permissions = (
+            ("employee", "Can do employee tasks"),
+        )
+
 
 class OrganizationAdmins(Group):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
+
+    class Meta:
+        permissions = (
+            ("org_admin", "Can do organization admin tasks"),
+            ("employee", "Can do employee tasks"),
+        )
 
 
 class Office365Connection(models.Model):

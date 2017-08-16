@@ -161,7 +161,12 @@ def home(request):
     # SUPERUSER SEES THE CURRENT VIEW WITHOUT ADD PROEJCT BUTTON
     # ADMIN SEES THE CURRENT VIEW BUT ONLY WITH ITS PROJECTS
     # EMPLOYEE SEES STORIES AND SNAPS IT IS ALLOWED TO SEE
-    # PUBLIC SEES PUBLIC STORIES AND SNAPS
+
+    user = request.user
+    print("ADMIN?: ")
+    print(user.has_perm('portfolio_manager.org_admin'))
+    print("EMPLOYEE?: ")
+    print(user.has_perm('portfolio_manager.employee'))
 
     # milestones for project sneak peeks
     # (only future milestones), ordered by date
