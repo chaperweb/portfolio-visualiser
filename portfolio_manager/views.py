@@ -52,6 +52,8 @@ from portfolio_manager.outlookservice import get_me, \
 
 # LOGGING
 logger = logging.getLogger('django.request')
+
+# Is the user orgadmin or superuser
 def is_admin(user):
     if user.is_superuser:
         return True
@@ -59,6 +61,10 @@ def is_admin(user):
         if group.name.endswith('_OrgAdmins'):
             return True
     return False
+
+# Is the user orgadmin
+def is_orgadmin(user):
+    return user.has_perm('portfolio_manager.org_admin') and not user.is_superuser
 
 
 def signup(request):
@@ -223,6 +229,7 @@ def admin_tools(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def milestones(request):
     # SUPERUSER SEES all
     # ADMIN SEES WHAT IT HAS ACCESS TO
@@ -233,6 +240,10 @@ def milestones(request):
         'fieldToId': defaultdict(lambda: {})
     }
     milestones = Milestone.objects.all().order_by('project')
+    if is_orgadmin(request.user):
+        org = request.user.groups.first().employees.organization
+        projects = Project.objects.filter(parent=org)
+        milestones = milestones.filter(project__in=projects)
 
     if request.method == 'POST':
         fields = {}
