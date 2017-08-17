@@ -11,103 +11,135 @@ Portfolio Visualizer
 <link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
 <link rel="stylesheet" href="{% static "portfolio_manager/css/hover-effects.css" %}">
 <link rel="stylesheet" href="{% static "portfolio_manager/css/admin_tools.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/snapshot.css" %}">
 {% endblock %}
 
 {% block content %}
-<!-- Modal -->
-<div class="modal fade" id="add-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body text-center">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h3>Add project</h3>
-        <form method="GET" action="{% url 'addproject' %}" id="pre-add-project-form">
-          {% csrf_token %}
-          {{ pre_add_project_form.as_p }}
-          <center style="margin-top: 15px;">
-            <button type="submit" class="btn btn-orange">Continue</button>
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-          </center>
-        </form>
+{% load static %}
+{% if user_type == 'employee' %}
+  <div id="news-wrapper" class="text-center col-lg-2 col-lg-offset-2">
+    <h3>NEWS</h3>
+    <h4>PLACE NEWS HERE</h4>
+  </div>
+  <div id="snap-wrapper" class="text-center col-lg-2 col-lg-offset-1">
+    <h3>SNAPSHOTS</h3>
+    {% for snap in snaps %}
+      {% if snap.snap_type == 'PA' %}
+        <div class="snap-wrapper path-snap col-sm-12">
+          <a href="{% url 'snapshots' %}/path/{{snap.id}}" class="hover-link">
+            <img class="img-responsive" src='{% static "portfolio_manager/img/path.jpg" %}' alt="{{ snap.name }}">
+      {% elif snap.snap_type == 'FF' %}
+        <div class="snap-wrapper fourfield-snap col-sm-12">
+          <a href="{% url 'snapshots' %}/fourfield/{{snap.id}}" class="hover-link">
+            <img class="img-responsive" src='{% static "portfolio_manager/img/fourfield.jpg" %}' alt="{{ snap.name }}">
+      {% endif %}
+            <div class="overlay">
+              <h2>{{ snap.name }}</h2>
+      				<p>{{ snap.description }}</p>
+            </div>
+          </a>
+        </div>
+    {% endfor %}
+  </div>
+  <div id="something-wrapper" class="text-center col-lg-2 col-lg-offset-1">
+    <h3>SOMETHING</h3>
+    <h4>CONTENT FOR SOMETHING</h4>
+  </div>
+{% else %}
+  <!-- Modal -->
+  <div class="modal fade" id="add-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3>Add project</h3>
+          <form method="GET" action="{% url 'addproject' %}" id="pre-add-project-form">
+            {% csrf_token %}
+            {{ pre_add_project_form.as_p }}
+            <center style="margin-top: 15px;">
+              <button type="submit" class="btn btn-orange">Continue</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </center>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<!-- Visualizations -->
-<div id="visualizations" class="col-lg-9 col-md-6 col-sm-12 col-xs-12">
-  <a href="{% url 'path' %}">
-    <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12">
-      <div class="hoverPath">
-          <img class="img-responsive" src="/static/portfolio_manager/img/path.jpg" alt="">
+  <!-- Visualizations -->
+  <div id="visualizations" class="col-lg-9 col-md-6 col-sm-12 col-xs-12">
+    <a href="{% url 'path' %}">
+      <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12">
+        <div class="hoverPath">
+            <img class="img-responsive" src="/static/portfolio_manager/img/path.jpg" alt="">
+            <div class="overlay">
+              <h2>Path</h2>
+      				<p>See the data in a diagram</p>
+            </div>
+        </div>
+      </div>
+    </a>
+    <a href="{% url 'fourfield' %}">
+      <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12">
+        <div class="hoverPath">
+          <img class="img-responsive" src="/static/portfolio_manager/img/fourfield.jpg" alt="">
           <div class="overlay">
-            <h2>Path</h2>
-    				<p>See the data in a diagram</p>
+            <h2>4-Field</h2>
+            <p>See the data in a 4-field</p>
           </div>
-      </div>
-    </div>
-  </a>
-  <a href="{% url 'fourfield' %}">
-    <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12">
-      <div class="hoverPath">
-        <img class="img-responsive" src="/static/portfolio_manager/img/fourfield.jpg" alt="">
-        <div class="overlay">
-          <h2>4-Field</h2>
-          <p>See the data in a 4-field</p>
         </div>
       </div>
-    </div>
-  </a>
+    </a>
 
-  <a href="{% url 'projectdependencies' %}">
-    <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12" style="padding-top: 30px;">
-      <div class="hoverPath">
-        <img class="img-responsive" src="/static/portfolio_manager/img/dependencies.jpg" alt="">
-        <div class="overlay">
-          <h2>Dependencies</h2>
-          <p>Dependencies visualization</p>
+    <a href="{% url 'projectdependencies' %}">
+      <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12" style="padding-top: 30px;">
+        <div class="hoverPath">
+          <img class="img-responsive" src="/static/portfolio_manager/img/dependencies.jpg" alt="">
+          <div class="overlay">
+            <h2>Dependencies</h2>
+            <p>Dependencies visualization</p>
+          </div>
         </div>
       </div>
-    </div>
-  </a>
-</div>
+    </a>
+  </div>
 
-<div id="projects">
-  <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
-    <h2 class="text-center">Projects</h2>
-    {% if not user.is_superuser %}
+  <div id="projects">
+    <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
+      <h2 class="text-center">Projects</h2>
+      {% if not user.is_superuser %}
+        <div class="row">
+          <button class="btn btn-orange btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal" id="add-project-btn">
+            <span class="glyphicon glyphicon-plus"></span>
+            &nbsp;Add Project
+          </button>
+        </div>
+      {% endif %}
       <div class="row">
-        <button class="btn btn-orange btn-lg col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2" style="margin-bottom: 30px;" data-toggle="modal" data-target="#add-project-modal" id="add-project-btn">
-          <span class="glyphicon glyphicon-plus"></span>
-          &nbsp;Add Project
-        </button>
-      </div>
-    {% endif %}
-    <div class="row">
-      {% for project, data in projects_data.items %}
-        <div class="panel-group col-md-10 col-md-offset-1">
-          <div class="panel panel-default">
-            <div class="panel-heading" data-toggle="collapse" href="#collapse{{project.pk}}" aria-controls="#collapse{{project.pk}}" aria-expanded="false">
-              <b>
-                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-                &nbsp;{{ project.name }}
-              </b>
-            </div>
-            <div id="collapse{{project.pk}}" class="panel-collapse collapse text-center">
-              <!-- if project has not milestones coming, show project end date -->
-              {% if data.milestone %}
-                <p>Next milestone: {{ data.milestone.due_date }}</p>
-              {% else %}
-                <p>End date: {{ data.end_date.value }}</p>
-              {% endif %}
-              <p>Organization: {{ data.organization.name }}</p>
-              <p>Project manager: {{ data.proj_manager.value }}</p>
+        {% for project, data in projects_data.items %}
+          <div class="panel-group col-md-10 col-md-offset-1">
+            <div class="panel panel-default">
+              <div class="panel-heading" data-toggle="collapse" href="#collapse{{project.pk}}" aria-controls="#collapse{{project.pk}}" aria-expanded="false">
+                <b>
+                  <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                  <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                  &nbsp;{{ project.name }}
+                </b>
+              </div>
+              <div id="collapse{{project.pk}}" class="panel-collapse collapse text-center">
+                <!-- if project has not milestones coming, show project end date -->
+                {% if data.milestone %}
+                  <p>Next milestone: {{ data.milestone.due_date }}</p>
+                {% else %}
+                  <p>End date: {{ data.end_date.value }}</p>
+                {% endif %}
+                <p>Organization: {{ data.organization.name }}</p>
+                <p>Project manager: {{ data.proj_manager.value }}</p>
+              </div>
             </div>
           </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
+      </div>
     </div>
   </div>
-</div>
-
+{% endif %}
 {% endblock %}

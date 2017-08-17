@@ -165,10 +165,17 @@ def home(request):
     user = request.user
     milestones = {}
     projects_data = {}
+    user_type = 'employee'
+    context = {}
 
-    if user.has_perm('portfolio_manager.org_admin') and not user.is_superuser:
-        user_org = user.groups.last().organizationadmins.organization
-        projects = Project.objects.filter(parent=user_org)
+    if user.has_perm('portfolio_manager.org_admin') or user.is_superuser:
+        if user.is_superuser:
+            projects = Project.objects.all()
+            user_type = 'superuser'
+        else:
+            user_org = user.groups.last().organizationadmins.organization
+            projects = Project.objects.filter(parent=user_org)
+            user_type = 'org_admin'
 
         for project in projects:
             # Get project manager
@@ -193,25 +200,20 @@ def home(request):
                         end_date = dim.dimension_object
                         projects_data[project]['end_date'] = end_date
                         break
+        context["projects"] = projects
+        context["pre_add_project_form"] = AddProjectForm()
+        context['projects_data'] = projects_data
+    else:
+        # TODO: Filter the snaps according to waht the user is allowed to see
+        # Maybe have some news feed or something something
+        user_org = user.groups.last().employees.organization
+        context['snaps'] = []
+        snap_types = Snapshot.get_subclasses()
+        for snap_type in snap_types:
+            context['snaps'].extend(snap_type.objects.all())
 
+    context['user_type'] = user_type
 
-    # dimensions for project manager and end date of project
-    # for project sneak peeks
-    dims = ProjectDimension.objects.all()
-    # ContentType
-    assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
-    dated = ContentType.objects.get_for_model(DateDimension)
-    # Get dimensions of correct content_type for assPersonDs and dateds
-    assPersonDs = dims.filter(content_type=assPersonD)
-    dateds = dims.filter(content_type=dated)
-
-    context = {}
-    context["projects"] = projects
-    context["pre_add_project_form"] = AddProjectForm()
-    context['assPerson'] = assPersonDs
-    context["mils"] = milestones
-    context['dates'] = dateds
-    context['projects_data'] = projects_data
     return render(request, 'homepage.html', context)
 
 
