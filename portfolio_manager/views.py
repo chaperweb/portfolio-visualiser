@@ -158,10 +158,6 @@ def import_excel(request):
 
 @login_required
 def home(request):
-    # SUPERUSER SEES THE CURRENT VIEW WITHOUT ADD PROEJCT BUTTON    DONE
-    # ADMIN SEES THE CURRENT VIEW BUT ONLY WITH ITS PROJECTS
-    # EMPLOYEE SEES STORIES AND SNAPS IT IS ALLOWED TO SEE
-
     user = request.user
     milestones = {}
     projects_data = {}
@@ -218,6 +214,7 @@ def home(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def admin_tools(request):
     form = AddProjectForm()
     form.fields['name'].widget.attrs['class'] = 'form-control'
