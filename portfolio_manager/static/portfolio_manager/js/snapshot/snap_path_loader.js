@@ -20,8 +20,8 @@ $(function(){
   var djdata = $("#dj-data").data(),
   start_date = Date.parse(djdata['start_date']),
   end_date = Date.parse(djdata['end_date']),
-  project_id = djdata['pid'],
-  y_dimension_id = djdata['y'];
+  project_id = djdata['project_id'],
+  y_dimension_id = djdata['y_id'];
 
   data_id_array = []
 

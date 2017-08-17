@@ -690,13 +690,12 @@ def get_multiple(request, field_type, field_id):
 
 def create_pathsnapshot(name, description, pid, x, y, start, end):
     p_snap = PathSnapshot()
-    project = Project.objects.get(pk=pid)
     p_snap.name = name
     p_snap.description = description
     p_snap.snap_type = 'PA'
-    p_snap.project = pid
-    p_snap.x = x
-    p_snap.y = y
+    p_snap.project_id = pid
+    p_snap.x_id = x
+    p_snap.y_id = y
     p_snap.start_date = start
     p_snap.end_date = end
     p_snap.save()
@@ -758,30 +757,20 @@ def snapshots(request, vis_type=None, snapshot_id=None):
                 snap = PathSnapshot.objects.get(pk=snapshot_id)
                 name = snap.name
                 desc = snap.description
-                proj = snap.project
-                x = snap.dimension_object_x
-                y = snap.dimension_object_y
-                serializer = ProjectSerializer(Project.objects.all(), many=True)
-                data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
-
-                x = ProjectDimension.objects.get(
-                    project=proj,
-                    object_id=x.id,
-                    content_type=snap.content_type_x
-                )
-                y = ProjectDimension.objects.get(
-                    project=proj,
-                    object_id=y.id,
-                    content_type=snap.content_type_y
-                )
+                proj = snap.project_id
+                x = snap.x_id
+                y = snap.y_id
+                start = snap.start_date
+                end = snap.end_date
 
                 response_data = {
                     'name': name,
                     'description': desc,
-                    'project': proj,
-                    'x': x,
-                    'y': y,
-                    'data': data
+                    'project_id': proj,
+                    'x_id': x,
+                    'y_id': y,
+                    'start': start,
+                    'end' = end
                 }
                 template = 'snapshots/single/path.html'
             elif vis_type == 'fourfield':
