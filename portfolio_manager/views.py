@@ -240,6 +240,7 @@ def milestones(request):
         'fieldToId': defaultdict(lambda: {})
     }
     milestones = Milestone.objects.all().order_by('project')
+    # If user is a orgadmin, only show their organizations projects
     if is_orgadmin(request.user):
         org = request.user.groups.first().employees.organization
         projects = Project.objects.filter(parent=org)
@@ -295,12 +296,14 @@ def milestones(request):
 
 # TODO: Require admin
 @login_required
+@user_passes_test(is_admin)
+@require_POST
 def add_user(request):
     # CAN ONLY BE DONE BY ADMIN
 
     context = {}
     if request.method == 'POST':
-        org = request.user.groups.first()
+        org = request.user.groups.first().employees.organization
         user = User.objects.create_user(
             username=request.POST['username'],
             email=request.POST.get('email'),
@@ -314,8 +317,8 @@ def add_user(request):
     return render(request, 'manage/add_user.html', context)
 
 
-# TODO: Remove this since only superusers should be able to add orgs
-# Or modify it so that admins can add orgs beneath it somehow
+# TODO: modify it so that admins can add orgs beneath it somehow
+# SKIPPED
 @require_POST
 @login_required
 def create_org(request):
@@ -337,6 +340,7 @@ def create_org(request):
 
 
 # TODO: Make this better with deeper choices
+# SKIPPED
 @require_POST
 @login_required
 def create_person(request):
@@ -366,6 +370,7 @@ def create_person(request):
 
 @require_POST
 @login_required
+@user_passes_test(is_admin)
 def add_field(request):
     try:
         form = ProjectTemplateForm(request.POST)
@@ -415,9 +420,8 @@ def add_field(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def show_project(request, project_id):
-    #   ONLY FOR ADMINS AND SUPERUSERS
-
     all_projects = Project.objects.all()
     project = all_projects.get(pk=project_id)
     project_dims = project.dimensions.all()
@@ -435,9 +439,14 @@ def show_project(request, project_id):
             if d.dimension_object.name in value:
                 dimensions[key][d.dimension_object.name] = d.dimension_object
 
+    if is_orgadmin(request.user):
+        projects = all_projects.filter(parent=request.user.groups.first().employees.organization)
+    else:
+        projects = all_projects
+
     context = {}
     context['project'] = project
-    context['projects'] = all_projects
+    context['projects'] = projects
     context['dimensions'] = dimensions
 
     return render(request, 'project.html', context)
@@ -445,9 +454,8 @@ def show_project(request, project_id):
 
 # Function that edits a project by either updating, adding or removing values
 @login_required
+@user_passes_test(is_admin)
 def project_edit(request, project_id, field_type):
-    #   ADMIN ONLY
-
     type_to_dimension = {
         'text': TextDimension,
         'number': NumberDimension,
@@ -509,9 +517,8 @@ def project_edit(request, project_id, field_type):
 #   Import google sheet
 #   TODO: Require admin
 @login_required
+@user_passes_test(is_admin)
 def importer(request):
-    #   SUPERUSERS AND ADMINS
-
     if request.method == "POST":
         response_data = from_google_sheet(request.POST.get('url'))
         return HttpResponse(
@@ -555,10 +562,12 @@ def json(request):
 
 # site to see all projects, grouped by organization
 @login_required
+@user_passes_test(is_admin)
 def projects(request):
-    #   SHOW PROJECTS ACCORDING TO PERMISSION
-
     projects_all = Project.objects.all()
+
+    if is_orgadmin(request.user):
+        projects_all = projects_all.filter(parent=request.user.groups.first().employees.organization)
 
     projects_grouped = {}
     for org, ps in groupby(projects_all, lambda p: p.parent):
@@ -575,9 +584,7 @@ def projects(request):
             budgets.append(num_dim)
 
     response_data = {
-        'projects': projects_all,
-        'organizations': projects_grouped,
-        'budgets':budgets
+        'organizations': projects_grouped
     }
     return render(request, 'projects.html', response_data)
 
@@ -586,9 +593,6 @@ def projects(request):
 @login_required
 @user_passes_test(is_admin)
 def databaseview(request):
-    #   SUPERUSERS CHOOSE ORG
-    #   ADMINS SEE THEIR ORGS
-
     if request.method == "POST":
         form = OrgForm(request.POST)
         if form.is_valid:
@@ -649,9 +653,8 @@ def databaseview(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def addproject(request):
-    #   ADMINS AND SUPERUSERS ONLY?
-
     add_project_form = None
     add_project_form_prefix = 'add_project_form'
     if request.POST:
@@ -894,54 +897,53 @@ def snapshots(request, vis_type=None, snapshot_id=None):
 
 
 @login_required
+@user_passes_test(is_admin)
+@require_POST
 def create_snapshot(request):
-    # ONLY ADMIN
+    snapshot_type = request.POST['type']
+    if snapshot_type == 'path':
+        x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
+        y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
 
-    if request.method == 'POST':
-        snapshot_type = request.POST['type']
-        if snapshot_type == 'path':
-            x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
-            y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
+        name = request.POST['name']
+        description = request.POST['description']
+        pid = request.POST['project_id']
+        x_dim = x_proj_template.dimension_object
+        y_dim = y_proj_template.dimension_object
 
-            name = request.POST['name']
-            description = request.POST['description']
-            pid = request.POST['project_id']
-            x_dim = x_proj_template.dimension_object
-            y_dim = y_proj_template.dimension_object
+        p_snap = create_pathsnapshot(
+                    name=name,
+                    description=description,
+                    project_id=pid,
+                    x=x_dim,
+                    y=y_dim
+                )
+        url = 'snapshots/path/{}'.format(p_snap.id)
+        return redirect(url, permanent=True)
+    elif snapshot_type == 'fourfield':
+        x = request.POST['x_dim']
+        y = request.POST['y_dim']
+        r = request.POST['r_dim']
+        start_ddmmyyyy = request.POST['start-date']
+        end_ddmmyyyy = request.POST['end-date']
 
-            p_snap = create_pathsnapshot(
-                        name=name,
-                        description=description,
-                        project_id=pid,
-                        x=x_dim,
-                        y=y_dim
-                    )
-            url = 'snapshots/path/{}'.format(p_snap.id)
-            return redirect(url, permanent=True)
-        elif snapshot_type == 'fourfield':
-            x = request.POST['x_dim']
-            y = request.POST['y_dim']
-            r = request.POST['r_dim']
-            start_ddmmyyyy = request.POST['start-date']
-            end_ddmmyyyy = request.POST['end-date']
+        name = request.POST['name']
+        description = request.POST['description']
+        start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+        end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+        zoom = request.POST['zoom']
 
-            name = request.POST['name']
-            description = request.POST['description']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-            zoom = request.POST['zoom']
-
-            ff_snap = create_fourfieldsnapshot(
-                        name=name,
-                        description=description,
-                        x=x,
-                        y=y,
-                        r=r,
-                        start=start,
-                        end=end,
-                        zoom=zoom
-                    )
-            url = 'snapshots/fourfield/{}'.format(ff_snap.id)
-            return redirect(url, permanent=True)
-        else:
-            pass
+        ff_snap = create_fourfieldsnapshot(
+                    name=name,
+                    description=description,
+                    x=x,
+                    y=y,
+                    r=r,
+                    start=start,
+                    end=end,
+                    zoom=zoom
+                )
+        url = 'snapshots/fourfield/{}'.format(ff_snap.id)
+        return redirect(url, permanent=True)
+    else:
+        pass
