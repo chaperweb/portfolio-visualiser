@@ -50,6 +50,8 @@ from portfolio_manager.outlookservice import get_me, \
                                              get_and_import_my_sheet, \
                                              get_my_drive
 
+from portfolio_manager.exporter import get_data_array
+
 # LOGGING
 logger = logging.getLogger('django.request')
 
@@ -495,6 +497,7 @@ def json(request):
 # site to see all projects, grouped by organization
 @login_required
 def projects(request):
+    get_data_array()
     projects_all = Project.objects.all()
 
     projects_grouped = {}
