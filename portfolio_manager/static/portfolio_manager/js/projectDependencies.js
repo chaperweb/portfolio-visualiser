@@ -196,7 +196,8 @@ function dependancies(json) {
 			link.type = "fivezero";
 	});
 
-	var svg = d3.select("body").append("svg")
+	var svg = d3.select("#visualization")
+		.append("svg")
 		.attr("width", width)
 		.attr("height", height);
 
@@ -353,7 +354,7 @@ function dependancies(json) {
     var legendWidth = Math.max(300,width*0.25)
     var legendHeight = legendRectSize + legendSpacing;
 
-    var svgLegend = d3.select("body")
+    var svgLegend = d3.select("#visualization")
                       .append("svg")
                       .attr("width", legendWidth)
                       // Scaling the svg based on number of projects

@@ -688,15 +688,17 @@ def get_multiple(request, field_type, field_id):
     return JsonResponse({'type': field_type, 'data': data})
 
 
-def create_pathsnapshot(name, description, project_id, x, y):
+def create_pathsnapshot(name, description, pid, x, y, start, end):
     p_snap = PathSnapshot()
     project = Project.objects.get(pk=project_id)
     p_snap.name = name
     p_snap.description = description
     p_snap.snap_type = 'PA'
-    p_snap.project = project
-    p_snap.dimension_object_x = x
-    p_snap.dimension_object_y = y
+    p_snap.project = pid
+    p_snap.x = x
+    p_snap.y = y
+    p_snap.start_date = start
+    p_snap.end_date = end
     p_snap.save()
     return p_snap
 
@@ -820,21 +822,25 @@ def create_snapshot(request):
     if request.method == 'POST':
         snapshot_type = request.POST['type']
         if snapshot_type == 'path':
-            x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
-            y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
 
             name = request.POST['name']
             description = request.POST['description']
             pid = request.POST['project_id']
-            x_dim = x_proj_template.dimension_object
-            y_dim = y_proj_template.dimension_object
+            x = request.POST['x_dim']
+            y = request.POST['y_dim']
+            start_ddmmyyyy = request.POST['start-date']
+            end_ddmmyyyy = request.POST['end-date']
+            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
 
             p_snap = create_pathsnapshot(
                         name=name,
                         description=description,
-                        project_id=pid,
-                        x=x_dim,
-                        y=y_dim
+                        pid = pid,
+                        #x = x,
+                        y = y,
+                        start = start,
+                        end = end
                     )
             url = 'snapshots/path/{}'.format(p_snap.id)
             return redirect(url, permanent=True)
