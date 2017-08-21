@@ -45,12 +45,13 @@ def get_data_array():
     final_data.append(field_types)
     final_data.extend(data)
 
-    print("--- DATA ---")
-    print(data)
-    # print("---NAMES---")
-    # print(field_names)
-    # print("---TYPES---")
-    # print(field_types)
-    # print("---DATA---")
-    # print(data_dict)
+    col = len(field_names)
+    i = int(col/27)
+    j = int(col - (i*26))
+    if i > 0 and j > 0:
+        x = chr(i+64) + chr(j+64)
+    elif j > 0:
+        x = chr(j+64)
+    y = len(final_data)
+
     return final_data
