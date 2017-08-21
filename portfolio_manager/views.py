@@ -48,7 +48,8 @@ from portfolio_manager.authhelper import get_signin_url, get_token_from_code, \
                                          get_access_token
 from portfolio_manager.outlookservice import get_me, \
                                              get_and_import_my_sheet, \
-                                             get_my_drive
+                                             get_my_drive, \
+                                             export_sheet
 
 from portfolio_manager.exporter import get_data_array
 
@@ -147,10 +148,20 @@ def import_excel(request):
 
 @login_required
 def export_excel(request):
+    try:
+        access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
+        user_email = request.user.m365connection.microsoft_email
+    except KeyError as e:  # There is no access_token
+        return redirect('microsoft_signin')
+
+    excel_id = request.GET['item_id']
+    export_sheet(access_token, user_email, excel_id)
+
     data = get_data_array()
     context = {
         'data': data
     }
+
     return render(request, 'export_excel.html', context)
 
 

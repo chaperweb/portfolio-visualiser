@@ -75,3 +75,21 @@ def get_and_import_my_sheet(access_token, user_email, file_id):
         return r.json()['formulas']
     else:
         return "{0}: {1}".format(r.status_code, r.text)
+
+
+def export_sheet(access_token, user_email, file_id):
+    url = graph_endpoint.format('/me/drive/items/{}/workbook/createSession'.format(file_id))
+    params = {
+        'persistChanges': 'true'
+    }
+    r = make_api_call('POST', url, access_token, user_email, parameters=params)
+
+    if (r.status_code == requests.codes.ok):
+        session_id = r.json()['id']
+        url = graph_endpoint.format('/me/drive/items/{}/workbook/worksheets'.format(file_id))
+        params = { 'workbook-session-id': session_id }
+        r = make_api_call('GET', url, access_token, user_email, parameters=params)
+        if (r.status_code == requests.codes.ok):
+            print(r.json())
+    else:
+        print('{0}: {1}'.format(r.status_code, r.text))
