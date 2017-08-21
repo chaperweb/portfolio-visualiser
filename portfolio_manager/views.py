@@ -146,6 +146,15 @@ def import_excel(request):
 
 
 @login_required
+def export_excel(request):
+    data = get_data_array()
+    context = {
+        'data': data
+    }
+    return render(request, 'export_excel.html', context)
+
+
+@login_required
 def home(request):
     if not request.user.is_authenticated():
         return redirect('login')
@@ -497,7 +506,6 @@ def json(request):
 # site to see all projects, grouped by organization
 @login_required
 def projects(request):
-    get_data_array()
     projects_all = Project.objects.all()
 
     projects_grouped = {}

@@ -55,6 +55,13 @@ class BaseDimensionHistory(models.Model):
             return str(self.value)
 
 
+    def export_string(self):
+        try:
+            return self.value.strftime("%d/%m/%Y")
+        except:
+            return str(self.value)
+
+
 class BaseHistoricalMilestone(models.Model):
     class Meta:
         abstract = True
