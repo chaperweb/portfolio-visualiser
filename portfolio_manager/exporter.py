@@ -54,4 +54,4 @@ def get_data_array():
         x = chr(j+64)
     y = len(final_data)
 
-    return final_data
+    return ("{}{}".format(x,y), final_data)

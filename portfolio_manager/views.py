@@ -50,8 +50,8 @@ from portfolio_manager.outlookservice import get_me, \
                                              get_and_import_my_sheet, \
                                              get_my_drive, \
                                              export_sheet
-
 from portfolio_manager.exporter import get_data_array
+
 
 # LOGGING
 logger = logging.getLogger('django.request')
@@ -155,9 +155,8 @@ def export_excel(request):
         return redirect('microsoft_signin')
 
     excel_id = request.GET['item_id']
-    export_sheet(access_token, user_email, excel_id)
+    data = export_sheet(access_token, user_email, excel_id)
 
-    data = get_data_array()
     context = {
         'data': data
     }
