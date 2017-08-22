@@ -85,7 +85,7 @@ class ImportHelper:
         return project
 
     def parse_date_tz(self, data):
-        history_date = parse(data, dayfirst=True) # Timestamp of the update is in second column
+        history_date = parse(data, dayfirst=True)
         # Set default timezone if timestamp doesn't include it
         if history_date.tzinfo is None or history_date.tzinfo.utcoffset(history_date) is None:
             history_date = history_date.replace(tzinfo=pytz.utc)
