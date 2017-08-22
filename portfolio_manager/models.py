@@ -24,11 +24,12 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.utils.timezone import get_current_timezone, is_naive, make_aware
+from django.utils.timezone import get_current_timezone
 from simple_history.models import HistoricalRecords
 from dateutil.parser import parse
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
+import pytz
 
 # Class for getting subclasses of a abstract base class
 class GetSubclassesMixin(object):
@@ -306,15 +307,15 @@ class DateDimension (Dimension):
 
     def update_date(self, value):
         d = parse(value, dayfirst=True)
-        if is_naive(d):
-            d = make_aware(d)
+        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
+            d = d.replace(tzinfo=pytz.utc)
         self.value = d
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
         d = parse(value, dayfirst=True)
-        if is_naive(d):
-            d = make_aware(d)
+        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
+            d = d.replace(tzinfo=pytz.utc)
         self.value = d
         self._history_date = history_date
 
