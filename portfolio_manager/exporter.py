@@ -41,6 +41,14 @@ def get_data_array():
             oob_assign(data_row, index, v[1], '')
         data.append(data_row)
 
+    # Sort by project ID primarily and updated (YEAR > MONTH > DAY) secondarily
+    data = sorted(data, key=lambda row: (
+        row[0],
+        row[1].split('/')[2],
+        row[1].split('/')[1],
+        row[1].split('/')[0]
+    ))
+
     final_data = [field_names]
     final_data.append(field_types)
     final_data.extend(data)

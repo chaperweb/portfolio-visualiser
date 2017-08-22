@@ -149,7 +149,10 @@ def import_excel(request):
 @login_required
 def export_excel(request):
     try:
-        access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
+        access_token = get_access_token(
+            request,
+            request.build_absolute_uri(reverse('gettoken'))
+        )
         user_email = request.user.m365connection.microsoft_email
     except KeyError as e:  # There is no access_token
         return redirect('microsoft_signin')
@@ -157,9 +160,7 @@ def export_excel(request):
     excel_id = request.GET['item_id']
     data = export_sheet(access_token, user_email, excel_id)
 
-    context = {
-        'data': data
-    }
+    context = { 'data': data }
 
     return render(request, 'export_excel.html', context)
 
