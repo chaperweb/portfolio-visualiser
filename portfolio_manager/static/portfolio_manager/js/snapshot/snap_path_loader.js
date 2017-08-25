@@ -29,12 +29,12 @@ $(function(){
   data_id_array.push(project_id);
 
       $("#loading-icon").hide();
-      generate_path_svg(
+      
+	generate_path_svg(
         "visualization",
         data_id_array,
         start_date,
         end_date
       );
 
-  }
 });

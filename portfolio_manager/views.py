@@ -770,7 +770,7 @@ def snapshots(request, vis_type=None, snapshot_id=None):
                     'x_id': x,
                     'y_id': y,
                     'start': start,
-                    'end' = end
+                    'end': end
                 }
                 template = 'snapshots/single/path.html'
             elif vis_type == 'fourfield':
@@ -819,8 +819,8 @@ def create_snapshot(request):
             y = request.POST['y_dim']
             start_ddmmyyyy = request.POST['start-date']
             end_ddmmyyyy = request.POST['end-date']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            start = dt.datetime.strptime(start_ddmmyyyy, "%d-%m-%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%d-%m-%Y").strftime("%Y-%m-%d")
 
             p_snap = create_pathsnapshot(
                         name=name,
