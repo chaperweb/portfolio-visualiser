@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 $(function(){
   $("#save-path-snap-btn").click(function(){
     project_id = $("#project-selector").find("option:selected").val();
-    x_dimension_id = $("#x-selector").val();
+    x_dimension_id = $("#x-selector").find("option:selected").val();
     y_dimension_id = $("#y-selector").find("option:selected").val();
     start_date = $("#start-date-selector").val();
     end_date = $("#end-date-selector").val();

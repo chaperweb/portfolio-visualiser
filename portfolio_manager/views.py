@@ -707,7 +707,7 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
     ff_snap.name = name
     ff_snap.description = description
     ff_snap.snap_type = 'FF'
-    #ff_snap.x_dimension = x
+    ff_snap.x_dimension = x
     ff_snap.y_dimension = y
     ff_snap.radius_dimension = r
     ff_snap.start_date = start
@@ -819,8 +819,8 @@ def create_snapshot(request):
             y = request.POST['y_dim']
             start_ddmmyyyy = request.POST['start-date']
             end_ddmmyyyy = request.POST['end-date']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%d-%m-%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%d-%m-%Y").strftime("%Y-%m-%d")
+            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
 
             p_snap = create_pathsnapshot(
                         name=name,
