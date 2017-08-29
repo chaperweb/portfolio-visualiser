@@ -526,7 +526,7 @@ var focus = svg.append('g')
 
       svg.append("text")
          .attr("id", "xLabel"+rounds+"Hover")
-         .attr("class", "pathXlabel")
+         .attr("class", "pathXlabelHover")
          .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
          .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
          .attr("x", 0)
