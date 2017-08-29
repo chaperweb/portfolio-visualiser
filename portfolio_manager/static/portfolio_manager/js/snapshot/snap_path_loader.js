@@ -27,7 +27,7 @@ $(function(){
   y_dimension_id = djdata['y']
   x_dimension_ids = djdata['x'].trim().split(",")
   data_url = djdata['url'];
-console.log(djdata)
+//console.log(djdata)
 
 $.ajax({
   url: data_url
@@ -47,6 +47,10 @@ data_id_array = x_dimension_ids;
         start_date,
         end_date
       );
+
+$("#projectPanel").html($("#projectName").text())
+$("#xPanel").html($(".pathXlabel").text())
+$("#yPanel").html($("#yAxisLabel").text())
 
 });
 
