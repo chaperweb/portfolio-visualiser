@@ -16,9 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-var db_json;
 
-function get_selected_project(project_id) {
+function get_selected_project(json, project_id) {
   for (var i = 0; i < db_json.length; i++) {
     if(db_json[i].id == project_id) {
       return db_json[i];
@@ -37,9 +36,9 @@ function get_dimension(project, id) {
   return null;
 };
 
-function generate_path_data(data_id_array) {
+function generate_path_data(json, data_id_array) {
 
-  var project = get_selected_project(data_id_array[0]);
+  var project = get_selected_project(json, data_id_array[0]);
   var pathData = [];
   var y_end_date = 0;
 
@@ -99,7 +98,7 @@ function generate_data_chunk(dimension) {
 };
 
 // Generate the svg container for the visualization
-function generate_path_svg(target, data_id_array, startDate, endDate) {
+function generate_path_svg(json, target, data_id_array, startDate, endDate) {
 
   $('#'+ target).html('');
 
@@ -114,7 +113,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
         bottom: height * 0.05
       };
 
-  var pathData = generate_path_data(data_id_array)
+  var pathData = generate_path_data(json, data_id_array)
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
   var startDefault = y_data[0].history_date

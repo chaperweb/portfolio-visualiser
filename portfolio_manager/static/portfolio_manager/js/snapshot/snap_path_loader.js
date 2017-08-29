@@ -16,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+$.ajax({
+  url: "json"
+}).done(function(data) {
+  db_json = data;
+});
+
 $(function(){
   var djdata = $("#dj-data").data(),
   start_date = Date.parse(djdata['start_date']),
@@ -29,8 +35,9 @@ $(function(){
   data_id_array.push(project_id);
 
       $("#loading-icon").hide();
-      
+
 	generate_path_svg(
+        db_json,
         "visualization",
         data_id_array,
         start_date,

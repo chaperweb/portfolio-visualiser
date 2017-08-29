@@ -43,7 +43,7 @@ $(function() {
     data_id_array.unshift(y_dimension_id);
     data_id_array.unshift(project_id);
 
-    generate_path_svg( "visualization", data_id_array, start_date, end_date);
+    generate_path_svg(db_json, "visualization", data_id_array, start_date, end_date);
 
   };
 
