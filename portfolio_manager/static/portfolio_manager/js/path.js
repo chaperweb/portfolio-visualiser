@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 function get_selected_project(json, project_id) {
-  for (var i = 0; i < db_json.length; i++) {
-    if(db_json[i].id == project_id) {
-      return db_json[i];
+  for (var i = 0; i < json.length; i++) {
+    if(json[i].id == project_id) {
+      return json[i];
     }
   }
   return null;
@@ -37,7 +37,6 @@ function get_dimension(project, id) {
 };
 
 function generate_path_data(json, data_id_array) {
-
   var project = get_selected_project(json, data_id_array[0]);
   var pathData = [];
   var y_end_date = 0;

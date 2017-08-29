@@ -16,23 +16,25 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-$.ajax({
-  url: "json"
-}).done(function(data) {
-  db_json = data;
-});
+
 
 $(function(){
+
   var djdata = $("#dj-data").data(),
-  start_date = Date.parse(djdata['start_date']),
-  end_date = Date.parse(djdata['end_date']),
-  project_id = djdata['project_id'],
-  y_dimension_id = djdata['y_id'];
+  start_date = Date.parse(djdata['start']),
+  end_date = Date.parse(djdata['end']),
+  project_id = djdata['project'],
+  y_dimension_id = djdata['y']
+  data_url = djdata['url'];
+console.log(djdata)
+$.ajax({
+  url: data_url
+}).done(function(data) {
+  var db_json = data;
 
-  data_id_array = []
-
-  data_id_array.push(y_dimension_id);
+data_id_array = []
   data_id_array.push(project_id);
+  data_id_array.push(y_dimension_id); 
 
       $("#loading-icon").hide();
 
@@ -44,4 +46,7 @@ $(function(){
         end_date
       );
 
+});
+
+  
 });
