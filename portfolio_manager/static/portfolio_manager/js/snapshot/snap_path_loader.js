@@ -18,20 +18,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $(function(){
   var djdata = $("#dj-data").data(),
-      jsonurl = djdata['url'],
-      project = djdata['project'],
-      x = djdata['x'],
-      y = djdata['y'],
-      data = djdata['data'];
+  start_date = Date.parse(djdata['start']),
+  end_date = Date.parse(djdata['end']),
+  project_id = djdata['pid'],
+  y_dimension_id = djdata['y'];
 
-  for (var i = 0, len = data.length; i < len; i++) {
-    if (data[i].id == project) {
+  data_id_array = []
+
+  data_id_array.push(y_dimension_id);
+  data_id_array.push(project_id);
+
       $("#loading-icon").hide();
-      update_path_visualization(
-        get_dimension(data[i], x),
-        get_dimension(data[i], y)
+      generate_path_svg(
+        "visualization",
+        data_id_array,
+        start_date,
+        end_date
       );
-      break;
-    }
+
   }
 });

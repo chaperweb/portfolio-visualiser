@@ -759,18 +759,19 @@ def get_multiple(request, field_type, field_id):
     data = [{'id': p.pk, 'name': str(p)} for p in value]
     return JsonResponse({'type': field_type, 'data': data})
 
-
 def create_pathsnapshot(name, description, project_id, x, y):
     #   ADMIN ONLY
-
+    
     p_snap = PathSnapshot()
     project = Project.objects.get(pk=project_id)
     p_snap.name = name
     p_snap.description = description
     p_snap.snap_type = 'PA'
-    p_snap.project = project
-    p_snap.dimension_object_x = x
-    p_snap.dimension_object_y = y
+    p_snap.project = pid
+    p_snap.x = x
+    p_snap.y = y
+    p_snap.start_date = start
+    p_snap.end_date = end
     p_snap.save()
     return p_snap
 
@@ -897,6 +898,7 @@ def snapshots(request, vis_type=None, snapshot_id=None):
 @user_passes_test(is_admin)
 @require_POST
 def create_snapshot(request):
+  
     snapshot_type = request.POST['type']
     if snapshot_type == 'path':
         x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
@@ -944,3 +946,4 @@ def create_snapshot(request):
         return redirect(url, permanent=True)
     else:
         pass
+
