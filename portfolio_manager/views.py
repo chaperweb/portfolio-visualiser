@@ -55,12 +55,9 @@ logger = logging.getLogger('django.request')
 
 # Is the user orgadmin or superuser
 def is_admin(user):
-    if user.is_superuser:
-        return True
-    for group in user.groups.all(): # Check if admin
-        if group.name.endswith('_OrgAdmins'):
-            return True
-    return False
+    superuser = user.is_superuser
+    admin = user.has_perm('portfolio_manager.org_admin')
+    return superuser or admin
 
 # Is the user orgadmin
 def is_orgadmin(user):
@@ -170,7 +167,7 @@ def home(request):
     user_type = 'employee'
     context = {}
 
-    if user.has_perm('portfolio_manager.org_admin') or user.is_superuser:
+    if is_admin(user):
         if user.is_superuser:
             projects = Project.objects.all()
             user_type = 'superuser'
