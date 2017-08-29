@@ -18,14 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $(function(){
   $("#save-path-snap-btn").click(function(){
-    project_id = $("#project-selector").find("option:selected").val();
-    x_dimension_id = $("#x-selector").find("option:selected").val();
-    y_dimension_id = $("#y-selector").find("option:selected").val();
+    project_id = $("#project-selector").val();
+    x_dimension_ids = $("#x-selector").val();
+    y_dimension_id = $("#y-selector").val();
     start_date = $("#start-date-selector").val();
     end_date = $("#end-date-selector").val();
 
     $("#path-snap-project-id").val(project_id);
-    $("#path-snap-x-id").val(x_dimension_id);
+    $("#path-snap-x-id").val(x_dimension_ids);
     $("#path-snap-y-id").val(y_dimension_id);
     $("#path-snap-start-date").val(start_date);
     $("#path-snap-end-date").val(end_date);
