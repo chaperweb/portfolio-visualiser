@@ -44,6 +44,7 @@ function generate_path_data(json, data_id_array) {
   data_id_array = data_id_array.slice(1)
 
   if (project) {
+    projectName = project.name
     for (id in data_id_array) {
       var dimension = get_dimension(project, data_id_array[id]);
       if (dimension) {
@@ -113,6 +114,7 @@ function generate_path_svg(json, target, data_id_array, startDate, endDate) {
       };
 
   var pathData = generate_path_data(json, data_id_array)
+  var projectName = ""
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
   var startDefault = y_data[0].history_date
@@ -196,6 +198,11 @@ function generate_path_svg(json, target, data_id_array, startDate, endDate) {
      .attr("id", "yAxisLabel")
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
+
+  svg.append("text")
+      .attr("id", "projectName")
+      .style("visibility", "hidden")
+      .text(projectName)
 
   // If the given dates are invalid, asks for valid ones
   if (endDate <= startDate) {
