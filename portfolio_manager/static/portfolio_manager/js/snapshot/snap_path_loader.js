@@ -25,18 +25,18 @@ $(function(){
   end_date = Date.parse(djdata['end']),
   project_id = djdata['project'],
   y_dimension_id = djdata['y']
-  x_dimension_ids = djdata['x']
+  x_dimension_ids = djdata['x'].trim().split(",")
   data_url = djdata['url'];
 console.log(djdata)
+
 $.ajax({
   url: data_url
 }).done(function(data) {
   var db_json = data;
 
-data_id_array = []
-  data_id_array.push(project_id);
-  data_id_array.push(y_dimension_id);
-  data_id_array.push(x_dimension_ids);
+data_id_array = x_dimension_ids;
+  data_id_array.unshift(y_dimension_id);
+  data_id_array.unshift(project_id);
 
       $("#loading-icon").hide();
 

@@ -120,7 +120,7 @@ function generate_path_svg(json, target, data_id_array, startDate, endDate) {
 
 
   // human readable timeformat from history_date
-  var ddmmyy = d3.timeFormat("%d-%m-%Y");
+  var ddmmyy = d3.timeFormat("%d/%m/%Y");
 
   // set the min and max date by the selected project data
   $('.datepicker').datepicker("option", "minDate", new Date(startDefault))
