@@ -76,13 +76,13 @@ function generate_path_data(json, data_id_array) {
 };
 
 function returnProjectName(json, projectId) {
-var project = get_selected_project(json, projectId);
+  var project = get_selected_project(json, projectId);
 
-if (project) {
-return project.name
-};
+  if (project) {
+    return project.name
+  };
 
-return "";
+  return "";
 };
 
 // Generates two dimensional set of the data sorted by date
@@ -124,7 +124,7 @@ function generate_path_svg(json, target, data_id_array, startDate, endDate) {
       };
 
 var projectName = returnProjectName(json, data_id_array[0])
-  var pathData = generate_path_data(json, data_id_array)  
+  var pathData = generate_path_data(json, data_id_array)
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
   var startDefault = y_data[0].history_date
