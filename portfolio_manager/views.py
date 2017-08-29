@@ -34,7 +34,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.views import login,logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.urlresolvers import reverse
 
 from portfolio_manager.models import *
@@ -52,6 +52,16 @@ from portfolio_manager.outlookservice import get_me, \
 
 # LOGGING
 logger = logging.getLogger('django.request')
+
+# Is the user orgadmin or superuser
+def is_admin(user):
+    superuser = user.is_superuser
+    admin = user.has_perm('portfolio_manager.org_admin')
+    return superuser or admin
+
+# Is the user orgadmin
+def is_orgadmin(user):
+    return user.has_perm('portfolio_manager.org_admin') and not user.is_superuser
 
 
 def signup(request):
@@ -77,7 +87,10 @@ def is_int(s):
         return False
 
 
+# SUPERUSER CAN DO MS THINGS TO ALL ORGS
+# ADMINS ONLY GET TO DO MS THINGS TO ITS ORGS
 @login_required
+@user_passes_test(is_admin)
 def microsoft_signin(request):
     redirect_uri = request.build_absolute_uri(reverse('gettoken'))
     sign_in_url = get_signin_url(redirect_uri)
@@ -85,6 +98,7 @@ def microsoft_signin(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def gettoken(request):
     try:    # Check if the user already has connected
         request.user.m365connection
@@ -115,6 +129,7 @@ def gettoken(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def excel(request):
     #   Get access token
     try:
@@ -130,6 +145,7 @@ def excel(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def import_excel(request):
     #   Get access token
     try:
@@ -145,43 +161,63 @@ def import_excel(request):
 
 @login_required
 def home(request):
-    if not request.user.is_authenticated():
-        return redirect('login')
-    # milestones for project sneak peeks
-    # (only future milestones), ordered by date
-    now = datetime.now()
-    milestones = Milestone.objects.filter(due_date__gte = now)
-    ordered_milestones = milestones.order_by('due_date')
-
-    # dictionary for (project -> next milestone)
-    mils = {}
-    # Loop through the milestones
-    for m in ordered_milestones:
-        # Checks if m.project is already in the dictionary for next milestone
-        if m.project not in mils:
-            mils[m.project] = m.due_date
-
-    # dimensions for project manager and end date of project
-    # for project sneak peeks
-    dims = ProjectDimension.objects.all()
-    # ContentType
-    assPersonD = ContentType.objects.get_for_model(AssociatedPersonDimension)
-    dated = ContentType.objects.get_for_model(DateDimension)
-    # Get dimensions of correct content_type for assPersonDs and dateds
-    assPersonDs = dims.filter(content_type=assPersonD)
-    dateds = dims.filter(content_type=dated)
-
-
+    user = request.user
+    milestones = {}
+    projects_data = {}
+    user_type = 'employee'
     context = {}
-    context["projects"] = Project.objects.all()
-    context["pre_add_project_form"] = AddProjectForm()
-    context['assPerson'] = assPersonDs
-    context["mils"] = mils
-    context['dates'] = dateds
+
+    if is_admin(user):
+        if user.is_superuser:
+            projects = Project.objects.all()
+            user_type = 'superuser'
+        else:
+            user_org = user.groups.last().organizationadmins.organization
+            projects = Project.objects.filter(parent=user_org)
+            user_type = 'org_admin'
+
+        for project in projects:
+            # Get project manager
+            ct_apers = ContentType.objects.get_for_model(AssociatedPersonDimension)
+            for dim in project.dimensions.filter(content_type=ct_apers):
+                if dim.dimension_object.name == 'ProjectManager':
+                    proj_manager = dim.dimension_object
+
+            projects_data[project] = {
+                'organization': project.parent,
+                'proj_manager': proj_manager
+            }
+
+            p_miles = project.milestones.order_by('due_date').filter(due_date__gte = datetime.now())
+            if p_miles: # If it has a milestone after now use it
+                milestones[project] = p_miles.first().due_date
+                projects_data[project]['milestone'] = p_miles.first()
+            else:   # Else use the end date
+                ct = ContentType.objects.get_for_model(DateDimension)
+                for dim in project.dimensions.filter(content_type=ct):
+                    if dim.dimension_object.name == 'EndDate':
+                        end_date = dim.dimension_object
+                        projects_data[project]['end_date'] = end_date
+                        break
+        context["projects"] = projects
+        context["pre_add_project_form"] = AddProjectForm()
+        context['projects_data'] = projects_data
+    else:
+        # TODO: Filter the snaps according to waht the user is allowed to see
+        # Maybe have some news feed or something something
+        user_org = user.groups.last().employees.organization
+        context['snaps'] = []
+        snap_types = Snapshot.get_subclasses()
+        for snap_type in snap_types:
+            context['snaps'].extend(snap_type.objects.all())
+
+    context['user_type'] = user_type
+
     return render(request, 'homepage.html', context)
 
 
 @login_required
+@user_passes_test(is_admin)
 def admin_tools(request):
     form = AddProjectForm()
     form.fields['name'].widget.attrs['class'] = 'form-control'
@@ -190,13 +226,22 @@ def admin_tools(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def milestones(request):
+    # SUPERUSER SEES all
+    # ADMIN SEES WHAT IT HAS ACCESS TO
+
     context = {
         'milestones': {},
         'fields': {},
         'fieldToId': defaultdict(lambda: {})
     }
     milestones = Milestone.objects.all().order_by('project')
+    # If user is a orgadmin, only show their organizations projects
+    if is_orgadmin(request.user):
+        org = request.user.groups.first().employees.organization
+        projects = Project.objects.filter(parent=org)
+        milestones = milestones.filter(project__in=projects)
 
     if request.method == 'POST':
         fields = {}
@@ -248,10 +293,14 @@ def milestones(request):
 
 # TODO: Require admin
 @login_required
+@user_passes_test(is_admin)
+@require_POST
 def add_user(request):
+    # CAN ONLY BE DONE BY ADMIN
+
     context = {}
     if request.method == 'POST':
-        org = request.user.groups.first()
+        org = request.user.groups.first().employees.organization
         user = User.objects.create_user(
             username=request.POST['username'],
             email=request.POST.get('email'),
@@ -265,6 +314,8 @@ def add_user(request):
     return render(request, 'manage/add_user.html', context)
 
 
+# TODO: modify it so that admins can add orgs beneath it somehow
+# SKIPPED
 @require_POST
 @login_required
 def create_org(request):
@@ -285,9 +336,14 @@ def create_org(request):
         )
 
 
+# TODO: Make this better with deeper choices
+# SKIPPED
 @require_POST
 @login_required
 def create_person(request):
+    #   SUPERUSERS USE ADMINSITE
+    #   ADMINS USE THIS
+
     first = request.POST.get('first')
     last = request.POST.get('last')
     data = {'first': first, 'last': last}
@@ -311,6 +367,7 @@ def create_person(request):
 
 @require_POST
 @login_required
+@user_passes_test(is_admin)
 def add_field(request):
     try:
         form = ProjectTemplateForm(request.POST)
@@ -360,6 +417,7 @@ def add_field(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def show_project(request, project_id):
     all_projects = Project.objects.all()
     project = all_projects.get(pk=project_id)
@@ -378,9 +436,14 @@ def show_project(request, project_id):
             if d.dimension_object.name in value:
                 dimensions[key][d.dimension_object.name] = d.dimension_object
 
+    if is_orgadmin(request.user):
+        projects = all_projects.filter(parent=request.user.groups.first().employees.organization)
+    else:
+        projects = all_projects
+
     context = {}
     context['project'] = project
-    context['projects'] = all_projects
+    context['projects'] = projects
     context['dimensions'] = dimensions
 
     return render(request, 'project.html', context)
@@ -388,6 +451,7 @@ def show_project(request, project_id):
 
 # Function that edits a project by either updating, adding or removing values
 @login_required
+@user_passes_test(is_admin)
 def project_edit(request, project_id, field_type):
     type_to_dimension = {
         'text': TextDimension,
@@ -450,6 +514,7 @@ def project_edit(request, project_id, field_type):
 #   Import google sheet
 #   TODO: Require admin
 @login_required
+@user_passes_test(is_admin)
 def importer(request):
     if request.method == "POST":
         response_data = from_google_sheet(request.POST.get('url'))
@@ -494,8 +559,12 @@ def json(request):
 
 # site to see all projects, grouped by organization
 @login_required
+@user_passes_test(is_admin)
 def projects(request):
     projects_all = Project.objects.all()
+
+    if is_orgadmin(request.user):
+        projects_all = projects_all.filter(parent=request.user.groups.first().employees.organization)
 
     projects_grouped = {}
     for org, ps in groupby(projects_all, lambda p: p.parent):
@@ -512,15 +581,14 @@ def projects(request):
             budgets.append(num_dim)
 
     response_data = {
-        'projects': projects_all,
-        'organizations': projects_grouped,
-        'budgets':budgets
+        'organizations': projects_grouped
     }
     return render(request, 'projects.html', response_data)
 
 
 # site to show datafields by organization
 @login_required
+@user_passes_test(is_admin)
 def databaseview(request):
     if request.method == "POST":
         form = OrgForm(request.POST)
@@ -582,6 +650,7 @@ def databaseview(request):
 
 
 @login_required
+@user_passes_test(is_admin)
 def addproject(request):
     add_project_form = None
     add_project_form_prefix = 'add_project_form'
@@ -645,18 +714,21 @@ def addproject(request):
 
 
 # Gets all organizations and return them in a JSON string
+@require_GET
 def get_orgs(request):
     serializer = OrganizationSerializer(Organization.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
 
 # Gets all persons and return them in a JSON string
+@require_GET
 def get_pers(request):
     serializer = PersonSerializer(Person.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
 
 # Gets all projects and returns them with name and id in a JSON
+@require_GET
 def get_proj(request):
     serializer = ProjectNameIdSerializer(Project.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
@@ -687,8 +759,9 @@ def get_multiple(request, field_type, field_id):
     data = [{'id': p.pk, 'name': str(p)} for p in value]
     return JsonResponse({'type': field_type, 'data': data})
 
-
-def create_pathsnapshot(name, description, pid, x, y, start, end):
+def create_pathsnapshot(name, description, project_id, x, y):
+    #   ADMIN ONLY
+    
     p_snap = PathSnapshot()
     project = Project.objects.get(pk=project_id)
     p_snap.name = name
@@ -704,6 +777,8 @@ def create_pathsnapshot(name, description, pid, x, y, start, end):
 
 
 def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
+    #   ADMIN ONLY
+
     ff_snap = FourFieldSnapshot()
     ff_snap.name = name
     ff_snap.description = description
@@ -721,6 +796,8 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
 
 @login_required
 def snapshots(request, vis_type=None, snapshot_id=None):
+    #   FILTER THE SNAPS ACCORDING TO PERMISSION
+
     response_data = {}
     template = 'snapshots/error.html'
 
@@ -818,56 +895,55 @@ def snapshots(request, vis_type=None, snapshot_id=None):
 
 
 @login_required
+@user_passes_test(is_admin)
+@require_POST
 def create_snapshot(request):
-    if request.method == 'POST':
-        snapshot_type = request.POST['type']
-        if snapshot_type == 'path':
+  
+    snapshot_type = request.POST['type']
+    if snapshot_type == 'path':
+        x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
+        y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
 
-            name = request.POST['name']
-            description = request.POST['description']
-            pid = request.POST['project_id']
-            x = request.POST['x_dim']
-            y = request.POST['y_dim']
-            start_ddmmyyyy = request.POST['start-date']
-            end_ddmmyyyy = request.POST['end-date']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+        name = request.POST['name']
+        description = request.POST['description']
+        pid = request.POST['project_id']
+        x_dim = x_proj_template.dimension_object
+        y_dim = y_proj_template.dimension_object
 
-            p_snap = create_pathsnapshot(
-                        name=name,
-                        description=description,
-                        pid = pid,
-                        #x = x,
-                        y = y,
-                        start = start,
-                        end = end
-                    )
-            url = 'snapshots/path/{}'.format(p_snap.id)
-            return redirect(url, permanent=True)
-        elif snapshot_type == 'fourfield':
-            x = request.POST['x_dim']
-            y = request.POST['y_dim']
-            r = request.POST['r_dim']
-            start_ddmmyyyy = request.POST['start-date']
-            end_ddmmyyyy = request.POST['end-date']
+        p_snap = create_pathsnapshot(
+                    name=name,
+                    description=description,
+                    project_id=pid,
+                    x=x_dim,
+                    y=y_dim
+                )
+        url = 'snapshots/path/{}'.format(p_snap.id)
+        return redirect(url, permanent=True)
+    elif snapshot_type == 'fourfield':
+        x = request.POST['x_dim']
+        y = request.POST['y_dim']
+        r = request.POST['r_dim']
+        start_ddmmyyyy = request.POST['start-date']
+        end_ddmmyyyy = request.POST['end-date']
 
-            name = request.POST['name']
-            description = request.POST['description']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-            zoom = request.POST['zoom']
+        name = request.POST['name']
+        description = request.POST['description']
+        start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+        end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+        zoom = request.POST['zoom']
 
-            ff_snap = create_fourfieldsnapshot(
-                        name=name,
-                        description=description,
-                        x=x,
-                        y=y,
-                        r=r,
-                        start=start,
-                        end=end,
-                        zoom=zoom
-                    )
-            url = 'snapshots/fourfield/{}'.format(ff_snap.id)
-            return redirect(url, permanent=True)
-        else:
-            pass
+        ff_snap = create_fourfieldsnapshot(
+                    name=name,
+                    description=description,
+                    x=x,
+                    y=y,
+                    r=r,
+                    start=start,
+                    end=end,
+                    zoom=zoom
+                )
+        url = 'snapshots/fourfield/{}'.format(ff_snap.id)
+        return redirect(url, permanent=True)
+    else:
+        pass
+

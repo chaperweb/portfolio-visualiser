@@ -58,6 +58,14 @@ You can access the software from address `localhost:8000`, and for the admin acc
 
 # Data input
 
+## User management
+To get started you need to create a superuser:
+```
+$ python3 manage.py createsuperuser
+```
+Afterwards just follow the instructions. Either you can start from scratch with everything by adding organizations and projects from the django adminpage:`localhost:8000/admin`.
+After you've added the organizations you want you can start adding users. There are three types of users: superuser, organizationadmin and employee. When adding the users you need to remember to add the user to the groups it should be included in. Employees should only be added to the employee-group but organizationadmins should be added to both the org_admin-group and the employee-group of the organization it is to have admin rights to. Organizationadmins should also be given the `staff` status so that they can access the django admin page. Currently they don't have any permissions on the admin page but that will be fixed at a later time.
+
 TBA
 
 # How to run tests

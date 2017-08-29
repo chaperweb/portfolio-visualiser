@@ -21,7 +21,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.timezone import get_current_timezone, is_naive, make_aware
@@ -459,9 +459,19 @@ class FourFieldSnapshot(Snapshot):
 class Employees(Group):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
 
+    class Meta:
+        permissions = (
+            ("employee", "Can do employee tasks"),
+        )
+
 
 class OrganizationAdmins(Group):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
+
+    class Meta:
+        permissions = (
+            ("org_admin", "Can do organization admin tasks"),
+        )
 
 
 class Office365Connection(models.Model):
@@ -477,17 +487,23 @@ class Office365Connection(models.Model):
     expiration = models.IntegerField()
 
 
-@receiver(post_save, sender=Organization)
 def create_groups(sender, instance, created, **kwargs):
     if created:
-        Employees.objects.create(
+        e = Employees.objects.create(
             organization=instance,
             name = '{}_Employees'.format(instance.name)
         )
-        OrganizationAdmins.objects.create(
+        a = OrganizationAdmins.objects.create(
             organization=instance,
             name = '{}_OrgAdmins'.format(instance.name)
         )
+        pe = Permission.objects.get(codename='employee')
+        pa = Permission.objects.get(codename='org_admin')
+
+        e.save()
+        a.save()
+        e.permissions.add(pe)
+        a.permissions.add(pa)
     else:
         e = Employees.objects.get(organization=instance)
         a = OrganizationAdmins.objects.get(organization=instance)
@@ -497,9 +513,5 @@ def create_groups(sender, instance, created, **kwargs):
 
         e.save()
         a.save()
-
-
-@receiver(post_save, sender=Organization)
-def save_groups(sender, instance, **kwargs):
-    instance.employees.save()
-    instance.organizationadmins.save()
+        
+post_save.connect(create_groups, sender=Organization)
