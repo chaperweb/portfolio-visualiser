@@ -49,7 +49,9 @@ data_id_array = x_dimension_ids;
       );
 
 $("#projectPanel").html($("#projectName").text())
-$("#xPanel").html($(".pathXlabel").text())
+$("#xPanel").html($(".pathXlabel").each( function(i) {
+  $("#xPanel").html($("#xPanel").html() + i.text()<br>) 
+}))
 $("#yPanel").html($("#yAxisLabel").text())
 
 });
