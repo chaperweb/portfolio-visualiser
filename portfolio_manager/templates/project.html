@@ -108,9 +108,9 @@ Projects | {{project.name}}
                   {% for history_obj in dim_obj.history.all %}
                     {% if forloop.counter < 6 %}
                       <tr>
-                        <td>{{history_obj.history_date|utc|date:"d/m/Y H:i"}}</td>
+                        <td>{{history_obj.history_date|date:"d/m/Y"}}</td>
                         {% if dim_type|get_type == "date" %}
-                          <td>{{history_obj.value|date:"d/m/Y H:i"}}</td>
+                          <td>{{history_obj.value|date:"d/m/Y"}}</td>
                         {% else %}
                           <td>{{history_obj.value}}</td>
                         {% endif %}

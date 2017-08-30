@@ -320,7 +320,7 @@ class DateDimension (Dimension):
         self._history_date = history_date
 
     def __str__(self):
-        return self.value.astimezone(get_current_timezone()).strftime("%d/%m/%Y %H:%M")
+        return self.value.strftime("%d/%m/%Y")
 
 
 class AssociatedOrganizationDimension (Dimension):
