@@ -27,7 +27,7 @@
           </button>
           <ul class="more-menu dropdown-menu dropdown-menu-right pull-right">
             <li><a class="import-link" href="{% url 'import_excel' %}?item_id={{ excel.id }}">Import this excel</a></li>
-            <li class="disabled"><a href="{% url 'excel' %}?item_id={{ excel.id }}">Export to this excel</a></li>
+            <li><a class="export-link" href="{% url 'export_excel' %}?item_id={{ excel.id }}">Export to this excel</a></li>
           </ul>
         </li>
       {% endfor %}

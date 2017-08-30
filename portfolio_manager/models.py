@@ -55,6 +55,13 @@ class BaseDimensionHistory(models.Model):
             return str(self.value)
 
 
+    def export_string(self):
+        try:
+            return self.value.strftime("%d/%m/%Y")
+        except:
+            return str(self.value)
+
+
 class BaseHistoricalMilestone(models.Model):
     class Meta:
         abstract = True
@@ -285,6 +292,7 @@ class TextDimension (Dimension):
     value = models.TextField()
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
+    data_type = 'TEXT'
 
     def __str__(self):
         return self.value
@@ -294,6 +302,7 @@ class NumberDimension (Dimension):
     value = models.DecimalField(max_digits = 20, decimal_places = 2)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
+    data_type = 'NUM'
 
     def __str__(self):
         return str(self.value)
@@ -303,6 +312,7 @@ class DateDimension (Dimension):
     value = models.DateTimeField()
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
+    data_type = 'DATE'
 
     def update_date(self, value):
         d = parse(value, dayfirst=True)
@@ -326,6 +336,7 @@ class AssociatedOrganizationDimension (Dimension):
     value = models.ForeignKey(Organization, null=True)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
+    data_type = 'AORG'
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
@@ -348,6 +359,7 @@ class AssociatedPersonDimension (Dimension):
     value = models.ForeignKey(Person, null=True)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
+    data_type = 'APER'
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
@@ -368,6 +380,7 @@ class AssociatedPersonDimension (Dimension):
 
 class AssociatedPersonsDimension(Dimension):
     value = models.ManyToManyField(Person)
+    data_type = 'APERS'
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
@@ -398,6 +411,7 @@ class AssociatedPersonsDimension(Dimension):
 
 class AssociatedProjectsDimension(Dimension):
     value = models.ManyToManyField(Project)
+    data_type = 'APROJ'
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):

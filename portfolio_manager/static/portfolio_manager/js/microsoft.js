@@ -10,7 +10,7 @@ $(function(){
     }
   });
 
-  $('.import-link').click(function(e) {
+  $('.import-link, .export-link').click(function(e) {
     $('#loading').show();
   });
 });
