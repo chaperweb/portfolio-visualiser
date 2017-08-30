@@ -54,8 +54,10 @@ Projects | {{project.name}}
               aria-expanded="false">
             <!--  Triangles  -->
             <div class="col-lg-1">
-              <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-              <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+              {% if not dim_type|get_type|is_type:"multiple" %}
+                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+              {% endif %}
             </div>
             <!--  Name of dimension  -->
             <div class="col-lg-2">
@@ -93,26 +95,32 @@ Projects | {{project.name}}
             </div>
           </div>
           <!--  The history box  -->
-          <div id="{{dim_name}}-panel" class="panel-collapse panel-body collapse row">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for history_obj in dim_obj.history.all %}
-                  {% if forloop.counter < 6 %}
-                    <tr>
-                      <td>{{history_obj.history_date}}</td>
-                      <td>{{history_obj.string}}</td>
-                    </tr>
-                  {% endif %}
-              	{% endfor %}
-              </tbody>
-            </table>
-          </div>
+          {% if not dim_type|get_type|is_type:"multiple" %}
+            <div id="{{dim_name}}-panel" class="panel-collapse panel-body collapse row">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for history_obj in dim_obj.history.all %}
+                    {% if forloop.counter < 6 %}
+                      <tr>
+                        <td>{{history_obj.history_date|date:"d/m/Y"}}</td>
+                        {% if dim_type|get_type == "date" %}
+                          <td>{{history_obj.value|date:"d/m/Y"}}</td>
+                        {% else %}
+                          <td>{{history_obj.value}}</td>
+                        {% endif %}
+                      </tr>
+                    {% endif %}
+                	{% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
         </div>
       {% endfor %}
       </div>
