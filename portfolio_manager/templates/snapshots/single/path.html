@@ -25,10 +25,11 @@
   <!-- Info for the ajax -->
   <input id="dj-data" type="hidden"
       data-url="{% url 'json' %}"
-      data-project="{{ project.id }}"
-      data-x="{{ x.id }}"
-      data-y="{{ y.id }}"
-      data-data="{{ data }}">
+      data-project="{{ project_id }}"
+      data-x="{{ x_id }}"
+      data-y="{{ y_id }}"
+      data-start="{{ start }}"
+      data-end="{{ end }}">
 
   <!-- Infopanels at the right side -->
   <div id="snap-info-cont" class="col-lg-2 col-xs-12">
@@ -37,24 +38,37 @@
         <div class="panel-heading">
           Project
         </div>
-        <div class="panel-body">
-          {{ project }}
+        <div class="panel-body" id="projectPanel">
         </div>
       </div>
       <div class="panel panel-default">
         <div class="panel-heading">
           X
         </div>
-        <div class="panel-body">
-          {{ x.dimension_object.name }}
+        <div class="panel-body" id="xPanel">
         </div>
       </div>
       <div class="panel panel-default">
         <div class="panel-heading">
           Y
         </div>
+        <div class="panel-body" id="yPanel">
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Start date
+        </div>
         <div class="panel-body">
-          {{ y.dimension_object.name }}
+          {{ start }}
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          End date
+        </div>
+        <div class="panel-body">
+          {{ end }}
         </div>
       </div>
     </div>

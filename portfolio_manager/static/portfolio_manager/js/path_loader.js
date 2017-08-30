@@ -43,7 +43,7 @@ $(function() {
     data_id_array.unshift(y_dimension_id);
     data_id_array.unshift(project_id);
 
-    generate_path_svg( "visualization", data_id_array, start_date, end_date);
+    generate_path_svg(db_json, "visualization", data_id_array, start_date, end_date);
 
   };
 
@@ -122,6 +122,6 @@ $(function() {
   $('#y-selector').on('change', change_if_pathdata_selected);
   $('.datepicker').on('change', change_if_pathdata_selected);
 
-  $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd-mm-yy'});
+  $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd/mm/yy'});
 
 });

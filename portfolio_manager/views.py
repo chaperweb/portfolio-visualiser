@@ -781,17 +781,14 @@ def get_multiple(request, field_type, field_id):
     data = [{'id': p.pk, 'name': str(p)} for p in value]
     return JsonResponse({'type': field_type, 'data': data})
 
-def create_pathsnapshot(name, description, project_id, x, y):
-    #   ADMIN ONLY
-    
+def create_pathsnapshot(name, description, pid, x, y, start, end):
     p_snap = PathSnapshot()
-    project = Project.objects.get(pk=project_id)
     p_snap.name = name
     p_snap.description = description
     p_snap.snap_type = 'PA'
-    p_snap.project = pid
-    p_snap.x = x
-    p_snap.y = y
+    p_snap.project_id = pid
+    p_snap.x_id = x
+    p_snap.y_id = y
     p_snap.start_date = start
     p_snap.end_date = end
     p_snap.save()
@@ -857,30 +854,20 @@ def snapshots(request, vis_type=None, snapshot_id=None):
                 snap = PathSnapshot.objects.get(pk=snapshot_id)
                 name = snap.name
                 desc = snap.description
-                proj = snap.project
-                x = snap.dimension_object_x
-                y = snap.dimension_object_y
-                serializer = ProjectSerializer(Project.objects.all(), many=True)
-                data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
-
-                x = ProjectDimension.objects.get(
-                    project=proj,
-                    object_id=x.id,
-                    content_type=snap.content_type_x
-                )
-                y = ProjectDimension.objects.get(
-                    project=proj,
-                    object_id=y.id,
-                    content_type=snap.content_type_y
-                )
+                proj = snap.project_id
+                x = snap.x_id
+                y = snap.y_id
+                start = snap.start_date
+                end = snap.end_date
 
                 response_data = {
                     'name': name,
                     'description': desc,
-                    'project': proj,
-                    'x': x,
-                    'y': y,
-                    'data': data
+                    'project_id': proj,
+                    'x_id': x,
+                    'y_id': y,
+                    'start': start,
+                    'end': end
                 }
                 template = 'snapshots/single/path.html'
             elif vis_type == 'fourfield':
@@ -920,52 +907,55 @@ def snapshots(request, vis_type=None, snapshot_id=None):
 @user_passes_test(is_admin)
 @require_POST
 def create_snapshot(request):
-  
-    snapshot_type = request.POST['type']
-    if snapshot_type == 'path':
-        x_proj_template = ProjectDimension.objects.get(pk=request.POST['x_dim'])
-        y_proj_template = ProjectDimension.objects.get(pk=request.POST['y_dim'])
+    if request.method == 'POST':
+        snapshot_type = request.POST['type']
+        if snapshot_type == 'path':
 
-        name = request.POST['name']
-        description = request.POST['description']
-        pid = request.POST['project_id']
-        x_dim = x_proj_template.dimension_object
-        y_dim = y_proj_template.dimension_object
+            name = request.POST['name']
+            description = request.POST['description']
+            pid = request.POST['project_id']
+            x = request.POST['x_dim']
+            y = request.POST['y_dim']
+            start_ddmmyyyy = request.POST['start-date']
+            end_ddmmyyyy = request.POST['end-date']
+            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
 
-        p_snap = create_pathsnapshot(
-                    name=name,
-                    description=description,
-                    project_id=pid,
-                    x=x_dim,
-                    y=y_dim
-                )
-        url = 'snapshots/path/{}'.format(p_snap.id)
-        return redirect(url, permanent=True)
-    elif snapshot_type == 'fourfield':
-        x = request.POST['x_dim']
-        y = request.POST['y_dim']
-        r = request.POST['r_dim']
-        start_ddmmyyyy = request.POST['start-date']
-        end_ddmmyyyy = request.POST['end-date']
+            p_snap = create_pathsnapshot(
+                        name=name,
+                        description=description,
+                        pid = pid,
+                        x = x,
+                        y = y,
+                        start = start,
+                        end = end
+                    )
+            url = 'snapshots/path/{}'.format(p_snap.id)
+            return redirect(url, permanent=True)
+        elif snapshot_type == 'fourfield':
+            x = request.POST['x_dim']
+            y = request.POST['y_dim']
+            r = request.POST['r_dim']
+            start_ddmmyyyy = request.POST['start-date']
+            end_ddmmyyyy = request.POST['end-date']
 
-        name = request.POST['name']
-        description = request.POST['description']
-        start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-        end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-        zoom = request.POST['zoom']
+            name = request.POST['name']
+            description = request.POST['description']
+            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            zoom = request.POST['zoom']
 
-        ff_snap = create_fourfieldsnapshot(
-                    name=name,
-                    description=description,
-                    x=x,
-                    y=y,
-                    r=r,
-                    start=start,
-                    end=end,
-                    zoom=zoom
-                )
-        url = 'snapshots/fourfield/{}'.format(ff_snap.id)
-        return redirect(url, permanent=True)
-    else:
-        pass
-
+            ff_snap = create_fourfieldsnapshot(
+                        name=name,
+                        description=description,
+                        x=x,
+                        y=y,
+                        r=r,
+                        start=start,
+                        end=end,
+                        zoom=zoom
+                    )
+            url = 'snapshots/fourfield/{}'.format(ff_snap.id)
+            return redirect(url, permanent=True)
+        else:
+            pass

@@ -16,12 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-var db_json;
 
-function get_selected_project(project_id) {
-  for (var i = 0; i < db_json.length; i++) {
-    if(db_json[i].id == project_id) {
-      return db_json[i];
+function get_selected_project(json, project_id) {
+  for (var i = 0; i < json.length; i++) {
+    if(json[i].id == project_id) {
+      return json[i];
     }
   }
   return null;
@@ -37,15 +36,15 @@ function get_dimension(project, id) {
   return null;
 };
 
-function generate_path_data(data_id_array) {
-
-  var project = get_selected_project(data_id_array[0]);
+function generate_path_data(json, data_id_array) {
+  var project = get_selected_project(json, data_id_array[0]);
   var pathData = [];
   var y_end_date = 0;
 
   data_id_array = data_id_array.slice(1)
 
   if (project) {
+
     for (id in data_id_array) {
       var dimension = get_dimension(project, data_id_array[id]);
       if (dimension) {
@@ -76,6 +75,16 @@ function generate_path_data(data_id_array) {
   return pathData;
 };
 
+function returnProjectName(json, projectId) {
+  var project = get_selected_project(json, projectId);
+
+  if (project) {
+    return project.name
+  };
+
+  return "";
+};
+
 // Generates two dimensional set of the data sorted by date
 function generate_data_chunk(dimension) {
   data = dimension.dimension_object.history.map(function(val) {
@@ -99,7 +108,7 @@ function generate_data_chunk(dimension) {
 };
 
 // Generate the svg container for the visualization
-function generate_path_svg(target, data_id_array, startDate, endDate) {
+function generate_path_svg(json, target, data_id_array, startDate, endDate) {
 
   $('#'+ target).html('');
 
@@ -114,7 +123,8 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
         bottom: height * 0.05
       };
 
-  var pathData = generate_path_data(data_id_array)
+var projectName = returnProjectName(json, data_id_array[0])
+  var pathData = generate_path_data(json, data_id_array)
   var y_data = pathData[0].data
   var x_data = pathData.slice(1)
   var startDefault = y_data[0].history_date
@@ -122,7 +132,7 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
 
 
   // human readable timeformat from history_date
-  var ddmmyy = d3.timeFormat("%d-%m-%Y");
+  var ddmmyy = d3.timeFormat("%d/%m/%Y");
 
   // set the min and max date by the selected project data
   $('.datepicker').datepicker("option", "minDate", new Date(startDefault))
@@ -198,6 +208,11 @@ function generate_path_svg(target, data_id_array, startDate, endDate) {
      .attr("id", "yAxisLabel")
      .attr("transform", "translate("+(pathTransformX + 10) +","+(pathTransformY + margin.top) +")")
      .text(pathData[0].dimension_name)
+
+  svg.append("text")
+      .attr("id", "projectName")
+      .style("visibility", "hidden")
+      .text(projectName)
 
   // If the given dates are invalid, asks for valid ones
   if (endDate <= startDate) {
@@ -511,7 +526,7 @@ var focus = svg.append('g')
 
       svg.append("text")
          .attr("id", "xLabel"+rounds+"Hover")
-         .attr("class", "pathXlabel")
+         .attr("class", "pathXlabelHover")
          .attr("transform", "translate("+ 0 +","+xAxisTransformY+")")
          .attr("y", ((rounds * xAxesHeight) + (xAxesHeight - 2)))
          .attr("x", 0)
