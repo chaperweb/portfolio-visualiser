@@ -304,7 +304,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 /*********************************/
 
 		//container for everything
-		var svg = d3.select("#visualization").append("svg")
+		var svg = d3.select("#" + target).append("svg")
 					.attr("width", fieldWidth)
 					.attr("height", svgHeight);
 

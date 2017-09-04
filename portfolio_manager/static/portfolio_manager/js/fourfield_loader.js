@@ -37,7 +37,7 @@ $(function() {
     end_date = Date.parse($('#end-date-selector').datepicker( "getDate" ))/1000;
     slider_value = $('#slider-value-selector').val();
     $('#visualization').html('');
-    fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value);
+    fourField(db_json, "visualization", x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value);
   }
 
   $.ajax({
