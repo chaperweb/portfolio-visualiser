@@ -67,6 +67,7 @@ urlpatterns = [
     url(r'^excel/$', views.excel, name='excel'),
     url(r'^excel/import$', views.import_excel, name='import_excel'),
     url(r'^excel/export$', views.export_excel, name='export_excel'),
+    url(r'^presentations/(?P<presentation_id>[0-9]+)$', views.projects, name="show_presentation")
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
 

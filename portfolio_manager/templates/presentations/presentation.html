@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{# TITLE HERE #}
+{% block title %}
+Projects
+{% endblock %}
+
+{# CSS HERE #}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/projects.css" %}">
+{% endblock %}
+
+{% block content %}
+  <div class="col-lg-3 hidden-md hidden-sm hidden-xs">
+    <nav id="spymenu" class="col-lg-8 col-lg-offset-3">
+      <ul class="text-center nav nav-pills nav-stacked">
+        {% for org, p in organizations.items %}
+          <li><a href="#{{ org.id }}-wrapper">{{ org.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+  <div class="col-lg-6 col-xs-12">
+    {% for org, projects in organizations.items %}
+      <div id="{{ org.id }}-wrapper" class="org-wrapper col-lg-12 col-sm-10 col-sm-offset-1">
+        <h2 class="text-center">{{ org.name }}</h2>
+        {% for project in projects %}
+          <a href="{% url 'show_project' project.pk %}" class="projectbox text-center col-sm-8 col-sm-offset-2 col-xs-12">
+            <h4>{{ project.name }}</h4>
+            <div>Budget: {{ project.get_budget }}</div>
+            <div>Project manager: {{ project.get_project_manager }}</div>
+          </a>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
