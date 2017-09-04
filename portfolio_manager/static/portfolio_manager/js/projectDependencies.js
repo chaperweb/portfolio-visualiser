@@ -20,11 +20,11 @@ $(function(){
   $.ajax({
     url: "json"
   }).success(function(data) {
-    dependancies(data)
+    dependencies(data, "visualization")
   });
 });
 
-function dependancies(json) {
+function dependencies(json, target) {
 	var nodes = {},
     	links = [],
       jsonlen = json.length,
@@ -196,7 +196,7 @@ function dependancies(json) {
 			link.type = "fivezero";
 	});
 
-	var svg = d3.select("#visualization")
+	var svg = d3.select("#" + target)
 		.append("svg")
 		.attr("width", width)
 		.attr("height", height);
@@ -354,7 +354,7 @@ function dependancies(json) {
     var legendWidth = Math.max(300,width*0.25)
     var legendHeight = legendRectSize + legendSpacing;
 
-    var svgLegend = d3.select("#visualization")
+    var svgLegend = d3.select("#" + target)
                       .append("svg")
                       .attr("width", legendWidth)
                       // Scaling the svg based on number of projects
