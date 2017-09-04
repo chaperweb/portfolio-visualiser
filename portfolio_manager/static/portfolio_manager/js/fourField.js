@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var db_json;
 
-function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues) {
+function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, sliderValues) {
 	// console.log(json);
 
 	var projects = [],
