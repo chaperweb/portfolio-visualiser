@@ -470,6 +470,7 @@ class FourFieldSnapshot(Snapshot):
     zoom = models.PositiveIntegerField()
 
 class Presentation(models.Model):
+    title = models.TextField(max_length=64)
     summary = models.TextField()
     snapshots = models.CharField(max_length=256)
 

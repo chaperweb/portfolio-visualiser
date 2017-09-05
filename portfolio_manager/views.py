@@ -959,3 +959,19 @@ def create_snapshot(request):
             return redirect(url, permanent=True)
         else:
             pass
+
+@login_required
+@user_passes_test(is_admin)
+@require_POST
+    def create_presentation(request):
+        if request.method == 'POST':
+            title = request.POST['title']
+            summary = request.POST['summary']
+
+            presentation = Presentation()
+            presentation.title = title
+            presentation.summary = summary
+            presentation.snapshots = 'FF,1,PA,4'
+
+            url = 'presentations/{}'.format(presentation.id)
+            return redirect(url, permanent=True)
