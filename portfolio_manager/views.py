@@ -967,11 +967,37 @@ def create_snapshot(request):
         if request.method == 'POST':
             title = request.POST['title']
             summary = request.POST['summary']
+            snapshots = 'FF,1,PA,3'
 
             presentation = Presentation()
             presentation.title = title
             presentation.summary = summary
-            presentation.snapshots = 'FF,1,PA,4'
+            presentation.snapshots = snapshots
 
             url = 'presentations/{}'.format(presentation.id)
             return redirect(url, permanent=True)
+
+@login_required
+    def presentation(request, presentation_id = None):
+        response_data = {}
+        template = 'snapshots/error.html'
+
+        if not presentation_id
+            presentations = Presentation.objects.all()
+            template = 'presentations/all.html'
+            response_data = {
+                'presentations': presentations
+            }
+
+        else:
+            try:
+                presentation = Presentation.objects.get(pk = presentation_id)
+                template = 'presentations/presentation.html'
+                response_data = {
+                    'presentation': presentation
+                }
+            except Exception as e:
+                print("ERROR: {}".format(e))
+                pass
+
+        return render(request, template, response_data)
