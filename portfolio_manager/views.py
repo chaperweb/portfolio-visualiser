@@ -995,6 +995,7 @@ def create_snapshot(request):
                 template = 'presentations/presentation.html'
                 response_data = {
                     'presentation': presentation
+                    'snapshots': snapshots
                 }
             except Exception as e:
                 print("ERROR: {}".format(e))
