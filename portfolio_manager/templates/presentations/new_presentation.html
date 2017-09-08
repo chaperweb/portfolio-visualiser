@@ -19,11 +19,12 @@ All Snapshots
 <h1 class="text-center">Create a new presentation</h1>
 <div id="save_presentation">
   <form id="save-presentation-form" method="POST" action="{% url 'new_presentation' %}">
-      <input type="textField" value="Title">
-      <h2>Summary</h2>
-      <textarea cols="4" rows="5"></textarea>
-      <input class="btn" type="submit" value="Save">
-      <input class="btn" type="submit" value="Add snapshot">
+    {% csrf_token %}
+    <input type="textField" value="Title">
+    <h2>Summary</h2>
+    <textarea cols="4" rows="5"></textarea>
+    <input class="btn" type="submit" value="Save">
+    <input class="btn" type="submit" value="Add snapshot">
   </form>
 </div>
 <div id="snapshotBar">
