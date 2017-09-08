@@ -986,8 +986,8 @@ def save_presentation(request, presentation_id = None):
 
             response_data = {
             'title':presentation.title,
-            'summary': presentation.summary,
-            'snapshots': presentation.snapshots
+            'summary': presentation.summary#,
+            #'snapshots': presentation.snapshots
             }
 
             template = 'presentations/edit_presentation.html'

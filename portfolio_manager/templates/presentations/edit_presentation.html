@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-All Snapshots
+Edit presentation
 {% endblock %}
 
 {% block css %}
@@ -19,12 +19,11 @@ All Snapshots
 {% block content %}
 <h1 class="text-center">Edit your presentation</h1>
 <div id="save_presentation">
-  <form id="save-presentation-form" method="POST" action="{% url 'new_presentation' %}">
+  <form id="save-presentation-form" method="POST" action="{% url 'save_presentation'/{{ presentation.pk }}  %}">
       <input type="textField" value="{{ title }}">
       <h2>Summary</h2>
       <textarea cols="4" rows="5">{{ summary }}</textarea>
       <input class="btn" type="submit" value="Save">
-      <input class="btn" type="submit" value="Add snapshot">
   </form>
 </div>
 
