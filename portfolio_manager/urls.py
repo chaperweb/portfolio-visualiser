@@ -67,7 +67,7 @@ urlpatterns = [
     url(r'^excel/$', views.excel, name='excel'),
     url(r'^excel/import$', views.import_excel, name='import_excel'),
     url(r'^excel/export$', views.export_excel, name='export_excel'),
-    url(r'^presentations/(?P<presentation_id>[0-9]+)$', views.presentation, name="presentations"),
+    url(r'^presentations(/(?P<presentation_id>[0-9]+))?$', views.presentation, name="presentations"),
     url(r'^presentations/edit_presentation/(?P<presentation_id>[0-9]+)$', views.save_presentation, name="edit_presentation"),
     url(r'^presentations/new_presentation$', TemplateView.as_view(template_name="presentations/new_presentation.html"), name='new_presentation'),
     url(r'^presentations/save_presentation$', views.save_presentation, name='save_presentation'),

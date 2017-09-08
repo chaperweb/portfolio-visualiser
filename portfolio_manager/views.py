@@ -983,8 +983,9 @@ def save_presentation(request, presentation_id = None):
     presentation.title = title
     presentation.summary = summary
     presentation.snapshots = snapshots
+    print(presentation)
 
-    url = 'presentations/edit_presentation/{}'.format(presentation.id)
+    url = 'edit_presentation/{}'.format(presentation.pk)
     return redirect(url, permanent=True)
 
 @login_required
