@@ -962,7 +962,6 @@ def create_snapshot(request):
 
 @login_required
 @user_passes_test(is_admin)
-@require_POST
 def save_presentation(request, presentation_id = None):
 
     if not presentation_id:
@@ -988,6 +987,7 @@ def save_presentation(request, presentation_id = None):
             summary = presentation.summary
 
             response_data = {
+            'id': presentation.pk,
             'title': title,
             'summary': summary#,
             #'snapshots': presentation.snapshots
