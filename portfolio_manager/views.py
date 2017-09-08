@@ -984,9 +984,12 @@ def save_presentation(request, presentation_id = None):
         try:
             presentation = Presentation.objects.get(pk = presentation_id)
 
+            title = presentation.title
+            summary = presentation.summary
+
             response_data = {
-            'title':presentation.title,
-            'summary': presentation.summary#,
+            'title': title,
+            'summary': summary#,
             #'snapshots': presentation.snapshots
             }
 
