@@ -969,7 +969,7 @@ def save_presentation(request, presentation_id = None):
     summary = request.POST['summary']
     snapshots = 'FF,1,PA,3'
 
-    if not presentation_id and request.method == 'POST':
+    if not presentation_id:
 
         presentation = Presentation()
 
@@ -992,7 +992,7 @@ def presentation(request, presentation_id = None):
     response_data = {}
     template = 'snapshots/error.html'
 
-    if not presentation_id
+    if not presentation_id:
         presentations = Presentation.objects.all()
         template = 'presentations/all.html'
         response_data = {
@@ -1005,7 +1005,7 @@ def presentation(request, presentation_id = None):
             if presentation:
                 template = 'presentations/presentation.html'
                 response_data = {
-                    'presentation': presentation
+                    'presentation': presentation,
                     'snapshots': snapshots
                 }
         except Exception as e:

@@ -26,4 +26,28 @@ All Snapshots
       <input class="btn" type="submit" value="Add snapshot">
   </form>
 </div>
+<div id="snapshotBar">
+  <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
+    <h2 class="text-center">Snapshots</h2>
+    <div class="row">
+      {% for snapshot in snapshots %}
+        <div class="panel-group col-md-10 col-md-offset-1">
+          <div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" href="#collapse{{snap.pk}}" aria-controls="#collapse{{snap.pk}}" aria-expanded="false">
+              <b>
+                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
+                &nbsp;{{ snap.name }}
+              </b>
+            </div>
+            <div id="collapse{{snap.pk}}" class="panel-collapse collapse text-center">
+              <p>{{ snap.description }}</p>
+              <p>Snap type: {{ snap.type }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}
