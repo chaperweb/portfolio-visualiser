@@ -17,15 +17,17 @@ All Snapshots
 
 {% block content %}
 <h1 class="text-center">Create a new presentation</h1>
-<div id="save_presentation">
-  <form id="save-presentation-form" method="POST" action="{% url 'new_presentation' %}">
-    {% csrf_token %}
-    <input type="textField" value="Title">
-    <h2>Summary</h2>
-    <textarea cols="4" rows="5"></textarea>
-    <input class="btn" type="submit" value="Save">
-    <input class="btn" type="submit" value="Add snapshot">
-  </form>
+<div id="page-content-wrapper" class="container col-lg-10 col-lg-offset-1">
+  <div class="col-md-8 col-md-offset-2">
+    <form id="save-presentation-form" method="POST" action="{% url 'edit_presentation' %}">
+      {% csrf_token %}
+      <input type="textField" value="Title">
+      <h2>Summary</h2>
+      <textarea cols="4" rows="5"></textarea>
+      <input class="btn" type="submit" value="Save">
+      <input class="btn" type="submit" value="Add snapshot">
+    </form>
+  </div>
 </div>
 <div id="snapshotBar">
   <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
