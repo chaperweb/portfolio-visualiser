@@ -21,9 +21,9 @@ All Snapshots
   <div class="col-md-8 col-md-offset-2">
     <form id="save-presentation-form" method="POST" action="{% url 'save_presentation' %}">
       {% csrf_token %}
-      <input type="textField" value="Title">
+      <input type="textField" name="title" value="Title">
       <h2>Summary</h2>
-      <textarea cols="4" rows="5"></textarea>
+      <textarea cols="4" rows="5" name="summary"></textarea>
       <input class="btn" type="submit" value="Save">
       <input class="btn" type="submit" value="Add snapshot">
     </form>
