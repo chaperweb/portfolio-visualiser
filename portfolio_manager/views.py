@@ -988,7 +988,7 @@ def save_presentation(request, presentation_id = None):
             'title':presentation.title,
             'summary': presentation.summary,
             'snapshots': presentation.snapshots
-            }            
+            }
 
             template = 'presentations/edit_presentation.html'
 
@@ -1016,7 +1016,7 @@ def presentation(request, presentation_id = None):
         try:
             presentation = Presentation.objects.get(pk = presentation_id)
             if presentation:
-                template = 'presentations/presentation.html'
+                template = 'presentations/presentation/{}'.format(presentation.pk)
                 response_data = {
                     'presentation': presentation,
                     'snapshots': snapshots
