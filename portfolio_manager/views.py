@@ -992,11 +992,12 @@ def create_snapshot(request):
         else:
             try:
                 presentation = Presentation.objects.get(pk = presentation_id)
-                template = 'presentations/presentation.html'
-                response_data = {
-                    'presentation': presentation
-                    'snapshots': snapshots
-                }
+                if presentation:
+                    template = 'presentations/presentation.html'
+                    response_data = {
+                        'presentation': presentation
+                        'snapshots': snapshots
+                    }
             except Exception as e:
                 print("ERROR: {}".format(e))
                 pass
