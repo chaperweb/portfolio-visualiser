@@ -20,9 +20,9 @@ All Snapshots
 <h1 class="text-center">Edit your presentation</h1>
 <div id="save_presentation">
   <form id="save-presentation-form" method="POST" action="{% url 'new_presentation' %}">
-      <input type="textField" value="Title">
+      <input type="textField" value="{{ title }}">
       <h2>Summary</h2>
-      <textarea cols="4" rows="5"></textarea>
+      <textarea cols="4" rows="5">{{ summary }}</textarea>
       <input class="btn" type="submit" value="Save">
       <input class="btn" type="submit" value="Add snapshot">
   </form>

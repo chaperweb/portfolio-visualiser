@@ -965,28 +965,40 @@ def create_snapshot(request):
 @require_POST
 def save_presentation(request, presentation_id = None):
 
-    title = request.POST['title']
-    summary = request.POST['summary']
-    snapshots = 'FF,1,PA,3'
-
     if not presentation_id:
 
         presentation = Presentation()
+        title = request.POST['title']
+        summary = request.POST['summary']
+        snapshots = 'FF,1,PA,3'
+
+        presentation.title = title
+        presentation.summary = summary
+        presentation.snapshots = snapshots
+        presentation.save()
+
+        url = 'edit_presentation/{}'.format(presentation.pk)
+        return redirect(url, permanent=True)
 
     else:
         try:
             presentation = Presentation.objects.get(pk = presentation_id)
+
+            response_data = {
+            'title':presentation.title,
+            'summary': presentation.summary,
+            'snapshots': presentation.snapshots
+            }            
+
+            template = 'presentations/edit_presentation.html'
+
+            return render(request, template, response_data)
+
         except Exception as e:
             print("ERROR: {}".format(e))
             pass
 
-    presentation.title = title
-    presentation.summary = summary
-    presentation.snapshots = snapshots
-    presentation.save()
 
-    url = 'edit_presentation/{}'.format(presentation.pk)
-    return redirect(url, permanent=True)
 
 @login_required
 def presentation(request, presentation_id = None):
