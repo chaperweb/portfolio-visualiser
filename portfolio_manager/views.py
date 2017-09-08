@@ -963,43 +963,43 @@ def create_snapshot(request):
 @login_required
 @user_passes_test(is_admin)
 @require_POST
-    def create_presentation(request):
-        if request.method == 'POST':
-            title = request.POST['title']
-            summary = request.POST['summary']
-            snapshots = 'FF,1,PA,3'
+def create_presentation(request):
+    if request.method == 'POST':
+        title = request.POST['title']
+        summary = request.POST['summary']
+        snapshots = 'FF,1,PA,3'
 
-            presentation = Presentation()
-            presentation.title = title
-            presentation.summary = summary
-            presentation.snapshots = snapshots
+        presentation = Presentation()
+        presentation.title = title
+        presentation.summary = summary
+        presentation.snapshots = snapshots
 
-            url = 'presentations/{}'.format(presentation.id)
-            return redirect(url, permanent=True)
+        url = 'presentations/{}'.format(presentation.id)
+        return redirect(url, permanent=True)
 
 @login_required
-    def presentation(request, presentation_id = None):
-        response_data = {}
-        template = 'snapshots/error.html'
+def presentation(request, presentation_id = None):
+    response_data = {}
+    template = 'snapshots/error.html'
 
-        if not presentation_id
-            presentations = Presentation.objects.all()
-            template = 'presentations/all.html'
-            response_data = {
-                'presentations': presentations
-            }
+    if not presentation_id
+        presentations = Presentation.objects.all()
+        template = 'presentations/all.html'
+        response_data = {
+            'presentations': presentations
+        }
 
-        else:
-            try:
-                presentation = Presentation.objects.get(pk = presentation_id)
-                if presentation:
-                    template = 'presentations/presentation.html'
-                    response_data = {
-                        'presentation': presentation
-                        'snapshots': snapshots
-                    }
-            except Exception as e:
-                print("ERROR: {}".format(e))
-                pass
+    else:
+        try:
+            presentation = Presentation.objects.get(pk = presentation_id)
+            if presentation:
+                template = 'presentations/presentation.html'
+                response_data = {
+                    'presentation': presentation
+                    'snapshots': snapshots
+                }
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            pass
 
-        return render(request, template, response_data)
+    return render(request, template, response_data)
