@@ -963,19 +963,29 @@ def create_snapshot(request):
 @login_required
 @user_passes_test(is_admin)
 @require_POST
-def create_presentation(request):
-    if request.method == 'POST':
-        title = request.POST['title']
-        summary = request.POST['summary']
-        snapshots = 'FF,1,PA,3'
+def save_presentation(request, presentation_id = None):
+
+    title = request.POST['title']
+    summary = request.POST['summary']
+    snapshots = 'FF,1,PA,3'
+
+    if not presentation_id and request.method == 'POST':
 
         presentation = Presentation()
-        presentation.title = title
-        presentation.summary = summary
-        presentation.snapshots = snapshots
 
-        url = 'presentations/{}'.format(presentation.id)
-        return redirect(url, permanent=True)
+    else:
+        try:
+            presentation = Presentation.objects.get(pk = presentation_id)
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            pass
+
+    presentation.title = title
+    presentation.summary = summary
+    presentation.snapshots = snapshots
+
+    url = 'presentations/edit_presentation/{}'.format(presentation.id)
+    return redirect(url, permanent=True)
 
 @login_required
 def presentation(request, presentation_id = None):
