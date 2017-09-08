@@ -1016,7 +1016,7 @@ def presentation(request, presentation_id = None):
         try:
             presentation = Presentation.objects.get(pk = presentation_id)
             if presentation:
-                template = 'presentations/presentation/{}'.format(presentation.pk)
+                template = 'presentations/presentation.html'
                 response_data = {
                     'presentation': presentation,
                     'snapshots': snapshots
