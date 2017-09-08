@@ -19,7 +19,7 @@ All Snapshots
 <h1 class="text-center">Create a new presentation</h1>
 <div id="page-content-wrapper" class="container col-lg-10 col-lg-offset-1">
   <div class="col-md-8 col-md-offset-2">
-    <form id="save-presentation-form" method="POST" action="{% url 'edit_presentation' %}">
+    <form id="save-presentation-form" method="POST" action="{% url 'save_presentation' %}">
       {% csrf_token %}
       <input type="textField" value="Title">
       <h2>Summary</h2>
