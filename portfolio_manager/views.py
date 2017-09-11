@@ -962,11 +962,27 @@ def create_snapshot(request):
 
 @login_required
 @user_passes_test(is_admin)
-def save_presentation(request, presentation_id = None):
+def save_presentation(request):
 
-    if not presentation_id:
+    presentation = Presentation()
+    title = request.POST['title']
+    summary = request.POST['summary']
+    snapshots = 'FF,1,PA,3'
 
-        presentation = Presentation()
+    presentation.title = title
+    presentation.summary = summary
+    presentation.snapshots = snapshots
+    presentation.save()
+
+    url = 'edit_presentation/{}'.format(presentation.pk)
+    return redirect(url, permanent=True)
+
+@login_required
+@user_passes_test(is_admin)
+def edit_presentation(request, presentation_id = None):
+    try:
+        presentation = Presentation.objects.get(pk = presentation_id)
+
         title = request.POST['title']
         summary = request.POST['summary']
         snapshots = 'FF,1,PA,3'
@@ -976,30 +992,23 @@ def save_presentation(request, presentation_id = None):
         presentation.snapshots = snapshots
         presentation.save()
 
-        url = 'edit_presentation/{}'.format(presentation.pk)
-        return redirect(url, permanent=True)
+        title = presentation.title
+        summary = presentation.summary
 
-    else:
-        try:
-            presentation = Presentation.objects.get(pk = presentation_id)
+        response_data = {
+        'id': presentation.pk,
+        'title': title,
+        'summary': summary#,
+        #'snapshots': presentation.snapshots
+        }
 
-            title = presentation.title
-            summary = presentation.summary
+        template = 'presentations/edit_presentation.html'
 
-            response_data = {
-            'id': presentation.pk,
-            'title': title,
-            'summary': summary#,
-            #'snapshots': presentation.snapshots
-            }
+        return render(request, template, response_data)
 
-            template = 'presentations/edit_presentation.html'
-
-            return render(request, template, response_data)
-
-        except Exception as e:
-            print("ERROR: {}".format(e))
-            pass
+    except Exception as e:
+        print("ERROR: {}".format(e))
+        pass
 
 
 

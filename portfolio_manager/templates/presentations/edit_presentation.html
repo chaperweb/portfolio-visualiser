@@ -20,7 +20,7 @@ Edit presentation
 <h1 class="text-center">Edit your presentation</h1>
 <div id="page-content-wrapper" class="container col-lg-10 col-lg-offset-1">
   <div class="col-md-8 col-md-offset-2">
-    <form id="save-presentation-form" method="POST" action="{% url 'save_presentation' %}">
+    <form id="save-presentation-form" method="POST" action="{% url 'edit_presentation' %}">
       {% csrf_token %}
       <input type="textField" class="col-lg-6" name="title" value= "{{ title }}">
       <h2>Summary</h2>
