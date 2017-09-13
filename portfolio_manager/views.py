@@ -962,26 +962,17 @@ def create_snapshot(request):
 
 @login_required
 @user_passes_test(is_admin)
-def save_presentation(request):
+def save_presentation(request, presentation_id = None):
 
-    presentation = Presentation()
-    title = request.POST['title']
-    summary = request.POST['summary']
-    snapshots = 'FF,1,PA,3'
+    if not presentation_id:
+        presentation = Presentation()
 
-    presentation.title = title
-    presentation.summary = summary
-    presentation.snapshots = snapshots
-    presentation.save()
-
-    url = 'edit_presentation/{}'.format(presentation.pk)
-    return redirect(url, permanent=True)
-
-@login_required
-@user_passes_test(is_admin)
-def edit_presentation(request, presentation_id = None):
-    try:
-        presentation = Presentation.objects.get(pk = presentation_id)
+    else:
+        try:
+            presentation = Presentation.objects.get(pk = presentation_id)
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            pass
 
         title = request.POST['title']
         summary = request.POST['summary']
@@ -992,14 +983,31 @@ def edit_presentation(request, presentation_id = None):
         presentation.snapshots = snapshots
         presentation.save()
 
+        url = 'edit_presentation/{}'.format(presentation.pk)
+        return redirect(url, permanent=True)
+
+@login_required
+@user_passes_test(is_admin)
+def edit_presentation(request, presentation_id = None):
+    try:
+        presentation = Presentation.objects.get(pk = presentation_id)
+
         title = presentation.title
         summary = presentation.summary
+        snaps = []
+
+        snap_types = Snapshot.get_subclasses()
+        for snap_type in snap_types:
+            snaps.extend(snap_type.objects.all())
+
+        sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at)
+        sorted_snaps.reverse()
 
         response_data = {
         'id': presentation.pk,
         'title': title,
-        'summary': summary#,
-        #'snapshots': presentation.snapshots
+        'summary': summary,
+        'snapshots': sorted_snaps
         }
 
         template = 'presentations/edit_presentation.html'
@@ -1009,8 +1017,6 @@ def edit_presentation(request, presentation_id = None):
     except Exception as e:
         print("ERROR: {}".format(e))
         pass
-
-
 
 @login_required
 def presentation(request, presentation_id = None):
@@ -1028,6 +1034,24 @@ def presentation(request, presentation_id = None):
         try:
             presentation = Presentation.objects.get(pk = presentation_id)
             if presentation:
+
+                snapshots = []
+
+                if presentation.snapshots.len != 0:
+                    snapshot_ids = presentation.snapshots.split(",")
+
+                    for i in snapshot_ids.len():
+                        if i % 2 == 0:
+                            try:
+                                if snapshot_ids[i] == 'PA':
+                                    snap = PathSnapshot.objects.get(pk = snapshot_ids[i + 1])
+                                elif snapshot_ids[i] == 'FF':
+                                    snap = FourFieldSnapshot.objects.get(pk = snapshot_ids[i + 1])
+                            except Exception as e:
+                                print("ERROR: {}".format(e))
+                                pass
+                            snapshots.append(snap)    
+
                 template = 'presentations/presentation.html'
                 response_data = {
                     'presentation': presentation,
