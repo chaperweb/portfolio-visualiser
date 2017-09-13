@@ -25,9 +25,17 @@ $(function() {
   end_date = Date.parse(djdata['end']),
   project_id = djdata['project'],
   y_dimension_id = djdata['y']
-  x_dimension_ids = djdata['x'].trim().split(",")
+  x_dimension_ids = [];
+  
+  if(typeof djdata['x'] == "string") {
+  	if(djdata['x'] != "") {
+      x_dimension_ids = djdata['x'].trim().split(",");
+    }
+  } else {
+    x_dimension_ids.push(djdata['x']);
+  }
   data_url = djdata['url'];
-//console.log(djdata)
+  //console.log(djdata)
 
   $.ajax({
     url: data_url
