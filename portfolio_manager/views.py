@@ -1037,10 +1037,11 @@ def presentation(request, presentation_id = None):
 
                 snapshots = []
 
-                if presentation.snapshots.len != 0:
+                if presentation.snapshots != "":
                     snapshot_ids = presentation.snapshots.split(",")
 
-                    for i in snapshot_ids.len():
+                    for x in snapshot_ids:
+                        i = 0
                         if i % 2 == 0:
                             try:
                                 if snapshot_ids[i] == 'PA':
@@ -1050,7 +1051,8 @@ def presentation(request, presentation_id = None):
                             except Exception as e:
                                 print("ERROR: {}".format(e))
                                 pass
-                            snapshots.append(snap)    
+                            snapshots.append(snap)
+                        i = i + 1    
 
                 template = 'presentations/presentation.html'
                 response_data = {
