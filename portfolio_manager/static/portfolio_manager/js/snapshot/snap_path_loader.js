@@ -21,12 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 $(function() {
 
   var djdata = $("#dj-data").data(),
-  start_date = Date.parse(djdata['start']),
-  end_date = Date.parse(djdata['end']),
+  start_date = djdata['start'],
+  end_date = djdata['end'],
   project_id = djdata['project'],
   y_dimension_id = djdata['y']
   x_dimension_ids = [];
-  
+
   if(typeof djdata['x'] == "string") {
   	if(djdata['x'] != "") {
       x_dimension_ids = djdata['x'].trim().split(",");

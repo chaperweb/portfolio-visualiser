@@ -17,6 +17,7 @@ Fourfield Snapshot
 <script src="{% static 'portfolio_manager/js/snapshot/snap_fourfield_loader.js' %}"></script>
 {% endblock %}
 
+{% load timetags %}
 {% block content %}
 <div class="text-center">
   <h2>{{ name }}</h2>
@@ -64,7 +65,7 @@ Fourfield Snapshot
           Start date
         </div>
         <div class="panel-body">
-          {{ start_date }}
+          {{ start_date | print_timestamp }}
         </div>
       </div>
       <div class="panel panel-default">
@@ -72,7 +73,7 @@ Fourfield Snapshot
           End date
         </div>
         <div class="panel-body">
-          {{ end_date }}
+          {{ end_date | print_timestamp }}
         </div>
       </div>
       <div class="panel panel-default">
