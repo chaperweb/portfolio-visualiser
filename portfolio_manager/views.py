@@ -874,9 +874,9 @@ def snapshots(request, vis_type=None, snapshot_id=None):
                 snap = FourFieldSnapshot.objects.get(pk=snapshot_id)
                 name = snap.name
                 desc = snap.description
-                x = snap.x_dimension
-                y = snap.y_dimension
-                radius = snap.radius_dimension
+                x = snap.x_id
+                y = snap.y_id
+                radius = snap.radius_id
                 start_date = snap.start_date
                 end_date = snap.end_date
                 zoom = snap.zoom
