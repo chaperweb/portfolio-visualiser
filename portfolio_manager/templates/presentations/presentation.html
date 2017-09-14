@@ -29,7 +29,7 @@ Presentation
     {% for snap in snapshots %}
       <input id="visualization-data" type="hidden"
         snap-type = "{{ snap.type}}"
-        snap-id = "{{snap.pk}}"
+        snap-id = "{{ snap.pk }}"
         >
       <div id="{{ snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10 col-sm-offset-1">
           <h2>{{ snap.name }}</h2>
