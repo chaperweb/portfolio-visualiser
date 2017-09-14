@@ -964,27 +964,27 @@ def create_snapshot(request):
 @user_passes_test(is_admin)
 def save_presentation(request, presentation_id = None):
 
-    if not presentation_id:
-        presentation = Presentation()
+    try:
+        presentation = Presentation.objects.get(pk = presentation_id)
 
-    else:
-        try:
-            presentation = Presentation.objects.get(pk = presentation_id)
-        except Exception as e:
-            print("ERROR: {}".format(e))
-            pass
+        if not presentation:
+            presentation = Presentation()
+            
+    except Exception as e:
+        print("ERROR: {}".format(e))
+        pass
 
-        title = request.POST['title']
-        summary = request.POST['summary']
-        snapshots = 'FF,1,PA,3'
+    title = request.POST['title']
+    summary = request.POST['summary']
+    snapshots = 'FF,1,PA,3'
 
-        presentation.title = title
-        presentation.summary = summary
-        presentation.snapshots = snapshots
-        presentation.save()
+    presentation.title = title
+    presentation.summary = summary
+    presentation.snapshots = snapshots
+    presentation.save()
 
-        url = 'edit_presentation/{}'.format(presentation.pk)
-        return redirect(url, permanent=True)
+    url = 'edit_presentation/{}'.format(presentation.pk)
+    return redirect(url, permanent=True)
 
 @login_required
 @user_passes_test(is_admin)
