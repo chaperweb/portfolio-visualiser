@@ -21,8 +21,8 @@ $(function(){
       x = djdata['x'],
       y = djdata['y'],
       r = djdata['r'],
-      start = Date.parse(djdata['start'])/1000,
-      end = Date.parse(djdata['end'])/1000,
+      start = djdata['start'],
+      end = djdata['end'],
       zoom = djdata['zoom'],
       data = djdata['data'];
 

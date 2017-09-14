@@ -918,8 +918,8 @@ def create_snapshot(request):
             y = request.POST['y_dim']
             start_ddmmyyyy = request.POST['start-date']
             end_ddmmyyyy = request.POST['end-date']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            start = time.mktime((datetime.strptime(start_ddmmyyyy, "%d/%m/%Y")).timetuple())
+            end = time.mktime((datetime.strptime(end_ddmmyyyy, "%d/%m/%Y")).timetuple())
 
             p_snap = create_pathsnapshot(
                         name=name,
@@ -941,8 +941,8 @@ def create_snapshot(request):
 
             name = request.POST['name']
             description = request.POST['description']
-            start = dt.datetime.strptime(start_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
-            end = dt.datetime.strptime(end_ddmmyyyy, "%d/%m/%Y").strftime("%Y-%m-%d")
+            start = time.mktime((datetime.strptime(start_ddmmyyyy, "%d/%m/%Y")).timetuple())
+            end = time.mktime((datetime.strptime(end_ddmmyyyy, "%d/%m/%Y")).timetuple())
             zoom = request.POST['zoom']
 
             ff_snap = create_fourfieldsnapshot(

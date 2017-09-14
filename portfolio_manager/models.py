@@ -457,16 +457,16 @@ class PathSnapshot(Snapshot):
     project_id = models.CharField(max_length=64)
     x_id = models.CharField(max_length=64)
     y_id = models.CharField(max_length=64)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.PositiveIntegerField()
+    end_date = models.PositiveIntegerField()
 
 
 class FourFieldSnapshot(Snapshot):
     x_dimension = models.CharField(max_length=64)
     y_dimension = models.CharField(max_length=64)
     radius_dimension = models.CharField(max_length=64)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.PositiveIntegerField()
+    end_date = models.PositiveIntegerField()
     zoom = models.PositiveIntegerField()
 
 class Presentation(models.Model):
