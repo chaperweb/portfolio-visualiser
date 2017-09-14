@@ -27,14 +27,22 @@ Presentation
       {{ presentation.summary }}
     </div>
     {% for snap in snapshots %}
-      <input id="visualization-data" type="hidden"
-        snap-type = "{{ snap.type}}"
+      <input id="visualization-data{{ snap.snap_type }}{{ snap.id }}" type="hidden"
+        snap-url="{% url 'json' %}"
+        snap-type = "{{ snap.snap_type }}"
         snap-id = "{{ snap.pk }}"
-        >
+        snap-x = "{{ snap.x_id}}"
+        snap-y = "{{ snap.y_id}}"
+        snap-start="{{ snap.start }}"
+        snap-end="{{ snap.end }}"
+        snap-r = "{{ snap.radius_id}}"
+        snap-zoom = "{{ snap.zoom }}"
+        snap-project =  "{{ snap.project_id}}"
+         >
       <div id="{{ snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10 col-sm-offset-1">
           <h2>{{ snap.name }}</h2>
           <h5>{{ snap.description }}</h5>
-          <div class="col-lg-8 col-xs-12" id="visualization{{ snap.id }}" >
+          <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ snap.snap_type }}{{ snap.id }}" >
             <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
           </div>
       </div>

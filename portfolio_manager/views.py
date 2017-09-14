@@ -802,9 +802,9 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
     ff_snap.name = name
     ff_snap.description = description
     ff_snap.snap_type = 'FF'
-    ff_snap.x_dimension = x
-    ff_snap.y_dimension = y
-    ff_snap.radius_dimension = r
+    ff_snap.x_id = x
+    ff_snap.y_id = y
+    ff_snap.radius_id = r
     ff_snap.start_date = start
     ff_snap.end_date = end
     ff_snap.zoom = zoom
@@ -1040,7 +1040,7 @@ def presentation(request, presentation_id = None):
                 if presentation.snapshots != "":
                     snapshot_ids = presentation.snapshots.split(",")
                     i = 0
-                    for x in snapshot_ids:                        
+                    for x in snapshot_ids:
                         if i % 2 == 0:
                             try:
                                 if snapshot_ids[i] == 'PA':
