@@ -1047,11 +1047,13 @@ def presentation(request, presentation_id = None):
                                 pass
                             snapshots.append(snap)
                         i = i + 1
-
+                serializer = ProjectSerializer(Project.objects.all(), many=True)
+                data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
                 template = 'presentations/presentation.html'
                 response_data = {
                     'presentation': presentation,
-                    'snapshots': snapshots
+                    'snapshots': snapshots,
+                    'data': data
                 }
         except Exception as e:
             print("ERROR: {}".format(e))

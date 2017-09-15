@@ -18,20 +18,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $(function(){
 
-  $(".presentationVisualization").each( function(i) {
-	console.log("here")
-    var input =  $("#visualization-data"+ i.snap_type + i.id).data(),
+  $(".presentationVisualization").each( function() {
+	console.log(this.id+"-data") ;
+    var input = $("#"+this.id +"-data").data(),
+	url = input['url'],
+	type = input['type'],
         x = input['x'],
         y = input['y'],
         start = input['start'],
         end = input['end'],
         data = input['data']
-        target = "visualization" + i.snap_type + i.id;
+        target = this.id;
 
-        if (i.snap_type == 'PA') {
+	
+
+        if ( type == 'PA') {
           project_id = input['project']
           $.ajax({
-            url: data
+            url: url
           }).done(function(data) {
             var db_json = data,
             x_dimension_ids = [];
@@ -45,7 +49,7 @@ $(function(){
             }
 
             data_id_array = x_dimension_ids;
-            data_id_array.unshift(y_dimension_id);
+            data_id_array.unshift(y);
             data_id_array.unshift(project_id);
 
             $("#loading-icon").hide();
@@ -57,7 +61,7 @@ $(function(){
                   end
                 );
           });
-        } else if (i.snap_type == 'FF') {
+        } else if (type == 'FF') {
           r = input['r']
           zoom = input['zoom']
 
