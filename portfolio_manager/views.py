@@ -964,19 +964,14 @@ def create_snapshot(request):
 @user_passes_test(is_admin)
 def save_presentation(request, presentation_id = None):
 
-    try:
-        presentation = Presentation.objects.get(pk = presentation_id)
 
-        if not presentation:
-            presentation = Presentation()
+    presentation = Presentation()
             
-    except Exception as e:
-        print("ERROR: {}".format(e))
-        pass
+
 
     title = request.POST['title']
     summary = request.POST['summary']
-    snapshots = 'FF,1,PA,3'
+    snapshots = 'FF,5,PA,5'
 
     presentation.title = title
     presentation.summary = summary

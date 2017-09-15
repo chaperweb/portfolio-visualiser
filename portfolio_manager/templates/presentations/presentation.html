@@ -8,6 +8,9 @@ Presentation
 {# CSS HERE #}
 {% block css %}
 {% load static %}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/colorGenerator.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/presentations/presentation_loader.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -33,8 +36,8 @@ Presentation
         snap-id = "{{ snap.pk }}"
         snap-x = "{{ snap.x_id}}"
         snap-y = "{{ snap.y_id}}"
-        snap-start="{{ snap.start }}"
-        snap-end="{{ snap.end }}"
+        snap-start="{{ snap.start_date }}"
+        snap-end="{{ snap.end_date }}"
         snap-r = "{{ snap.radius_id}}"
         snap-zoom = "{{ snap.zoom }}"
         snap-project =  "{{ snap.project_id}}"

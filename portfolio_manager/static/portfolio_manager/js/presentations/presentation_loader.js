@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 $(function(){
 
   $(".presentationVisualization").each( function(i) {
+	console.log("here")
     var input =  $("#visualization-data"+ i.snap_type + i.id).data(),
         x = input['x'],
         y = input['y'],
@@ -50,7 +51,7 @@ $(function(){
             $("#loading-icon").hide();
             generate_path_svg(
                   db_json,
-                  "visualization",
+                  target,
                   data_id_array,
                   start,
                   end
