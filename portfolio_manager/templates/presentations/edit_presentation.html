@@ -20,8 +20,9 @@ Edit presentation
 <h1 class="text-center">Edit your presentation</h1>
 <div id="page-content-wrapper" class="container col-lg-10 col-lg-offset-1">
   <div class="col-md-8 col-md-offset-2">
-    <form id="save-presentation-form" method="POST" action="{% url 'save_presentation/{{ id }}' %}">
+    <form id="save-presentation-form" method="POST" action="{% url 'save_presentation' %}">
       {% csrf_token %}
+	<input type="hidden" name = "presentation_id" value = "{{ id }}" >
       <input type="textField" class="col-lg-6" name="title" value= "{{ title }}">
       <h2>Summary</h2>
       <textarea class="col-lg-6" cols="4" rows="5" name="summary">{{ summary }}</textarea>

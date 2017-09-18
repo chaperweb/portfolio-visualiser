@@ -962,16 +962,20 @@ def create_snapshot(request):
 
 @login_required
 @user_passes_test(is_admin)
-def save_presentation(request, presentation_id = None):
-
-    try:
-        presentation = Presentation.objects.get(pk = presentation_id)
-    except Presentation.DoesNotExist:
+def save_presentation(request, presentation_id):
+    presentation_id = request.POST['presentation_id']
+    if presentation_id:
+        try:
+            presentation = Presentation.objects.get(pk = presentation_id)
+        except Presentation.DoesNotExist:
+            presentation = Presentation()
+	
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            pass
+    else:
         presentation = Presentation()
-    except Exception as e:
-        print("ERROR: {}".format(e))
-        pass
-    
+
     title = request.POST['title']
     summary = request.POST['summary']
     snapshots = 'FF,5,PA,5'
@@ -986,7 +990,8 @@ def save_presentation(request, presentation_id = None):
 
 @login_required
 @user_passes_test(is_admin)
-def edit_presentation(request, presentation_id = None):
+def edit_presentation(request, presentation_id):
+    print(presentation_id)
     try:
         presentation = Presentation.objects.get(pk = presentation_id)
 
