@@ -214,7 +214,8 @@ function dependancies(json) {
 	// add the links and the arrows
 	var path = svg.append("svg:g").selectAll("path")
             		.data(links)
-            	  .enter().append("svg:path")
+            .enter().append("svg:path")
+                .attr("class", function(d) { return "link " + d.type; })
             		.attr("class", "link" )
             		.attr("marker-end", "url(#end)");
 
