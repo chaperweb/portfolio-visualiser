@@ -356,12 +356,10 @@ function dependancies(json) {
    var textWidth = []
 
    svg.append("g")
-        .selectAll('dummyText')
+        .selectAll("legend")
         .data(textArray)
         .enter()
         .append("text")
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "15px")
         .text(function(d) {return d})
         .each(function(d,i){
           var thisWidth = this.getComputedTextLength()
@@ -400,10 +398,10 @@ function dependancies(json) {
           .style("fill", function(d){return color(d)});
 
     legend.append("text")
-          .data(nodeValueArray)
+          .data(textArray)
           .attr("x", legendRectSize + legendSpacing)
           .attr("y", legendRectSize - legendSpacing)
           .text(function(d){
-            return d[0] + " Budget: " + d[1] + "€";
+            return d;
           });
 }
