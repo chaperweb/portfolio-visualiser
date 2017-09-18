@@ -1,18 +1,14 @@
 /*
 Portfolio Visualizer
-
 Copyright (C) 2017 Codento
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -93,14 +89,18 @@ function dependancies(json) {
 	var values = [],
       nameArray = [],
 	    valueArray = [],
+      textArray = [],
 	    nodeValueArray = [];
 	d3.values(nodes).forEach(function(node) {
 		values.push(node.value);
-		nameArray.push(node.name);
     nodeValueArray.push([node.name, node.value*denominator]);
 	});
   nodeValueArray.sort(function(a,b){
     return b[1]-a[1];
+  });
+  nodeValueArray.forEach(function(d) {
+    textArray.push(d[0] + " Budget: " + d[1] + "€")
+    nameArray.push(d[0]);
   });
 
 	/* searches the name of the project with the given ID.
@@ -158,7 +158,10 @@ function dependancies(json) {
 	// size of the display box and definition of colorscale (predefined ATM)
 	var height = Math.max(500,$(window).height()*0.85),
 		width = Math.max(700, $(window).width()*0.60),
-		color = d3.scale.category20();
+    projecDependancyColors = enoughColors(nameArray.length, colors)
+    color = d3.scaleOrdinal()
+              .domain(nameArray)
+              .range(projecDependancyColors);
 
  // Ball outline is 1 pixels wide
   var ballOutline = 1;
@@ -171,25 +174,18 @@ function dependancies(json) {
    * Makes possible to visualize large and small projects simultanously and
    * prevents situations where projects are too small or big for given canvas
   */
-	var linearScale = d3.scale.linear()
+	var linearScale = d3.scaleLinear()
 						          .domain([minDataPoint,maxDataPoint])
 						          .range([20,75]);
 
 	/* defining the graph force, for example default distance of balls and
    * aggressivity of charge of the balls
   */
-	var force = d3.layout.force()
-            		.nodes(d3.values(nodes))
-            		.links(links)
-            		.size([width, height])
-            		.linkDistance(175)
-            		.charge(-500)
-            		.on("tick", tick)
-            		.start();
-
-	var drag = force.drag()
-              		.on("dragstart", dragstart)
-              		.on("drag", onDrag);
+	var force = d3.forceSimulation()
+                .force('link', d3.forceLink().id(function(d){ return d.name }).distance(100))
+                .force("collide",d3.forceCollide( function(d){return linearScale(d.value) + 8 }))
+                .force("charge", d3.forceManyBody().strength(-50))
+                .force("center", d3.forceCenter(width / 2, height / 2))
 
 	// assign a type per value to encode opacity from css
 	links.forEach(function(link) {
@@ -217,25 +213,27 @@ function dependancies(json) {
 
 	// add the links and the arrows
 	var path = svg.append("svg:g").selectAll("path")
-            		.data(force.links())
-            	  .enter().append("svg:path")
-            		.attr("class", function(d) { return "link " + d.type; })
+            		.data(links)
+            .enter().append("svg:path")
+                .attr("class", function(d) { return "link " + d.type; })
+            		.attr("class", "link" )
             		.attr("marker-end", "url(#end)");
 
 	// define the nodes and their reactions
 	var node = svg.selectAll(".node")
-            		.data(force.nodes())
+            		.data(d3.values(nodes))
             	  .enter().append("g")
             		.attr("class", "node")
             		.on("click", click)
             		.on("dblclick", dblclick)
-            		.on("dragstart", dragstart)
-            		.call(force.drag);
+                .call(d3.drag()
+                  .on("start", dragstart)
+                  .on("drag", onDrag));
 
 	// add the nodes to canvas
 	node.append("circle")
   		.attr("r", function(d) { return linearScale(d.value); })
-  		.attr('fill-opacity', 0.7)
+  		.attr('fill-opacity', 0.8)
   		.style("fill", function(d) { return color(d.name); });
 
 	// add the text, currently project name
@@ -291,13 +289,19 @@ function dependancies(json) {
 		});
 
 	}
+  force
+    .nodes(d3.values(nodes))
+    .on("tick", tick);
+
+  force.force("link")
+    .links(links);
 
   /* action to take on mouse click
   *  makes project name larger
   *  actions taken by dragStart append as well
   */
 
-	function click() {
+	function click(d) {
 		d3.select(this).select("text").transition()
 			.duration(750)
 			.attr("x", 22)
@@ -312,9 +316,9 @@ function dependancies(json) {
 	function dblclick(d) {
 		d3.select(this).select("circle").transition()
 			.duration(750)
-			.attr("fixed", d.fixed = false)
 			.style("stroke", "none");
-
+      d.fx = null
+      d.fy = null
 		d3.select(this).select("text").transition()
 			.style("font-weight", "normal");
 	}
@@ -325,16 +329,16 @@ function dependancies(json) {
    * positionally locked balls
    */
 	function dragstart(d) {
+    if (!d3.event.active) force.alphaTarget(0.3).restart();
 	  d3.select(this).select("circle").transition()
-	  .attr("fixed", d.fixed = true)
 	  .style("stroke", "black")
 	  .style("stroke-width", ballOutline + "px");
 	}
 
 	// this function drags the node inside the height-width limits
 	function onDrag(d) {
-	   d.px = validate(d.px, 0, width, linearScale(d.value)+ballOutline);
-	   d.py = validate(d.py, 0, height, linearScale(d.value)+ballOutline);
+	   d.fx = validate(d3.event.x, 0, width, linearScale(d.value)+ballOutline);
+	   d.fy = validate(d3.event.y, 0, height, linearScale(d.value)+ballOutline);
 	}
 
 	/* helper function for "onDrag" and tick() to validate whether
@@ -349,9 +353,24 @@ function dependancies(json) {
 	/* The legend next to the graph is given its own svg container in
    * which we have the project color, name and budget respectively.
    */
+   var textWidth = []
+
+   svg.append("g")
+        .selectAll("legend")
+        .data(textArray)
+        .enter()
+        .append("text")
+        .text(function(d) {return d})
+        .each(function(d,i){
+          var thisWidth = this.getComputedTextLength()
+          textWidth.push(thisWidth)
+          this.remove()
+        })
+
+    maxTextLength = d3.max(textWidth)
     var legendSpacing = 4;
     var legendRectSize = 25;
-    var legendWidth = Math.max(300,width*0.25)
+    var legendWidth = maxTextLength + legendRectSize + 10
     var legendHeight = legendRectSize + legendSpacing;
 
     var svgLegend = d3.select("#visualization")
@@ -379,10 +398,10 @@ function dependancies(json) {
           .style("fill", function(d){return color(d)});
 
     legend.append("text")
-          .data(nodeValueArray)
+          .data(textArray)
           .attr("x", legendRectSize + legendSpacing)
           .attr("y", legendRectSize - legendSpacing)
           .text(function(d){
-            return d[0] + " Budget: " + d[1] + "€";
+            return d;
           });
 }
