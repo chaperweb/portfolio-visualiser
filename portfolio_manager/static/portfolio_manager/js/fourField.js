@@ -423,7 +423,6 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 						  .attr("class", "handle")
 							.attr("r", 20)
 							.attr("cx", scaleDate(sliderDate));
-							console.log(sliderDate, startDate);
 	  // The y and x axis are moved in to place
 	  svg.append("g")
 		 .attr("class", "xAxis")
@@ -434,8 +433,9 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		 .attr("class", "yAxis")
 		 .attr("transform", "translate("+fieldWidth / 2+","+margin.top+")")
 		 .call(d3.axisLeft(scaleY));
-setBalls(sliderDate);
-svg.select(".handle").node().cx = 500;
-console.log(svg.select(".handle").node().cx);
-return svg;
+
+		//if the user zoomed the image, the timescale does not reset
+		setBalls(sliderDate);
+		svg.select(".handle").node().cx.baseVal.value = scaleDate(sliderDate * 1000);
+		return svg;
 }
