@@ -962,6 +962,26 @@ def create_snapshot(request):
 
 @login_required
 @user_passes_test(is_admin)
+def new_presentation(request):
+
+    snaps = []
+    snap_types = Snapshot.get_subclasses()
+    for snap_type in snap_types:
+        snaps.extend(snap_type.objects.all())
+
+    sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at)
+    sorted_snaps.reverse()
+
+    response_data = {
+        'snaps': sorted_snaps
+    }
+
+    template = 'presentations/new_presentation.html'
+
+    return render(request, template, response_data)
+
+@login_required
+@user_passes_test(is_admin)
 def save_presentation(request, presentation_id):
     presentation_id = request.POST['presentation_id']
     if presentation_id:
@@ -969,7 +989,7 @@ def save_presentation(request, presentation_id):
             presentation = Presentation.objects.get(pk = presentation_id)
         except Presentation.DoesNotExist:
             presentation = Presentation()
-	
+
         except Exception as e:
             print("ERROR: {}".format(e))
             pass
