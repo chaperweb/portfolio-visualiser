@@ -19,18 +19,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 $(function(){
 
   $(".presentationVisualization").each( function() {
-	console.log(this.id+"-data") ;
+
     var input = $("#"+this.id +"-data").data(),
-	url = input['url'],
-	type = input['type'],
+	      url = input['url'],
+	      type = input['type'],
         x = input['x'],
         y = input['y'],
         start = input['start'],
         end = input['end'],
         data = input['data']
-        target = this.id;
-
-	
+        target = this.id;	
 
         if ( type == 'PA') {
           project_id = input['project']

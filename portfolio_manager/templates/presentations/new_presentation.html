@@ -16,6 +16,7 @@ New Presentation
 {% endblock %}
 
 {% block content %}
+{% load static %}
 <h1 class="text-center">Create a new presentation</h1>
 <div id="page-content-wrapper" class="container col-lg-10 col-lg-offset-1">
   <div class="col-md-8 col-md-offset-2">
@@ -33,21 +34,21 @@ New Presentation
     <h2 class="text-center">Snapshots</h2>
     <div class="row">
       {% for snap in snaps %}
-        <div class="panel-group col-md-10 col-md-offset-1">
-          <div class="panel panel-default">
-            <div class="panel-heading" data-toggle="collapse" href="#collapse{{snap.pk}}" aria-controls="#collapse{{snap.pk}}" aria-expanded="false">
-              <b>
-                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-                &nbsp;{{ snap.name }}
-              </b>
-            </div>
-            <div id="collapse{{snap.pk}}" class="panel-collapse collapse text-center">
-              <p>{{ snap.description }}</p>
-              <p>Snap type: {{ snap.type }}</p>
-            </div>
+        {% if snap.snap_type == 'PA' %}
+          <div class="snap-wrapper path-snap col-sm-12">
+            <a href="{% url 'snapshots' %}/path/{{snap.id}}" class="hover-link">
+              <img class="img-responsive" src='{% static "portfolio_manager/img/path.jpg" %}' alt="{{ snap.name }}">
+        {% elif snap.snap_type == 'FF' %}
+          <div class="snap-wrapper fourfield-snap col-sm-12">
+            <a href="{% url 'snapshots' %}/fourfield/{{snap.id}}" class="hover-link">
+              <img class="img-responsive" src='{% static "portfolio_manager/img/fourfield.jpg" %}' alt="{{ snap.name }}">
+        {% endif %}
+              <div class="overlay">
+                <h2>{{ snap.name }}</h2>
+        				<p>{{ snap.description }}</p>
+              </div>
+            </a>
           </div>
-        </div>
       {% endfor %}
     </div>
   </div>
