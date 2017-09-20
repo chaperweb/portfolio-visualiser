@@ -18,6 +18,15 @@
   top: 1%;
 }
 
+.hover-link .presentation-overlay {
+  position: absolute;
+  overflow: hidden;
+  width: 90%;
+  height: 80%;
+  left: 5%;
+  top: 1%;  
+}
+
 /* Snap Description */
 .hover-link .overlay p {
   color: #FFF;
