@@ -1001,13 +1001,11 @@ def save_presentation(request, presentation_id):
     summary = request.POST['summary']
     snapshot_array = request.POST.getlist('snapshot_checkbox[]')
     snapshots = ""
-    print(snapshot_array)
 
     for pair in snapshot_array:
         snapshots = snapshots + pair + ","
 
     snapshots = snapshots[0:(len(snapshots) - 1)]
-    print(snapshots)
 
     presentation.title = title
     presentation.summary = summary
@@ -1020,7 +1018,7 @@ def save_presentation(request, presentation_id):
 @login_required
 @user_passes_test(is_admin)
 def edit_presentation(request, presentation_id):
-    print(presentation_id)
+
     try:
         presentation = Presentation.objects.get(pk = presentation_id)
 

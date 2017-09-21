@@ -15,6 +15,7 @@
   <div id="navbardrop" class="collapse navbar-collapse">
     <ul class="nav nav-justified">
       <li><a class="navbar-item" href="{% url 'snapshots' %}">Snapshots</a></li>
+      <li><a class="navbar-item" href="{% url 'presentations' %}">Presentations</a></li>
       {% if user|is_orgadmin or user.is_superuser %}
       <li class="dropdown">
         <a class="dropdown-toggle navbar-item" data-toggle="dropdown">
