@@ -983,22 +983,31 @@ def new_presentation(request):
 @login_required
 @user_passes_test(is_admin)
 def save_presentation(request, presentation_id):
-    presentation_id = request.POST['presentation_id']
-    if presentation_id:
-        try:
-            presentation = Presentation.objects.get(pk = presentation_id)
-        except Presentation.DoesNotExist:
-            presentation = Presentation()
+    try:
+        presentation_id = request.POST['presentation_id']
+        if presentation_id:
+            try:
+                presentation = Presentation.objects.get(pk = presentation_id)
+            except Presentation.DoesNotExist:
+                presentation = Presentation()
 
-        except Exception as e:
-            print("ERROR: {}".format(e))
-            pass
-    else:
+            except Exception as e:
+                print("ERROR: {}".format(e))
+                pass
+    except:
         presentation = Presentation()
 
     title = request.POST['title']
     summary = request.POST['summary']
-    snapshots = 'FF,5,PA,5'
+    snapshot_array = request.POST.getlist('snapshot_checkbox[]')
+    snapshots = ""
+    print(snapshot_array)
+
+    for pair in snapshot_array:
+        snapshots = snapshots + pair + ","
+
+    snapshots = snapshots[0:(len(snapshots) - 1)]
+    print(snapshots)
 
     presentation.title = title
     presentation.summary = summary
@@ -1017,6 +1026,7 @@ def edit_presentation(request, presentation_id):
 
         title = presentation.title
         summary = presentation.summary
+        presentation_snaps = presentation.snapshots
         snaps = []
 
         snap_types = Snapshot.get_subclasses()
@@ -1030,7 +1040,8 @@ def edit_presentation(request, presentation_id):
         'id': presentation.pk,
         'title': title,
         'summary': summary,
-        'snapshots': sorted_snaps
+        'snapshots': presentation_snaps,
+        'snaps': sorted_snaps
         }
 
         template = 'presentations/edit_presentation.html'

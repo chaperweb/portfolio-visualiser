@@ -6,8 +6,10 @@ Edit presentation
 
 {% block css %}
 {% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/hover-effects.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/admin_tools.css" %}">
 <link rel="stylesheet" href="{% static "portfolio_manager/css/snapshot.css" %}">
-<link rel="stylesheet" href="{% static "portfolio_manager/css/sidebar.css" %}">
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 {% endblock %}
 
@@ -18,40 +20,45 @@ Edit presentation
 
 {% block content %}
 <h1 class="text-center">Edit your presentation</h1>
-<div id="page-content-wrapper" class="container col-lg-10 col-lg-offset-1">
+<div id="page-content-wrapper" class="container col-lg-8 col-lg-offset-1">
   <div class="col-md-8 col-md-offset-2">
     <form id="save-presentation-form" method="POST" action="{% url 'save_presentation' %}">
       {% csrf_token %}
 	<input type="hidden" name = "presentation_id" value = "{{ id }}" >
-      <input type="textField" class="col-lg-6" name="title" value= "{{ title }}">
-      <h2>Summary</h2>
-      <textarea class="col-lg-6" cols="4" rows="5" name="summary">{{ summary }}</textarea>
+      <input type="textField" class="form-control" name="title" value= "{{ title }}">
+      <textarea class="form-control" cols="4" rows="5" name="summary">{{ summary }}</textarea>
       <input class="btn" type="submit" value="Save">
-    </form>
+
   </div>
 </div>
-<div id="snapshotBar">
+<div id="projects">
   <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
     <h2 class="text-center">Snapshots</h2>
     <div class="row">
-      {% for snap in snaps %}
-        <div class="panel-group col-md-10 col-md-offset-1">
-          <div class="panel panel-default">
-            <div class="panel-heading" data-toggle="collapse" href="#collapse{{snap.pk}}" aria-controls="#collapse{{snap.pk}}" aria-expanded="false">
-              <b>
-                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-                <span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span>
-                &nbsp;{{ snap.name }}
-              </b>
+              {% for snap in snaps %}
+        {% if snap.snap_type == 'PA' %}
+        <div class="snap-wrapper path-snap col-md-10 col-md-offset-1">
+          <a href="{% url 'snapshots' %}/path/{{snap.id}}" class="hover-link">
+            <img class="img-responsive" src='{% static "portfolio_manager/img/path.jpg" %}' alt="{{ snap.name }}">
+        {% elif snap.snap_type == 'FF' %}
+        <div class="snap-wrapper fourfield-snap col-md-10 col-md-offset-1">
+          <a href="{% url 'snapshots' %}/fourfield/{{snap.id}}" class="hover-link">
+            <img class="img-responsive" src='{% static "portfolio_manager/img/fourfield.jpg" %}' alt="{{ snap.name }}">
+        {% else %}
+
+        {% endif %}
+            <div class="presentation-overlay overlay">
+              <h2>{{ snap.name }}</h2>
+      				<p>{{ snap.description }}</p>
             </div>
-            <div id="collapse{{snap.pk}}" class="panel-collapse collapse text-center">
-              <p>{{ snap.description }}</p>
-              <p>Snap type: {{ snap.type }}</p>
-            </div>
-          </div>
+          </a>
+	<div>
+          <input name="snapshot_checkbox[]" type="checkbox" value="{{snap.snap_type}},{{snap.id}}"> Add this snapshot to the presentation
+	</div>
         </div>
-      {% endfor %}
+        {% endfor %}
     </div>
+    </form>
   </div>
 </div>
 {% endblock %}
