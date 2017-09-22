@@ -180,7 +180,6 @@ def export_excel(request):
 
     return render(request, 'export_excel.html', context)
 
-
 @login_required
 def home(request):
     user = request.user
@@ -194,8 +193,7 @@ def home(request):
             projects = Project.objects.all()
             user_type = 'superuser'
         else:
-            user_org = user.groups.last().organizationadmins.organization
-            projects = Project.objects.filter(parent=user_org)
+            projects = Project.objects.filter(parent__in = get_organizations_where_admin(user))
             user_type = 'org_admin'
 
         for project in projects:
@@ -225,9 +223,9 @@ def home(request):
         context["pre_add_project_form"] = AddProjectForm()
         context['projects_data'] = projects_data
     else:
-        # TODO: Filter the snaps according to waht the user is allowed to see
+        # TODO: Filter the snaps according to what the user is allowed to see
         # Maybe have some news feed or something something
-        user_org = user.groups.last().employees.organization
+        user_org = get_organizations(user)
         context['snaps'] = []
         snap_types = Snapshot.get_subclasses()
         for snap_type in snap_types:

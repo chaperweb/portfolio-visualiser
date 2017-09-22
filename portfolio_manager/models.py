@@ -106,6 +106,19 @@ class Organization (models.Model):
             template_dimension.content_type = dim_obj.get_content_type()
             template_dimension.save()
 
+def get_organizations_where_admin(user):
+    list_orgs = Organization.objects.all()
+    return list_orgs.filter(organizationadmins__user = user)
+
+def get_organizations_where_employee(user):
+    list_orgs = Organization.objects.all()
+    return list_orgs.filter(employees__user = user)
+
+def get_organizations(user):
+    list_orgs = Organization.objects.all()
+    q1 = models.Q(organizationadmins__user = user)
+    q2 = models.Q(employees__user = user)
+    return list_orgs.filter(q1 | q2)
 
 class Project (models.Model):
     name = models.CharField(max_length=50)
