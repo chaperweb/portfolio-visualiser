@@ -364,7 +364,7 @@ function dependancies(json) {
         .each(function(d,i){
           var thisWidth = this.getComputedTextLength()
           textWidth.push(thisWidth)
-          this.remove()
+          $(this).remove();
         })
 
     maxTextLength = d3.max(textWidth)
