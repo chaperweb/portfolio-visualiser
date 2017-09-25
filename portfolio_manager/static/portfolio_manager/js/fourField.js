@@ -162,6 +162,10 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	if (isNaN(sliderDate)) {
 		sliderDate = startDefault;
 		$('#start-date-selector').val(ddmmyy(startDate*1000));
+	} else if(sliderDate < startDate) {
+		sliderDate = startDate;
+	} else if(sliderDate > endDate) {
+		sliderDate = endDate;
 	}
 
 //console.log(projects);
