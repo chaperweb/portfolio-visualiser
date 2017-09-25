@@ -1010,8 +1010,12 @@ def save_presentation(request, presentation_id):
             snapshot_text = SnapshotPresentationText()
         snapshot_text.presentation_id = presentation_id
         snapshot_text.snapshot_id = pair
-        snapshot_text.snapshot_title = request.POST['snapshot_title' + pair]
-        snapshot_text.snapshot_text = request.POST['snapshot_text' + pair]
+        try:
+            snapshot_text.snapshot_title = request.POST['snapshot_title' + pair]
+            snapshot_text.snapshot_text = request.POST['snapshot_text' + pair]
+        except:
+            snapshot_text.snapshot_title = pair
+            snapshot_text.snapshot_text = pair    
         snapshot_text.save()
 
     snapshots = snapshots[0:(len(snapshots) - 1)]
