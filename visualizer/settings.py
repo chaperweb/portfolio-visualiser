@@ -92,7 +92,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'envparse',
-    'dj_database_url'
+    'dj_database_url',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
@@ -103,7 +104,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     # 'simple_history.middleware.HistoryRequestMiddleware',
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1'
 ]
 
 ROOT_URLCONF = 'visualizer.urls'
