@@ -16,6 +16,11 @@ Edit presentation
 {% block javascript %}
 {% load static %}
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/colorGenerator.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/path.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/fourField.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/presentations/presentation_loader.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -30,6 +35,29 @@ Edit presentation
       <input class="btn" type="submit" value="Save">
 
   </div>
+  {% for item in snapshots %}
+      <input id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}-data" type="hidden"
+      data-url="{% url 'json' %}"
+      data-type = "{{ item.snap.snap_type }}"
+      data-id = "{{ item.snap.pk }}"
+      data-x = "{{ item.snap.x_id}}"
+      data-y = "{{ item.snap.y_id}}"
+      data-start="{{ item.snap.start_date }}"
+      data-end="{{ item.snap.end_date }}"
+      data-r = "{{ item.snap.radius_id}}"
+      data-zoom = "{{ item.snap.zoom }}"
+      data-project =  "{{ item.snap.project_id}}"
+      data-data = "{{ data }}"
+      >
+    <div id="{{ item.snap.snap_type }}{{ item.snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
+      <hr width = 100%>
+        <input type="textField" class="form-control" name="snapshot_title{{ item.snap.snap_type }},{{ item.snap.id }}" value= "{{ item.text.snapshot_title }}">
+        <textarea class="form-control" cols="4" rows="5" name="snapshot_text{{ item.snap.snap_type }},{{ item.snap.id }}">{{ item.text.snapshot_text }}</textarea>
+        <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}" >
+          <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
+        </div>
+    </div>
+  {% endfor %}
 </div>
 <div id="projects">
   <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >

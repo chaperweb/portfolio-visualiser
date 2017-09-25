@@ -477,7 +477,6 @@ class Presentation(models.Model):
 class SnapshotPresentationText(models.Model):
     presentation_id = models.ForeignKey(Presentation, null=True)
     snapshot_id = models.CharField(max_length=64)
-    snapshot_type = models.CharField(max_length=2)
     snapshot_title = models.CharField(max_length=64)
     snapshot_text = models.TextField()
 

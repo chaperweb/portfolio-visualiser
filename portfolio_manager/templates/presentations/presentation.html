@@ -32,29 +32,32 @@ Presentation
     </nav>
   </div>
   <div class="col-lg-9 col-xs-12">
+    {% if user|is_orgadmin or user.is_superuser %}
+    <a href="{% url 'edit_presentation/{{ presentation.pk }}' %}" class="btn">Edit presentation</a>
+    {% endif %}
     <h2> {{presentation.title}} </h2>
     <div id="summary-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
       {{ presentation.summary }}
     </div>
-    {% for snap in snapshots %}
-        <input id="visualization{{ snap.snap_type }}{{ snap.id }}-data" type="hidden"
+    {% for item in snapshots %}
+        <input id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}-data" type="hidden"
         data-url="{% url 'json' %}"
-        data-type = "{{ snap.snap_type }}"
-        data-id = "{{ snap.pk }}"
-        data-x = "{{ snap.x_id}}"
-        data-y = "{{ snap.y_id}}"
-        data-start="{{ snap.start_date }}"
-        data-end="{{ snap.end_date }}"
-        data-r = "{{ snap.radius_id}}"
-        data-zoom = "{{ snap.zoom }}"
-        data-project =  "{{ snap.project_id}}"
-	data-data = "{{ data }}"
-         >
-      <div id="{{ snap.snap_type }}{{ snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
+        data-type = "{{ item.snap.snap_type }}"
+        data-id = "{{ item.snap.pk }}"
+        data-x = "{{ item.snap.x_id}}"
+        data-y = "{{ item.snap.y_id}}"
+        data-start="{{ item.snap.start_date }}"
+        data-end="{{ item.snap.end_date }}"
+        data-r = "{{ item.snap.radius_id}}"
+        data-zoom = "{{ item.snap.zoom }}"
+        data-project =  "{{ item.snap.project_id}}"
+	      data-data = "{{ data }}"
+        >
+      <div id="{{ item.snap.snap_type }}{{ item.snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
         <hr width = 100%>
-          <h2>{{ snap.name }}</h2>
-          <h5>{{ snap.description }}</h5>
-          <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ snap.snap_type }}{{ snap.id }}" >
+          <h2>{{ item.text.snapshot_title }}</h2>
+          <h5>{{ item.text.snapshot_text }}</h5>
+          <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}" >
             <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
           </div>
       </div>
