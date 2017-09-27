@@ -996,6 +996,7 @@ def save_presentation(request, presentation_id):
                 pass
     except:
         presentation = Presentation()
+        presentation.save()
 
     title = request.POST['title']
     summary = request.POST['summary']
@@ -1008,22 +1009,23 @@ def save_presentation(request, presentation_id):
             snapshot_text = SnapshotPresentationText.objects.get(pk = presentation_id, snapshot_id = pair)
         except:
             snapshot_text = SnapshotPresentationText()
-        snapshot_text.presentation_id = presentation_id
+        
         snapshot_text.snapshot_id = pair
+        snapshot_text.presentation_id = presentation
+        snapshot_text.save()
         try:
             snapshot_text.snapshot_title = request.POST['snapshot_title' + pair]
             snapshot_text.snapshot_text = request.POST['snapshot_text' + pair]
         except:
             snapshot_text.snapshot_title = pair
-            snapshot_text.snapshot_text = pair    
-        snapshot_text.save()
+            snapshot_text.snapshot_text = pair  
 
     snapshots = snapshots[0:(len(snapshots) - 1)]
 
     presentation.title = title
     presentation.summary = summary
     presentation.snapshots = snapshots
-    presentation.save()
+    presentation.save()    
 
     url = 'edit_presentation/{}'.format(presentation.pk)
     return redirect(url, permanent=True)
@@ -1033,8 +1035,7 @@ def save_presentation(request, presentation_id):
 def edit_presentation(request, presentation_id):
 
     try:
-        presentation = Presentation.objects.get(pk = presentation_id)
-        snapshot_texts = SnapshotPresentationText.objects.get(presentation_id = presentation_id)
+        presentation = Presentation.objects.get(pk = presentation_id)        
 
         title = presentation.title
         summary = presentation.summary
@@ -1046,11 +1047,12 @@ def edit_presentation(request, presentation_id):
             for x in snapshot_ids:
                 if i % 2 == 0:
                     try:
+                        print(snapshot_ids[i] + "," + snapshot_ids[i + 1])
                         if snapshot_ids[i] == 'PA':
                             snap = PathSnapshot.objects.get(pk = snapshot_ids[i + 1])
                         elif snapshot_ids[i] == 'FF':
                             snap = FourFieldSnapshot.objects.get(pk = snapshot_ids[i + 1])
-                        snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation_id, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
+                        snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
                         snap_data = {
                             'snap': snap,
                             'text': snapshot_text
@@ -1115,7 +1117,7 @@ def presentation(request, presentation_id = None):
                                     snap = PathSnapshot.objects.get(pk = snapshot_ids[i + 1])
                                 elif snapshot_ids[i] == 'FF':
                                     snap = FourFieldSnapshot.objects.get(pk = snapshot_ids[i + 1])
-                                snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation_id, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
+                                snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
                                 snap_data = {
                                     'snap': snap,
                                     'text': snapshot_text
