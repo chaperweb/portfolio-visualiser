@@ -18,6 +18,9 @@ All Presentations
 
 {% block content %}
 <h1 class="text-center">Presentations</h1>
+<div>
+  <a href="{% url 'new_presentation' %}" class="btn">Create new presentation</a>
+</div>
 <div class="snaps-container">
   {% for presentation in presentations %}
   <div class="snap-wrapper path-snap col-lg-2 col-md-4 col-sm-6 col-12">

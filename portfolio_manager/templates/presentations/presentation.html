@@ -33,7 +33,7 @@ Presentation
   </div>
   <div class="col-lg-9 col-xs-12">
     {% if user.is_orgadmin or user.is_superuser %}
-    <a href="{% url 'presentations' %}" class="btn">Edit presentation</a>
+    <a href="{% url 'presentations' %}/{{ presentation.pk }}" class="btn">Edit presentation</a>
     {% endif %}
     <h2> {{presentation.title}} </h2>
     <div id="summary-wrapper" class="snap-wrapper col-lg-12 col-sm-10">

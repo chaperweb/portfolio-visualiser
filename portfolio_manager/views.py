@@ -983,11 +983,14 @@ def new_presentation(request):
 @login_required
 @user_passes_test(is_admin)
 def save_presentation(request, presentation_id):
+
+    snapshots = ""
     try:
         presentation_id = request.POST['presentation_id']
         if presentation_id:
             try:
                 presentation = Presentation.objects.get(pk = presentation_id)
+                snapshots = presentation.snapshots
             except Presentation.DoesNotExist:
                 presentation = Presentation()
 
@@ -1001,31 +1004,29 @@ def save_presentation(request, presentation_id):
     title = request.POST['title']
     summary = request.POST['summary']
     snapshot_array = request.POST.getlist('snapshot_checkbox[]')
-    snapshots = ""
 
     for pair in snapshot_array:
-        snapshots = snapshots + pair + ","
+        snapshots = snapshots + "," + pair
         try:
-            snapshot_text = SnapshotPresentationText.objects.get(pk = presentation_id, snapshot_id = pair)
+            snapshot_text = SnapshotPresentationText.objects.get(pk = presentation, snapshot_id = pair)
         except:
             snapshot_text = SnapshotPresentationText()
-        
-        snapshot_text.snapshot_id = pair
-        snapshot_text.presentation_id = presentation
-        snapshot_text.save()
+            snapshot_text.snapshot_id = pair
+            snapshot_text.presentation_id = presentation
         try:
             snapshot_text.snapshot_title = request.POST['snapshot_title' + pair]
             snapshot_text.snapshot_text = request.POST['snapshot_text' + pair]
         except:
             snapshot_text.snapshot_title = pair
-            snapshot_text.snapshot_text = pair  
-
-    snapshots = snapshots[0:(len(snapshots) - 1)]
+            snapshot_text.snapshot_text = pair
+        snapshot_text.save()
+    if snapshots[0] == ','
+        snapshots = snapshots[1:len(snapshots)]
 
     presentation.title = title
     presentation.summary = summary
     presentation.snapshots = snapshots
-    presentation.save()    
+    presentation.save()
 
     url = 'edit_presentation/{}'.format(presentation.pk)
     return redirect(url, permanent=True)
@@ -1035,7 +1036,7 @@ def save_presentation(request, presentation_id):
 def edit_presentation(request, presentation_id):
 
     try:
-        presentation = Presentation.objects.get(pk = presentation_id)        
+        presentation = Presentation.objects.get(pk = presentation_id)
 
         title = presentation.title
         summary = presentation.summary
