@@ -83,7 +83,8 @@ Edit presentation
             </div>
           </a>
 	<div>
-    {% if {{snap.snap_type}} + "," + {{snap.id}} not in presentation.snapshots %}
+    <div>{{ snap.snap_type|add:","|add:4|stringformat:'s' }}</div>
+    {% if snap.snap_type|add:","|add:snap.id|stringformat:'s' not in presentation.snapshots %}
       <input name="snapshot_checkbox[]" type="checkbox" value="{{snap.snap_type}},{{snap.id}}"> Add this snapshot to the presentation
     {% else %}
         This snapshot is already in your presentation

@@ -1020,7 +1020,7 @@ def save_presentation(request, presentation_id):
             snapshot_text.snapshot_title = pair
             snapshot_text.snapshot_text = pair
         snapshot_text.save()
-    if snapshots[0] == ','
+    if snapshots[0] == ",":
         snapshots = snapshots[1:len(snapshots)]
 
     presentation.title = title
@@ -1074,6 +1074,7 @@ def edit_presentation(request, presentation_id):
         sorted_snaps.reverse()
 
         response_data = {
+        'presentation': presentation,
         'id': presentation.pk,
         'title': title,
         'summary': summary,
