@@ -28,7 +28,7 @@ $(function(){
         start = input['start'],
         end = input['end'],
         data = input['data']
-        target = this.id;	
+        target = this.id;
 
         if ( type == 'PA') {
           project_id = input['project']

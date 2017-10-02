@@ -53,6 +53,7 @@ Edit presentation
       >
     <div id="{{ item.snap.snap_type }}{{ item.snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
       <hr width = 100%>
+        <a href="{% url 'remove_presentation_snapshot' %}/{{ presentation.pk }}/{{ item.snap.snap_type }},{{ item.snap.id }}" class="btn">Remove this snapshot</a>
         <input type="textField" class="form-control" name="snapshot_title{{ item.snap.snap_type }},{{ item.snap.id }}" value= "{{ item.text.snapshot_title }}">
         <textarea class="form-control" cols="4" rows="5" name="snapshot_text{{ item.snap.snap_type }},{{ item.snap.id }}">{{ item.text.snapshot_text }}</textarea>
         <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}" >
@@ -77,19 +78,22 @@ Edit presentation
         {% else %}
 
         {% endif %}
-            <div class="presentation-overlay overlay">
+            <div class="overlay">
               <h2>{{ snap.name }}</h2>
       				<p>{{ snap.description }}</p>
             </div>
           </a>
-	<div>
-    <div>{{ snap.snap_type|add:","|add:4|stringformat:'s' }}</div>
-    {% if snap.snap_type|add:","|add:snap.id|stringformat:'s' not in presentation.snapshots %}
-      <input name="snapshot_checkbox[]" type="checkbox" value="{{snap.snap_type}},{{snap.id}}"> Add this snapshot to the presentation
-    {% else %}
-        This snapshot is already in your presentation
-    {% endif %}
-	</div>
+        	<div>
+            {% with snap.pk|stringformat:'s' as id_number %}
+              {% if snap.snap_type|add:","|add:id_number not in presentation.snapshots %}
+                <input name="snapshot_checkbox[]" type="checkbox" value="{{snap.snap_type}},{{snap.id}}"> Add this snapshot to the presentation
+                <input type="hidden" name="{{snap.snap_type}},{{snap.id}}name" value="{{ snap.name }}">
+                <input type="hidden" name="{{snap.snap_type}},{{snap.id}}description" value="{{ snap.derscription }}">
+              {% else %}
+                  This snapshot is already in your presentation
+              {% endif %}
+            {% endwith %}
+        	</div>
         </div>
         {% endfor %}
     </div>

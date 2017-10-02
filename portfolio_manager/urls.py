@@ -68,9 +68,10 @@ urlpatterns = [
     url(r'^excel/import$', views.import_excel, name='import_excel'),
     url(r'^excel/export$', views.export_excel, name='export_excel'),
     url(r'^presentations(/(?P<presentation_id>[0-9]+))?$', views.presentation, name="presentations"),
-    url(r'^presentations/edit_presentation/(?P<presentation_id>[0-9]+)$', views.edit_presentation, name="edit_presentation"),
-    url(r'^presentations/new_presentation$', views.new_presentation, name='new_presentation'),
-    url(r'^presentations/save_presentation(/(?P<presentation_id>[0-9]+))?$', views.save_presentation, name='save_presentation'),
+        url(r'^presentations/edit_presentation/(?P<presentation_id>[0-9]+)$', views.edit_presentation, name="edit_presentation"),
+        url(r'^presentations/new_presentation$', views.new_presentation, name='new_presentation'),
+        url(r'^presentations/save_presentation(/(?P<presentation_id>[0-9]+))?$', views.save_presentation, name='save_presentation'),
+        url(r'^presentations/remove_presentation_snapshot/(?P<presentation_id>[0-9]+)/(?P<snapshot_id>[A-Za-z]+","[0-9]+)$', views.remove_presentation_snapshot, name='remove_presentation_snapshot'),
     # these are for ajax requests
     url(r'', include(ajax_patterns)),
 

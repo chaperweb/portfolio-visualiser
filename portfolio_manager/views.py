@@ -1014,11 +1014,11 @@ def save_presentation(request, presentation_id):
             snapshot_text.snapshot_id = pair
             snapshot_text.presentation_id = presentation
         try:
-            snapshot_text.snapshot_title = request.POST['snapshot_title' + pair]
-            snapshot_text.snapshot_text = request.POST['snapshot_text' + pair]
+            snapshot_text.snapshot_title = request.POST[pair + 'name']
+            snapshot_text.snapshot_text = request.POST[pair + 'description']
         except:
-            snapshot_text.snapshot_title = pair
-            snapshot_text.snapshot_text = pair
+            snapshot_text.snapshot_title = ""
+            snapshot_text.snapshot_text = ""
         snapshot_text.save()
     if snapshots[0] == ",":
         snapshots = snapshots[1:len(snapshots)]
@@ -1048,7 +1048,6 @@ def edit_presentation(request, presentation_id):
             for x in snapshot_ids:
                 if i % 2 == 0:
                     try:
-                        print(snapshot_ids[i] + "," + snapshot_ids[i + 1])
                         if snapshot_ids[i] == 'PA':
                             snap = PathSnapshot.objects.get(pk = snapshot_ids[i + 1])
                         elif snapshot_ids[i] == 'FF':
@@ -1089,6 +1088,30 @@ def edit_presentation(request, presentation_id):
     except Exception as e:
         print("ERROR: {}".format(e))
         pass
+
+@login_required
+@user_passes_test(is_admin)
+def remove_presentation_snapshot(request, presentation_id = None, snapshot_id = None):
+    try:
+        presentation = Presentation.objects.get(pk = presentation_id)
+        snap_id_length = len(snapshot_id)
+        location = presentation.snapshots.find(snapshot_id)
+
+        if (location == 0):
+            presentation.snapshots = presentations.snapshots[snap_id_length : len(persentation.snapshots)]
+        else:
+            first_part = presentations.snapshots[:location]
+            second_part = presentation.snapshots[(location - 1) + snap_id_length : len(persentation.snapshots) ]
+            presentation.snapshots = first_part + second_part
+
+        presentation.save()
+
+    except Exception as e:
+        print("ERROR: {}".format(e))
+        pass
+
+    url = 'edit_presentation/{}'.format(presentation.pk)
+    return redirect(url, permanent=True)
 
 @login_required
 def presentation(request, presentation_id = None):
