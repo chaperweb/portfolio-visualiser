@@ -36,6 +36,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 			startDefault = 0,
 			endDefault = 0;
 
+	var radiusArray = []
 	// The scales for the x and y axis.
 	// range means the length of the line and domain the numbers beneath it
 	var scaleX = d3.scaleLinear()
@@ -101,6 +102,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 					inProgress.yAxisActual = (collectVal).reverse();
 				} else if (valueName === radToBe) {
 					inProgress.radius = (collectVal)
+					radiusArray.push.apply(radiusArray,collectVal)
 				}
 			} else if (dimension.dimension_type === colorToBe ) {
 				inProgress.organization = dimension.dimension_object.history[0].value.name
@@ -139,6 +141,18 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		projects.push(inProgress);
 		}
 	}
+	var maxRadius = 0
+	var minRadius = Infinity
+	//getting min and max values for the radius-values
+	radiusArray.forEach(function(d) {
+		var parsedNumber = parseInt(d[1])
+		if(parsedNumber < minRadius) {
+			minRadius = parsedNumber
+		}
+		if(parsedNumber > maxRadius) {
+			maxRadius = parsedNumber
+		}
+	})
 
 	var uniqueOrganizations = organizations.filter( onlyUnique );
 
@@ -148,6 +162,10 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	var colorScale = d3.scaleOrdinal()
 										.domain(uniqueOrganizations)
 										.range(fourFieldColors);
+	//creating linearscale to scale the balls
+	var linearScale = d3.scaleLinear()
+										.domain([minRadius,maxRadius])
+										.range([5,100]);
 
 	ddmmyy = d3.timeFormat("%d/%m/%Y");
 
@@ -227,10 +245,10 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		d.yAxis !== Infinity &&
 		d.xAxis !== Infinity &&
 		d.xAxis !== -Infinity &&
-		y(d) > margin.top  &&
-		x(d) > margin.left &&
-		y(d) < (margin.top + axisLengthY) &&
-		x(d) < (margin.left + axisLengthX));
+		y(d) > linearScale(d.radius)  &&
+		x(d) > linearScale(d.radius) &&
+		y(d) < (margin.top + axisLengthY + margin.bottom - Math.min(linearScale(d.radius), 100)) &&
+		x(d) < (margin.left + axisLengthX + margin.right - Math.min(linearScale(d.radius), 100)));
 	}
 	function validXCoordinates(d) {
 		if(!isNaN(d)) {return Math.min(Math.max(d,0),fieldWidth) } else {return 0};
@@ -247,7 +265,13 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	function position(dot) {
 		dot.attr("cx", function(d) { return validXCoordinates(x(d)) ; })
 		   .attr("cy", function(d) { return validYCoordinates(y(d)); })
-		   .attr("r", function(d) { return Math.min(Math.max( radius(d),0 ),100); });
+		   .attr("r", function(d) {
+				 if(radius(d) <= 0) {
+					 return 0;
+				 } else {
+					 return linearScale(radius(d));
+				 }
+				  });
 	}
 
 	// Set ball locations and date label value
