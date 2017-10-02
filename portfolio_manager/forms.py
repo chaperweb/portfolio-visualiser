@@ -77,6 +77,7 @@ class TextDimensionForm(DimensionForm):
 
     def __init__(self, *args, **kwargs ):
         super(TextDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].required = False
         self.fields['value'].label = self.dimension_name
 
 class NumberDimensionForm(DimensionForm):
@@ -123,6 +124,7 @@ class AssociatedPersonDimensionForm(DimensionForm):
 
     def __init__(self, *args, **kwargs):
         super(AssociatedPersonDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].required = False
         self.fields['value'].label = self.dimension_name
 
 
@@ -134,6 +136,7 @@ class AssociatedOrganizationDimensionForm(DimensionForm):
 
     def __init__(self, *args, **kwargs):
         super(AssociatedOrganizationDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].required = False
         self.fields['value'].label = self.dimension_name
 
 class AssociatedPersonsDimensionForm(DimensionForm):
@@ -144,6 +147,7 @@ class AssociatedPersonsDimensionForm(DimensionForm):
 
     def __init__(self, *args, **kwargs):
         super(AssociatedPersonsDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].required = False
         self.fields['value'].label = self.dimension_name
 
 class AssociatedProjectsDimensionForm(DimensionForm):
@@ -154,6 +158,7 @@ class AssociatedProjectsDimensionForm(DimensionForm):
 
     def __init__(self, *args, **kwargs):
         super(AssociatedProjectsDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].required = False
         self.fields['value'].label = self.dimension_name
 
 class AddProjectForm(ModelForm):
