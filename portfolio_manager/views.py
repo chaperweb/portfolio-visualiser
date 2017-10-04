@@ -1094,6 +1094,7 @@ def edit_presentation(request, presentation_id):
 def remove_presentation_snapshot(request, presentation_id = None, snapshot_id = None):
     try:
         presentation = Presentation.objects.get(pk = presentation_id)
+        snap_text = SnapshotPresentationText.get(pk = presentation, snapshot_id = snapshot_id)
         snap_id_length = len(snapshot_id)
         location = presentation.snapshots.find(snapshot_id)
 
@@ -1104,6 +1105,7 @@ def remove_presentation_snapshot(request, presentation_id = None, snapshot_id = 
             second_part = presentation.snapshots[(location - 1) + snap_id_length : len(persentation.snapshots) ]
             presentation.snapshots = first_part + second_part
 
+        snap_text.delete()
         presentation.save()
 
     except Exception as e:
