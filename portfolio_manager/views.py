@@ -961,6 +961,17 @@ def create_snapshot(request):
             pass
 
 @login_required
+def get_snapshot(snap_type, snap_id):
+    try:
+        if snap_type == 'PA':
+            snap = PathSnapshot.objects.get(pk = snap_id)
+        elif snap_type == 'FF':
+            snap = FourFieldSnapshot.objects.get(pk = snap_id)
+    except Exception as e:
+        print("ERROR: {}".format(e))
+    return snap
+
+@login_required
 @user_passes_test(is_admin)
 def new_presentation(request):
 
@@ -1091,32 +1102,37 @@ def edit_presentation(request, presentation_id):
 
 @login_required
 @user_passes_test(is_admin)
-def remove_presentation_snapshot(request, presentation_id = None, snapshot_id = None):
+def remove_presentation_snapshot(request, presentation_id = None, snapshot_type = None, snapshot_id = None):
     try:
+        snap_id = snapshot_type + "," + snapshot_id
         presentation = Presentation.objects.get(pk = presentation_id)
-        snap_text = SnapshotPresentationText.get(pk = presentation, snapshot_id = snapshot_id)
-        snap_id_length = len(snapshot_id)
-        location = presentation.snapshots.find(snapshot_id)
+        snap_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snap_id)
+        snap_id_length = len(snap_id)
+        location = presentation.snapshots.find(snap_id)
 
         if (location == 0):
-            presentation.snapshots = presentations.snapshots[snap_id_length : len(persentation.snapshots)]
+            presentation.snapshots = presentation.snapshots[snap_id_length : len(presentation.snapshots)]
         else:
-            first_part = presentations.snapshots[:location]
-            second_part = presentation.snapshots[(location - 1) + snap_id_length : len(persentation.snapshots) ]
+            first_part = presentation.snapshots[0:location]
+            second_part = presentation.snapshots[(location + snap_id_length):len(presentation.snapshots) ]
             presentation.snapshots = first_part + second_part
+
+        if (presentation.snapshots != "" and presentation.snapshots[0] == ","):
+            presentation.snapshots = presentation.snapshots[1:len(presentation.snapshots)]
 
         snap_text.delete()
         presentation.save()
+        
 
     except Exception as e:
         print("ERROR: {}".format(e))
         pass
 
-    url = 'edit_presentation/{}'.format(presentation.pk)
-    return redirect(url, permanent=True)
+    return redirect(reverse('edit_presentation', kwargs={'presentation_id': presentation_id}))
 
 @login_required
 def presentation(request, presentation_id = None):
+
     response_data = {}
     template = 'snapshots/error.html'
 

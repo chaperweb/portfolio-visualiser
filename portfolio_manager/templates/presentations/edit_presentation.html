@@ -53,7 +53,7 @@ Edit presentation
       >
     <div id="{{ item.snap.snap_type }}{{ item.snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
       <hr width = 100%>
-        <a href="{% url 'remove_presentation_snapshot' %}/{{ presentation.pk }}/{{ item.snap.snap_type }},{{ item.snap.id }}" class="btn">Remove this snapshot</a>
+        <a href="{% url 'remove_presentation_snapshot' %}/{{ presentation.pk }}/{{ item.snap.snap_type }}/{{ item.snap.id }}" class="btn orange-btn">Remove this snapshot</a>
         <input type="textField" class="form-control" name="snapshot_title{{ item.snap.snap_type }},{{ item.snap.id }}" value= "{{ item.text.snapshot_title }}">
         <textarea class="form-control" cols="4" rows="5" name="snapshot_text{{ item.snap.snap_type }},{{ item.snap.id }}">{{ item.text.snapshot_text }}</textarea>
         <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}" >
