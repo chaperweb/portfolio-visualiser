@@ -4,6 +4,10 @@
   stroke-width: 5px;
 }
 
+.presentationVisualization {
+  width: inherit;
+}
+
 img#loading-icon {
   padding-top: 15%;
   cursor: wait;

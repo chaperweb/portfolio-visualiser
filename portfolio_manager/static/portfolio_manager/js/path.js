@@ -114,8 +114,8 @@ function generate_path_svg(json, target, data_id_array, startDate, endDate) {
 
   // Dimension of the svg box
   // Left and right margin are hardcoded to ensure enough room for axis values
-  var height =  Math.max(600, $(window).height() * 0.8),
-      width =   Math.max(800, ($(window).width() - 250) * 0.9),
+  var width = $('#'+ target).width(),
+      height = width * 0.7, //Math.max(600, $(window).height() * 0.8),
       margin = {
         right: 35,
         left: 85,

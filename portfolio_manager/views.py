@@ -960,7 +960,6 @@ def create_snapshot(request):
         else:
             pass
 
-@login_required
 def get_all_snapshots():
     snaps = []
     snap_types = Snapshot.get_subclasses()
@@ -972,7 +971,6 @@ def get_all_snapshots():
 
     return sorted_snaps
 
-@login_required
 def get_snapshot(snapshot_id):
     snap_id = snapshot_id.split(',')[1]
     snap_type = snapshot_id.split(',')[0]
@@ -1022,6 +1020,21 @@ def save_presentation(request, presentation_id):
 
     title = request.POST['title']
     summary = request.POST['summary']
+
+    if (snapshots != ""):
+        snapshot_ids = presentation.snapshots.split(",")
+        i = 0
+        for x in snapshot_ids:
+            if i % 2 == 0:
+                try:
+                    snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
+                    snapshot_text.snapshot_title = request.POST['snapshot_title' + snapshot_ids[i] + "," + snapshot_ids[i + 1] ]
+                    snapshot_text.snapshot_text = request.POST['snapshot_text' + snapshot_ids[i] + "," + snapshot_ids[i + 1] ]
+                    snapshot_text.save()
+                except Exception as e:
+                    print("ERROR: {}".format(e))
+                    pass
+                i = i + 1
 
     snapshot_array = request.POST.getlist('snapshot_checkbox[]')
 
