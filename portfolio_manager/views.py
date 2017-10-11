@@ -961,7 +961,21 @@ def create_snapshot(request):
             pass
 
 @login_required
-def get_snapshot(snap_type, snap_id):
+def get_all_snapshots():
+    snaps = []
+    snap_types = Snapshot.get_subclasses()
+    for snap_type in snap_types:
+        snaps.extend(snap_type.objects.all())
+
+    sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at)
+    sorted_snaps.reverse()
+
+    return sorted_snaps
+
+@login_required
+def get_snapshot(snapshot_id):
+    snap_id = snapshot_id.split(',')[1]
+    snap_type = snapshot_id.split(',')[0]
     try:
         if snap_type == 'PA':
             snap = PathSnapshot.objects.get(pk = snap_id)
@@ -975,16 +989,10 @@ def get_snapshot(snap_type, snap_id):
 @user_passes_test(is_admin)
 def new_presentation(request):
 
-    snaps = []
-    snap_types = Snapshot.get_subclasses()
-    for snap_type in snap_types:
-        snaps.extend(snap_type.objects.all())
-
-    sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at)
-    sorted_snaps.reverse()
+    snaps = get_all_snapshots()
 
     response_data = {
-        'snaps': sorted_snaps
+        'snaps': snaps
     }
 
     template = 'presentations/new_presentation.html'
@@ -1014,6 +1022,7 @@ def save_presentation(request, presentation_id):
 
     title = request.POST['title']
     summary = request.POST['summary']
+
     snapshot_array = request.POST.getlist('snapshot_checkbox[]')
 
     for pair in snapshot_array:
@@ -1025,8 +1034,9 @@ def save_presentation(request, presentation_id):
             snapshot_text.snapshot_id = pair
             snapshot_text.presentation_id = presentation
         try:
-            snapshot_text.snapshot_title = request.POST[pair + 'name']
-            snapshot_text.snapshot_text = request.POST[pair + 'description']
+            snapshot = get_snapshot(pair)
+            snapshot_text.snapshot_title = snapshot.name
+            snapshot_text.snapshot_text = snapshot.description
         except:
             snapshot_text.snapshot_title = ""
             snapshot_text.snapshot_text = ""
@@ -1059,10 +1069,7 @@ def edit_presentation(request, presentation_id):
             for x in snapshot_ids:
                 if i % 2 == 0:
                     try:
-                        if snapshot_ids[i] == 'PA':
-                            snap = PathSnapshot.objects.get(pk = snapshot_ids[i + 1])
-                        elif snapshot_ids[i] == 'FF':
-                            snap = FourFieldSnapshot.objects.get(pk = snapshot_ids[i + 1])
+                        snap = get_snapshot(snapshot_ids[i] + ',' + snapshot_ids[ i + 1 ])
                         snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
                         snap_data = {
                             'snap': snap,
@@ -1074,14 +1081,7 @@ def edit_presentation(request, presentation_id):
                     presentation_snaps.append(snap_data)
                 i = i + 1
 
-        snaps = []
-
-        snap_types = Snapshot.get_subclasses()
-        for snap_type in snap_types:
-            snaps.extend(snap_type.objects.all())
-
-        sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at)
-        sorted_snaps.reverse()
+        snaps = get_all_snapshots()
 
         response_data = {
         'presentation': presentation,
@@ -1089,7 +1089,7 @@ def edit_presentation(request, presentation_id):
         'title': title,
         'summary': summary,
         'snapshots': presentation_snaps,
-        'snaps': sorted_snaps
+        'snaps': snaps
         }
 
         template = 'presentations/edit_presentation.html'
@@ -1122,7 +1122,7 @@ def remove_presentation_snapshot(request, presentation_id = None, snapshot_type 
 
         snap_text.delete()
         presentation.save()
-        
+
 
     except Exception as e:
         print("ERROR: {}".format(e))
@@ -1156,10 +1156,7 @@ def presentation(request, presentation_id = None):
                     for x in snapshot_ids:
                         if i % 2 == 0:
                             try:
-                                if snapshot_ids[i] == 'PA':
-                                    snap = PathSnapshot.objects.get(pk = snapshot_ids[i + 1])
-                                elif snapshot_ids[i] == 'FF':
-                                    snap = FourFieldSnapshot.objects.get(pk = snapshot_ids[i + 1])
+                                snap = get_snapshot(snapshot_ids[i] + ',' + snapshot_ids[ i + 1 ])
                                 snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
                                 snap_data = {
                                     'snap': snap,
