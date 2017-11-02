@@ -19,9 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var db_json;
 
-function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, sliderValues) {
+function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues, sliderDate) {
 	// console.log(json);
-
 	var projects = [],
 			colorToBe = 'AssociatedOrganizationDimension',
 			// size of the display box and other scaling related variables
@@ -159,6 +158,14 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 	if(isNaN(endDate)) {
 		endDate = endDefault;
 		$('#end-date-selector').val(ddmmyy(endDate*1000));
+	}
+	if (isNaN(sliderDate)) {
+		sliderDate = startDefault;
+		$('#start-date-selector').val(ddmmyy(startDate*1000));
+	} else if(sliderDate < startDate) {
+		sliderDate = startDate;
+	} else if(sliderDate > endDate) {
+		sliderDate = endDate;
 	}
 
 //console.log(projects);
@@ -418,8 +425,8 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 	// Slider handle
 	var handle = timeAxis.insert("circle", ".track-overlay")
 						  .attr("class", "handle")
-							.attr("r", 20);
-
+							.attr("r", 20)
+							.attr("cx", scaleDate(sliderDate));
 	  // The y and x axis are moved in to place
 	  svg.append("g")
 		 .attr("class", "xAxis")
@@ -430,5 +437,9 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		 .attr("class", "yAxis")
 		 .attr("transform", "translate("+fieldWidth / 2+","+margin.top+")")
 		 .call(d3.axisLeft(scaleY));
-return svg;
+
+		//if the user zoomed the image, the timescale does not reset
+		setBalls(sliderDate);
+		svg.select(".handle").node().cx.baseVal.value = scaleDate(sliderDate * 1000);
+		return svg;
 }

@@ -42,6 +42,11 @@ text {
   pointer-events: all;
   cursor: ew-resize;
 }
+.track,
+.track-inset,
+.track-overlay {
+  stroke-linecap: round;
+}
 
 .track {
   stroke: #000;
@@ -57,6 +62,7 @@ text {
 .track-overlay {
   pointer-events: stroke;
   stroke-width: 50px;
+  stroke: transparent;
 }
 
 .handle {

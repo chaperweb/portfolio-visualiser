@@ -36,8 +36,14 @@ $(function() {
     start_date = Date.parse($('#start-date-selector').datepicker( "getDate" ))/1000;
     end_date = Date.parse($('#end-date-selector').datepicker( "getDate" ))/1000;
     slider_value = $('#slider-value-selector').val();
+    var slider_date = start_date
+    var test = document.getElementsByClassName("currentDate")
+    if(test.length == 1) {
+      var parts = test[0].textContent.split(".");
+      var slider_date = Date.parse(new Date(parts[2], parts[1] - 1, parts[0]))/1000
+    }
     $('#visualization').html('');
-    fourField(db_json, "visualization", x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value);
+    fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value, slider_date);
   }
 
   $.ajax({
