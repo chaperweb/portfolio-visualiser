@@ -9,6 +9,7 @@ Presentation
 {% load static %}
 <link rel="stylesheet" href="{% static "portfolio_manager/css/fourField.css" %}">
 <link rel="stylesheet" href="{% static "portfolio_manager/css/path.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/projects.css" %}">
 {% endblock %}
 
 {% block javascript %}
@@ -26,14 +27,14 @@ Presentation
       <ul class="text-center nav nav-pills nav-stacked">
         <li><a href="#summary-wrapper">"Summary"</a></li>
         {% for snap in snapshots %}
-          <li><a href="#{{ snap.snap_type }}{{ snap.id }}-wrapper">{{ snap.name }}</a></li>
+          <li><a href="#{{ snap.snap.snap_type }}{{ snap.snap.id }}-wrapper">{{ snap.snap.name }}</a></li>
         {% endfor %}
       </ul>
     </nav>
   </div>
   <div class="col-lg-9 col-xs-12">
     {% if user.is_orgadmin or user.is_superuser %}
-    <a href="{% url 'edit_presentation' presentation.pk %} " class="btn">Edit presentation</a>
+    <a href="{% url 'edit_presentation' presentation.pk %} " class="btn orange-btn">Edit presentation</a>
     {% endif %}
     <h2> {{presentation.title}} </h2>
     <div id="summary-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
@@ -58,7 +59,7 @@ Presentation
           <h2>{{ item.text.snapshot_title }}</h2>
           <h5>{{ item.text.snapshot_text }}</h5>
           <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}" >
-            <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
+            <img id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
           </div>
       </div>
     {% endfor %}

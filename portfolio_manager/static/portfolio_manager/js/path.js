@@ -109,13 +109,14 @@ function generate_data_chunk(dimension) {
 
 // Generate the svg container for the visualization
 function generate_path_svg(json, target, data_id_array, startDate, endDate) {
+console.log(json)
 
   $('#'+ target).html('');
 
   // Dimension of the svg box
   // Left and right margin are hardcoded to ensure enough room for axis values
   var width = $('#'+ target).width(),
-      height = width * 0.7, //Math.max(600, $(window).height() * 0.8),
+      height = Math.max(600, $('#'+ target).height()),
       margin = {
         right: 35,
         left: 85,

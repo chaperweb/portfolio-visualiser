@@ -57,7 +57,7 @@ Edit presentation
         <input type="textField" class="form-control" name="snapshot_title{{ item.snap.snap_type }},{{ item.snap.id }}" value= "{{ item.text.snapshot_title }}">
         <textarea class="form-control" cols="4" rows="5" name="snapshot_text{{ item.snap.snap_type }},{{ item.snap.id }}">{{ item.text.snapshot_text }}</textarea>
         <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}" >
-          <img id="loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
+          <img id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
         </div>
     </div>
   {% endfor %}

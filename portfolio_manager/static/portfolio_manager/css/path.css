@@ -6,6 +6,7 @@
 
 .presentationVisualization {
   width: inherit;
+  margin-right: 50vh;
 }
 
 img#loading-icon {

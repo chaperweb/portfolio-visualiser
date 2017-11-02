@@ -38,6 +38,7 @@ $(function(){
             var db_json = data,
             x_dimension_ids = [];
 
+
             if ( typeof x == "string") {
             	if (x != "") {
                 x_dimension_ids = x.trim().split(",");
@@ -50,7 +51,8 @@ $(function(){
             data_id_array.unshift(y);
             data_id_array.unshift(project_id);
 
-            $("#loading-icon").hide();
+            $("#"+this.id +"loading-icon").hide();
+//console.log(db_json, target, data_id_array, start, end);
             generate_path_svg(
                   db_json,
                   target,
@@ -63,7 +65,8 @@ $(function(){
           r = input['r']
           zoom = input['zoom']
 
-          $("#loading-icon").hide();
+          $("#"+this.id +"loading-icon").hide();
+//console.log(data, target, x,y,r, start, end, zoom);
           fourField(data, target, x, y, r, start, end, zoom);
         }
 
