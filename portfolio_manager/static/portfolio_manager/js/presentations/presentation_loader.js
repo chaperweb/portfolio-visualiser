@@ -31,10 +31,7 @@ $(function(){
         target = this.id;
 
         if ( type == 'PA') {
-          project_id = input['project']
-          $.ajax({
-            url: url
-          }).done(function(data) {
+          project_id = input['project']          
             var db_json = data,
             x_dimension_ids = [];
 
@@ -54,19 +51,19 @@ $(function(){
             $("#"+this.id +"loading-icon").hide();
 //console.log(db_json, target, data_id_array, start, end);
             generate_path_svg(
-                  db_json,
+                  data,
                   target,
                   data_id_array,
                   start,
                   end
                 );
-          });
+          
         } else if (type == 'FF') {
           r = input['r']
           zoom = input['zoom']
 
           $("#"+this.id +"loading-icon").hide();
-//console.log(data, target, x,y,r, start, end, zoom);
+console.log(data, target, x,y,r, start, end, zoom);
           fourField(data, target, x, y, r, start, end, zoom);
         }
 

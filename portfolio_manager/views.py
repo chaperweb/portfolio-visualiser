@@ -1095,6 +1095,8 @@ def edit_presentation(request, presentation_id):
                 i = i + 1
 
         snaps = get_all_snapshots()
+        serializer = ProjectSerializer(Project.objects.all(), many=True)
+        data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
 
         response_data = {
         'presentation': presentation,
@@ -1102,7 +1104,8 @@ def edit_presentation(request, presentation_id):
         'title': title,
         'summary': summary,
         'snapshots': presentation_snaps,
-        'snaps': snaps
+        'snaps': snaps,
+        'data': data
         }
 
         template = 'presentations/edit_presentation.html'
@@ -1122,7 +1125,6 @@ def remove_presentation_snapshot(request, presentation_id = None, snapshot_type 
         snap_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snap_id)
         snap_id_length = len(snap_id)
         location = presentation.snapshots.find(snap_id)
-        print(presentation.snapshots)
 
         if (location == 0):
             presentation.snapshots = presentation.snapshots[snap_id_length : len(presentation.snapshots)]
@@ -1134,7 +1136,6 @@ def remove_presentation_snapshot(request, presentation_id = None, snapshot_type 
         if (presentation.snapshots != "" and presentation.snapshots[0] == ","):
             presentation.snapshots = presentation.snapshots[1:len(presentation.snapshots)]
         
-        print(presentation.snapshots)
         snap_text.delete()
         presentation.save()
 
