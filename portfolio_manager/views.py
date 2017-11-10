@@ -1034,7 +1034,7 @@ def save_presentation(request, presentation_id):
                 except Exception as e:
                     print("ERROR: {}".format(e))
                     pass
-                i = i + 1
+            i = i + 1
 
     snapshot_array = request.POST.getlist('snapshot_checkbox[]')
 
@@ -1122,17 +1122,19 @@ def remove_presentation_snapshot(request, presentation_id = None, snapshot_type 
         snap_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snap_id)
         snap_id_length = len(snap_id)
         location = presentation.snapshots.find(snap_id)
+        print(presentation.snapshots)
 
         if (location == 0):
             presentation.snapshots = presentation.snapshots[snap_id_length : len(presentation.snapshots)]
         else:
-            first_part = presentation.snapshots[0:location]
+            first_part = presentation.snapshots[0:location - 1]
             second_part = presentation.snapshots[(location + snap_id_length):len(presentation.snapshots) ]
             presentation.snapshots = first_part + second_part
 
         if (presentation.snapshots != "" and presentation.snapshots[0] == ","):
             presentation.snapshots = presentation.snapshots[1:len(presentation.snapshots)]
-
+        
+        print(presentation.snapshots)
         snap_text.delete()
         presentation.save()
 
