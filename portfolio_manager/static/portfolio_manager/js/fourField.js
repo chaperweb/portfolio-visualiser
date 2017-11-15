@@ -24,6 +24,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	var projects = [],
 			colorToBe = 'AssociatedOrganizationDimension',
 			// size of the display box and other scaling related variables
+			maximumRadius = 100;
 			sliderHeight = 50,
 			fieldWidth = Math.max(500, $(window).height()*0.85),
 			svgHeight = fieldWidth + sliderHeight,
@@ -247,8 +248,8 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		d.xAxis !== -Infinity &&
 		y(d) > linearScale(d.radius)  &&
 		x(d) > linearScale(d.radius) &&
-		y(d) < (margin.top + axisLengthY + margin.bottom - Math.min(linearScale(d.radius), 100)) &&
-		x(d) < (margin.left + axisLengthX + margin.right - Math.min(linearScale(d.radius), 100)));
+		y(d) < (margin.top + axisLengthY + margin.bottom - Math.min(linearScale(d.radius), maximumRadius)) &&
+		x(d) < (margin.left + axisLengthX + margin.right - Math.min(linearScale(d.radius), maximumRadius)));
 	}
 	function validXCoordinates(d) {
 		if(!isNaN(d)) {return Math.min(Math.max(d,0),fieldWidth) } else {return 0};
@@ -269,7 +270,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 				 if(radius(d) <= 0) {
 					 return 0;
 				 } else {
-					 return linearScale(radius(d));
+					 return Math.min(linearScale(radius(d)), maximumRadius);
 				 }
 				  });
 	}
