@@ -300,7 +300,7 @@ class TextDimension (Dimension):
 
 
 class NumberDimension (Dimension):
-    value = models.DecimalField(max_digits = 20, decimal_places = 2)
+    value = models.DecimalField(max_digits = 20, decimal_places = 2,null=True)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
     data_type = 'NUM'

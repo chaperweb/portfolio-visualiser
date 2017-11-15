@@ -88,6 +88,7 @@ class NumberDimensionForm(DimensionForm):
 
     def __init__(self, *args, **kwargs):
         super(NumberDimensionForm, self).__init__(label_suffix='', *args, **kwargs)
+        self.fields['value'].required = False
         self.fields['value'].label = self.dimension_name
 
 
