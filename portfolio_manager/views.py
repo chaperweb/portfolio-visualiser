@@ -138,7 +138,7 @@ def excel(request):
     try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.user.m365connection.microsoft_email
-    except Exception as e:  # There is no access_token
+    except KeyError:  # There is no access_token
         return redirect('microsoft_signin')
 
     excels = get_my_drive(access_token, user_email)
@@ -154,7 +154,7 @@ def import_excel(request):
     try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.user.m365connection.microsoft_email
-    except KeyError as e:  # There is no access_token
+    except KeyError:  # There is no access_token
         return redirect('microsoft_signin')
 
     excel_id = request.GET['item_id']
@@ -576,7 +576,7 @@ def json(request):
         serializer = ProjectSerializer(Project.objects.all(), many=True)
         return JsonResponse(serializer.data, safe=False)
     except Exception as e:
-        print("Error in JSON serialization: {}".format(e))
+        print(f'Error in JSON serialization: {e})
 
 
 # site to see all projects, grouped by organization
@@ -896,7 +896,7 @@ def snapshots(request, vis_type=None, snapshot_id=None):
                 }
                 template = 'snapshots/single/fourfield.html'
         except Exception as e:
-            print("ERROR: {}".format(e))
+            print(f'ERROR: {e}')
             pass
 
     #   Render the appropriate template
@@ -930,7 +930,7 @@ def create_snapshot(request):
                         start = start,
                         end = end
                     )
-            url = 'snapshots/path/{}'.format(p_snap.id)
+            url = f'snapshots/path/{p_snap.id}'
             return redirect(url, permanent=True)
         elif snapshot_type == 'fourfield':
             x = request.POST['x_dim']
@@ -955,7 +955,7 @@ def create_snapshot(request):
                         end=end,
                         zoom=zoom
                     )
-            url = 'snapshots/fourfield/{}'.format(ff_snap.id)
+            url = f'snapshots/fourfield/{ff_snap.id}'
             return redirect(url, permanent=True)
         else:
             pass
@@ -964,23 +964,22 @@ def get_all_snapshots():
     snaps = []
     snap_types = Snapshot.get_subclasses()
     for snap_type in snap_types:
-        snaps.extend(snap_type.objects.all())
+        snaps += snap_type.objects.all()
 
-    sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at)
-    sorted_snaps.reverse()
+    sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at, reverse=True)
 
     return sorted_snaps
 
 def get_snapshot(snapshot_id):
-    snap_id = snapshot_id.split(',')[1]
-    snap_type = snapshot_id.split(',')[0]
+    snap_type,snap_id = snapshot_id.split(',')
+
     try:
         if snap_type == 'PA':
             snap = PathSnapshot.objects.get(pk = snap_id)
         elif snap_type == 'FF':
             snap = FourFieldSnapshot.objects.get(pk = snap_id)
-    except Exception as e:
-        print("ERROR: {}".format(e))
+    except (PathSnapshot.DoesNotExist, FourFieldSnapshot.DoesNotExist) as e:
+        print(f'ERROR: {e}')
     return snap
 
 @login_required
@@ -1012,29 +1011,28 @@ def save_presentation(request, presentation_id):
                 presentation = Presentation()
 
             except Exception as e:
-                print("ERROR: {}".format(e))
+                print(f'ERROR: {e}')
                 pass
-    except:
+    except KeyError:
         presentation = Presentation()
         presentation.save()
 
     title = request.POST['title']
     summary = request.POST['summary']
 
-    if (snapshots != ""):
-        snapshot_ids = presentation.snapshots.split(",")
-        i = 0
-        for x in snapshot_ids:
-            if i % 2 == 0:
-                try:
-                    snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
-                    snapshot_text.snapshot_title = request.POST['snapshot_title' + snapshot_ids[i] + "," + snapshot_ids[i + 1] ]
-                    snapshot_text.snapshot_text = request.POST['snapshot_text' + snapshot_ids[i] + "," + snapshot_ids[i + 1] ]
-                    snapshot_text.save()
-                except Exception as e:
-                    print("ERROR: {}".format(e))
-                    pass
-            i = i + 1
+    if snapshots:
+        snapshot_ids = zip(itertools.islice(presentation.snapshots, 0, None, 2), itertools.islice(presentation.snapshots, 1, None, 2))
+
+        for a,b in snapshot_ids:
+            snap_id = a + "," + b
+            try:
+                snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snap_id)
+                snapshot_text.snapshot_title = request.POST['snapshot_title' +  snap_id]
+                snapshot_text.snapshot_text = request.POST['snapshot_text' + snap_id]
+                snapshot_text.save()
+            except SnapshotPresentationText.DoesNotExist as e:
+                print(f'ERROR: {e}')
+                pass
 
     snapshot_array = request.POST.getlist('snapshot_checkbox[]')
 
@@ -1042,7 +1040,7 @@ def save_presentation(request, presentation_id):
         snapshots = snapshots + "," + pair
         try:
             snapshot_text = SnapshotPresentationText.objects.get(pk = presentation, snapshot_id = pair)
-        except:
+        except SnapshotPresentationText.DoesNotExist:
             snapshot_text = SnapshotPresentationText()
             snapshot_text.snapshot_id = pair
             snapshot_text.presentation_id = presentation
@@ -1050,19 +1048,17 @@ def save_presentation(request, presentation_id):
             snapshot = get_snapshot(pair)
             snapshot_text.snapshot_title = snapshot.name
             snapshot_text.snapshot_text = snapshot.description
-        except:
+        except KeyError:
             snapshot_text.snapshot_title = ""
             snapshot_text.snapshot_text = ""
         snapshot_text.save()
-    if snapshots[0] == ",":
-        snapshots = snapshots[1:len(snapshots)]
 
     presentation.title = title
     presentation.summary = summary
-    presentation.snapshots = snapshots
+    presentation.snapshots = snapshots.lstrip(',')
     presentation.save()
 
-    url = 'edit_presentation/{}'.format(presentation.pk)
+    url = f'edit_presentation/{presentation.pk}'
     return redirect(url, permanent=True)
 
 @login_required
@@ -1076,23 +1072,21 @@ def edit_presentation(request, presentation_id):
         summary = presentation.summary
         presentation_snaps = []
 
-        if presentation.snapshots != "":
-            snapshot_ids = presentation.snapshots.split(",")
-            i = 0
-            for x in snapshot_ids:
-                if i % 2 == 0:
-                    try:
-                        snap = get_snapshot(snapshot_ids[i] + ',' + snapshot_ids[ i + 1 ])
-                        snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
-                        snap_data = {
-                            'snap': snap,
-                            'text': snapshot_text
-                        }
-                    except Exception as e:
-                        print("ERROR: {}".format(e))
-                        pass
-                    presentation_snaps.append(snap_data)
-                i = i + 1
+        if presentation.snapshots:
+            snapshot_ids = zip(itertools.islice(presentation.snapshots, 0, None, 2), itertools.islice(presentation.snapshots, 1, None, 2))
+            for a,b in snapshot_ids:
+                try:
+                    snap = get_snapshot(a + ',' + b)
+                    snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = a + "," + b)
+                    snap_data = {
+                        'snap': snap,
+                        'text': snapshot_text
+                    }
+                except Exception as e:
+                    print(f'ERROR: {e}')
+                    pass
+                presentation_snaps.append(snap_data)
+
 
         snaps = get_all_snapshots()
         serializer = ProjectSerializer(Project.objects.all(), many=True)
@@ -1112,8 +1106,8 @@ def edit_presentation(request, presentation_id):
 
         return render(request, template, response_data)
 
-    except Exception as e:
-        print("ERROR: {}".format(e))
+except Presentation.DoesNotExist as e:
+        print(f'ERROR: {e}')
         pass
 
 @login_required
@@ -1123,25 +1117,15 @@ def remove_presentation_snapshot(request, presentation_id = None, snapshot_type 
         snap_id = snapshot_type + "," + snapshot_id
         presentation = Presentation.objects.get(pk = presentation_id)
         snap_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snap_id)
-        snap_id_length = len(snap_id)
-        location = presentation.snapshots.find(snap_id)
 
-        if (location == 0):
-            presentation.snapshots = presentation.snapshots[snap_id_length : len(presentation.snapshots)]
-        else:
-            first_part = presentation.snapshots[0:location - 1]
-            second_part = presentation.snapshots[(location + snap_id_length):len(presentation.snapshots) ]
-            presentation.snapshots = first_part + second_part
+        presentation.snapshots = presentation.snapshots.replace(snap_id, '').replace(',,', ',').lstrip(',').rstrip(',')
 
-        if (presentation.snapshots != "" and presentation.snapshots[0] == ","):
-            presentation.snapshots = presentation.snapshots[1:len(presentation.snapshots)]
-        
         snap_text.delete()
         presentation.save()
 
 
-    except Exception as e:
-        print("ERROR: {}".format(e))
+    except (Presentation.DoesNotExist, SnapshotPresentationText.DoesNotExist, KeyError) as e:
+        print(f'ERROR: {e}')
         pass
 
     return redirect(reverse('edit_presentation', kwargs={'presentation_id': presentation_id}))
@@ -1166,23 +1150,22 @@ def presentation(request, presentation_id = None):
 
                 snapshots = []
 
-                if presentation.snapshots != "":
-                    snapshot_ids = presentation.snapshots.split(",")
-                    i = 0
-                    for x in snapshot_ids:
-                        if i % 2 == 0:
-                            try:
-                                snap = get_snapshot(snapshot_ids[i] + ',' + snapshot_ids[ i + 1 ])
-                                snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snapshot_ids[i] + "," + snapshot_ids[i + 1])
-                                snap_data = {
-                                    'snap': snap,
-                                    'text': snapshot_text
-                                }
-                            except Exception as e:
-                                print("ERROR: {}".format(e))
-                                pass
-                            snapshots.append(snap_data)
-                        i = i + 1
+                if presentation.snapshots:
+                    snapshot_ids = zip(itertools.islice(presentation.snapshots, 0, None, 2), itertools.islice(presentation.snapshots, 1, None, 2))
+
+                    for a,b in snapshot_ids:
+                        try:
+                            snap = get_snapshot(a + ',' + b)
+                            snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = a + "," + b)
+                            snap_data = {
+                                'snap': snap,
+                                'text': snapshot_text
+                            }
+                        except (KeyError, SnapshotPresentationText.DoesNotExist) as e:
+                            print(f'ERROR: {e}')
+                            pass
+                        snapshots.append(snap_data)
+
                 serializer = ProjectSerializer(Project.objects.all(), many=True)
                 data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
                 template = 'presentations/presentation.html'
@@ -1191,8 +1174,8 @@ def presentation(request, presentation_id = None):
                     'snapshots': snapshots,
                     'data': data
                 }
-        except Exception as e:
-            print("ERROR: {}".format(e))
+        except Presentation.DoesNotExist as e:
+            print(f'ERROR: {e}')
             pass
 
     return render(request, template, response_data)
