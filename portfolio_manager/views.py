@@ -24,7 +24,7 @@ import time
 import json as json_module
 from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
-from itertools import groupby
+from itertools import groupby, islice
 from collections import defaultdict
 from dateutil.parser import parse
 
@@ -576,7 +576,7 @@ def json(request):
         serializer = ProjectSerializer(Project.objects.all(), many=True)
         return JsonResponse(serializer.data, safe=False)
     except Exception as e:
-        print(f'Error in JSON serialization: {e})
+        print(f'Error in JSON serialization: {e}')
 
 
 # site to see all projects, grouped by organization
@@ -1021,7 +1021,8 @@ def save_presentation(request, presentation_id):
     summary = request.POST['summary']
 
     if snapshots:
-        snapshot_ids = zip(itertools.islice(presentation.snapshots, 0, None, 2), itertools.islice(presentation.snapshots, 1, None, 2))
+        values = presentation.snapshots.split(',')
+        snapshot_ids = list(zip(islice(values, 0, None, 2), islice(values, 1, None, 2)))
 
         for a,b in snapshot_ids:
             snap_id = a + "," + b
@@ -1039,7 +1040,7 @@ def save_presentation(request, presentation_id):
     for pair in snapshot_array:
         snapshots = snapshots + "," + pair
         try:
-            snapshot_text = SnapshotPresentationText.objects.get(pk = presentation, snapshot_id = pair)
+            snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = pair)
         except SnapshotPresentationText.DoesNotExist:
             snapshot_text = SnapshotPresentationText()
             snapshot_text.snapshot_id = pair
@@ -1073,7 +1074,9 @@ def edit_presentation(request, presentation_id):
         presentation_snaps = []
 
         if presentation.snapshots:
-            snapshot_ids = zip(itertools.islice(presentation.snapshots, 0, None, 2), itertools.islice(presentation.snapshots, 1, None, 2))
+            values = presentation.snapshots.split(',')
+            snapshot_ids = list(zip(islice(values, 0, None, 2), islice(values, 1, None, 2)))
+                    
             for a,b in snapshot_ids:
                 try:
                     snap = get_snapshot(a + ',' + b)
@@ -1106,7 +1109,7 @@ def edit_presentation(request, presentation_id):
 
         return render(request, template, response_data)
 
-except Presentation.DoesNotExist as e:
+    except Presentation.DoesNotExist as e:
         print(f'ERROR: {e}')
         pass
 
@@ -1151,8 +1154,9 @@ def presentation(request, presentation_id = None):
                 snapshots = []
 
                 if presentation.snapshots:
-                    snapshot_ids = zip(itertools.islice(presentation.snapshots, 0, None, 2), itertools.islice(presentation.snapshots, 1, None, 2))
-
+                    values = presentation.snapshots.split(',')
+                    snapshot_ids = list(zip(islice(values, 0, None, 2), islice(values, 1, None, 2)))
+                    
                     for a,b in snapshot_ids:
                         try:
                             snap = get_snapshot(a + ',' + b)
