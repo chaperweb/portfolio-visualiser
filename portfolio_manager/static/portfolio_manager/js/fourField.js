@@ -135,12 +135,12 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 				if(milestone.dimensions != undefined) {
 					for(q = 0; q < milestone.dimensions.length ; q++ ) {
 						if(milestone.dimensions[q].project_dimension == xID) {	// ADD X
-							date = milestone.due_date,
-							parsedDate = new Date(date).getTime() / 1000,
+							date = milestone.due_date;
+							parsedDate = new Date(date).getTime() / 1000;
 							milestoneValue = milestone.dimensions[q].dimension_milestone_object.value;
 							collectXPlan.push([parsedDate,milestoneValue]);
 						} else if( milestone.dimensions[q].project_dimension == yID ) {	// ADD Y
-							date = milestone.due_date,
+							date = milestone.due_date;
 							parsedDate = new Date(date).getTime() / 1000;
 							milestoneValue = milestone.dimensions[q].dimension_milestone_object.value;
 							collectYPlan.push([parsedDate,milestoneValue]);
