@@ -4,6 +4,11 @@
   stroke-width: 5px;
 }
 
+.presentationVisualization {
+  width: inherit;
+  margin-right: 50vh;
+}
+
 img#loading-icon {
   padding-top: 15%;
   cursor: wait;

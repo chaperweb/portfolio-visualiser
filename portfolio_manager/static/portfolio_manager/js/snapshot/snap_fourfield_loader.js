@@ -27,5 +27,5 @@ $(function(){
       data = djdata['data'];
 
   $("#loading-icon").hide();
-  fourField(data, x, y, r, start, end, zoom);
+  fourField(data, "visualization", x, y, r, start, end, zoom);
 });

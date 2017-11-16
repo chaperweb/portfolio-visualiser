@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit presentation
+{% endblock %}
+
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/homepage.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/hover-effects.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/admin_tools.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/snapshot.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/fourField.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/path.css" %}">
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block javascript %}
+{% load static %}
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/colorGenerator.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/path.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/fourField.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/presentations/presentation_loader.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Edit your presentation</h1>
+<div id="page-content-wrapper" class="container col-lg-8 col-lg-offset-1">
+  <div class="col-md-8 col-md-offset-2">
+    <form id="save-presentation-form" method="POST" action="{% url 'save_presentation' %}">
+      {% csrf_token %}
+	<input type="hidden" name = "presentation_id" value = "{{ id }}" >
+      <input type="textField" class="form-control" name="title" value= "{{ title }}">
+      <textarea class="form-control" cols="4" rows="5" name="summary">{{ summary }}</textarea>
+      <input class="btn" type="submit" value="Save">
+
+  </div>
+  {% for item in snapshots %}
+      <input id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}-data" type="hidden"
+      data-url="{% url 'json' %}"
+      data-type = "{{ item.snap.snap_type }}"
+      data-id = "{{ item.snap.pk }}"
+      data-x = "{{ item.snap.x_id}}"
+      data-y = "{{ item.snap.y_id}}"
+      data-start="{{ item.snap.start_date }}"
+      data-end="{{ item.snap.end_date }}"
+      data-r = "{{ item.snap.radius_id}}"
+      data-zoom = "{{ item.snap.zoom }}"
+      data-project =  "{{ item.snap.project_id}}"
+      data-data = "{{ data }}"
+      >
+    <div id="{{ item.snap.snap_type }}{{ item.snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
+      <hr width = 100%>
+        <a href="{% url 'remove_presentation_snapshot' %}/{{ presentation.pk }}/{{ item.snap.snap_type }}/{{ item.snap.id }}" class="btn orange-btn">Remove this snapshot</a>
+        <input type="textField" class="form-control" name="snapshot_title{{ item.snap.snap_type }},{{ item.snap.id }}" value= "{{ item.text.snapshot_title }}">
+        <textarea class="form-control" cols="4" rows="5" name="snapshot_text{{ item.snap.snap_type }},{{ item.snap.id }}">{{ item.text.snapshot_text }}</textarea>
+        <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}" >
+          <img id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
+        </div>
+    </div>
+  {% endfor %}
+</div>
+<div id="projects">
+  <div class="pre-scrollable leftborder col-lg-3 col-md-6 col-sm-12 col-xs-12" >
+    <h2 class="text-center">Snapshots</h2>
+    <div class="row">
+              {% for snap in snaps %}
+        {% if snap.snap_type == 'PA' %}
+        <div class="snap-wrapper path-snap col-md-10 col-md-offset-1">
+          <a href="{% url 'snapshots' %}/path/{{snap.id}}" class="hover-link">
+            <img class="img-responsive" src='{% static "portfolio_manager/img/path.jpg" %}' alt="{{ snap.name }}">
+        {% elif snap.snap_type == 'FF' %}
+        <div class="snap-wrapper fourfield-snap col-md-10 col-md-offset-1">
+          <a href="{% url 'snapshots' %}/fourfield/{{snap.id}}" class="hover-link">
+            <img class="img-responsive" src='{% static "portfolio_manager/img/fourfield.jpg" %}' alt="{{ snap.name }}">
+        {% else %}
+
+        {% endif %}
+            <div class="overlay">
+              <h2>{{ snap.name }}</h2>
+      				<p>{{ snap.description }}</p>
+            </div>
+          </a>
+        	<div>
+            {% with snap.pk|stringformat:'s' as id_number %}
+              {% if snap.snap_type|add:","|add:id_number not in presentation.snapshots %}
+                <input name="snapshot_checkbox[]" type="checkbox" value="{{snap.snap_type}},{{snap.id}}"> Add this snapshot to the presentation
+                <input type="hidden" name="{{snap.snap_type}},{{snap.id}}name" value="{{ snap.name }}">
+                <input type="hidden" name="{{snap.snap_type}},{{snap.id}}description" value="{{ snap.derscription }}">
+              {% else %}
+                  This snapshot is already in your presentation
+              {% endif %}
+            {% endwith %}
+        	</div>
+        </div>
+        {% endfor %}
+    </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

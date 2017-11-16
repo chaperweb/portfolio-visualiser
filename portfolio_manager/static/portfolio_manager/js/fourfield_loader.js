@@ -43,7 +43,7 @@ $(function() {
       var slider_date = Date.parse(new Date(parts[2], parts[1] - 1, parts[0]))/1000
     }
     $('#visualization').html('');
-    fourField(db_json, x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value, slider_date);
+    fourField(db_json, "visualization", x_dimension, y_dimension, r_dimension, start_date, end_date, slider_value, slider_date);
   }
 
   $.ajax({

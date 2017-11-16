@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{# TITLE HERE #}
+{% block title %}
+Presentation
+{% endblock %}
+
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/fourField.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/path.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/projects.css" %}">
+{% endblock %}
+
+{% block javascript %}
+{% load static %}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static 'portfolio_manager/js/colorGenerator.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/path.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/fourField.js' %}"></script>
+<script src="{% static 'portfolio_manager/js/presentations/presentation_loader.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="col-lg-3 hidden-md hidden-sm hidden-xs">
+    <nav id="spymenu" class="col-lg-8 col-lg-offset-2">
+      <ul class="text-center nav nav-pills nav-stacked">
+        <li><a href="#summary-wrapper">"Summary"</a></li>
+        {% for snap in snapshots %}
+          <li><a href="#{{ snap.snap.snap_type }}{{ snap.snap.id }}-wrapper">{{ snap.snap.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+  <div class="col-lg-9 col-xs-12">
+    {% if user.is_orgadmin or user.is_superuser %}
+    <a href="{% url 'edit_presentation' presentation.pk %} " class="btn orange-btn">Edit presentation</a>
+    {% endif %}
+    <h2> {{presentation.title}} </h2>
+    <div id="summary-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
+      {{ presentation.summary }}
+    </div>
+    {% for item in snapshots %}
+        <input id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}-data" type="hidden"
+        data-url="{% url 'json' %}"
+        data-type = "{{ item.snap.snap_type }}"
+        data-id = "{{ item.snap.pk }}"
+        data-x = "{{ item.snap.x_id}}"
+        data-y = "{{ item.snap.y_id}}"
+        data-start="{{ item.snap.start_date }}"
+        data-end="{{ item.snap.end_date }}"
+        data-r = "{{ item.snap.radius_id}}"
+        data-zoom = "{{ item.snap.zoom }}"
+        data-project =  "{{ item.snap.project_id}}"
+	      data-data = "{{ data }}"
+        >
+      <div id="{{ item.snap.snap_type }}{{ item.snap.id }}-wrapper" class="snap-wrapper col-lg-12 col-sm-10">
+        <hr width = 100%>
+          <h2>{{ item.text.snapshot_title }}</h2>
+          <h5>{{ item.text.snapshot_text }}</h5>
+          <div class="col-lg-8 col-xs-12 presentationVisualization" id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}" >
+            <img id="visualization{{ item.snap.snap_type }}{{ item.snap.id }}loading-icon" src="{% static 'portfolio_manager/img/loading.gif' %}"/>
+          </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

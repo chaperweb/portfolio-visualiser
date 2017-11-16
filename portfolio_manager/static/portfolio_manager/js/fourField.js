@@ -17,15 +17,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var db_json;
+//var db_json;
 
-function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues, sliderDate) {
+function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, sliderValues, sliderDate) {
 	// console.log(json);
 	var projects = [],
+      
 	colorToBe = 'AssociatedOrganizationDimension',
 	// size of the display box and other scaling related variables
 	sliderHeight = 50,
-	fieldWidth = Math.max(500, $(window).height()*0.85),
+	fieldWidth =Math.max(600,($("#" + target).height() - sliderHeight)),
 	svgHeight = fieldWidth + sliderHeight,
 	margin = {right: fieldWidth * 0.05, left: fieldWidth * 0.05, top: fieldWidth * 0.05, bottom: sliderHeight},
 	axisLengthX = fieldWidth * 0.9,
@@ -37,6 +38,7 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 	endDefault = 0;
 
 	var radiusArray = [];
+
 	// The scales for the x and y axis.
 	// range means the length of the line and domain the numbers beneath it
 	var scaleX = d3.scaleLinear()
@@ -353,9 +355,11 @@ function fourField(json, xToBe, yToBe, radToBe, startDate, endDate, sliderValues
 		/*********************************/
 
 		//container for everything
-		var svg = d3.select("#visualization").append("svg")
-		.attr("width", fieldWidth)
-		.attr("height", svgHeight);
+
+		var svg = d3.select("#" + target).append("svg")
+					.attr("width", fieldWidth)
+					.attr("height", svgHeight);
+
 
 		//Parser for a human readable date format dd. mm. yyyy
 		var parseDate = d3.timeFormat("%d. %m. %Y");

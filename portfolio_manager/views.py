@@ -24,7 +24,7 @@ import time
 import json as json_module
 from django.core.serializers.json import DjangoJSONEncoder
 import datetime as dt
-from itertools import groupby
+from itertools import groupby, islice
 from collections import defaultdict
 from dateutil.parser import parse
 
@@ -138,7 +138,7 @@ def excel(request):
     try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.user.m365connection.microsoft_email
-    except Exception as e:  # There is no access_token
+    except KeyError:  # There is no access_token
         return redirect('microsoft_signin')
 
     excels = get_my_drive(access_token, user_email)
@@ -154,7 +154,7 @@ def import_excel(request):
     try:
         access_token = get_access_token(request, request.build_absolute_uri(reverse('gettoken')))
         user_email = request.user.m365connection.microsoft_email
-    except KeyError as e:  # There is no access_token
+    except KeyError:  # There is no access_token
         return redirect('microsoft_signin')
 
     excel_id = request.GET['item_id']
@@ -576,7 +576,7 @@ def json(request):
         serializer = ProjectSerializer(Project.objects.all(), many=True)
         return JsonResponse(serializer.data, safe=False)
     except Exception as e:
-        print("Error in JSON serialization: {}".format(e))
+        print(f'Error in JSON serialization: {e}')
 
 
 # site to see all projects, grouped by organization
@@ -802,9 +802,9 @@ def create_fourfieldsnapshot(name, description, x, y, r, start, end, zoom):
     ff_snap.name = name
     ff_snap.description = description
     ff_snap.snap_type = 'FF'
-    ff_snap.x_dimension = x
-    ff_snap.y_dimension = y
-    ff_snap.radius_dimension = r
+    ff_snap.x_id = x
+    ff_snap.y_id = y
+    ff_snap.radius_id = r
     ff_snap.start_date = start
     ff_snap.end_date = end
     ff_snap.zoom = zoom
@@ -874,9 +874,9 @@ def snapshots(request, vis_type=None, snapshot_id=None):
                 snap = FourFieldSnapshot.objects.get(pk=snapshot_id)
                 name = snap.name
                 desc = snap.description
-                x = snap.x_dimension
-                y = snap.y_dimension
-                radius = snap.radius_dimension
+                x = snap.x_id
+                y = snap.y_id
+                radius = snap.radius_id
                 start_date = snap.start_date
                 end_date = snap.end_date
                 zoom = snap.zoom
@@ -896,7 +896,7 @@ def snapshots(request, vis_type=None, snapshot_id=None):
                 }
                 template = 'snapshots/single/fourfield.html'
         except Exception as e:
-            print("ERROR: {}".format(e))
+            print(f'ERROR: {e}')
             pass
 
     #   Render the appropriate template
@@ -930,7 +930,7 @@ def create_snapshot(request):
                         start = start,
                         end = end
                     )
-            url = 'snapshots/path/{}'.format(p_snap.id)
+            url = f'snapshots/path/{p_snap.id}'
             return redirect(url, permanent=True)
         elif snapshot_type == 'fourfield':
             x = request.POST['x_dim']
@@ -955,7 +955,231 @@ def create_snapshot(request):
                         end=end,
                         zoom=zoom
                     )
-            url = 'snapshots/fourfield/{}'.format(ff_snap.id)
+            url = f'snapshots/fourfield/{ff_snap.id}'
             return redirect(url, permanent=True)
         else:
             pass
+
+def get_all_snapshots():
+    snaps = []
+    snap_types = Snapshot.get_subclasses()
+    for snap_type in snap_types:
+        snaps += snap_type.objects.all()
+
+    sorted_snaps = sorted(snaps, key=lambda snap: snap.created_at, reverse=True)
+
+    return sorted_snaps
+
+def get_snapshot(snapshot_id):
+    snap_type,snap_id = snapshot_id.split(',')
+
+    try:
+        if snap_type == 'PA':
+            snap = PathSnapshot.objects.get(pk = snap_id)
+        elif snap_type == 'FF':
+            snap = FourFieldSnapshot.objects.get(pk = snap_id)
+    except (PathSnapshot.DoesNotExist, FourFieldSnapshot.DoesNotExist) as e:
+        print(f'ERROR: {e}')
+    return snap
+
+@login_required
+@user_passes_test(is_admin)
+def new_presentation(request):
+
+    snaps = get_all_snapshots()
+
+    response_data = {
+        'snaps': snaps
+    }
+
+    template = 'presentations/new_presentation.html'
+
+    return render(request, template, response_data)
+
+@login_required
+@user_passes_test(is_admin)
+def save_presentation(request, presentation_id):
+
+    snapshots = ""
+    try:
+        presentation_id = request.POST['presentation_id']
+        if presentation_id:
+            try:
+                presentation = Presentation.objects.get(pk = presentation_id)
+                snapshots = presentation.snapshots
+            except Presentation.DoesNotExist:
+                presentation = Presentation()
+
+            except Exception as e:
+                print(f'ERROR: {e}')
+                pass
+    except KeyError:
+        presentation = Presentation()
+        presentation.save()
+
+    title = request.POST['title']
+    summary = request.POST['summary']
+
+    if snapshots:
+        values = presentation.snapshots.split(',')
+        snapshot_ids = list(zip(islice(values, 0, None, 2), islice(values, 1, None, 2)))
+
+        for a,b in snapshot_ids:
+            snap_id = a + "," + b
+            try:
+                snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snap_id)
+                snapshot_text.snapshot_title = request.POST['snapshot_title' +  snap_id]
+                snapshot_text.snapshot_text = request.POST['snapshot_text' + snap_id]
+                snapshot_text.save()
+            except SnapshotPresentationText.DoesNotExist as e:
+                print(f'ERROR: {e}')
+                pass
+
+    snapshot_array = request.POST.getlist('snapshot_checkbox[]')
+
+    for pair in snapshot_array:
+        snapshots = snapshots + "," + pair
+        try:
+            snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = pair)
+        except SnapshotPresentationText.DoesNotExist:
+            snapshot_text = SnapshotPresentationText()
+            snapshot_text.snapshot_id = pair
+            snapshot_text.presentation_id = presentation
+        try:
+            snapshot = get_snapshot(pair)
+            snapshot_text.snapshot_title = snapshot.name
+            snapshot_text.snapshot_text = snapshot.description
+        except KeyError:
+            snapshot_text.snapshot_title = ""
+            snapshot_text.snapshot_text = ""
+        snapshot_text.save()
+
+    presentation.title = title
+    presentation.summary = summary
+    presentation.snapshots = snapshots.lstrip(',')
+    presentation.save()
+
+    url = f'edit_presentation/{presentation.pk}'
+    return redirect(url, permanent=True)
+
+@login_required
+@user_passes_test(is_admin)
+def edit_presentation(request, presentation_id):
+
+    try:
+        presentation = Presentation.objects.get(pk = presentation_id)
+
+        title = presentation.title
+        summary = presentation.summary
+        presentation_snaps = []
+
+        if presentation.snapshots:
+            values = presentation.snapshots.split(',')
+            snapshot_ids = list(zip(islice(values, 0, None, 2), islice(values, 1, None, 2)))
+                    
+            for a,b in snapshot_ids:
+                try:
+                    snap = get_snapshot(a + ',' + b)
+                    snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = a + "," + b)
+                    snap_data = {
+                        'snap': snap,
+                        'text': snapshot_text
+                    }
+                except Exception as e:
+                    print(f'ERROR: {e}')
+                    pass
+                presentation_snaps.append(snap_data)
+
+
+        snaps = get_all_snapshots()
+        serializer = ProjectSerializer(Project.objects.all(), many=True)
+        data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
+
+        response_data = {
+        'presentation': presentation,
+        'id': presentation.pk,
+        'title': title,
+        'summary': summary,
+        'snapshots': presentation_snaps,
+        'snaps': snaps,
+        'data': data
+        }
+
+        template = 'presentations/edit_presentation.html'
+
+        return render(request, template, response_data)
+
+    except Presentation.DoesNotExist as e:
+        print(f'ERROR: {e}')
+        pass
+
+@login_required
+@user_passes_test(is_admin)
+def remove_presentation_snapshot(request, presentation_id = None, snapshot_type = None, snapshot_id = None):
+    try:
+        snap_id = snapshot_type + "," + snapshot_id
+        presentation = Presentation.objects.get(pk = presentation_id)
+        snap_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = snap_id)
+
+        presentation.snapshots = presentation.snapshots.replace(snap_id, '').replace(',,', ',').lstrip(',').rstrip(',')
+
+        snap_text.delete()
+        presentation.save()
+
+
+    except (Presentation.DoesNotExist, SnapshotPresentationText.DoesNotExist, KeyError) as e:
+        print(f'ERROR: {e}')
+        pass
+
+    return redirect(reverse('edit_presentation', kwargs={'presentation_id': presentation_id}))
+
+@login_required
+def presentation(request, presentation_id = None):
+
+    response_data = {}
+    template = 'snapshots/error.html'
+
+    if not presentation_id:
+        presentations = Presentation.objects.all()
+        template = 'presentations/all.html'
+        response_data = {
+            'presentations': presentations
+        }
+
+    else:
+        try:
+            presentation = Presentation.objects.get(pk = presentation_id)
+            if presentation:
+
+                snapshots = []
+
+                if presentation.snapshots:
+                    values = presentation.snapshots.split(',')
+                    snapshot_ids = list(zip(islice(values, 0, None, 2), islice(values, 1, None, 2)))
+                    
+                    for a,b in snapshot_ids:
+                        try:
+                            snap = get_snapshot(a + ',' + b)
+                            snapshot_text = SnapshotPresentationText.objects.get(presentation_id = presentation, snapshot_id = a + "," + b)
+                            snap_data = {
+                                'snap': snap,
+                                'text': snapshot_text
+                            }
+                        except (KeyError, SnapshotPresentationText.DoesNotExist) as e:
+                            print(f'ERROR: {e}')
+                            pass
+                        snapshots.append(snap_data)
+
+                serializer = ProjectSerializer(Project.objects.all(), many=True)
+                data = json_module.dumps(serializer.data, cls=DjangoJSONEncoder)
+                template = 'presentations/presentation.html'
+                response_data = {
+                    'presentation': presentation,
+                    'snapshots': snapshots,
+                    'data': data
+                }
+        except Presentation.DoesNotExist as e:
+            print(f'ERROR: {e}')
+            pass
+
+    return render(request, template, response_data)

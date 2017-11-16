@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+All Presentations
+{% endblock %}
+
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "portfolio_manager/css/snapshot.css" %}">
+<link rel="stylesheet" href="{% static "portfolio_manager/css/sidebar.css" %}">
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block javascript %}
+{% load static %}
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Presentations</h1>
+<div>
+  <a href="{% url 'new_presentation' %}" class="btn">Create new presentation</a>
+</div>
+<div class="snaps-container">
+  {% for presentation in presentations %}
+  <div class="snap-wrapper path-snap col-lg-2 col-md-4 col-sm-6 col-12">
+    <a href="{% url 'presentations' %}/{{presentation.id}}" class="hover-link">
+      <img class="img-responsive" src='{% static "portfolio_manager/img/dependencies.jpg" %}' alt="{{ snap.name }}">
+
+      <div class="overlay">
+        <h2>{{ presentation.title }}</h2>
+				<p>{{ presentation.summary }}</p>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

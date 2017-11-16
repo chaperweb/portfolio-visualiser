@@ -462,13 +462,23 @@ class PathSnapshot(Snapshot):
 
 
 class FourFieldSnapshot(Snapshot):
-    x_dimension = models.CharField(max_length=64)
-    y_dimension = models.CharField(max_length=64)
-    radius_dimension = models.CharField(max_length=64)
+    x_id = models.CharField(max_length=64)
+    y_id = models.CharField(max_length=64)
+    radius_id = models.CharField(max_length=64)
     start_date = models.PositiveIntegerField()
     end_date = models.PositiveIntegerField()
     zoom = models.PositiveIntegerField()
 
+class Presentation(models.Model):
+    title = models.TextField(max_length=64)
+    summary = models.TextField()
+    snapshots = models.CharField(max_length=256)
+
+class SnapshotPresentationText(models.Model):
+    presentation_id = models.ForeignKey(Presentation, null=True)
+    snapshot_id = models.CharField(max_length=64)
+    snapshot_title = models.CharField(max_length=64)
+    snapshot_text = models.TextField()
 
 class Employees(Group):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
