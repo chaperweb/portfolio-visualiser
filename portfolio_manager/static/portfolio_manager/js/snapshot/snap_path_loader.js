@@ -52,8 +52,8 @@ $(function() {
           db_json,
           "visualization",
           data_id_array,
-          start_date,
-          end_date
+          (start_date * 1000),
+          (end_date * 1000)
         );
 
     $("#projectPanel").html($("#projectName").text())

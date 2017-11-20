@@ -17,6 +17,7 @@
 <script src="{% static 'portfolio_manager/js/snapshot/snap_path_loader.js' %}"></script>
 {% endblock %}
 
+{% load timetags %}
 {% block content %}
 {% load static %}
 <div class="text-center ">
@@ -60,7 +61,7 @@
             Start date
           </div>
           <div class="panel-body">
-            {{ start }}
+            {{ start | print_timestamp }}
           </div>
         </div>
         <div class="panel panel-default">
@@ -68,7 +69,7 @@
             End date
           </div>
           <div class="panel-body">
-            {{ end }}
+            {{ end | print_timestamp }}
           </div>
         </div>
       </div>
