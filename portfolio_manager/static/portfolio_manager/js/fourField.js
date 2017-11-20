@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, sliderValues, sliderDate) {
 	// console.log(json);
 	var projects = [],
-      
+
 	colorToBe = 'AssociatedOrganizationDimension',
 	// size of the display box and other scaling related variables
 	sliderHeight = 50,
@@ -115,22 +115,25 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 				} else if (valueName === radToBe) {
 					inProgress.radius = (collectVal).reverse();
 					radiusArray.push.apply(radiusArray,collectVal);
-				}
+				};
 			} else if (dimension.dimension_type === colorToBe ) {
 				if(dimension.dimension_object.history[0].value) {
 					inProgress.organization = dimension.dimension_object.history[0].value.name;
 				} else {
 					//project has no organization
 					inProgress.organization = "";
-				}
+				};
 				organizations.push(inProgress.organization);
 			};
 
-		}
+		};
 		var milestone;
 		const dayInSeconds = 86400;
-		var collectXPlan = [(inProgress.firstDate - dayInSeconds, 0)], // array for x-axis milestones
-		collectYPlan = [(inProgress.firstDate - dayInSeconds, 0)]; // array for y-axis milestones
+
+		//The milestonarrays are initialized here. both arrays will have 1 value set by
+		//default to improve interpolation between the actual start and the first milestone.
+		var collectXPlan = [(inProgress.firstDate - dayInSeconds, 0)],
+		collectYPlan = [(inProgress.firstDate - dayInSeconds, 0)];
 
 		if(json[j].milestones != undefined) {
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
@@ -147,19 +150,19 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 							parsedDate = new Date(date).getTime() / 1000;
 							milestoneValue = milestone.dimensions[q].dimension_milestone_object.value;
 							collectYPlan.push([parsedDate,milestoneValue]);
-						}
+						};
 						inProgress.firstDate = Math.min(parsedDate, inProgress.firstDate);
 						inProgress.lastDate = Math.max(parsedDate, inProgress.lastDate);
 						setDateScale(parsedDate);
-					}
-				}
-			}
+					};
+				};
+			};
 			//pushing the milestone-arrays to inProgress, and push inProgress to projects-array.
 			inProgress.xAxisPlanned = (collectXPlan);
 			inProgress.yAxisPlanned = (collectYPlan);
 			projects.push(inProgress);
-		}
-	}
+		};
+	};
 	var maxRadius = 0;
 	var minRadius = Infinity;
 	var parsedNumber;
@@ -172,8 +175,8 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		}
 		if(parsedNumber > maxRadius) {
 			maxRadius = parsedNumber;
-		}
-	})
+		};
+	});
 
 	var uniqueOrganizations = organizations.filter( onlyUnique );
 
@@ -198,14 +201,14 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 	if(isNaN(endDate)) {
 		endDate = endDefault;
 		$('#end-date-selector').val(ddmmyy(endDate*1000));
-	}
+	};
 	if (isNaN(sliderDate)) {
 		sliderDate = startDate;
 	} else if(sliderDate < startDate) {
 		sliderDate = startDate;
 	} else if(sliderDate > endDate) {
 		sliderDate = endDate;
-	}
+	};
 
 	//console.log(projects);
 
@@ -216,11 +219,11 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 	//function to determine the x-coordinate of a circle in the graph.
 	function x(d) {
 		return margin.left + (sliderValues/100 + d.xAxis) * percentInPx;
-	}
+	};
 	//function to determine the y-coordinate of a circle in the graph.
 	function y(d) {
 		return margin.top + (sliderValues/100 + d.yAxis) * percentInPx;
-	}
+	};
 	/*function to determine the radius of a circle in the graph.
 	*If given location is not valid, the radius is set to 0, and the circle is not displayed
 	*/
@@ -228,14 +231,14 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		if (validLocation(d)) {
 			return d.radius;
 		} else {
-			d.radius = 0
+			d.radius = 0;
 			return d.radius;
-		}
-	}
+		};
+	};
 	//This function is for the filter to rule out not unique values from array
 	function onlyUnique(value, index, self) {
 		return self.indexOf(value) === index;
-	}
+	};
 	/*
 	* Helps to set timescale-slider by min&max values of
 	* given data points and milestones
@@ -245,13 +248,13 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 			startDefault = date;
 			endDefault = date;
 			return;
-		}
+		};
 		if (date > endDefault) {
 			endDefault = date;
 		} else if (date < startDefault) {
 			startDefault = date;
-		}
-	}
+		};
+	};
 
 	/* If
 	* 1) y- or x-coordinates are infinite (the ball lacks milestones or dimension values)
@@ -269,36 +272,36 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 			x(d) > linearScale(d.radius) &&
 			y(d) < (margin.top + axisLengthY + margin.bottom - linearScale(d.radius)) &&
 			x(d) < (margin.left + axisLengthX + margin.right - linearScale(d.radius)));
-		}
+		};
 		function validXCoordinates(d) {
 			if(!isNaN(d)) {return Math.min(Math.max(d,0),fieldWidth) } else {return 0};
-		}
+		};
 		function validYCoordinates(d) {
 			if(!isNaN(d)) {return Math.min(Math.max(d,0),fieldWidth) } else {return 0};
-		}
+		};
 
 		//function to determine color of the circle. Currently is set to color the circles by their "AssociatedOrganizationDimension"
-		function color(d) { return colorScale(d.organization); }
-		function key(d) { return d.name; }
+		function color(d) { return colorScale(d.organization); };
+		function key(d) { return d.name; };
 
 		// Positions the dots based on data, the only scaling happens here as the ball max r is limited to 100
 		function position(dot) {
-			dot.attr("cx", function(d) { return validXCoordinates(x(d)) ; })
-			.attr("cy", function(d) { return validYCoordinates(y(d)); })
+			dot.attr("cx", function(d) { return validXCoordinates(x(d)) ; });
+			.attr("cy", function(d) { return validYCoordinates(y(d)); });
 			.attr("r", function(d) {
 				if(radius(d) <= 0) {
 					return 0;
 				} else {
 					return linearScale(radius(d));
-				}
+				};
 			});
-		}
+		};
 
 		// Set ball locations and date label value
 		function setBalls(date) {
 			dot.data(interpolateData(date), key).call(position).sort(order);
 			dateLabel.text(parseDate((new Date(date*1000))));
-		}
+		};
 
 		// interpolate data of the given day
 		function interpolateData(date) {
@@ -308,14 +311,14 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 					organization: d.organization,
 					xAxis: processValues(interpolateValues(d, d.xAxisActual, date),interpolateValues(d, d.xAxisPlanned, date)),
 					yAxis: processValues(interpolateValues(d, d.yAxisActual, date),interpolateValues(d, d.yAxisPlanned, date)),
-					radius: interpolateValues(d, d.radius, date)
+					radius: interpolateValues(d, d.radius, date);
 				};
 			});
-		}
+		};
 		// this function returns the required % in decimal form to position the circle correctly.
 		function processValues(actual,planned) {
 			return ( ((actual/planned) -1));
-		}
+		};
 
 		/*
 		this function interpolates the values of the given array "values",
@@ -327,21 +330,21 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 				//array containing the data is undefined, most likely the data never existed.
 				//The value will be eventyally set to 0.
 				return 0;
-			}
+			};
 			var i = bisect.left(values, date, 0, values.length - 1),
 			a = values[i];
 			if (a == undefined) {
 				return 0;
 			} else if(a.length == 0) {
 				return 0;
-			}
+			};
 			if (i > 0) {
 				var b = values[i - 1],
 				t = (date - a[0]) / (b[0] - a[0]);
 				return a[1] * (1 - t) + b[1] * t;
-			}
+			};
 			return a[1];
-		}
+		};
 		//Bisector for interpolation
 		var bisect = d3.bisector(function(d) { return d[0]; });
 
@@ -349,7 +352,7 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		//then with the sort command aligns the smaller circle in front of the bigger one
 		function order(a, b) {
 			return radius(b) - radius(a);
-		}
+		};
 		/*********************************/
 		/* Graph elements live down here */
 		/*********************************/
@@ -438,12 +441,12 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 										dot.style("opacity", .4);
 										d3.select(this).style("opacity", 1);
 										d3.selectAll(".selected").style("opacity", 1);
-									})
+									});
 									.on("mouseleave", function(d) {
 										namelabel.text("");
 										orglabel.text("");
 										dot.style("opacity", 1);
-									})
+									});
 
 		//Timescale under the graph
 		var scaleDate = d3.scaleTime()
@@ -488,4 +491,4 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		setBalls(sliderDate);
 		svg.select(".handle").node().cx.baseVal.value = scaleDate(sliderDate * 1000);
 		return svg;
-}
+};
