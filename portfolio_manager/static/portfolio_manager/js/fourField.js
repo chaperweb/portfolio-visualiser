@@ -113,7 +113,7 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 					yID = dimension.id // y-axis id is saved. This value is used in the milestone-loop.
 					inProgress.yAxisActual = (collectVal).reverse();
 				} else if (valueName === radToBe) {
-					inProgress.radius = (collectVal);
+					inProgress.radius = (collectVal).reverse();
 					radiusArray.push.apply(radiusArray,collectVal);
 				}
 			} else if (dimension.dimension_type === colorToBe ) {
@@ -128,8 +128,9 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 
 		}
 		var milestone;
-		var collectXPlan = [], // array for x-axis milestones
-		collectYPlan = []; // array for y-axis milestones
+		const dayInSeconds = 86400;
+		var collectXPlan = [(inProgress.firstDate - dayInSeconds, 0)], // array for x-axis milestones
+		collectYPlan = [(inProgress.firstDate - dayInSeconds, 0)]; // array for y-axis milestones
 
 		if(json[j].milestones != undefined) {
 			for(e = 0; e < json[j].milestones.length ; e++ ) {
