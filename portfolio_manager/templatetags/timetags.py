@@ -7,6 +7,6 @@ def print_timestamp(timestamp):
         ts = float(timestamp)
     except ValueError:
         return None
-    return datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
+    return datetime.datetime.fromtimestamp(ts).strftime("%d/%m/%Y")
 
 register.filter(print_timestamp)
