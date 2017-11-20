@@ -286,8 +286,8 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 
 		// Positions the dots based on data, the only scaling happens here as the ball max r is limited to 100
 		function position(dot) {
-			dot.attr("cx", function(d) { return validXCoordinates(x(d)) ; });
-			.attr("cy", function(d) { return validYCoordinates(y(d)); });
+			dot.attr("cx", function(d) { return validXCoordinates(x(d)) ; })
+			.attr("cy", function(d) { return validYCoordinates(y(d)); })
 			.attr("r", function(d) {
 				if(radius(d) <= 0) {
 					return 0;
@@ -311,7 +311,7 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 					organization: d.organization,
 					xAxis: processValues(interpolateValues(d, d.xAxisActual, date),interpolateValues(d, d.xAxisPlanned, date)),
 					yAxis: processValues(interpolateValues(d, d.yAxisActual, date),interpolateValues(d, d.yAxisPlanned, date)),
-					radius: interpolateValues(d, d.radius, date);
+					radius: interpolateValues(d, d.radius, date)
 				};
 			});
 		};
@@ -441,7 +441,7 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 										dot.style("opacity", .4);
 										d3.select(this).style("opacity", 1);
 										d3.selectAll(".selected").style("opacity", 1);
-									});
+									})
 									.on("mouseleave", function(d) {
 										namelabel.text("");
 										orglabel.text("");
