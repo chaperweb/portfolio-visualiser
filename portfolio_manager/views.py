@@ -67,20 +67,6 @@ def is_orgadmin(user):
     return user.has_perm('portfolio_manager.org_admin') and not user.is_superuser
 
 
-def signup(request):
-    if request.method == "POST":
-        user = User.objects.create_user(
-            username=request.POST['username'],
-            email=request.POST.get('email'),
-            password=request.POST['password'],
-            first_name=request.POST.get('first_name'),
-            last_name=request.POST.get('last_name')
-        )
-        user.save()
-        return redirect('homepage')
-    else:
-        return render(request, 'registration/signup.html')
-
 
 def is_int(s):
     try:
@@ -1076,7 +1062,7 @@ def edit_presentation(request, presentation_id):
         if presentation.snapshots:
             values = presentation.snapshots.split(',')
             snapshot_ids = list(zip(islice(values, 0, None, 2), islice(values, 1, None, 2)))
-                    
+
             for a,b in snapshot_ids:
                 try:
                     snap = get_snapshot(a + ',' + b)
@@ -1156,7 +1142,7 @@ def presentation(request, presentation_id = None):
                 if presentation.snapshots:
                     values = presentation.snapshots.split(',')
                     snapshot_ids = list(zip(islice(values, 0, None, 2), islice(values, 1, None, 2)))
-                    
+
                     for a,b in snapshot_ids:
                         try:
                             snap = get_snapshot(a + ',' + b)

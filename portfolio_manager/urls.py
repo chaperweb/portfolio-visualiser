@@ -39,7 +39,6 @@ ajax_patterns = [
 ]
 
 urlpatterns = [
-    url(r'^signup/$', views.signup, name="signup"),
     url(r'^signin/$', auth_login, name="login"),
     url(r'^signout/$', auth_logout, {'next_page': '/signin/'}, name="logout"),
     url(r'^$', views.home, name='homepage'),
