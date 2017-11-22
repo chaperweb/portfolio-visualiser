@@ -14,9 +14,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $(function(){
   $.ajax({
-    url: "json"
+    url: "json";
   }).success(function(data) {
-    dependencies(data, "visualization")
+    dependencies(data, "visualization");
   });
 });
 
@@ -41,23 +41,23 @@ function dependencies(json, target) {
         valueArray.push(gimmeBudget(json[j].id))
         if (json[j].dimensions[i].dimension_object.value != undefined) {
           valueArray.push(gimmeBudget(json[j].dimensions[i].dimension_object.value[0]))
-        }
-      }
-    }
-  }
+        };
+      };
+    };
+  };
 
   // defining denominator for scaling overly large values to usable size
   var denominator = 1;
   if (d3.max(valueArray) > 1000000) {
     denominator = d3.max(valueArray) / 100000;
-  }
+  };
 
   // Compute the distinct nodes from the links. Each node is only created once
   for (j = 0; j < jsonlen; j++) {
 
     if(json[j].dimensions == undefined) {
       throw error("project dimensions missing");
-    }
+    };
 
     var size = json[j].dimensions.length,
     budgetS,
@@ -411,4 +411,4 @@ function dependencies(json, target) {
         .text(function(d){
           return d;
   });
-}
+};
