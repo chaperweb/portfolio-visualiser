@@ -310,7 +310,7 @@ class NumberDimension (Dimension):
 
 
 class DateDimension (Dimension):
-    value = models.DateTimeField()
+    value = models.DateTimeField(null=True)
     history = HistoricalRecords(bases=[BaseDimensionHistory])
     __history_date = None
     data_type = 'DATE'
@@ -330,7 +330,10 @@ class DateDimension (Dimension):
         self._history_date = history_date
 
     def __str__(self):
-        return self.value.strftime("%d/%m/%Y")
+        if( self.value != None):
+            return self.value.strftime("%d/%m/%Y")
+        else:
+            return ""
 
 
 class AssociatedOrganizationDimension (Dimension):
