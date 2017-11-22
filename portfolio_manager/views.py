@@ -214,10 +214,8 @@ def home(request):
         # TODO: Filter the snaps according to waht the user is allowed to see
         # Maybe have some news feed or something something
         user_org = user.groups.last().employees.organization
-        context['snaps'] = []
-        snap_types = Snapshot.get_subclasses()
-        for snap_type in snap_types:
-            context['snaps'].extend(snap_type.objects.all())
+        context['snaps'] = get_all_snapshots()
+        context['presentations'] = Presentation.objects.all()
 
     context['user_type'] = user_type
 

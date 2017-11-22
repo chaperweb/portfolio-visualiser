@@ -41,10 +41,21 @@ Portfolio Visualizer
         </div>
     {% endfor %}
   </div>
-  <div id="something-wrapper" class="text-center col-lg-2 col-lg-offset-1">
-    <h3>SOMETHING</h3>
-    <h4>CONTENT FOR SOMETHING</h4>
-  </div>
+  <div id="presentation-wrapper" class="text-center col-lg-2 col-lg-offset-1">
+    <h3>PRESENTATIONS</h3>
+    {% for presentation in presentations %}
+    <div class="snap-wrapper col-sm-12">
+      <a href="{% url 'presentations' %}/{{presentation.id}}" class="hover-link">
+        <img class="img-responsive" src='{% static "portfolio_manager/img/dependencies.jpg" %}' alt="{{ presentation.name }}">
+
+        <div class="overlay">
+          <h2>{{ presentation.title }}</h2>
+  				<p>{{ presentation.summary }}</p>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>  
 {% else %}
   <!-- Modal -->
   <div class="modal fade" id="add-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
