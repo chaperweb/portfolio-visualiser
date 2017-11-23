@@ -14,7 +14,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 $(function(){
   $.ajax({
-    url: "json";
+    url: "json"
   }).success(function(data) {
     dependencies(data, "visualization");
   });
