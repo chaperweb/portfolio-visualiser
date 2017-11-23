@@ -27,7 +27,7 @@ function dependencies(json, target) {
   valueArray = [];
 
   /* Going through json input and collecting budget values from objects
-  * that have values in ProjectDependencies. To be used in defining need
+  * that have values in dependencies. To be used in defining need
   * for denominaor != 1
   */
   for (j = 0; j < jsonlen; j++) {
@@ -37,7 +37,7 @@ function dependencies(json, target) {
 
     var size = json[j].dimensions.length
     for (i = 0; i < size; i++) {
-      if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
+      if (json[j].dimensions[i].dimension_object.name === "dependencies") {
         valueArray.push(gimmeBudget(json[j].id))
         if (json[j].dimensions[i].dimension_object.value != undefined) {
           valueArray.push(gimmeBudget(json[j].dimensions[i].dimension_object.value[0]))
@@ -68,7 +68,7 @@ function dependencies(json, target) {
     targetId;
 
     for (i = 0; i < size; i++) {
-      if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
+      if (json[j].dimensions[i].dimension_object.name === "dependencies") {
         for(p = 0; p < json[j].dimensions[i].dimension_object.value.length;p++) {
 
           budgetS = gimmeBudget(json[j].id) / denominator;

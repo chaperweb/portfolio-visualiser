@@ -8,7 +8,7 @@
 	{# CSS HERE #}
 	{% block css %}
 	{% load static %}
-	<link rel="stylesheet" href="{% static "portfolio_manager/css/projectDependencies.css" %}">
+	<link rel="stylesheet" href="{% static "portfolio_manager/css/dependencies.css" %}">
 	<link rel="stylesheet" href="{% static "portfolio_manager/css/sidebar.css" %}">
 	{% endblock %}
 
@@ -17,7 +17,7 @@
 	{% load static %}
 	<script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="{% static 'portfolio_manager/js/colorGenerator.js' %}"></script>
-	<script src="{% static 'portfolio_manager/js/projectDependencies.js' %}"></script>
+	<script src="{% static 'portfolio_manager/js/dependencies.js' %}"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 	{% endblock %}
 	{% block visualization_content %}
