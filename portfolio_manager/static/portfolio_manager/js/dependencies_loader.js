@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 $(function() {
 
   function change_if_data_selected() {
-    var orgIsChosen = $('#size-selector').val() != '---';
+    var orgIsChosen = $('#org-selector').val() != '---';
     var typeIsChosen = $('#type-selector').val() != '---';
 
     if (orgIsChosen && typeIsChosen) {
@@ -48,6 +48,13 @@ $(function() {
     $($.parseJSON(data)).map(function () {
       return $('<option>').val(this.id).text(this.name);
     }).appendTo('#org-selector');
+    $('#org-selector').append('<option value="kisu">Kissa</option>');
+
+    $('#org-selector').chosen({
+        max_selected_options: 5
+    });
+
+    $('#org-selector').prop('disabled', false);
   });
 
   $.ajax({
@@ -56,8 +63,8 @@ $(function() {
     db_json = data;
     dependencies(db_json, "visualization");
   });
-
-  $('#color-selector').on('change', function() {
+/*
+  $('#org-selector').on('change', function() {
     project_id = $(this).find("option:selected").val();
 
     preserved_org_array = [];
@@ -70,7 +77,7 @@ $(function() {
       }
     });
 
-    preserved_y_name = $('#size-selector').find("option:selected").text();
+    preserved_size = $('#size-selector').find("option:selected").text();
 
     $('#org-selector').html('')
     $('#size-selector').html('<option>---</option>');
@@ -109,15 +116,13 @@ $(function() {
         } )) option.selected = true;
       });
 
-    $('#org-selector').chosen({
-        max_selected_options: 5
-    });
+
 
     $('.datepicker').prop('disabled', false);
 
     change_if_data_selected();
   });
-
+*/
   $('#org-selector').on('change', change_if_data_selected);
   $('#type-selector').on('change', change_if_data_selected);
   $('#size-selector').on('change', change_if_data_selected);
