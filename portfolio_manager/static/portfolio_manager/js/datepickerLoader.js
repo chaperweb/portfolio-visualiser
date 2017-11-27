@@ -3,6 +3,6 @@ window.onload = function() {
   var isFirefox = typeof InstallTrigger !== 'undefined';
   var isIE = /*@cc_on!@*/false || !!document.documentMode;
   if(isFirefox || isIE) {
-    $("#date-value").datepicker();
+    $("#date-value").datepicker({dateFormat: "dd/mm/yy"});
   };
 };
