@@ -400,11 +400,15 @@ def add_field(request):
                 #TODO: group them by types to make the site easier to view?
                 t_dim_name = t_dim.content_type.model_class().__name__
                 dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
+        defdict = {}
+        for k,v in dims.items():
+            defdict.setdefault(v, []).append(k)
+
 
         resultmsg = "Successfully added the \"%s\"-field" % request.POST['name']
         render_data = {
             'form': orgform,
-            'dims': dims,
+            'dims': defdict,
             'add_field_form': add_field_form,
             'add_field_success': resultmsg,
         }
@@ -603,8 +607,12 @@ def databaseview(request):
             add_field_form.initial = {'organization': request.POST['orgs']}
             # (dimension name -> datatype) dictionary
             dims = {}
-            organization = Organization.objects.get(pk=request.POST['orgs'])
-            templates = organization.templates.all()
+            try:
+                organization = Organization.objects.get(pk=request.POST['orgs'])
+                templates = organization.templates.all()
+            except ValueError:
+                #Organization not found
+                templates = []
             if len(templates) > 0:
                 template = templates[0]
                 for t_dim in template.dimensions.all():
