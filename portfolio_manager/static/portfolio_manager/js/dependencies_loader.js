@@ -33,28 +33,26 @@ $(function() {
     selected_type = $('#type-selector').val();
     selected_size = $('#size-selector').val();
     selecter_color = $('#color-selector').val();
-    start_date = Date.parse($('#start-date-selector').datepicker( "getDate" ));
-    end_date = Date.parse($('#end-date-selector').datepicker( "getDate" ));
+    start_date = Date.parse($('#date-selector').datepicker( "getDate" ));
 
     // collect data
 
-    //dependencies(db_json, "visualization", organizations, associationtype, size, color, start_date, end_date);
-
+    //dependencies(db_json, "visualization", organizations, associationtype, size, color, date);
+    return;
   };
 
   $.ajax({
     url: "get_orgs"
   }).done(function(data) {
-    $($.parseJSON(data)).map(function () {
-      return $('<option>').val(this.id).text(this.name);
-    }).appendTo('#org-selector');
-    $('#org-selector').append('<option value="kisu">Kissa</option>');
-
-    $('#org-selector').chosen({
-        max_selected_options: 5
+    $($.parseJSON(data)).each(function () {
+      return $('#org-selector').append('<option value="'+this.id+'">'+this.name+'</option>');
     });
 
     $('#org-selector').prop('disabled', false);
+  });
+
+  $('#org-selector').chosen({
+      max_selected_options: 5
   });
 
   $.ajax({
