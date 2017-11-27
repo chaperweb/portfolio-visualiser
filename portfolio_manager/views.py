@@ -574,7 +574,8 @@ def projects(request):
 
     projects_grouped = {}
     for org, ps in groupby(projects_all, lambda p: p.parent):
-        projects_grouped[org] = []
+        if(not org in projects_grouped):
+            projects_grouped[org] = []
         for p in ps:
             projects_grouped[org].append(p)
 
