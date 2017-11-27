@@ -41,86 +41,76 @@ $(function() {
     return;
   };
 
+// Filter function to rule out duplicate values
+  function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  };
+
   $.ajax({
     url: "get_orgs"
   }).done(function(data) {
-    $($.parseJSON(data)).each(function () {
-      return $('#org-selector').append('<option value="'+this.id+'">'+this.name+'</option>');
+    data.forEach(function(elem) {
+      return $('#org-selector').append('<option value="'+elem.id+'">'+elem.name+'</option>');
     });
-
+    jQuery.noConflict();
+    $('#org-selector').chosen();
     $('#org-selector').prop('disabled', false);
-  });
-
-  $('#org-selector').chosen({
-      max_selected_options: 5
   });
 
   $.ajax({
     url: "json"
   }).done(function(data) {
     db_json = data;
-    dependencies(db_json, "visualization");
-  });
-/*
-  $('#org-selector').on('change', function() {
-    project_id = $(this).find("option:selected").val();
 
-    preserved_org_array = [];
+    // Populate the selectors
+    var numberic_names = [];
+    var text_names = [];
+    var associated_names = [];
 
-    $('#org-selector option:selected').each(function () {
-      var $this = $(this);
-      if ($this.length) {
-        var selText = $this.text();
-        preserved_org_array.push(selText);
-      }
-    });
+    for (var i = 0, ilen = db_json.length; i < ilen; i++) {
+      var project = db_json[i];
+      for (var j = 0, jlen = project.dimensions.length; j < jlen; j++) {
+        var dimension = project.dimensions[j];
 
-    preserved_size = $('#size-selector').find("option:selected").text();
-
-    $('#org-selector').html('')
-    $('#size-selector').html('<option>---</option>');
-
-    for (var i = 0, len = db_json.length; i < len; i++) {
-      if(db_json[i].id == project_id) {
-        project = db_json[i];
-        for (var j = 0; j < project.dimensions.length; j++) {
-          if('history' in project.dimensions[j].dimension_object) {
-            $('#org-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
-            $('#org-selector').prop('disabled', false);
-            if (project.dimensions[j].dimension_type == 'NumberDimension') {
-              $('#size-selector').append('<option value="'+project.dimensions[j].id+'">'+project.dimensions[j].dimension_object.name+'</option>');
-              $('#size-selector').prop('disabled', false);
-            }
-          }
+        var name = dimension.dimension_object.name;
+        if (dimension.dimension_type === 'NumberDimension') {
+            numberic_names.push(name);
+        } else if (dimension.dimension_type === 'AssociatedPersonDimension' ||
+                   dimension.dimension_type === 'AssociatedPersonsDimension' ||
+                   dimension.dimension_type === 'AssociatedProjectsDimension' ||
+                   dimension.dimension_type === 'AssociatedOrganizationDimension') {
+          associated_names.push(name);
+        } else if (dimension.dimension_type === 'TextDimension') {
+          text_names.push(name);
         }
-        break;
       }
     }
+    numberic_names = numberic_names.filter( onlyUnique );
+    associated_names = associated_names.filter( onlyUnique );
+    text_names = text_names.filter( onlyUnique );
 
-    var y_id = null;
-    $('#size-selector').children().each(function(i, option) {
-      if (option.value != '---'
-          && (option.text == preserved_y_name || y_id == null))
-        y_id = option.value;
+    numberic_names.forEach(function(name) {
+      return $('#size-selector').append('<option value="'+name+'">'+name+'</option>');
     });
 
-    if (y_id != null)
-      $('#size-selector').val(y_id);
+    associated_names.forEach(function(name) {
+      return $('#type-selector').append('<option value="'+name+'">'+name+'</option>');
+    });
 
-    if (preserved_org_array !== undefined)
-      $('#org-selector').children().each( function(i, option) {
-        if (preserved_org_array.some(function(element) {
-          return option.text === element
-        } )) option.selected = true;
-      });
+    text_names.forEach(function(name) {
+      return $('#color-selector').append('<option value="'+name+'">'+name+'</option>');
+    });
 
 
+    $('#size-selector').prop('disabled', false);
+    $('#type-selector').prop('disabled', false);
+    $('#color-selector').prop('disabled', false);
+    $('#date-selector').prop('disabled', false);
 
-    $('.datepicker').prop('disabled', false);
-
-    change_if_data_selected();
+    dependencies(db_json, "visualization");
   });
-*/
+
+  jQuery.noConflict();
   $('#org-selector').on('change', change_if_data_selected);
   $('#type-selector').on('change', change_if_data_selected);
   $('#size-selector').on('change', change_if_data_selected);
