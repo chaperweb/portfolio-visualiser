@@ -316,10 +316,14 @@ class DateDimension (Dimension):
     data_type = 'DATE'
 
     def update_date(self, value):
-        d = parse(value, dayfirst=True)
-        if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
-            d = d.replace(tzinfo=pytz.utc)
-        self.value = d
+        try:
+            d = parse(value, dayfirst=True)
+            if d.tzinfo is None or d.tzinfo.utcoffset(d) is None:
+                d = d.replace(tzinfo=pytz.utc)
+            self.value = d
+        except ValueError:
+            #the date was not in correct format
+            pass
 
     # Updates model's value with a value drawn from a Google Sheet
     def from_sheet(self, value, history_date):
@@ -330,9 +334,9 @@ class DateDimension (Dimension):
         self._history_date = history_date
 
     def __str__(self):
-        if( self.value != None):
+        try:
             return self.value.strftime("%d/%m/%Y")
-        else:
+        except AttributeError:
             return ""
 
 
