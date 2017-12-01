@@ -16,15 +16,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-function dependencies(json, target) {
-  var nodes = {},
+function dependencies(json, target, organizations, associationtype, nodeSizeValue, nodeColorValue, date) {
+  var nodes = [],
   links = [],
   jsonlen = json.length,
   valueArray = [];
 
-  /* Going through json input and collecting budget values from objects
+  /* Going through json input and collecting size values from objects
   * that have values in dependencies. To be used in defining need
-  * for denominaor != 1
+  * for denominator != 1
   */
   for (j = 0; j < jsonlen; j++) {
     if (json[j].dimensions == undefined) {
@@ -33,10 +33,13 @@ function dependencies(json, target) {
 
     var size = json[j].dimensions.length
     for (i = 0; i < size; i++) {
-      if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
-        valueArray.push(gimmeBudget(json[j].id))
+      if (json[j].dimensions[i].dimension_object.name === associationtype) {
+        valueArray[json[j].id] = nodeSize(json[j].id)
+
         if (json[j].dimensions[i].dimension_object.value != undefined) {
-          valueArray.push(gimmeBudget(json[j].dimensions[i].dimension_object.value[0]))
+          for (p = 0; p < json[j].dimensions[i].dimension_object.value.length; p++) {
+            valueArray[json[j].dimensions[i].dimension_object.value[p]] = nodeSize(json[j].dimensions[i].dimension_object.value[p])
+          }
         };
       };
     };
@@ -48,68 +51,90 @@ function dependencies(json, target) {
     denominator = d3.max(valueArray) / 100000;
   };
 
-  // Compute the distinct nodes from the links. Each node is only created once
-  for (j = 0; j < jsonlen; j++) {
+  // Compute the distinct nodes. Each node is only created once
+  for (j = 0; j < jsonlen - 1; j++) {
 
     if(json[j].dimensions == undefined) {
       throw error("project dimensions missing");
     };
 
     var size = json[j].dimensions.length,
-    budgetS,
-    budgetT,
+    sizeS,
+    sizeT,
     nameS,
     nameT,
-    sourceId,
-    targetId;
+    colorS,
+    colorT,
+    sourceNode,
+    targetNode;
 
     for (i = 0; i < size; i++) {
-      if (json[j].dimensions[i].dimension_object.name === "ProjectDependencies") {
-        for(p = 0; p < json[j].dimensions[i].dimension_object.value.length;p++) {
+      // Create source node
+      sizeS = nodeSize(json[j].id)/ denominator;
+      nameS = "";
+      colorS = nodeColor(json[j].id, nodeColorValue)
 
-          budgetS = gimmeBudget(json[j].id) / denominator;
-          budgetT = 0;
-          nameS = "";
-          sourceId = json[j].id;
-          targetId = json[j].dimensions[i].dimension_object.value[p];
-          nameT = gimmeName(json[j].dimensions[i].dimension_object.value[p]);
-          if (json[j].dimensions[i].dimension_object.value != undefined) {
-            budgetT = gimmeBudget(targetId) / denominator;
+      if (json[j].dimensions[0].dimension_object.history != undefined) {
+        nameS = nodeName(json[j].id);
+      };
+      sourceNode = nodes[json[j].id] ||
+                  (nodes[json[j].id] = {"shape": "circle","name": nameS, "value": sizeS / denominator, "color": colorS });
+
+      // Create target node(s)
+      if ( json[j].dimensions[i].dimension_object.name === associationtype ) {
+        var thisDimensionType = json[j].dimensions[i].dimension_type
+
+        if (thisDimensionType === "AssociatedProjectsDimension") {
+          for(p = 0; p < json[j].dimensions[i].dimension_object.value.length;p++) {
+            sizeT = nodeSize(json[j].dimensions[i].dimension_object.value[p])/ denominator;
+            nameT = nodeName(json[j].dimensions[i].dimension_object.value[p]);
+            colorT = nodeColor(json[j].dimensions[i].dimension_object.value[p], nodeColorValue)
+
+            targetNode = nodes[json[j].dimensions[i].dimension_object.value[p]] ||
+            (nodes[json[j].dimensions[i].dimension_object.value[p]] = {"shape": "circle", "name": nameT, "value": sizeT / denominator, "color": colorT});
+
+            links.push({"source": sourceNode, "target": targetNode});
           };
-          if (json[j].dimensions[0].dimension_object.history != undefined) {
-            nameS = gimmeName(json[j].id);
+        } else if (thisDimensionType === "AssociatedPersonsDimension") {
+          for(p = 0; p < json[j].dimensions[i].dimension_object.value.length;p++) {
+
+            sizeT = 100 / denominator;
+            nameT = json[j].dimensions[i].dimension_object.value[p].first_name;
+            colorT = nameT
+
+            targetNode = nodes[json[j].dimensions[i].dimension_object.value[p].id] ||
+            (nodes[json[j].dimensions[i].dimension_object.value[p].id] = {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT});
+
+            links.push({"source": sourceNode, "target": targetNode});
           };
+        }  else if (thisDimensionType === "AssociatedPersonDimension") {
 
-          sourceId = nodes[json[j].id] || (nodes[json[j].id] = {name: nameS, value: budgetS / denominator });
-          targetId = nodes[json[j].dimensions[i].dimension_object.value[p]] ||
-          (nodes[json[j].dimensions[i].dimension_object.value[p]] = {name: nameT, value: budgetT / denominator});
+          sizeT = 100 / denominator;
+          nameT = json[j].dimensions[i].dimension_object.history[0].value.first_name;
+          colorT = nameT
 
-          links.push({"source": sourceId, "target": targetId, "budgetS":budgetS / denominator, "budgetT":budgetT / denominator});
-        };
+          targetNode = nodes[json[j].dimensions[i].dimension_object.history[0].value.id] ||
+          (nodes[json[j].dimensions[i].dimension_object.history[0].value.id] = {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT});
+
+          links.push({"source": sourceNode, "target": targetNode});
+        } else if (thisDimensionType === "AssociatedOrganizationDimension") {
+          sizeT = 100 / denominator;
+          nameT = json[j].dimensions[i].dimension_object.history[0].value.name;
+          colorT = nameT
+
+          targetNode = nodes[json[j].dimensions[i].dimension_object.history[0].value.id] ||
+          (nodes[json[j].dimensions[i].dimension_object.history[0].value.id] = {"shape": "rotateRect", "name": nameT, "value": sizeT / denominator, "color": colorT});
+
+          links.push({"source": sourceNode, "target": targetNode});
+        }
       };
     };
   };
-  var values = [],
-  nameArray = [],
-  valueArray = [],
-  textArray = [],
-  nodeValueArray = [];
-  d3.values(nodes).forEach(function(node) {
-    values.push(node.value);
-    nodeValueArray.push([node.name, node.value*denominator]);
-  });
-  nodeValueArray.sort(function(a,b){
-    return b[1]-a[1];
-  });
-  nodeValueArray.forEach(function(d) {
-    textArray.push(d[0] + " Budget: " + d[1] + "€")
-    nameArray.push(d[0]);
-  });
 
   /* searches the name of the project with the given ID.
   * If name with given ID is not found returns empty string
   */
-  function gimmeName(id) {
+  function nodeName(id) {
 
     for (z = 0; z < jsonlen; z++) {
       if (json[z].id == id) {
@@ -127,17 +152,17 @@ function dependencies(json, target) {
     };
     return "";
   };
-  /* searches the budget of the project with the given ID. if no such id is
-  * found, or if the project doesn't have budget, returns 0
+  /* searches the size parameter of the project with the given ID. if no such id is
+  * found, or if the project doesn't have size parameter, returns 0
   */
-  function gimmeBudget(id) {
+  function nodeSize(id) {
     for (z = 0; z < jsonlen; z++) {
       if (json[z].id == id) {
         for(m = 0; m < json[z].dimensions.length ; m++ ){
-          if (json[z].dimensions[m].dimension_object.name === "Budget") {
-            var budget = json[z].dimensions[m].dimension_object.history[0].value
-            if (budget != undefined) {
-              return budget;
+          if (json[z].dimensions[m].dimension_object.name === nodeSizeValue) {
+            var value = json[z].dimensions[m].dimension_object.history[0].value
+            if (value != undefined) {
+              return value;
             } else {
               return 0;
             };
@@ -147,7 +172,24 @@ function dependencies(json, target) {
     };
     return 0;
   };
+  function nodeColor(id, colorParameter) {
 
+    for (z = 0; z < jsonlen; z++) {
+      if (json[z].id == id) {
+        for (n = 0; n < json[z].dimensions.length ; n++ ) {
+          if (json[z].dimensions[n].dimension_object.name === colorParameter) {
+            var color = json[z].dimensions[n].dimension_object.history[0].value
+            if (color != undefined) {
+              return color;
+            } else {
+              return "";
+            };
+          };
+        };
+      };
+    };
+    return "";
+  };
 
   /* function to ditch duplicate values from a array. used in "names" since
   * links have duplicate nodes. works on strings only.
@@ -158,16 +200,21 @@ function dependencies(json, target) {
       return seen.hasOwnProperty(item) ? false : (seen[item] = true);
     });
   };
+
+  var colorArray = uniq(nodes.map(x => x.color))
   // size of the display box and definition of colorscale (predefined ATM)
-  var height = Math.max(500,$(window).height()*0.85),
-  width = Math.max(700, $(window).width()*0.60),
-  projecDependancyColors = enoughColors(nameArray.length, colors)
-  color = d3.scaleOrdinal()
-            .domain(nameArray)
-            .range(projecDependancyColors);
+  var width = $('#'+ target).width(),
+      height = Math.max(600, $('#'+ target).height()),
+      projecDependancyColors = enoughColors(colorArray.length, colors),
+      colorScale = d3.scaleOrdinal()
+                     .domain(d3.values(colorArray))
+                     .range(projecDependancyColors);
 
   // Ball outline is 1 pixels wide
   var ballOutline = 1;
+
+
+  var values = nodes.map(x => x.value)
 
   //maximum and minimum value of the nodes
   var minDataPoint = d3.min(values);
@@ -227,19 +274,30 @@ function dependencies(json, target) {
                 .data(d3.values(nodes))
                 .enter().append("g")
                 .attr("class", "node")
+                .style("fill", function(d) { return colorScale(d.color); })
+                .attr('fill-opacity', 0.8)
                 .on("click", click)
                 .on("dblclick", dblclick)
                 .call(d3.drag()
                 .on("start", dragstart)
                 .on("drag", onDrag));
 
-  // add the nodes to canvas
-  node.append("circle")
-      .attr("r", function(d) { return linearScale(d.value); })
-      .attr('fill-opacity', 0.8)
-      .style("fill", function(d) { return color(d.name); });
+  node.filter(function(d) {return d.shape === "circle"})
+      .append("circle")
+      .attr("r", function(d) { return linearScale(d.value); });
 
-  // add the text, currently project name
+  node.filter(function(d) {return d.shape === "rect"})
+      .append("rect")
+      .attr("height", function(d) { return linearScale(d.value); })
+      .attr("width", function(d) { return linearScale(d.value); });
+
+  node.filter(function(d) {return d.shape === "rotateRect"})
+      .append("rect")
+      .attr("height", function(d) { return linearScale(d.value); })
+      .attr("width", function(d) { return linearScale(d.value); })
+      .attr("transform", "rotate(45)");
+
+// add the text, currently project name
   node.append("text")
       .attr("x", 12)
       .attr("text-anchor", "middle")
@@ -266,10 +324,10 @@ function dependencies(json, target) {
       /* calculating the shortest distance between two circles
       * gives coordinates of start and end points
       */
-      startX = d.source.x + dx * linearScale(d.budgetS) / dr,
-      startY = d.source.y + dy * linearScale(d.budgetS) / dr,
-      endX = d.target.x - dx * linearScale(d.budgetT) / dr,
-      endY = d.target.y - dy * linearScale(d.budgetT) / dr,
+      startX = d.source.x + dx * linearScale(d.source.value) / dr,
+      startY = d.source.y + dy * linearScale(d.source.value) / dr,
+      endX = d.target.x - dx * linearScale(d.target.value) / dr,
+      endY = d.target.y - dy * linearScale(d.target.value) / dr,
       /* we need a third point for quadratic curve. Assume a straight line between startXY and endXY.
       * Start from the middle point of that line, and take a point that is at right angle towards that point at
       * distance line_length / 2. It is easy to calculate a line at the right angle towards the original line:
@@ -360,16 +418,16 @@ function dependencies(json, target) {
 
   svg.append("g")
   .selectAll("legend")
-  .data(textArray)
+  .data(d3.values(nodes))
   .enter()
   .append("text")
-  .text(function(d) {return d})
+  .text(function(d) {return d.name})
   .each(function(d,i){
-    var thisWidth = this.getComputedTextLength()
+    var thisWidth = Math.max(1,this.getComputedTextLength())
     textWidth.push(thisWidth)
     $(this).remove();
   });
-
+  
   maxTextLength = d3.max(textWidth)
   var legendSpacing = 4;
   var legendRectSize = 25;
@@ -380,12 +438,12 @@ function dependencies(json, target) {
                     .append("svg")
                     .attr("width", legendWidth)
                     // Scaling the svg based on number of projects
-                    .attr("height", (legendHeight)*(nameArray.length)+legendSpacing)
+                    .attr("height", (legendHeight)*(d3.values(nodes).length)+legendSpacing)
                     .append("g")
                     .attr("transform", "translate(0,"+(2*legendSpacing)+")");
 
   var legend = svgLegend.selectAll("legend")
-                        .data(nameArray)
+                        .data(d3.values(nodes))
                         .enter()
                         .append("g")
                         .attr("transform", function(d,i){
@@ -398,13 +456,12 @@ function dependencies(json, target) {
   legend.append("rect")
         .attr("width", legendRectSize)
         .attr("height", legendRectSize)
-        .style("fill", function(d){return color(d)});
+        .style("fill", function(d){return colorScale(d.color)});
 
   legend.append("text")
-        .data(textArray)
         .attr("x", legendRectSize + legendSpacing)
         .attr("y", legendRectSize - legendSpacing)
         .text(function(d){
-          return d;
+          return d.name;
   });
 };

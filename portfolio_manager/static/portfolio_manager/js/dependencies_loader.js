@@ -29,15 +29,14 @@ $(function() {
   }
 
   function selection_changed() {
-    selected_org = $('#org-selector').val();
-    selected_type = $('#type-selector').val();
-    selected_size = $('#size-selector').val();
-    selecter_color = $('#color-selector').val();
-    start_date = Date.parse($('#date-selector').datepicker( "getDate" ));
+    organizations = $('#org-selector').val();
+    associationtype = $('#type-selector').val();
+    size = $('#size-selector').val();
+    color = $('#color-selector').val();
+    date = Date.parse($('#date-selector').datepicker( "getDate" ));
 
-    // collect data
-
-    //dependencies(db_json, "visualization", organizations, associationtype, size, color, date);
+    $('#visualization').html('');
+    dependencies(db_json, "visualization", organizations, associationtype, size, color, date);
     return;
   };
 
