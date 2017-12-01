@@ -52,7 +52,7 @@ $.ajaxSetup({
 
 function populate_organizations(json) {
   for(i=0;i<json.length;i++) {
-    var orgs_html = "<option value='"+json[i].name+"'>"+json[i].name+"</option>";
+    var orgs_html = "<option value='"+json[i].id+"'>"+json[i].name+"</option>";
     $(orgs_html).appendTo($("#associatedorganization-value"));
   }
 }
