@@ -44,21 +44,21 @@ class PersonForm(forms.Form):
                                 error_messages={'required': 'Your person needs a name!'})
 
 class OrgForm(forms.Form):
-    orgs = forms.ModelChoiceField(queryset=Organization.objects.all().order_by('name'),empty_label="Select an organization",
+    orgs = forms.ModelChoiceField(queryset=[],empty_label="Select an organization",
     widget=forms.Select(attrs={"onChange":'submit()'}))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user',None)
         super(OrgForm, self).__init__(*args, **kwargs)
         orgs = []
-        if(self.user):
-            groups_all = self.user.groups.all()
-            for i in range(len(groups_all)):
-                try:
-                    orgs.append(groups_all[i].organizationadmins.organization.id)
-                except:
-                    pass
-            self.fields['orgs'].queryset = Organization.objects.all().filter(pk__in=orgs).order_by('name')
+        groups_all = self.user.groups.all()
+        for i in range(len(groups_all)):
+            try:
+                orgs.append(groups_all[i].organizationadmins.organization.id)
+            except:
+                #user is not an admin in this group
+                pass
+        self.fields['orgs'].queryset = Organization.objects.all().filter(pk__in=orgs).order_by('name')
 
 class DimensionForm(ModelForm):
 

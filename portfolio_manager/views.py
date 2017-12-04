@@ -406,7 +406,7 @@ def add_field(request):
 
         add_field_form = ProjectTemplateForm()
         add_field_form.initial = {'organization': org.name}
-        orgform = OrgForm({'orgs': org})
+        orgform = OrgForm({'orgs': org}, user=request.user)
         # (dimension name -> datatype) dictionary
         dims = {}
         templates = org.templates.all()
@@ -633,7 +633,7 @@ def projects(request):
 @user_passes_test(is_admin)
 def databaseview(request):
     if request.method == "POST":
-        form = OrgForm(request.POST)
+        form = OrgForm(request.POST, user=request.user)
         if form.is_valid:
             add_field_form = ProjectTemplateForm()
             add_field_form.initial = {'organization': request.POST['orgs']}
