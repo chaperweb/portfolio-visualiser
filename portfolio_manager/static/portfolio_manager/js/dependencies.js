@@ -69,7 +69,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     targetNode;
 
     for (i = 0; i < size; i++) {
-      // Create source node
+      // Create source node, currently default is projects.
       sizeS = nodeSize(json[j].id)/ denominator;
       nameS = "";
       colorS = nodeColor(json[j].id, nodeColorValue)
@@ -80,7 +80,11 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
       sourceNode = nodes[json[j].id] ||
                   (nodes[json[j].id] = {"shape": "circle","name": nameS, "value": sizeS / denominator, "color": colorS });
 
-      // Create target node(s)
+      /* Create target node(s) can be projects, people or organizations
+       * for types that don't have desired arguments default values are
+       * given. This is temporal solution before the backend version can
+       * be implemented.
+      */
       if ( json[j].dimensions[i].dimension_object.name === associationtype ) {
         var thisDimensionType = json[j].dimensions[i].dimension_type
 
@@ -191,9 +195,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     return "";
   };
 
-  /* function to ditch duplicate values from a array. used in "names" since
-  * links have duplicate nodes. works on strings only.
-  */
+  // function to ditch duplicate values from a array.
   function uniq(a) {
     var seen = {};
     return a.filter(function(item) {
@@ -276,12 +278,17 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
                 .attr("class", "node")
                 .style("fill", function(d) { return colorScale(d.color); })
                 .attr('fill-opacity', 0.8)
-                .on("click", click)
                 .on("dblclick", dblclick)
                 .call(d3.drag()
                 .on("start", dragstart)
                 .on("drag", onDrag));
 
+
+  /* Draws the shape of the node based on the given value
+   * rectangles are translated to central coordinates as their
+   * initial coordinates locate the central point to the left top
+   * corner of the rectangle.
+   */
   node.filter(function(d) {return d.shape === "circle"})
       .append("circle")
       .attr("r", function(d) { return linearScale(d.value); });
@@ -289,13 +296,18 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   node.filter(function(d) {return d.shape === "rect"})
       .append("rect")
       .attr("height", function(d) { return linearScale(d.value); })
-      .attr("width", function(d) { return linearScale(d.value); });
+      .attr("width", function(d) { return linearScale(d.value); })
+      .attr("transform",  function(d) {
+        var trans = (linearScale(d.value) / 2)
+        return "translate(-" + trans + ",-" + trans +")";});
 
   node.filter(function(d) {return d.shape === "rotateRect"})
       .append("rect")
       .attr("height", function(d) { return linearScale(d.value); })
       .attr("width", function(d) { return linearScale(d.value); })
-      .attr("transform", "rotate(45)");
+      .attr("transform",  function(d) {
+        var trans = (linearScale(d.value) / 2)
+        return "rotate(45) translate(-" + trans + ",-" + trans +") ";});
 
 // add the text, currently project name
   node.append("text")
@@ -357,16 +369,30 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   force.force("link")
   .links(links);
 
-  /* action to take on mouse click
-  *  makes project name larger
-  *  actions taken by dragStart append as well
+  /* action to take on dragStart
+  *  makes project name larger,
+  * fixes the ball position and adds black outline for
+  * positionally locked balls
   */
 
-  function click(d) {
+  function linedShape(d) {
+    if (d.shape === "rotateRect"){
+      return "rect"
+    } else {
+      return d.shape
+    }
+  }
+
+  function dragstart(d)  {
+    if (!d3.event.active) force.alphaTarget(0.3).restart();
+    d3.select(this).select(linedShape(d)).transition()
+      .style("stroke", "black")
+      .style("stroke-width", ballOutline + "px");
+
     d3.select(this).select("text").transition()
-    .duration(750)
-    .attr("x", 22)
-    .style("font-weight", "bold");
+      .duration(750)
+      .attr("x", 22)
+      .style("font-weight", "bold");
   };
 
   /* action to take on mouse double click
@@ -375,25 +401,14 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   * removes black outline
   */
   function dblclick(d) {
-    d3.select(this).select("circle").transition()
+
+    d3.select(this).select(linedShape(d)).transition()
     .duration(750)
     .style("stroke", "none");
     d.fx = null
     d.fy = null
     d3.select(this).select("text").transition()
     .style("font-weight", "normal");
-  };
-
-  /* action to take on dragstart,
-  * actions taken on normal mouseclick append as well
-  * currently fixes the ball position and adds black outline for
-  * positionally locked balls
-  */
-  function dragstart(d) {
-    if (!d3.event.active) force.alphaTarget(0.3).restart();
-    d3.select(this).select("circle").transition()
-    .style("stroke", "black")
-    .style("stroke-width", ballOutline + "px");
   };
 
   // this function drags the node inside the height-width limits
@@ -413,7 +428,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
 
   /* The legend next to the graph is given its own svg container in
   * which we have the project color, name and budget respectively.
-  */
+
   var textWidth = []
 
   svg.append("g")
@@ -427,7 +442,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     textWidth.push(thisWidth)
     $(this).remove();
   });
-  
+
   maxTextLength = d3.max(textWidth)
   var legendSpacing = 4;
   var legendRectSize = 25;
@@ -464,4 +479,5 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
         .text(function(d){
           return d.name;
   });
+    */
 };
