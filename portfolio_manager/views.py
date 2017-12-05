@@ -29,7 +29,7 @@ from collections import defaultdict
 from dateutil.parser import parse
 
 import django.forms
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
@@ -180,8 +180,16 @@ def home(request):
             projects = Project.objects.all()
             user_type = 'superuser'
         else:
-            user_org = user.groups.last().organizationadmins.organization
-            projects = Project.objects.filter(parent=user_org)
+            orgs = set([])
+            groups_all = request.user.groups.all()
+            for i in range(len(groups_all)):
+                try:
+                    orgs.add(groups_all[i].organizationadmins.organization.id)
+                except:
+                    #user is not an admin in this group
+                    pass
+            #filter the projects
+            projects = filter(lambda projects_all: projects_all.parent.id in orgs, Project.objects.all())
             user_type = 'org_admin'
 
         for project in projects:
@@ -245,8 +253,16 @@ def milestones(request):
     milestones = Milestone.objects.all().order_by('project')
     # If user is a orgadmin, only show their organizations projects
     if is_orgadmin(request.user):
-        org = request.user.groups.first().employees.organization
-        projects = Project.objects.filter(parent=org)
+        orgs = set([])
+        groups_all = request.user.groups.all()
+        for i in range(len(groups_all)):
+            try:
+                orgs.add(groups_all[i].organizationadmins.organization.id)
+            except:
+                #user is not an admin in this group
+                pass
+        #filter the projects
+        projects = filter(lambda projects_all: projects_all.parent.id in orgs, Project.objects.all())
         milestones = milestones.filter(project__in=projects)
 
     if request.method == 'POST':
@@ -390,7 +406,7 @@ def add_field(request):
 
         add_field_form = ProjectTemplateForm()
         add_field_form.initial = {'organization': org.name}
-        orgform = OrgForm({'orgs': org})
+        orgform = OrgForm({'orgs': org}, user=request.user)
         # (dimension name -> datatype) dictionary
         dims = {}
         templates = org.templates.all()
@@ -447,7 +463,18 @@ def show_project(request, project_id):
                 dimensions[key][d.dimension_object.name] = d.dimension_object
 
     if is_orgadmin(request.user):
-        projects = all_projects.filter(parent=request.user.groups.first().employees.organization)
+        orgs = set([])
+        groups_all = request.user.groups.all()
+        for i in range(len(groups_all)):
+            try:
+                orgs.add(groups_all[i].organizationadmins.organization.id)
+            except:
+                #user is not an admin in this group
+                pass
+        #filter the projects
+        projects = filter(lambda project: project.parent.id in orgs, all_projects)
+        if(not project in projects):
+            raise Http404
     else:
         projects = all_projects
 
@@ -574,7 +601,16 @@ def projects(request):
     projects_all = Project.objects.all()
 
     if is_orgadmin(request.user):
-        projects_all = projects_all.filter(parent=request.user.groups.first().employees.organization)
+        orgs = set([])
+        groups_all = request.user.groups.all()
+        for i in range(len(groups_all)):
+            try:
+                orgs.add(groups_all[i].organizationadmins.organization.id)
+            except:
+                #user is not an admin in this group
+                pass
+        #filter the projects
+        projects_all = filter(lambda projects_all: projects_all.parent.id in orgs, projects_all)
 
     projects_grouped = {}
     for org, ps in groupby(projects_all, lambda p: p.parent):
@@ -602,7 +638,7 @@ def projects(request):
 @user_passes_test(is_admin)
 def databaseview(request):
     if request.method == "POST":
-        form = OrgForm(request.POST)
+        form = OrgForm(request.POST, user=request.user)
         if form.is_valid:
             add_field_form = ProjectTemplateForm()
             add_field_form.initial = {'organization': request.POST['orgs']}
@@ -630,34 +666,11 @@ def databaseview(request):
                 'dims':defdict,
                 'add_field_form': add_field_form
             }
-    elif request.user.is_superuser:
+    else:
         add_field_form = ProjectTemplateForm()
-        form = OrgForm()
+        form = OrgForm(user=request.user)
         render_data = {
             'form':form,
-            'add_field_form': add_field_form
-        }
-    else:
-        try:
-            organization = request.user.groups.first().employees.organization
-        except:
-            organization = request.user.groups.first().organizationadmins.organization
-        add_field_form = ProjectTemplateForm()
-        add_field_form.initial = {'organization': organization.pk}
-        templates = organization.templates.all()
-        dims = {}
-        if len(templates) > 0:
-            template = templates[0]
-            for t_dim in template.dimensions.all():
-                #TODO: group them by types to make the site easier to view?
-                t_dim_name = t_dim.content_type.model_class().__name__
-                dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
-        # Group them by datatype
-        defdict = {}
-        for k,v in dims.items():
-            defdict.setdefault(v, []).append(k)
-        render_data = {
-            'dims': defdict,
             'add_field_form': add_field_form
         }
 
