@@ -109,7 +109,6 @@ function generate_data_chunk(dimension) {
 
 // Generate the svg container for the visualization
 function generate_path_svg(json, target, data_id_array, startDate, endDate) {
-console.log(json)
 
   $('#'+ target).html('');
 

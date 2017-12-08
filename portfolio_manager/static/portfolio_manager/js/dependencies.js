@@ -233,12 +233,12 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   /* defining the graph force, for example default distance of balls and
   * aggressivity of charge of the balls
   */
-  /*
   var force = d3.forceSimulation()
                 .force('link', d3.forceLink().id(function(d){ return d.name }).distance(100))
                 .force("collide",d3.forceCollide( function(d){return linearScale(d.value) + 8 }))
+                .force("charge", d3.forceManyBody().strength(-50))
                 .force("center", d3.forceCenter(width / 2, height / 2));
-*/
+
   // assign a type per value to encode opacity from css
   links.forEach(function(link) {
     link.type = "fivezero";
@@ -362,11 +362,13 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     });
 
   };
-  /*
   force
   .nodes(d3.values(nodes))
   .on("tick", tick);
-*/
+
+  force.force("link")
+  .links(links);
+
   /* action to take on dragStart
   *  makes project name larger,
   * fixes the ball position and adds black outline for
@@ -382,7 +384,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   }
 
   function dragstart(d)  {
-    //if (!d3.event.active) force.alphaTarget(0.1).restart();
+    if (!d3.event.active) force.alphaTarget(0.3).restart();
     d3.select(this).select(linedShape(d)).transition()
       .style("stroke", "black")
       .style("stroke-width", ballOutline + "px");

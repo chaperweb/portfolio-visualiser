@@ -9,10 +9,7 @@ path.link.fivezero {
   opacity: 0.50;
 }
 
-/* definitions for circles and text */
-circle {
-  fill: #ccc;
-}
+/* definition for text */
 
 text {
   fill: #000;
