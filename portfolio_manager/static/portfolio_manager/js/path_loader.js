@@ -62,8 +62,10 @@ $(function() {
     preserved_x_array = [];
     if($(this).find("option:selected").val() !== "---") {
       $("#save-path-snap-btn").prop("style", "pointer-events:all");
+      $("#save-path-snap-btn").removeClass("disabled");
     } else {
       $("#save-path-snap-btn").prop("style", "pointer-events:none");
+      $("#save-path-snap-btn").addClass("disabled");
     }
     $('#x-selector option:selected').each(function () {
       var $this = $(this);
