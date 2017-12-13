@@ -59,9 +59,15 @@ $(function() {
 
   $('#project-selector').on('change', function() {
     project_id = $(this).find("option:selected").val();
-
     preserved_x_array = [];
-
+    if($(this).find("option:selected").val() !== "---") {
+      $("#save-path-snap-btn").attr("style", "pointer-events:all");
+      document.getElementById('save-path-snap-btn').removeAttribute('disabled');
+    } else {
+      //IE does not work with pointer-events, others won't work with disabled
+      document.getElementById('save-path-snap-btn').setAttribute('disabled', 'true');
+      $("#save-path-snap-btn").attr("style", "pointer-events:none");
+    }
     $('#x-selector option:selected').each(function () {
       var $this = $(this);
       if ($this.length) {
@@ -121,7 +127,6 @@ $(function() {
   $('#x-selector').on('change', change_if_pathdata_selected);
   $('#y-selector').on('change', change_if_pathdata_selected);
   $('.datepicker').on('change', change_if_pathdata_selected);
-
   $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd/mm/yy'});
 
 });

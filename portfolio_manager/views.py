@@ -916,7 +916,7 @@ def create_snapshot(request):
     if request.method == 'POST':
         snapshot_type = request.POST['type']
         if snapshot_type == 'path':
-
+            button = request.POST['button']
             name = request.POST['name']
             description = request.POST['description']
             pid = request.POST['project_id']
@@ -926,7 +926,6 @@ def create_snapshot(request):
             end_ddmmyyyy = request.POST['end-date']
             start = time.mktime((datetime.strptime(start_ddmmyyyy, "%d/%m/%Y")).timetuple())
             end = time.mktime((datetime.strptime(end_ddmmyyyy, "%d/%m/%Y")).timetuple())
-
             p_snap = create_pathsnapshot(
                         name=name,
                         description=description,
@@ -936,9 +935,13 @@ def create_snapshot(request):
                         start = start,
                         end = end
                     )
-            url = f'snapshots/path/{p_snap.id}'
-            return redirect(url, permanent=True)
+            if(button == 'save and stay'):
+                return HttpResponse(status = 204)
+            else:
+                url = f'snapshots/path/{p_snap.id}'
+                return redirect(url, permanent=True)
         elif snapshot_type == 'fourfield':
+            button = request.POST['button']
             x = request.POST['x_dim']
             y = request.POST['y_dim']
             r = request.POST['r_dim']
@@ -950,7 +953,6 @@ def create_snapshot(request):
             start = time.mktime((datetime.strptime(start_ddmmyyyy, "%d/%m/%Y")).timetuple())
             end = time.mktime((datetime.strptime(end_ddmmyyyy, "%d/%m/%Y")).timetuple())
             zoom = request.POST['zoom']
-
             ff_snap = create_fourfieldsnapshot(
                         name=name,
                         description=description,
@@ -961,8 +963,11 @@ def create_snapshot(request):
                         end=end,
                         zoom=zoom
                     )
-            url = f'snapshots/fourfield/{ff_snap.id}'
-            return redirect(url, permanent=True)
+            if(button == 'save and stay'):
+                return HttpResponse(status = 204)
+            else:
+                url = f'snapshots/fourfield/{ff_snap.id}'
+                return redirect(url, permanent=True)
         else:
             pass
 
