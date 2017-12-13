@@ -165,3 +165,20 @@ $(function()
     error: function() { ajax_error(); }
   });
 });
+//set the modal default value when opened
+$( document ).ready(function() {
+  $(".modify-button").click(function() {
+    button = $(this);
+    value = button.closest(".panel-default").find(".col-lg-3")[0].innerText;
+    type = button[0].dataset.type;
+    if(type === "date"){
+      value = stringToCorrectFormat(value);
+    }
+    $("#modify-" + type + "-modal").find("#"+ type + "-value").val(value);
+  });
+});
+
+function stringToCorrectFormat(string) {
+  list = string.split("/");
+  return list[2] + "-" + list[1] + "-" + list[0];
+}
