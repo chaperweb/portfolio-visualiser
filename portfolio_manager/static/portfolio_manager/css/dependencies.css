@@ -6,7 +6,7 @@ path.link {
 /* possibly not needed since there is only one type of links? */
 
 path.link.fivezero {
-  opacity: 0.50;
+  opacity: 0.25;
 }
 
 /* definition for text */

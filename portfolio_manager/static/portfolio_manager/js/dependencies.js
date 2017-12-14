@@ -108,6 +108,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
 
             targetNode = nodes[json[j].dimensions[i].dimension_object.value[p].id] ||
             (nodes[json[j].dimensions[i].dimension_object.value[p].id] = {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT});
+            console.log(nodes.indexOf(sourceNode), sourceNode.name, nodes.indexOf(targetNode), targetNode.name)
 
             links.push({"source": sourceNode, "target": targetNode});
           };
@@ -119,6 +120,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
 
           targetNode = nodes[json[j].dimensions[i].dimension_object.history[0].value.id] ||
           (nodes[json[j].dimensions[i].dimension_object.history[0].value.id] = {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT});
+          console.log(nodes.indexOf(sourceNode), sourceNode.name, nodes.indexOf(targetNode), targetNode.name)
 
           links.push({"source": sourceNode, "target": targetNode});
         } else if (thisDimensionType === "AssociatedOrganizationDimension") {
@@ -128,7 +130,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
 
           targetNode = nodes[json[j].dimensions[i].dimension_object.history[0].value.id] ||
           (nodes[json[j].dimensions[i].dimension_object.history[0].value.id] = {"shape": "rotateRect", "name": nameT, "value": sizeT / denominator, "color": colorT});
-
+          console.log(nodes.indexOf(sourceNode), sourceNode.name, nodes.indexOf(targetNode), targetNode.name)
           links.push({"source": sourceNode, "target": targetNode});
         }
       };
