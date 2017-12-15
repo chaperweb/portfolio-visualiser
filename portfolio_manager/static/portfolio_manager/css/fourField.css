@@ -1,3 +1,7 @@
+.hvLabel {
+  font-size: 15px;
+  opacity: 0.3;
+}
 
 text {
   fill: #000;
@@ -10,32 +14,25 @@ text {
 
 .currentDate {
   font-weight: : 700;
-  font-size: 70px;
-  fill: black;
+  font-size: 50px;
   opacity: 0.3;
 }
 
 .info {
   font-weight: : 300;
   font-size: 45px;
-  font-family: "Exo 2", sans-serif;
-  fill: black;
   opacity: 0.3;
 }
 .axisLabel {
   font-weight: : 200;
   font-size: 30px;
-  font-family: "Exo 2", sans-serif;
-  fill: black;
   opacity: 0.3;
 }
 
 .sliderLabel {
   font-weight: 300;
   font-size: 20px;
-  font-family: "Exo 2", sans-serif;
-  fill: black;
-
+  opacity: 0.3;
 }
 .overlay {
   fill: none;

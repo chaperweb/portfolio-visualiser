@@ -26,9 +26,14 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 	colorToBe = 'AssociatedOrganizationDimension',
 	// size of the display box and other scaling related variables
 	sliderHeight = 50,
-	fieldWidth =Math.max(600,($("#" + target).height() - sliderHeight)),
+	fieldWidth = Math.max(600,($("#" + target).height() - sliderHeight)),
+	textWidth	= Math.max(400,($("#" + target).width() - fieldWidth)),
 	svgHeight = fieldWidth + sliderHeight,
 	margin = {right: fieldWidth * 0.05, left: fieldWidth * 0.05, top: fieldWidth * 0.05, bottom: sliderHeight},
+	labelXLocation = fieldWidth + margin.left * 2,
+  infoLabelLocation = svgHeight - 300,
+	yAxisLabelLocation = svgHeight - 130,
+	xAxisLabelLocation = svgHeight - 200,
 	axisLengthX = fieldWidth * 0.9,
 	axisLengthY = fieldWidth * 0.9,
 	sliderY = fieldWidth,
@@ -37,7 +42,7 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 	startDefault = 0,
 	endDefault = 0;
 
-	var radiusArray = [];
+  var radiusArray = [];
 
 	// The scales for the x and y axis.
 	// range means the length of the line and domain the numbers beneath it
@@ -358,9 +363,8 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		/*********************************/
 
 		//container for everything
-
 		var svg = d3.select("#" + target).append("svg")
-					.attr("width", fieldWidth)
+					.attr("width", fieldWidth + textWidth)
 					.attr("height", svgHeight);
 
 
@@ -370,9 +374,9 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		// Add the date label; the value is set on transition.
 		var dateLabel =  svg.append("text")
 												.attr("class", "currentDate")
-												.attr("text-anchor", "end")
-												.attr("y", svgHeight - 100)
-												.attr("x", fieldWidth )
+												.attr("text-anchor", "start")
+												.attr("y", svgHeight - 50)
+												.attr("x", labelXLocation)
 												.text(parseDate((new Date(startDate*1000))));
 
 		//slider start & stop values
@@ -380,11 +384,11 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		var labelEnd = parseDate(endDate * 1000);
 		//label for the start date next to the slider
 		var sSLabel = svg.append("text")
-											.attr("class", "sliderLabel")
-											.attr("text-anchor", "start")
-											.attr("x", 0)
-											.attr("y", svgHeight)
-											.text("Start date: " + labelStart);
+										 .attr("class", "sliderLabel")
+										 .attr("text-anchor", "start")
+										 .attr("x", 0)
+										 .attr("y", svgHeight)
+										 .text("Start date: " + labelStart);
 
 		//label for the end date next to the slider
 		var sELabel = svg.append("text")
@@ -397,32 +401,45 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 		var namelabel =  svg.append("text")
 												.attr("class", "info")
 												.attr("text-anchor", "start")
-												.attr("y", 80)
-												.attr("x", 20)
+												.attr("y", infoLabelLocation - 50)
+												.attr("x", labelXLocation)
 												.text("");
 
 		//label for the organizations
 		var orglabel = svg.append("text")
 											.attr("class", "info")
 											.attr("text-anchor", "start")
-											.attr("y", 140)
-											.attr("x", 20)
+											.attr("y", infoLabelLocation)
+											.attr("x", labelXLocation)
 											.text("");
-		//label for x-axis
-		var xlabel = svg.append("text")
-										.attr("class", "axisLabel")
-										.attr("text-anchor", "start")
-										.attr("y", 240)
-										.attr("x", 20)
-										.text("x-axis: "+xToBe);
-		//label for y-axis
-		var ylabel = svg.append("text")
-										.attr("class", "axisLabel")
-										.attr("text-anchor", "start")
-										.attr("y", 340)
-										.attr("x", 20)
-										.text("y-axis: "+yToBe);
 
+		var horizontalLabel = svg.append("text")
+										         .attr("class", "axisLabel")
+										         .attr("text-anchor", "start")
+										         .attr("y", xAxisLabelLocation)
+										         .attr("x", labelXLocation)
+										         .text("horizontal: "+xToBe);
+
+		var verticalLabel = svg.append("text")
+										       .attr("class", "axisLabel")
+										       .attr("text-anchor", "start")
+										       .attr("y", svgHeight - 130)
+										       .attr("x", labelXLocation)
+										       .text("vertical: "+yToBe);
+
+		var xLabel = svg.append("text")
+														 .attr("class", "hvLabel")
+														 .attr("text-anchor", "start")
+														 .attr("y", xAxisLabelLocation-30)
+														 .attr("x", labelXLocation)
+														 .text('x-axis')
+
+		var yLabel = svg.append("text")
+										.attr("class", "hvLabel")
+										.attr("text-anchor", "start")
+						 			  .attr("y", yAxisLabelLocation - 20)
+						  			.attr("x", labelXLocation)
+					    			.text('y-axis')
 		// Place and colorise circles, and define mouseenter and mouseleave functions
 		var dot = svg.append("g")
 									.attr("class", "dots")
