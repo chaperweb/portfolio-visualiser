@@ -439,7 +439,15 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 										.attr("text-anchor", "start")
 						 			  .attr("y", yAxisLabelLocation - 20)
 						  			.attr("x", labelXLocation)
-					    			.text('y-axis')
+					    			.text('y-axis');
+
+	  var infoBall = svg.append("circle")
+									    .attr("class", "infoBall")
+											.attr("r" , 0)
+	 										.attr("fill","black")
+											.attr("cx", labelXLocation + 175)
+	  									.attr("cy", svgHeight - 700);
+
 		// Place and colorise circles, and define mouseenter and mouseleave functions
 		var dot = svg.append("g")
 									.attr("class", "dots")
@@ -455,6 +463,8 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 									.on("mouseenter", function(d) {
 										namelabel.text(d.name);
 										orglabel.text(d.organization);
+										infoBall.attr("r", d.radius);
+										infoBall.attr("fill", colorScale(color(d)))
 										dot.style("opacity", .4);
 										d3.select(this).style("opacity", 1);
 										d3.selectAll(".selected").style("opacity", 1);
@@ -463,6 +473,7 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 										namelabel.text("");
 										orglabel.text("");
 										dot.style("opacity", 1);
+										infoBall.attr("r", 0);
 									});
 
 		//Timescale under the graph
@@ -503,6 +514,8 @@ function fourField(json, target, xToBe, yToBe, radToBe, startDate, endDate, slid
 				.attr("class", "yAxis")
 				.attr("transform", "translate("+fieldWidth / 2+","+margin.top+")")
 				.call(d3.axisLeft(scaleY));
+
+
 
 		//if the user zoomed the image, the timescale does not reset
 		setBalls(sliderDate);
