@@ -27,7 +27,7 @@ Projects | {{project.name}}
   <div class="col-md-8 col-md-offset-2">
     <div class="title text-center" id="project-name">
       <div class="dropdown text-center">
-        <ul class="col-lg-4 dropdown-menu">
+        <ul id="projects-dropdown" class="col-lg-4 dropdown-menu">
           {% for p in projects %}
             <li role="presentation"><a href="/projects/{{p.pk}}">{{p.name}}</a></li>
           {% endfor %}

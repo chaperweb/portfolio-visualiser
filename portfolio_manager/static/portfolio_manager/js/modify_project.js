@@ -62,7 +62,9 @@ function populate_persons(json) {
     var option = "<option value='" + json[i].id + "'>" + fullname + "</option>";
 
     $(option).appendTo($("#associatedperson-value"));
+    $("#associatedperson-value").trigger("chosen:updated");
     $(option).appendTo($("#associatedpersons-value"));
+    $("#associatedpersons-value").trigger("chosen:updated")
   }
 }
 function populate_projects(json) {
@@ -95,7 +97,7 @@ function add_multiple_row(name, id, type, field, projectID) {
 $(function()
 {
   $('#projects-button').click(function(){
-    $('.dropdown-menu').animate({
+    $('#projects-dropdown').animate({
       height: 'toggle'
     });
   });
@@ -117,6 +119,7 @@ $(function()
       // Buttons data variables
       var projectID = $(this).data('projectid');
       var type = $(this).data('type');
+      console.log("/get_multiple/" + type + "/" + field)
 
       // Send ajax request to get the items and then populate the list
       $.ajax({
@@ -136,8 +139,8 @@ $(function()
         error: function() { ajax_error(); }
       });
     }
-
     // Open the modal
+    $("#" + type + "-value").trigger("chosen:updated");
     $($(this).data('target')).modal('toggle');
   });
 
@@ -164,4 +167,10 @@ $(function()
     success: function(json) { populate_projects(json); },
     error: function() { ajax_error(); }
   });
+});
+$(function() {
+  selects = $("select");
+  selects.each(function(){
+    $(this).chosen({width:'50%'});
+  })
 });

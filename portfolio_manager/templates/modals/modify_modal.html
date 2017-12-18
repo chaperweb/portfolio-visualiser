@@ -59,7 +59,7 @@
                 {% csrf_token %}
                 <input id="hidden-{{type}}-info" type="hidden" name="field"/>
                 <label for="{{type}}-value" class="pull-left">Add</label>
-                <select id="{{type}}-value" name="value"></select>
+                <select multiple id="{{type}}-value" name="value"></select>
                 <button type="submit" class="btn btn-orange btn-xs pull-right">
                   <span class="glyphicon glyphicon-plus"></span>
                 </button>
