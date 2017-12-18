@@ -169,12 +169,14 @@ $(function()
 $( document ).ready(function() {
   $(".modify-button").click(function() {
     button = $(this);
-    value = button.closest(".panel-default").find(".col-lg-3")[0].innerText;
+    value = button[0].getAttribute("hiddenvalue");
     type = button[0].dataset.type;
     if(type === "date"){
       value = stringToCorrectFormat(value);
+    } else if(type ==="associatedorganization" || type ==="associatedperson" ) {
+      value = button[0].getAttribute("selectvalue");
     }
-    $("#modify-" + type + "-modal").find("#"+ type + "-value").val(value);
+    $("#modify-" + type + "-modal").find("#"+ type + "-value").val(value).trigger("change");
   });
 });
 
