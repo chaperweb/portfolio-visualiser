@@ -472,7 +472,7 @@ def show_project(request, project_id):
                 #user is not an admin in this group
                 pass
         #filter the projects
-        projects = filter(lambda project: project.parent.id in orgs, all_projects)
+        projects = list(filter(lambda project: project.parent.id in orgs, all_projects))
         if(not project in projects):
             raise Http404
     else:
