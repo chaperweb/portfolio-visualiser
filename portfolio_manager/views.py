@@ -541,10 +541,8 @@ def project_edit(request, project_id, field_type):
         data = request.GET
         dimension = type_to_dimension[field_type].objects.get(pk=data.get('field'))
         value = data.get('value')
-        print(value)
         if field_type == "associatedpersons":
             person = Person.objects.get(pk=value)
-            print(person)
             dimension.value.remove(person)
         elif field_type == "associatedprojects":
             project = Project.objects.get(pk=value)
