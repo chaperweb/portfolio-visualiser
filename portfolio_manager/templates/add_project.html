@@ -16,6 +16,7 @@ PROJECTS
 $(document).ready(function() {
     $('.datepicker').datepicker({'firstDay': 1, 'dateFormat': 'dd/mm/yy'});
     $(".form-row:even").addClass('even-row');
+    $("select").chosen({placeholder_text_multiple: " "});
 });
 </script>
 {% endblock %}

@@ -51,7 +51,6 @@
           AssociatedPersons
         -->
         {% elif type|is_type:"multiple" %}
-        <div class="well">
           <ul id="{{type}}-well-ul" class="list-group">
             <li class="list-group-item">
               <form id="modify-{{type}}-form" method="POST"
@@ -66,7 +65,6 @@
               </form>
             </li>
           </ul>
-        </div>
         {% endif %}
       </div>
     </div>

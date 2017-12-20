@@ -502,9 +502,11 @@ def project_edit(request, project_id, field_type):
     if request.method == "POST":
         data = request.POST
         field = data.get('field')
+        values = data.getlist('value')
         value = data.get('value')
         if not is_int(field):
             dimension = type_to_dimension[field_type]()
+            dimension.save()
             dimension.value = value
             dimension.name = field
             dimension.save()
@@ -521,25 +523,28 @@ def project_edit(request, project_id, field_type):
         elif field_type == "associatedperson":
             dimension.value = Person.objects.get(pk=value)
         elif field_type == "associatedpersons":
-            person = Person.objects.get(pk=value)
-            dimension.value.add(person)
+            for value in values:
+                person = Person.objects.get(pk=value)
+                dimension.value.add(person)
         elif field_type == "associatedprojects":
-            project = Project.objects.get(pk=value)
-            dimension.value.add(project)
+            for value in values:
+                project = Project.objects.get(pk=value)
+                dimension.value.add(project)
         elif field_type == "date":
             dimension.update_date(value)
         else:
             dimension.value = value
         dimension.save()
-
     #   Should actually handle PATCH but Django changes forms' patch requests
     #   to GET requests
     elif request.method == "GET":
         data = request.GET
         dimension = type_to_dimension[field_type].objects.get(pk=data.get('field'))
         value = data.get('value')
+        print(value)
         if field_type == "associatedpersons":
             person = Person.objects.get(pk=value)
+            print(person)
             dimension.value.remove(person)
         elif field_type == "associatedprojects":
             project = Project.objects.get(pk=value)

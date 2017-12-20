@@ -55,6 +55,7 @@ function populate_organizations(json) {
     var orgs_html = "<option value='"+json[i].id+"'>"+json[i].name+"</option>";
     $(orgs_html).appendTo($("#associatedorganization-value"));
   }
+  $("#associatedorganization-value").trigger("chosen:updated")
 }
 function populate_persons(json) {
   for(i=0;i<json.length;i++) {
@@ -62,10 +63,10 @@ function populate_persons(json) {
     var option = "<option value='" + json[i].id + "'>" + fullname + "</option>";
 
     $(option).appendTo($("#associatedperson-value"));
-    $("#associatedperson-value").trigger("chosen:updated");
     $(option).appendTo($("#associatedpersons-value"));
-    $("#associatedpersons-value").trigger("chosen:updated")
   }
+  $("#associatedperson-value").trigger("chosen:updated");
+  $("#associatedpersons-value").trigger("chosen:updated")
 }
 function populate_projects(json) {
   for(i=0;i<json.length;i++)
@@ -73,6 +74,7 @@ function populate_projects(json) {
     var option = "<option value='" + json[i].id + "'>" + json[i].name + "</option>";
     $(option).appendTo($("#associatedprojects-value"));
   }
+  $("#associatedprojects-value").trigger("chosen:updated")
 }
 function ajax_error() {
   alert("Ajax didn't receive a response!");
@@ -109,35 +111,38 @@ $(function()
     //  Add info about which field we are handling
     var field = $(this).data('field');
     if(field == '') {   // Field has no projectdimension
-      field = $(this).attr('id').replace('-modifybtn', '');
-    }
-    $("#hidden-"+$(this).data('type')+"-info").val(field);
+      $("li.multiple-row").remove();
+      $("#hidden-"+$(this).data('type')+"-info").val($(this).attr('id').replace('-modifybtn', ''));
+      //field = $(this).attr('id').replace('-modifybtn', '');
+    } else {
+      $("#hidden-"+$(this).data('type')+"-info").val(field);
 
-    var valuetype = $(this).data('valuetype');
-    // If the field is a multiple-field
-    if (valuetype == 'multiple') {
-      // Buttons data variables
-      var projectID = $(this).data('projectid');
-      var type = $(this).data('type');
-      console.log("/get_multiple/" + type + "/" + field)
+      var valuetype = $(this).data('valuetype');
+      // If the field is a multiple-field
+      if (valuetype == 'multiple') {
+        // Buttons data variables
+        var projectID = $(this).data('projectid');
+        var type = $(this).data('type');
+        console.log("/get_multiple/" + type + "/" + field)
 
-      // Send ajax request to get the items and then populate the list
-      $.ajax({
-        method: "GET",
-        url: "/get_multiple/" + type + "/" + field,
-        success: function(json) {
-          // Remove old content from the modal
-          $("li.multiple-row").remove();
+        // Send ajax request to get the items and then populate the list
+        $.ajax({
+          method: "GET",
+          url: "/get_multiple/" + type + "/" + field,
+          success: function(json) {
+            // Remove old content from the modal
+            $("li.multiple-row").remove();
 
-          // Add a row for each item in data
-          for(i=0; i<json.data.length; i++) {
-            var name = json.data[i].name,
-                itemId = json.data[i].id;
-            add_multiple_row(name, itemId, json.type, field, projectID);
-          }
-        },
-        error: function() { ajax_error(); }
-      });
+            // Add a row for each item in data
+            for(i=0; i<json.data.length; i++) {
+              var name = json.data[i].name,
+                  itemId = json.data[i].id;
+              add_multiple_row(name, itemId, json.type, field, projectID);
+            }
+          },
+          error: function() { ajax_error(); }
+        });
+      }
     }
     // Open the modal
     $("#" + type + "-value").trigger("chosen:updated");
@@ -169,8 +174,7 @@ $(function()
   });
 });
 $(function() {
-  selects = $("select");
-  selects.each(function(){
+  $("select").each(function(){
     $(this).chosen({width:'50%'});
   })
 });
