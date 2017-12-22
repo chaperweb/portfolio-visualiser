@@ -55,6 +55,7 @@ function populate_organizations(json) {
     var orgs_html = "<option value='"+json[i].id+"'>"+json[i].name+"</option>";
     $(orgs_html).appendTo($("#associatedorganization-value"));
   }
+  $("#associatedorganization-value").trigger("chosen:updated")
 }
 function populate_persons(json) {
   for(i=0;i<json.length;i++) {
@@ -64,6 +65,8 @@ function populate_persons(json) {
     $(option).appendTo($("#associatedperson-value"));
     $(option).appendTo($("#associatedpersons-value"));
   }
+  $("#associatedperson-value").trigger("chosen:updated");
+  $("#associatedpersons-value").trigger("chosen:updated")
 }
 function populate_projects(json) {
   for(i=0;i<json.length;i++)
@@ -71,6 +74,7 @@ function populate_projects(json) {
     var option = "<option value='" + json[i].id + "'>" + json[i].name + "</option>";
     $(option).appendTo($("#associatedprojects-value"));
   }
+  $("#associatedprojects-value").trigger("chosen:updated")
 }
 function ajax_error() {
   alert("Ajax didn't receive a response!");
@@ -95,7 +99,7 @@ function add_multiple_row(name, id, type, field, projectID) {
 $(function()
 {
   $('#projects-button').click(function(){
-    $('.dropdown-menu').animate({
+    $('#projects-dropdown').animate({
       height: 'toggle'
     });
   });
@@ -107,37 +111,41 @@ $(function()
     //  Add info about which field we are handling
     var field = $(this).data('field');
     if(field == '') {   // Field has no projectdimension
-      field = $(this).attr('id').replace('-modifybtn', '');
+      $("li.multiple-row").remove();
+      $("#hidden-"+$(this).data('type')+"-info").val($(this).attr('id').replace('-modifybtn', ''));
+      //field = $(this).attr('id').replace('-modifybtn', '');
+    } else {
+      $("#hidden-"+$(this).data('type')+"-info").val(field);
+
+      var valuetype = $(this).data('valuetype');
+      // If the field is a multiple-field
+      if (valuetype == 'multiple') {
+        // Buttons data variables
+        var projectID = $(this).data('projectid');
+        var type = $(this).data('type');
+        console.log("/get_multiple/" + type + "/" + field)
+
+        // Send ajax request to get the items and then populate the list
+        $.ajax({
+          method: "GET",
+          url: "/get_multiple/" + type + "/" + field,
+          success: function(json) {
+            // Remove old content from the modal
+            $("li.multiple-row").remove();
+
+            // Add a row for each item in data
+            for(i=0; i<json.data.length; i++) {
+              var name = json.data[i].name,
+                  itemId = json.data[i].id;
+              add_multiple_row(name, itemId, json.type, field, projectID);
+            }
+          },
+          error: function() { ajax_error(); }
+        });
+      }
     }
-    $("#hidden-"+$(this).data('type')+"-info").val(field);
-
-    var valuetype = $(this).data('valuetype');
-    // If the field is a multiple-field
-    if (valuetype == 'multiple') {
-      // Buttons data variables
-      var projectID = $(this).data('projectid');
-      var type = $(this).data('type');
-
-      // Send ajax request to get the items and then populate the list
-      $.ajax({
-        method: "GET",
-        url: "/get_multiple/" + type + "/" + field,
-        success: function(json) {
-          // Remove old content from the modal
-          $("li.multiple-row").remove();
-
-          // Add a row for each item in data
-          for(i=0; i<json.data.length; i++) {
-            var name = json.data[i].name,
-                itemId = json.data[i].id;
-            add_multiple_row(name, itemId, json.type, field, projectID);
-          }
-        },
-        error: function() { ajax_error(); }
-      });
-    }
-
     // Open the modal
+    $("#" + type + "-value").trigger("chosen:updated");
     $($(this).data('target')).modal('toggle');
   });
 
@@ -165,6 +173,13 @@ $(function()
     error: function() { ajax_error(); }
   });
 });
+
+$(function() {
+  $("select").each(function(){
+    $(this).chosen({width:'50%'});
+  })
+});
+
 //set the modal default value when opened
 $( document ).ready(function() {
   $(".modify-button").click(function() {
@@ -184,3 +199,4 @@ function stringToCorrectFormat(string) {
   list = string.split("/");
   return list[2] + "-" + list[1] + "-" + list[0];
 }
+
