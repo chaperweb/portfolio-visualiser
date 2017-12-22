@@ -84,6 +84,8 @@ Projects | {{project.name}}
             <!--  Modify button  -->
             <div class="col-md-1 pull-right">
               <button id="{{dim_name}}-modifybtn" class="btn btn-xs btn-default modify-button"
+                  hiddenvalue="{{ dim_obj | stringformat:"s" }}"
+                  selectvalue="{{dim_obj.value.id}}"
                   data-type="{{ dim_type | get_type }}"
                   data-field="{{ dim_obj.id }}"
                   data-valuetype="{{ dim_type | get_type | get_valuetype }}"

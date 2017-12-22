@@ -165,3 +165,22 @@ $(function()
     error: function() { ajax_error(); }
   });
 });
+//set the modal default value when opened
+$( document ).ready(function() {
+  $(".modify-button").click(function() {
+    button = $(this);
+    value = button[0].getAttribute("hiddenvalue");
+    type = button[0].dataset.type;
+    if(type === "date"){
+      value = stringToCorrectFormat(value);
+    } else if(type ==="associatedorganization" || type ==="associatedperson" ) {
+      value = button[0].getAttribute("selectvalue");
+    }
+    $("#modify-" + type + "-modal").find("#"+ type + "-value").val(value).trigger("change");
+  });
+});
+
+function stringToCorrectFormat(string) {
+  list = string.split("/");
+  return list[2] + "-" + list[1] + "-" + list[0];
+}
