@@ -1,3 +1,8 @@
+{% block javascript %}
+{% load static %}
+<script src="{% static 'portfolio_manager/js/datepickerLoader.js' %}"></script>
+{% endblock %}
+
 <div class="modal fade" id="modify-{{type}}-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -46,7 +51,6 @@
           AssociatedPersons
         -->
         {% elif type|is_type:"multiple" %}
-        <div class="well">
           <ul id="{{type}}-well-ul" class="list-group">
             <li class="list-group-item">
               <form id="modify-{{type}}-form" method="POST"
@@ -54,14 +58,13 @@
                 {% csrf_token %}
                 <input id="hidden-{{type}}-info" type="hidden" name="field"/>
                 <label for="{{type}}-value" class="pull-left">Add</label>
-                <select id="{{type}}-value" name="value"></select>
+                <select multiple id="{{type}}-value" name="value"></select>
                 <button type="submit" class="btn btn-orange btn-xs pull-right">
                   <span class="glyphicon glyphicon-plus"></span>
                 </button>
               </form>
             </li>
           </ul>
-        </div>
         {% endif %}
       </div>
     </div>

@@ -472,7 +472,7 @@ def show_project(request, project_id):
                 #user is not an admin in this group
                 pass
         #filter the projects
-        projects = filter(lambda project: project.parent.id in orgs, all_projects)
+        projects = list(filter(lambda project: project.parent.id in orgs, all_projects))
         if(not project in projects):
             raise Http404
     else:
@@ -502,9 +502,11 @@ def project_edit(request, project_id, field_type):
     if request.method == "POST":
         data = request.POST
         field = data.get('field')
+        values = data.getlist('value')
         value = data.get('value')
         if not is_int(field):
             dimension = type_to_dimension[field_type]()
+            dimension.save()
             dimension.value = value
             dimension.name = field
             dimension.save()
@@ -521,17 +523,18 @@ def project_edit(request, project_id, field_type):
         elif field_type == "associatedperson":
             dimension.value = Person.objects.get(pk=value)
         elif field_type == "associatedpersons":
-            person = Person.objects.get(pk=value)
-            dimension.value.add(person)
+            for value in values:
+                person = Person.objects.get(pk=value)
+                dimension.value.add(person)
         elif field_type == "associatedprojects":
-            project = Project.objects.get(pk=value)
-            dimension.value.add(project)
+            for value in values:
+                project = Project.objects.get(pk=value)
+                dimension.value.add(project)
         elif field_type == "date":
             dimension.update_date(value)
         else:
             dimension.value = value
         dimension.save()
-
     #   Should actually handle PATCH but Django changes forms' patch requests
     #   to GET requests
     elif request.method == "GET":
@@ -916,7 +919,7 @@ def create_snapshot(request):
     if request.method == 'POST':
         snapshot_type = request.POST['type']
         if snapshot_type == 'path':
-
+            button = request.POST['button']
             name = request.POST['name']
             description = request.POST['description']
             pid = request.POST['project_id']
@@ -926,7 +929,6 @@ def create_snapshot(request):
             end_ddmmyyyy = request.POST['end-date']
             start = time.mktime((datetime.strptime(start_ddmmyyyy, "%d/%m/%Y")).timetuple())
             end = time.mktime((datetime.strptime(end_ddmmyyyy, "%d/%m/%Y")).timetuple())
-
             p_snap = create_pathsnapshot(
                         name=name,
                         description=description,
@@ -936,9 +938,13 @@ def create_snapshot(request):
                         start = start,
                         end = end
                     )
-            url = f'snapshots/path/{p_snap.id}'
-            return redirect(url, permanent=True)
+            if(button == 'save and stay'):
+                return HttpResponse(status = 204)
+            else:
+                url = f'snapshots/path/{p_snap.id}'
+                return redirect(url, permanent=True)
         elif snapshot_type == 'fourfield':
+            button = request.POST['button']
             x = request.POST['x_dim']
             y = request.POST['y_dim']
             r = request.POST['r_dim']
@@ -950,7 +956,6 @@ def create_snapshot(request):
             start = time.mktime((datetime.strptime(start_ddmmyyyy, "%d/%m/%Y")).timetuple())
             end = time.mktime((datetime.strptime(end_ddmmyyyy, "%d/%m/%Y")).timetuple())
             zoom = request.POST['zoom']
-
             ff_snap = create_fourfieldsnapshot(
                         name=name,
                         description=description,
@@ -961,8 +966,11 @@ def create_snapshot(request):
                         end=end,
                         zoom=zoom
                     )
-            url = f'snapshots/fourfield/{ff_snap.id}'
-            return redirect(url, permanent=True)
+            if(button == 'save and stay'):
+                return HttpResponse(status = 204)
+            else:
+                url = f'snapshots/fourfield/{ff_snap.id}'
+                return redirect(url, permanent=True)
         else:
             pass
 

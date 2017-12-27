@@ -83,6 +83,7 @@ $(function() {
     $("#start-date-selector").prop('disabled', false);
     $("#end-date-selector").prop('disabled', false);
     $("#slider-value-selector").prop('disabled', false);
+    $("#save-fourfield-snap-btn").prop("style", "pointer-events:all");
   });
 
   $('#x-selector').on('change', change_if_all_selected);
