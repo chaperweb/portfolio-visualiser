@@ -192,6 +192,7 @@ $( document ).ready(function() {
       value = button[0].getAttribute("selectvalue");
     }
     $("#modify-" + type + "-modal").find("#"+ type + "-value").val(value).trigger("change");
+    $("#" + type + "-value").trigger("chosen:updated");
   });
 });
 
