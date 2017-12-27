@@ -235,15 +235,20 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   * aggressivity of charge of the balls
   */
   var force = d3.forceSimulation()
-                .force('link', d3.forceLink().id(function(d){ return d.name }).distance(100))
-                .force("collide",d3.forceCollide( function(d){return linearScale(d.value) + 8 }))
-                .force("charge", d3.forceManyBody().strength(-50))
+                .force('link', d3.forceLink().distance(100))
+                .force("collide",d3.forceCollide( function(d){return linearScale(d.value) + 10 }))
                 .force("center", d3.forceCenter(width / 2, height / 2));
 
   // assign a type per value to encode opacity from css
   links.forEach(function(link) {
     link.type = "fivezero";
   });
+
+  // Timer for limiting the time and resources used for the visualization
+  var forceTimer = d3.timeout(function(d) {
+                    force.stop()
+                    forceTimer.stop()
+                  },7000);
 
   var svg = d3.select("#" + target)
               .append("svg")
@@ -282,6 +287,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
                 .on("dblclick", dblclick)
                 .call(d3.drag()
                 .on("start", dragstart)
+                .on("end", dragend)
                 .on("drag", onDrag));
 
   /* Draws the shape of the node based on the given value
@@ -316,7 +322,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
 
-  // add the curvy lines
+
   function tick() {
     // Takes care that balls don't get out of canvas by force
     node.attr("transform", function(d) {
@@ -326,7 +332,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
       d.y = validate(d.y,0,height, linearScale(d.value)+ballOutline)
       return "translate(" + d.x + "," + d.y + ")";
     });
-
+    // add the curvy lines
     path.attr("d", function(d) {
       // defining distance of two nodes
       var dx = (d.target.x - d.source.x) ,
@@ -369,11 +375,6 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   force.force("link")
   .links(links);
 
-  /* action to take on dragStart
-  *  makes project name larger,
-  * fixes the ball position and adds black outline for
-  * positionally locked balls
-  */
 
   function linedShape(d) {
     if (d.shape === "rotateRect"){
@@ -383,8 +384,14 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     }
   }
 
+  /* action to take on dragStart
+  *  makes project name larger,
+  * fixes the ball position and adds black outline for
+  * positionally locked balls
+  */
   function dragstart(d)  {
-    if (!d3.event.active) force.alphaTarget(0.3).restart();
+    forceTimer.stop()
+    if (!d3.event.active) force.velocityDecay(0.4).alphaDecay(0.05).alphaTarget(0.20).restart();
     d3.select(this).select(linedShape(d)).transition()
       .style("stroke", "black")
       .style("stroke-width", ballOutline + "px");
@@ -395,13 +402,20 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
       .style("font-weight", "bold");
   };
 
+  // dragend triggers the timer for the force, stopping the calculation after 5 seconds
+  function dragend(d) {
+    forceTimer.restart(function(d) {
+      force.stop()
+      forceTimer.stop()
+    }, 5000);
+  };
+
   /* action to take on mouse double click
   * currently resizes text to normal and
   * releases ball position so it reacts to force again.
   * removes black outline
   */
   function dblclick(d) {
-
     d3.select(this).select(linedShape(d)).transition()
     .duration(750)
     .style("stroke", "none");
@@ -409,12 +423,14 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     d.fy = null
     d3.select(this).select("text").transition()
     .style("font-weight", "normal");
+    force.velocityDecay(0.4).alphaDecay(0.05).alphaTarget(0.20).restart();
   };
 
   // this function drags the node inside the height-width limits
   function onDrag(d) {
     d.fx = validate(d3.event.x, 0, width, linearScale(d.value)+ballOutline);
     d.fy = validate(d3.event.y, 0, height, linearScale(d.value)+ballOutline);
+    force.tick()
   };
 
   /* helper function for "onDrag" and tick() to validate whether
