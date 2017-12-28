@@ -52,6 +52,9 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     denominator = d3.max(valueArray) / 100000;
   };
 
+  // getting the current smallest value to be used as default size for people nodes
+  var smallValue = d3.min(valueArray);
+
   // Compute the distinct nodes. Each node is only created once
   for (j = 0; j < jsonlen - 1; j++) {
 
@@ -103,7 +106,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
         } else if (thisDimensionType === "AssociatedPersonsDimension") {
           for(p = 0; p < json[j].dimensions[i].dimension_object.value.length;p++) {
 
-            sizeT = 100 / denominator;
+            sizeT = smallValue / denominator;
             nameT = json[j].dimensions[i].dimension_object.value[p].first_name;
             colorT = nameT
 
@@ -114,7 +117,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
           };
         }  else if (thisDimensionType === "AssociatedPersonDimension") {
 
-          sizeT = 100 / denominator;
+          sizeT = smallValue / denominator;
           nameT = json[j].dimensions[i].dimension_object.history[0].value.first_name;
           colorT = nameT
 
@@ -123,7 +126,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
 
           links.push({"source": sourceNode, "target": targetNode});
         } else if (thisDimensionType === "AssociatedOrganizationDimension") {
-          sizeT = 100 / denominator;
+          sizeT = smallValue / denominator;
           nameT = json[j].dimensions[i].dimension_object.history[0].value.name;
           colorT = nameT
 
@@ -204,6 +207,19 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     });
   };
 
+  // map connecting link amount with source node
+  var linkWeightMap = new Map()
+
+  for (elem in links) {
+    var keyValue = links[elem].source
+    if (!linkWeightMap.has(keyValue)) {
+      linkWeightMap.set(keyValue, 1)
+    } else {
+      var newValue = linkWeightMap.get(keyValue) + 1
+      linkWeightMap.set(keyValue, newValue)
+    }
+  }
+
   var colorArray = uniq(nodes.map(x => x.color))
   // size of the display box and definition of colorscale (predefined ATM)
   var width = $('#'+ target).width(),
@@ -231,6 +247,13 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
                       .domain([minDataPoint,maxDataPoint])
                       .range([20,75]);
 
+  var opacityScale = d3.scalePoint()
+                       .domain(uniq(Array.from(linkWeightMap.values()))
+                                                            .sort(function(a,b) {
+                                                              return a - b;
+                                                            }))
+                       .range([0.80, 0.15]);
+
   /* defining the graph force, for example default distance of balls and
   * aggressivity of charge of the balls
   */
@@ -238,11 +261,6 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
                 .force('link', d3.forceLink().distance(100))
                 .force("collide",d3.forceCollide( function(d){return linearScale(d.value) + 10 }))
                 .force("center", d3.forceCenter(width / 2, height / 2));
-
-  // assign a type per value to encode opacity from css
-  links.forEach(function(link) {
-    link.type = "fivezero";
-  });
 
   // Timer for limiting the time and resources used for the visualization
   var forceTimer = d3.timeout(function(d) {
@@ -273,9 +291,9 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   var path = svg.append("svg:g").selectAll("path")
                 .data(links)
                 .enter().append("svg:path")
-                .attr("class", function(d) { return "link " + d.type; })
                 .attr("class", "link" )
-                .attr("marker-end", "url(#end)");
+                .attr("marker-end", "url(#end)")
+                .style("opacity", function(d) { return opacityScale(linkWeightMap.get(d.source)); });
 
   // define the nodes and their reactions
   var node = svg.selectAll(".node")
