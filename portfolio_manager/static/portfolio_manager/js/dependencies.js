@@ -113,7 +113,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
             colorT = nodeColor(projectJson, nodeColorValue)
 
             targetNode = nodeMap.get("APD"+projectId) ||
-            nodeMap.set("APD"+ projectId, {"shape": "circle", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("p"+projectId);
+            nodeMap.set("APD"+ projectId, {"shape": "circle", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("APD"+projectId);
 
             links.push({"source": sourceNode, "target": targetNode});
           };
@@ -125,7 +125,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
             colorT = nameT;
 
             targetNode = nodeMap.get("APS"+projectId) ||
-            nodeMap.set("APS"+ projectId, {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("m"+projectId);
+            nodeMap.set("APS"+ projectId, {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("APS"+projectId);
 
 
             links.push({"source": sourceNode, "target": targetNode});
@@ -137,7 +137,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
           colorT = nameT;
 
           targetNode = nodeMap.get("AP"+projectId) ||
-          nodeMap.set("AP"+ projectId, {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("a"+projectId);
+          nodeMap.set("AP"+ projectId, {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("AP"+projectId);
 
 
           links.push({"source": sourceNode, "target": targetNode});
@@ -148,7 +148,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
           colorT = nameT
 
           targetNode = nodeMap.get("AO"+projectId) ||
-          nodeMap.set("AO"+ projectId, {"shape": "rotateRect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("o"+projectId);
+          nodeMap.set("AO"+ projectId, {"shape": "rotateRect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("AO"+projectId);
 
           links.push({"source": sourceNode, "target": targetNode});
         }
