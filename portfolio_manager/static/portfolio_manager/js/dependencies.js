@@ -17,10 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 function dependencies(json, target, organizations, associationtype, nodeSizeValue, nodeColorValue, date) {
+
   var nodes = [],
   links = [],
   jsonlen = json.length,
-  valueArray = [];
+  valueArray = [],
+  nodeMap = new Map();
 
   /* Going through json input and collecting size values from objects
   * that have values in dependencies. To be used in defining need
@@ -34,12 +36,13 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     var size = json[j].dimensions.length
     for (i = 0; i < size; i++) {
       if (json[j].dimensions[i].dimension_object.name === associationtype) {
-        valueArray[json[j].id] = nodeSize(json[j].id)
+        valueArray[json[j].id] = nodeSize(json[j])
 
         if (json[j].dimensions[i].dimension_object.value != undefined) {
           for (p = 0; p < json[j].dimensions[i].dimension_object.value.length; p++) {
-            valueArray[json[j].dimensions[i].dimension_object.value[p]] = nodeSize(json[j].dimensions[i].dimension_object.value[p])
-          };
+
+            valueArray[json[j].dimensions[i].dimension_object.value[p]] = nodeSize(json[j])
+          }
         };
       };
     };
@@ -51,7 +54,11 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     denominator = d3.max(valueArray) / 100000;
   };
 
+  // getting the current smallest value to be used as default size for people nodes
+  var smallValue = d3.min(valueArray);
+
   // Compute the distinct nodes. Each node is only created once
+
   for (j = 0; j < jsonlen - 1; j++) {
 
     if(json[j].dimensions == undefined) {
@@ -71,15 +78,16 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
 
     for (i = 0; i < size; i++) {
       // Create source node, currently default is projects.
-      sizeS = nodeSize(json[j].id)/ denominator;
+      sizeS = nodeSize(json[j])/ denominator;
       nameS = "";
-      colorS = nodeColor(json[j].id, nodeColorValue);
+      colorS = nodeColor(json[j], nodeColorValue)
+
 
       if (json[j].dimensions[0].dimension_object.history != undefined) {
-        nameS = nodeName(json[j].id);
+        nameS = nodeName(json[j]);
       };
-      sourceNode = nodes[json[j].id] ||
-                  (nodes[json[j].id] = {"shape": "circle","name": nameS, "value": sizeS / denominator, "color": colorS });
+      sourceNode = nodeMap.get("APD"+json[j].id) ||
+                   nodeMap.set("APD"+json[j].id, {"shape": "circle","name": nameS, "value": sizeS / denominator, "color": colorS }).get("p"+json[j].id)
 
       /* Create target node(s) can be projects, people or organizations
        * for types that don't have desired arguments default values are
@@ -91,110 +99,109 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
 
         if (thisDimensionType === "AssociatedProjectsDimension") {
           for(p = 0; p < json[j].dimensions[i].dimension_object.value.length;p++) {
-            sizeT = nodeSize(json[j].dimensions[i].dimension_object.value[p])/ denominator;
-            nameT = nodeName(json[j].dimensions[i].dimension_object.value[p]);
-            colorT = nodeColor(json[j].dimensions[i].dimension_object.value[p], nodeColorValue);
-            index =  "APD" + json[j].dimensions[i].dimension_object.value[p];
 
-            targetNode = nodes[index] ||
-            (nodes[index] = {"shape": "circle", "name": nameT, "value": sizeT / denominator, "color": colorT});
+            projectId = json[j].dimensions[i].dimension_object.value[p]
+
+            for (o = 0; o < jsonlen - 1; o++) {
+              if (json[o].id === projectId) {
+                var projectJson = json[o];
+              }
+            }
+
+            sizeT = nodeSize(projectJson)/ denominator;
+            nameT = nodeName(projectJson);
+            colorT = nodeColor(projectJson, nodeColorValue)
+
+            targetNode = nodeMap.get("APD"+projectId) ||
+            nodeMap.set("APD"+ projectId, {"shape": "circle", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("p"+projectId);
 
             links.push({"source": sourceNode, "target": targetNode});
           };
         } else if (thisDimensionType === "AssociatedPersonsDimension") {
           for(p = 0; p < json[j].dimensions[i].dimension_object.value.length;p++) {
-
-            sizeT = 100 / denominator;
+            projectId = json[j].dimensions[i].dimension_object.value[p].id
+            sizeT = smallValue / denominator;
             nameT = json[j].dimensions[i].dimension_object.value[p].first_name;
             colorT = nameT;
-            index = "APS" + json[j].dimensions[i].dimension_object.value[p].id;
 
-            targetNode = nodes[index] ||
-            (nodes[index] = {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT});
-            console.log(nodes.indexOf(sourceNode), sourceNode.name, nodes.indexOf(targetNode), targetNode.name)
+            targetNode = nodeMap.get("APS"+projectId) ||
+            nodeMap.set("APS"+ projectId, {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("m"+projectId);
+
 
             links.push({"source": sourceNode, "target": targetNode});
           };
         }  else if (thisDimensionType === "AssociatedPersonDimension") {
-
-          sizeT = 100 / denominator;
+          projectId = json[j].dimensions[i].dimension_object.history[0].value.id
+          sizeT = smallValue / denominator;
           nameT = json[j].dimensions[i].dimension_object.history[0].value.first_name;
           colorT = nameT;
-          index = "AP" + json[j].dimensions[i].dimension_object.history[0].value.id;
 
-          targetNode = nodes[index] ||
-          (nodes[index] = {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT});
-          console.log(nodes.indexOf(sourceNode), sourceNode.name, nodes.indexOf(targetNode), targetNode.name)
+          targetNode = nodeMap.get("AP"+projectId) ||
+          nodeMap.set("AP"+ projectId, {"shape": "rect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("a"+projectId);
+
 
           links.push({"source": sourceNode, "target": targetNode});
         } else if (thisDimensionType === "AssociatedOrganizationDimension") {
-          sizeT = 100 / denominator;
+          projectId = json[j].dimensions[i].dimension_object.history[0].value.id
+          sizeT = smallValue / denominator;
           nameT = json[j].dimensions[i].dimension_object.history[0].value.name;
-          colorT = nameT;
-          index = "AO" + json[j].dimensions[i].dimension_object.history[0].value.id;
-          targetNode = nodes[index] ||
-          (nodes[index] = {"shape": "rotateRect", "name": nameT, "value": sizeT / denominator, "color": colorT});
-          console.log(nodes.indexOf(sourceNode), sourceNode.name, nodes.indexOf(targetNode), targetNode.name)
+          colorT = nameT
+
+          targetNode = nodeMap.get("AO"+projectId) ||
+          nodeMap.set("AO"+ projectId, {"shape": "rotateRect", "name": nameT, "value": sizeT / denominator, "color": colorT}).get("o"+projectId);
+
           links.push({"source": sourceNode, "target": targetNode});
         }
       };
     };
   };
-  console.log(nodes);
-  /* searches the name of the project with the given ID.
+
+  nodes = Array.from(nodeMap.values())
+  /* searches the name of the project from the given json.
   * If name with given ID is not found returns empty string
   */
-  function nodeName(id) {
+  function nodeName(jsonChunck) {
 
-    for (z = 0; z < jsonlen; z++) {
-      if (json[z].id == id) {
-        for (m = 0; m < json[z].dimensions.length ; m++ ) {
-          if (json[z].dimensions[m].dimension_object.name === "Name") {
-            var name = json[z].dimensions[m].dimension_object.history[0].value
-            if (name != undefined) {
-              return name;
-            } else {
-              return "";
-            };
-          };
+    for(l = 0; l < jsonChunck.dimensions.length ; l++ ){
+      if (jsonChunck.dimensions[l].dimension_object.name === "Name") {
+        var name = jsonChunck.dimensions[l].dimension_object.history[0].value
+        if (name != undefined) {
+          return name;
+        } else {
+          return "";
         };
       };
     };
     return "";
   };
-  /* searches the size parameter of the project with the given ID. if no such id is
+  /* searches the size parameter of the project from the given json. if no such id is
   * found, or if the project doesn't have size parameter, returns 0
   */
-  function nodeSize(id) {
-    for (z = 0; z < jsonlen; z++) {
-      if (json[z].id == id) {
-        for(m = 0; m < json[z].dimensions.length ; m++ ){
-          if (json[z].dimensions[m].dimension_object.name === nodeSizeValue) {
-            var value = json[z].dimensions[m].dimension_object.history[0].value;
-            if (value != undefined) {
-              return value;
-            } else {
-              return 0;
-            };
-          };
+
+  function nodeSize(jsonChunck) {
+
+    for(m = 0; m < jsonChunck.dimensions.length ; m++ ){
+      if (jsonChunck.dimensions[m].dimension_object.name === nodeSizeValue) {
+        var value = jsonChunck.dimensions[m].dimension_object.history[0].value
+        if (value != undefined) {
+          return value;
+        } else {
+          return 0;
         };
       };
     };
     return 0;
   };
-  function nodeColor(id, colorParameter) {
 
-    for (z = 0; z < jsonlen; z++) {
-      if (json[z].id == id) {
-        for (n = 0; n < json[z].dimensions.length ; n++ ) {
-          if (json[z].dimensions[n].dimension_object.name === colorParameter) {
-            var color = json[z].dimensions[n].dimension_object.history[0].value;
-            if (color != undefined) {
-              return color;
-            } else {
-              return "";
-            };
-          };
+  function nodeColor(jsonChunck, colorParameter) {
+
+    for (n = 0; n < jsonChunck.dimensions.length ; n++ ) {
+      if (jsonChunck.dimensions[n].dimension_object.name === colorParameter) {
+        var color = jsonChunck.dimensions[n].dimension_object.history[0].value
+        if (color != undefined) {
+          return color;
+        } else {
+          return "";
         };
       };
     };
@@ -209,7 +216,20 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     });
   };
 
-  var colorArray = uniq(nodes.map(x => x.color));
+  // map connecting link amount with source node
+  var linkWeightMap = new Map()
+
+  for (elem in links) {
+    var keyValue = links[elem].source
+    if (!linkWeightMap.has(keyValue)) {
+      linkWeightMap.set(keyValue, 1)
+    } else {
+      var newValue = linkWeightMap.get(keyValue) + 1
+      linkWeightMap.set(keyValue, newValue)
+    }
+  }
+
+  var colorArray = uniq(nodes.map(x => x.color))
   // size of the display box and definition of colorscale (predefined ATM)
   var width = $('#'+ target).width(),
       height = Math.max(600, $('#'+ target).height()),
@@ -227,6 +247,8 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   //maximum and minimum value of the nodes
   var minDataPoint = d3.min(values);
   var maxDataPoint = d3.max(values);
+  var minScealdeSize = 20;
+  var maxScaledSize = 75;
 
   /* defining custom linearscale from minimum and maximum values of the nodes.
   * Makes possible to visualize large and small projects simultanously and
@@ -234,21 +256,30 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   */
   var linearScale = d3.scaleLinear()
                       .domain([minDataPoint,maxDataPoint])
-                      .range([20,75]);
+                      .range([minScealdeSize,maxScaledSize]);
+
+  var opacityScale = d3.scalePoint()
+                       .domain(uniq(Array.from(linkWeightMap.values()))
+                                                            .sort(function(a,b) {
+                                                              return a - b;
+                                                            }))
+                       .range([0.80, 0.15]);
 
   /* defining the graph force, for example default distance of balls and
   * aggressivity of charge of the balls
   */
   var force = d3.forceSimulation()
-                .force('link', d3.forceLink().id(function(d){ return d.name }).distance(100))
-                .force("collide",d3.forceCollide( function(d){return linearScale(d.value) + 8 }))
-                .force("charge", d3.forceManyBody().strength(-50))
+                .force('link', d3.forceLink().distance(maxScaledSize * 2))
+                .force("collide",d3.forceCollide( function(d){return linearScale(d.value) + 10 }))
                 .force("center", d3.forceCenter(width / 2, height / 2));
 
-  // assign a type per value to encode opacity from css
-  links.forEach(function(link) {
-    link.type = "fivezero";
-  });
+
+
+  // Timer for limiting the time and resources used for the visualization
+  var forceTimer = d3.timeout(function(d) {
+                    force.stop()
+                    forceTimer.stop()
+                  },7000);
 
   var svg = d3.select("#" + target)
               .append("svg")
@@ -273,9 +304,9 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   var path = svg.append("svg:g").selectAll("path")
                 .data(links)
                 .enter().append("svg:path")
-                .attr("class", function(d) { return "link " + d.type; })
                 .attr("class", "link" )
-                .attr("marker-end", "url(#end)");
+                .attr("marker-end", "url(#end)")
+                .style("opacity", function(d) { return opacityScale(linkWeightMap.get(d.source)); });
 
   // define the nodes and their reactions
   var node = svg.selectAll(".node")
@@ -287,8 +318,8 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
                 .on("dblclick", dblclick)
                 .call(d3.drag()
                 .on("start", dragstart)
+                .on("end", dragend)
                 .on("drag", onDrag));
-
 
   /* Draws the shape of the node based on the given value
    * rectangles are translated to central coordinates as their
@@ -322,7 +353,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
 
-  // add the curvy lines
+
   function tick() {
     // Takes care that balls don't get out of canvas by force
     node.attr("transform", function(d) {
@@ -332,7 +363,7 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
       d.y = validate(d.y,0,height, linearScale(d.value)+ballOutline)
       return "translate(" + d.x + "," + d.y + ")";
     });
-
+    // add the curvy lines
     path.attr("d", function(d) {
       // defining distance of two nodes
       var dx = (d.target.x - d.source.x) ,
@@ -368,18 +399,13 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     });
 
   };
-  force
-  .nodes(d3.values(nodes))
-  .on("tick", tick);
+
+  force.nodes(d3.values(nodes))
+        .on("tick", tick);
 
   force.force("link")
-  .links(links);
+        .links(links);
 
-  /* action to take on dragStart
-  *  makes project name larger,
-  * fixes the ball position and adds black outline for
-  * positionally locked balls
-  */
 
   function linedShape(d) {
     if (d.shape === "rotateRect"){
@@ -389,8 +415,15 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     }
   }
 
+  /* action to take on dragStart
+  *  makes project name larger,
+  * fixes the ball position and adds black outline for
+  * positionally locked balls
+  */
   function dragstart(d)  {
-    if (!d3.event.active) force.alphaTarget(0.3).restart();
+    forceTimer.stop()
+    force.force("center", null);
+    if (!d3.event.active) force.velocityDecay(0.4).alphaDecay(0.05).alphaTarget(0.20).restart();
     d3.select(this).select(linedShape(d)).transition()
       .style("stroke", "black")
       .style("stroke-width", ballOutline + "px");
@@ -401,13 +434,20 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
       .style("font-weight", "bold");
   };
 
+  // dragend triggers the timer for the force, stopping the calculation after 5 seconds
+  function dragend(d) {
+    forceTimer.restart(function(d) {
+      force.stop()
+      forceTimer.stop()
+    }, 5000);
+  };
+
   /* action to take on mouse double click
   * currently resizes text to normal and
   * releases ball position so it reacts to force again.
   * removes black outline
   */
   function dblclick(d) {
-
     d3.select(this).select(linedShape(d)).transition()
     .duration(750)
     .style("stroke", "none");
@@ -415,12 +455,14 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
     d.fy = null
     d3.select(this).select("text").transition()
     .style("font-weight", "normal");
+    force.velocityDecay(0.4).alphaDecay(0.05).alphaTarget(0.20).restart();
   };
 
   // this function drags the node inside the height-width limits
   function onDrag(d) {
     d.fx = validate(d3.event.x, 0, width, linearScale(d.value)+ballOutline);
     d.fy = validate(d3.event.y, 0, height, linearScale(d.value)+ballOutline);
+    force.tick()
   };
 
   /* helper function for "onDrag" and tick() to validate whether

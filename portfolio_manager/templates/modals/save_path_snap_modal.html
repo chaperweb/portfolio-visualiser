@@ -1,3 +1,8 @@
+{% block javascript %}
+{% load static %}
+<script src="{% static 'portfolio_manager/js/closeModal.js' %}"></script>
+{% endblock %}
+
 <div class="modal fade" id="save-path-snap-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -17,7 +22,8 @@
             <label class="col-lg-4" for="#snap-desc">Description</label>
             <input id="path-snap-desc" class="col-lg-6" maxlength="140" type="text" name="description">
           </div>
-          <input class="btn btn-orange" type="submit" value="Save Snapshot">
+          <input class="btn btn-orange" type="submit" value="save and stay" name="button">
+          <input class="btn btn-orange" type="submit" value="save and open" name="button">
 
           <!-- HIDDEN FIELDS -->
           <input type="hidden" name="type" value="path">

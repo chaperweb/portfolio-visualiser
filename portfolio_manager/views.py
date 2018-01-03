@@ -29,7 +29,7 @@ from collections import defaultdict
 from dateutil.parser import parse
 
 import django.forms
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
@@ -180,8 +180,16 @@ def home(request):
             projects = Project.objects.all()
             user_type = 'superuser'
         else:
-            user_org = user.groups.last().organizationadmins.organization
-            projects = Project.objects.filter(parent=user_org)
+            orgs = set([])
+            groups_all = request.user.groups.all()
+            for i in range(len(groups_all)):
+                try:
+                    orgs.add(groups_all[i].organizationadmins.organization.id)
+                except:
+                    #user is not an admin in this group
+                    pass
+            #filter the projects
+            projects = filter(lambda projects_all: projects_all.parent.id in orgs, Project.objects.all())
             user_type = 'org_admin'
 
         for project in projects:
@@ -245,8 +253,16 @@ def milestones(request):
     milestones = Milestone.objects.all().order_by('project')
     # If user is a orgadmin, only show their organizations projects
     if is_orgadmin(request.user):
-        org = request.user.groups.first().employees.organization
-        projects = Project.objects.filter(parent=org)
+        orgs = set([])
+        groups_all = request.user.groups.all()
+        for i in range(len(groups_all)):
+            try:
+                orgs.add(groups_all[i].organizationadmins.organization.id)
+            except:
+                #user is not an admin in this group
+                pass
+        #filter the projects
+        projects = filter(lambda projects_all: projects_all.parent.id in orgs, Project.objects.all())
         milestones = milestones.filter(project__in=projects)
 
     if request.method == 'POST':
@@ -390,7 +406,7 @@ def add_field(request):
 
         add_field_form = ProjectTemplateForm()
         add_field_form.initial = {'organization': org.name}
-        orgform = OrgForm({'orgs': org})
+        orgform = OrgForm({'orgs': org}, user=request.user)
         # (dimension name -> datatype) dictionary
         dims = {}
         templates = org.templates.all()
@@ -400,11 +416,15 @@ def add_field(request):
                 #TODO: group them by types to make the site easier to view?
                 t_dim_name = t_dim.content_type.model_class().__name__
                 dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
+        defdict = {}
+        for k,v in dims.items():
+            defdict.setdefault(v, []).append(k)
+
 
         resultmsg = "Successfully added the \"%s\"-field" % request.POST['name']
         render_data = {
             'form': orgform,
-            'dims': dims,
+            'dims': defdict,
             'add_field_form': add_field_form,
             'add_field_success': resultmsg,
         }
@@ -443,7 +463,18 @@ def show_project(request, project_id):
                 dimensions[key][d.dimension_object.name] = d.dimension_object
 
     if is_orgadmin(request.user):
-        projects = all_projects.filter(parent=request.user.groups.first().employees.organization)
+        orgs = set([])
+        groups_all = request.user.groups.all()
+        for i in range(len(groups_all)):
+            try:
+                orgs.add(groups_all[i].organizationadmins.organization.id)
+            except:
+                #user is not an admin in this group
+                pass
+        #filter the projects
+        projects = list(filter(lambda project: project.parent.id in orgs, all_projects))
+        if(not project in projects):
+            raise Http404
     else:
         projects = all_projects
 
@@ -471,9 +502,11 @@ def project_edit(request, project_id, field_type):
     if request.method == "POST":
         data = request.POST
         field = data.get('field')
+        values = data.getlist('value')
         value = data.get('value')
         if not is_int(field):
             dimension = type_to_dimension[field_type]()
+            dimension.save()
             dimension.value = value
             dimension.name = field
             dimension.save()
@@ -490,17 +523,18 @@ def project_edit(request, project_id, field_type):
         elif field_type == "associatedperson":
             dimension.value = Person.objects.get(pk=value)
         elif field_type == "associatedpersons":
-            person = Person.objects.get(pk=value)
-            dimension.value.add(person)
+            for value in values:
+                person = Person.objects.get(pk=value)
+                dimension.value.add(person)
         elif field_type == "associatedprojects":
-            project = Project.objects.get(pk=value)
-            dimension.value.add(project)
+            for value in values:
+                project = Project.objects.get(pk=value)
+                dimension.value.add(project)
         elif field_type == "date":
             dimension.update_date(value)
         else:
             dimension.value = value
         dimension.save()
-
     #   Should actually handle PATCH but Django changes forms' patch requests
     #   to GET requests
     elif request.method == "GET":
@@ -570,11 +604,21 @@ def projects(request):
     projects_all = Project.objects.all()
 
     if is_orgadmin(request.user):
-        projects_all = projects_all.filter(parent=request.user.groups.first().employees.organization)
+        orgs = set([])
+        groups_all = request.user.groups.all()
+        for i in range(len(groups_all)):
+            try:
+                orgs.add(groups_all[i].organizationadmins.organization.id)
+            except:
+                #user is not an admin in this group
+                pass
+        #filter the projects
+        projects_all = filter(lambda projects_all: projects_all.parent.id in orgs, projects_all)
 
     projects_grouped = {}
     for org, ps in groupby(projects_all, lambda p: p.parent):
-        projects_grouped[org] = []
+        if(not org in projects_grouped):
+            projects_grouped[org] = []
         for p in ps:
             projects_grouped[org].append(p)
 
@@ -597,14 +641,18 @@ def projects(request):
 @user_passes_test(is_admin)
 def databaseview(request):
     if request.method == "POST":
-        form = OrgForm(request.POST)
+        form = OrgForm(request.POST, user=request.user)
         if form.is_valid:
             add_field_form = ProjectTemplateForm()
             add_field_form.initial = {'organization': request.POST['orgs']}
             # (dimension name -> datatype) dictionary
             dims = {}
-            organization = Organization.objects.get(pk=request.POST['orgs'])
-            templates = organization.templates.all()
+            try:
+                organization = Organization.objects.get(pk=request.POST['orgs'])
+                templates = organization.templates.all()
+            except ValueError:
+                #Organization not found
+                templates = []
             if len(templates) > 0:
                 template = templates[0]
                 for t_dim in template.dimensions.all():
@@ -621,34 +669,11 @@ def databaseview(request):
                 'dims':defdict,
                 'add_field_form': add_field_form
             }
-    elif request.user.is_superuser:
+    else:
         add_field_form = ProjectTemplateForm()
-        form = OrgForm()
+        form = OrgForm(user=request.user)
         render_data = {
             'form':form,
-            'add_field_form': add_field_form
-        }
-    else:
-        try:
-            organization = request.user.groups.first().employees.organization
-        except:
-            organization = request.user.groups.first().organizationadmins.organization
-        add_field_form = ProjectTemplateForm()
-        add_field_form.initial = {'organization': organization.pk}
-        templates = organization.templates.all()
-        dims = {}
-        if len(templates) > 0:
-            template = templates[0]
-            for t_dim in template.dimensions.all():
-                #TODO: group them by types to make the site easier to view?
-                t_dim_name = t_dim.content_type.model_class().__name__
-                dims[t_dim.name] = str(t_dim_name).replace("Dimension", "")
-        # Group them by datatype
-        defdict = {}
-        for k,v in dims.items():
-            defdict.setdefault(v, []).append(k)
-        render_data = {
-            'dims': defdict,
             'add_field_form': add_field_form
         }
 
@@ -894,7 +919,7 @@ def create_snapshot(request):
     if request.method == 'POST':
         snapshot_type = request.POST['type']
         if snapshot_type == 'path':
-
+            button = request.POST['button']
             name = request.POST['name']
             description = request.POST['description']
             pid = request.POST['project_id']
@@ -904,7 +929,6 @@ def create_snapshot(request):
             end_ddmmyyyy = request.POST['end-date']
             start = time.mktime((datetime.strptime(start_ddmmyyyy, "%d/%m/%Y")).timetuple())
             end = time.mktime((datetime.strptime(end_ddmmyyyy, "%d/%m/%Y")).timetuple())
-
             p_snap = create_pathsnapshot(
                         name=name,
                         description=description,
@@ -914,9 +938,13 @@ def create_snapshot(request):
                         start = start,
                         end = end
                     )
-            url = f'snapshots/path/{p_snap.id}'
-            return redirect(url, permanent=True)
+            if(button == 'save and stay'):
+                return HttpResponse(status = 204)
+            else:
+                url = f'snapshots/path/{p_snap.id}'
+                return redirect(url, permanent=True)
         elif snapshot_type == 'fourfield':
+            button = request.POST['button']
             x = request.POST['x_dim']
             y = request.POST['y_dim']
             r = request.POST['r_dim']
@@ -928,7 +956,6 @@ def create_snapshot(request):
             start = time.mktime((datetime.strptime(start_ddmmyyyy, "%d/%m/%Y")).timetuple())
             end = time.mktime((datetime.strptime(end_ddmmyyyy, "%d/%m/%Y")).timetuple())
             zoom = request.POST['zoom']
-
             ff_snap = create_fourfieldsnapshot(
                         name=name,
                         description=description,
@@ -939,8 +966,11 @@ def create_snapshot(request):
                         end=end,
                         zoom=zoom
                     )
-            url = f'snapshots/fourfield/{ff_snap.id}'
-            return redirect(url, permanent=True)
+            if(button == 'save and stay'):
+                return HttpResponse(status = 204)
+            else:
+                url = f'snapshots/fourfield/{ff_snap.id}'
+                return redirect(url, permanent=True)
         else:
             pass
 
