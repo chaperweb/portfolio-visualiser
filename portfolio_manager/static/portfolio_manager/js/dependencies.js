@@ -58,7 +58,6 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
   var smallValue = d3.min(valueArray);
 
   // Compute the distinct nodes. Each node is only created once
-
   for (j = 0; j < jsonlen - 1; j++) {
 
     if(json[j].dimensions == undefined) {
@@ -118,13 +117,13 @@ function dependencies(json, target, organizations, associationtype, nodeSizeValu
 
   // map connecting link amount with source node
   var linkWeightMap = new Map()
-
+  var keyValue, newValue;
   for (elem in links) {
-    var keyValue = links[elem].source
+    keyValue = links[elem].source
     if (!linkWeightMap.has(keyValue)) {
       linkWeightMap.set(keyValue, 1)
     } else {
-      var newValue = linkWeightMap.get(keyValue) + 1
+      newValue = linkWeightMap.get(keyValue) + 1
       linkWeightMap.set(keyValue, newValue)
     }
   }
