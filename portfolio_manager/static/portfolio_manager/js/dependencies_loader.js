@@ -65,41 +65,34 @@ $(function() {
     var numberic_names = [];
     var text_names = [];
     var associated_names = [];
+    var name;
 
-    for (var i = 0, ilen = db_json.length; i < ilen; i++) {
-      var project = db_json[i];
-      for (var j = 0, jlen = project.dimensions.length; j < jlen; j++) {
-        var dimension = project.dimensions[j];
+    db_json.forEach(x => x.dimensions.forEach(function(y) {
+        name = y.dimension_object.name
+        switch(y.dimension_type) {
+          case 'NumberDimension':
+            if (numberic_names.indexOf(name) === -1) {
+              numberic_names.push(name);
+              $('#size-selector').append('<option value="'+name+'">'+name+'</option>');
+            }
+            break;
 
-        var name = dimension.dimension_object.name;
-        if (dimension.dimension_type === 'NumberDimension') {
-            numberic_names.push(name);
-        } else if (dimension.dimension_type === 'AssociatedPersonDimension' ||
-                   dimension.dimension_type === 'AssociatedPersonsDimension' ||
-                   dimension.dimension_type === 'AssociatedProjectsDimension' ||
-                   dimension.dimension_type === 'AssociatedOrganizationDimension') {
-          associated_names.push(name);
-        } else if (dimension.dimension_type === 'TextDimension') {
-          text_names.push(name);
+          case 'AssociatedPersonDimension': case 'AssociatedPersonsDimension':
+          case 'AssociatedProjectsDimension': case 'AssociatedOrganizationDimension':
+            if (associated_names.indexOf(name) === -1) {
+              associated_names.push(name);
+              $('#type-selector').append('<option value="'+name+'">'+name+'</option>');
+            }
+            break;
+          case 'TextDimension':
+          if (text_names.indexOf(name) === -1) {
+              text_names.push(name);
+              $('#color-selector').append('<option value="'+name+'">'+name+'</option>');
+          }
+            break;
         }
       }
-    }
-    numberic_names = numberic_names.filter( onlyUnique );
-    associated_names = associated_names.filter( onlyUnique );
-    text_names = text_names.filter( onlyUnique );
-
-    numberic_names.forEach(function(name) {
-      return $('#size-selector').append('<option value="'+name+'">'+name+'</option>');
-    });
-
-    associated_names.forEach(function(name) {
-      return $('#type-selector').append('<option value="'+name+'">'+name+'</option>');
-    });
-
-    text_names.forEach(function(name) {
-      return $('#color-selector').append('<option value="'+name+'">'+name+'</option>');
-    });
-
+    ));
 
     $('#size-selector').prop('disabled', false);
     $('#type-selector').prop('disabled', false);
