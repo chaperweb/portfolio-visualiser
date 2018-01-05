@@ -28,7 +28,7 @@ from . import views
 #URLs listed as following
 #Top view is the leftmost, every functionalities related to that is step right
 #Example Homepage is the top(found in navbar)
-#Visualizations on the page (path, projectdependencies, 4-field) are step right
+#Visualizations on the page (path, dependencies, 4-field) are step right
 ajax_patterns = [
     url(r'^get_sheets$', views.get_sheets, name='get_sheets'),
     url(r'^get_orgs$', views.get_orgs, name='get_orgs'),
@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^signout/$', auth_logout, {'next_page': '/signin/'}, name="logout"),
     url(r'^$', views.home, name='homepage'),
         url(r'^path$', TemplateView.as_view(template_name="path.html"), name='path'),
-        url(r'^projectdependencies$', TemplateView.as_view(template_name="projectdependencies.html"), name='projectdependencies'),
+        url(r'^dependencies$', TemplateView.as_view(template_name="dependencies.html"), name='dependencies'),
         url(r'^fourfield$', TemplateView.as_view(template_name="fourfield.html"), name='fourfield'),
     url(r'^projects$', views.projects, name='projects'),
         url(r"^projects/(?P<project_id>[0-9]+)$", views.show_project, name='show_project'),

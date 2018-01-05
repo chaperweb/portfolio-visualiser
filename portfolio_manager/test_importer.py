@@ -171,9 +171,9 @@ class ImporterTestCase(TestCase):
         self.assertEqual(Person.objects.get(first_name='Taneli'), members[1])
         self.assertEqual(Person.objects.get(first_name='Pekka'), members[0])
 
-    def test_import_projectdependencies(self):
+    def test_import_dependencies(self):
         data = [
-            [u'id', u'__history_date', u'Name', u'ProjectDependencies'],
+            [u'id', u'__history_date', u'Name', u'dependencies'],
             ['', '', 'TEXT', 'APROJ'],
             [u'1', '2013-03-16T17:41:28+00:00', 'Project1'],
             [u'2', '2013-03-18T17:41:28+00:00', 'Project2', '1'],

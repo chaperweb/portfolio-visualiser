@@ -31,7 +31,7 @@ class ViewsTestCase(TestCase):
 
         data = [[u'id', u'__history_date', u'Name',
                  u'ProjectManagerDimension',
-                 u'ProjectDependenciesDimension',
+                 u'dependenciesDimension',
                  u'Members'],
                 ['', '', 'TEXT', 'APER', 'APROJ', 'APERS'],
                 [u'1', '2012-03-16T17:41:28+00:00', u'Biz', u'Urho', u'', u'Matti, Pekka'],
