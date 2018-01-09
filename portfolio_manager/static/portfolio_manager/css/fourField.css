@@ -12,32 +12,43 @@ text {
   stroke: #000;
 }
 
+.dateLabel {
+  opacity: 0.7;
+}
 .currentDate {
-  font-weight: : 700;
+  font-weight: 500;
   font-size: 50px;
-  opacity: 0.3;
 }
 
 .info {
-  font-weight: : 300;
-  font-size: 45px;
-  opacity: 0.3;
+  font-weight: 300;
+  font-size: 25px;
+  opacity: 0.5;
+}
+
+.situation {
+  font-weight: 200;
+  font-size: 20px;
+  opacity: 0.5;
 }
 .axisLabel {
-  font-weight: : 200;
-  font-size: 30px;
+  font-weight: 200;
+  font-size: 20px;
   opacity: 0.3;
 }
 
 .sliderLabel {
   font-weight: 300;
   font-size: 20px;
-  opacity: 0.3;
 }
 .overlay {
   fill: none;
   pointer-events: all;
   cursor: ew-resize;
+}
+
+.axis {
+  opacity: 0.5;
 }
 .track,
 .track-inset,
