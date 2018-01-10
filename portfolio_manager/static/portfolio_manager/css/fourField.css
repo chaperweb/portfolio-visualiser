@@ -1,3 +1,7 @@
+.hvLabel {
+  font-size: 15px;
+  opacity: 0.3;
+}
 
 text {
   fill: #000;
@@ -8,39 +12,43 @@ text {
   stroke: #000;
 }
 
+.dateLabel {
+  opacity: 0.7;
+}
 .currentDate {
-  font-weight: : 700;
-  font-size: 70px;
-  fill: black;
-  opacity: 0.3;
+  font-weight: 500;
+  font-size: 50px;
 }
 
 .info {
-  font-weight: : 300;
-  font-size: 45px;
-  font-family: "Exo 2", sans-serif;
-  fill: black;
-  opacity: 0.3;
+  font-weight: 300;
+  font-size: 25px;
+  opacity: 0.5;
+}
+
+.situation {
+  font-weight: 200;
+  font-size: 20px;
+  opacity: 0.5;
 }
 .axisLabel {
-  font-weight: : 200;
-  font-size: 30px;
-  font-family: "Exo 2", sans-serif;
-  fill: black;
+  font-weight: 200;
+  font-size: 20px;
   opacity: 0.3;
 }
 
 .sliderLabel {
   font-weight: 300;
   font-size: 20px;
-  font-family: "Exo 2", sans-serif;
-  fill: black;
-
 }
 .overlay {
   fill: none;
   pointer-events: all;
   cursor: ew-resize;
+}
+
+.axis {
+  opacity: 0.5;
 }
 .track,
 .track-inset,
