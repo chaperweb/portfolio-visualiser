@@ -308,6 +308,9 @@ class NumberDimension (Dimension):
     def __str__(self):
         return str(self.value)
 
+    def from_sheet(self, value, history_date):
+        self.value = value.replace(',','.')
+        self._history_date = history_date
 
 class DateDimension (Dimension):
     value = models.DateTimeField(null=True)

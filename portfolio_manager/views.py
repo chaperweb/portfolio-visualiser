@@ -195,6 +195,7 @@ def home(request):
         for project in projects:
             # Get project manager
             ct_apers = ContentType.objects.get_for_model(AssociatedPersonDimension)
+            proj_manager = None
             for dim in project.dimensions.filter(content_type=ct_apers):
                 if dim.dimension_object.name == 'ProjectManager':
                     proj_manager = dim.dimension_object
@@ -405,7 +406,7 @@ def add_field(request):
         template_dim.save()
 
         add_field_form = ProjectTemplateForm()
-        add_field_form.initial = {'organization': org.name}
+        add_field_form.initial = {'organization': org.id}
         orgform = OrgForm({'orgs': org}, user=request.user)
         # (dimension name -> datatype) dictionary
         dims = {}
@@ -430,7 +431,7 @@ def add_field(request):
         }
         return render(request, 'database.html', render_data)
     except Exception as e:
-        orgform = OrgForm()
+        orgform = OrgForm(user=request.user)
         add_field_form = ProjectTemplateForm()
         resultmsg = "ERROR: %s" % e
         print(resultmsg)

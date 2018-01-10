@@ -158,6 +158,7 @@ def from_data_array(data):
                         helper.create_milestone(idx, milestone_value, milestone, project_dimension_objects[current_id][idx])
             else: # Row represents an update to project's dimensions
                 if current_id != prev_id: # new project
+                    name_set = False
                     project = helper.remove_and_create_project(current_id)
                     prev_id = current_id
                     dimension_objects[current_id] = {}
@@ -179,9 +180,10 @@ def from_data_array(data):
                             dimension_object.from_sheet(dimension_update.strip(), history_date)
                             dimension_object.save()
 
-                            if dimension_object_name == 'Name':
+                            if dimension_object.data_type == 'TEXT' and not name_set:
                                 project.name = dimension_object.value
                                 project.save()
+                                name_set = True
 
                             if create_project_dimension:
                                 project_dimension = ProjectDimension()
@@ -220,9 +222,10 @@ def from_data_array(data):
         dimension_object.from_sheet(data[y+2][x+3].strip(), history_date)
         dimension_object.save()
 
-        if dimension_object_name == 'OwningOrganization':
+        if dimension_object.data_type == 'AORG' and project.parent == None:
             project.parent = dimension_object.value
             project.save()
+            owningOrg_set = True
 
         if create_project_dimension:
             project_dimension = ProjectDimension()
